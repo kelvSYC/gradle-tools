@@ -13,7 +13,9 @@ import javax.inject.Inject
 /**
  * [WorkAction] implementation retrieving the contents of a remote Git repository using `git archive --remote`.
  */
-abstract class GitRemoteArchiveAction @Inject constructor(private val exec: ExecOperations, providers: ProviderFactory) : WorkAction<GitRemoteArchiveAction.Parameters> {
+abstract class GitRemoteArchiveAction @Inject constructor(
+    private val exec: ExecOperations, providers: ProviderFactory
+) : WorkAction<GitRemoteArchiveAction.Parameters> {
     /**
      * Parameters for [GitRemoteArchiveAction].
      */
