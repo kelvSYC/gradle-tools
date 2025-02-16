@@ -2,10 +2,13 @@ name: Build Gradle Tools
 on:
   push:
     branches:
-      - $default-branch
+      - main
   pull_request:
+    types:
+      - opened
+      - reopened
     branches:
-      - $default-branch
+      - main
 
 jobs:
   build:
