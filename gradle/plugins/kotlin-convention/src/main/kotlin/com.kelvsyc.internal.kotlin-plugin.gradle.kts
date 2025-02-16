@@ -9,6 +9,8 @@ plugins {
     id("io.gitlab.arturbosch.detekt")
 }
 
+group = "com.kelvsyc.gradle"
+
 kotlin {
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(21))

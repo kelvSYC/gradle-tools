@@ -9,3 +9,6 @@ gradlex-dependency-conflict-resolution-plugin = "org.gradlex:jvm-dependency-conf
 gradlex-reproducible-builds-plugin = "org.gradlex:reproducible-builds:1.0"
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin" }
 reckon-plugin = "org.ajoberstar.reckon:reckon-gradle:0.19.1"
+
+# API Dependencies
+jgit = "org.eclipse.jgit:org.eclipse.jgit:7.1.0.202411261347-r"
