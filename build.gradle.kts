@@ -1,6 +1,10 @@
 group = "com.kelvsyc"
 
 val components = buildList {
+    // Gradle Plugin Libraries
+    add("gradle-extensions")
+
+    // Gradle Plugins
     add("git-core")
 }
 

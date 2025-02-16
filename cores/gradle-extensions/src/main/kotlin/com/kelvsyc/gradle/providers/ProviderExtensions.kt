@@ -1,4 +1,4 @@
-package com.kelvsyc.gradle.git
+package com.kelvsyc.gradle.providers
 
 import org.gradle.api.provider.Provider
 import java.util.*
