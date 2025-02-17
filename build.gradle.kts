@@ -12,6 +12,7 @@ tasks.register("clean") {
     components.forEach {
         dependsOn(gradle.includedBuild(it).task(":$name"))
     }
+    dependsOn(gradle.includedBuild("aggregation").task(":platform:$name"))
 }
 
 tasks.register("assemble") {
@@ -25,6 +26,7 @@ tasks.register("build") {
         dependsOn(gradle.includedBuild(it).task(":$name"))
     }
     dependsOn(gradle.includedBuild("aggregation").task(":catalog:generateCatalogAsToml"))
+    dependsOn(gradle.includedBuild("aggregation").task(":platform:$name"))
 }
 
 tasks.register("publish") {
@@ -32,4 +34,5 @@ tasks.register("publish") {
         dependsOn(gradle.includedBuild(it).task(":$name"))
     }
     dependsOn(gradle.includedBuild("aggregation").task(":catalog:$name"))
+    dependsOn(gradle.includedBuild("aggregation").task(":platform:$name"))
 }

@@ -25,6 +25,7 @@ configure<ReckonExtension> {
 }
 
 include("catalog")
+include("platform")
 
 // Builds to be aggregated
 includeBuild("../cores/git-core")
