@@ -25,3 +25,9 @@ tasks.register("build") {
         dependsOn(gradle.includedBuild(it).task(":$name"))
     }
 }
+
+tasks.register("publish") {
+    components.forEach {
+        dependsOn(gradle.includedBuild(it).task(":$name"))
+    }
+}

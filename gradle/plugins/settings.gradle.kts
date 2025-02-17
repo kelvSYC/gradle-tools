@@ -17,3 +17,4 @@ dependencyResolutionManagement {
 }
 
 include("kotlin-convention")
+include("publishing-convention")
