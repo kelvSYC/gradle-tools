@@ -1,6 +1,7 @@
 package com.kelvsyc.gradle.providers
 
 import org.gradle.api.provider.Provider
+import java.util.*
 
 /**
  * Maps the elements of the collection provided by this provider.
@@ -42,3 +43,11 @@ val <T> Provider<Set<T>>.orElseEmpty
 val <K, V> Provider<Map<K, V>>.orElseEmpty
     @JvmName("mapProviderOrElseEmpty")
     get() = orElse(emptyMap())
+
+/**
+ * Returns a [Provider] converting the provided [Properties] object into a string map.
+ */
+val Provider<Properties>.asMap
+    get() = map {
+        it.stringPropertyNames().associateWith(it::getProperty)
+    }

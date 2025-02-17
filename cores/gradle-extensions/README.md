@@ -16,6 +16,7 @@ The vast majority of the Gradle Extensions are Kotlin extensions to the Gradle A
 
 * `Provider.asAbsolutePath` is a simple transformation that returns a `FileSystemLocation`'s absolute path.
   `Provider.asPath` is similar, but returns a `Path`.
+* `Provider.asMap` is a simple transformation converting a `Properties` object to a string map.
 * `Provider.dir()` and `Provider.file()` are extensions that transform directories like they do for `DirectoryProperty`.
 * `Provider.filterNotBlank()` is an extension that filters out blank strings.
 * `Provider.mapElements` is an extension that maps the elements of a collection. `Provider.mapElementsNotNull` uses
@@ -27,3 +28,4 @@ The vast majority of the Gradle Extensions are Kotlin extensions to the Gradle A
   function exist for `Provider`s of strings.
 * `ProviderFactory.ofNullable` is a simple `Provider` that returns a constant value. `ProviderFactory.absent` returns
   an always-absent `Provider`
+* `ProviderFactory.propertiesFile()` creates `Provider` instances from properties files.
