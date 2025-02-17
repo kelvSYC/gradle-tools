@@ -17,3 +17,19 @@ fun Provider<String>.filterNotBlank() = filter(String::isNotBlank)
  */
 val Provider<String>.orElseEmpty
     get() = orElse("")
+
+/**
+ * Returns a [Provider] that converts the provided string to an [Int] value.
+ *
+ * @see [String.toIntOrNull]
+ */
+val Provider<String>.asInt
+    get() = mapKt(String::toIntOrNull)
+
+/**
+ * Returns a [Provider] that converts the provided string to a [Boolean] value.
+ *
+ * @see [String.toBooleanStrictOrNull]
+ */
+val Provider<String>.asBoolean
+    get() = mapKt(String::toBooleanStrictOrNull)

@@ -16,6 +16,8 @@ The vast majority of the Gradle Extensions are Kotlin extensions to the Gradle A
 
 * `Provider.asAbsolutePath` is a simple transformation that returns a `FileSystemLocation`'s absolute path.
   `Provider.asPath` is similar, but returns a `Path`.
+* `Provider.asBoolean` converts a string `Provider` to a boolean `Provider`. Similarly, `Provider.asInt` converts a
+  string `Provider` to an integer `Provider`.
 * `Provider.asMap` is a simple transformation converting a `Properties` object to a string map.
 * `Provider.dir()` and `Provider.file()` are extensions that transform directories like they do for `DirectoryProperty`.
 * `Provider.filterNotBlank()` is an extension that filters out blank strings.
