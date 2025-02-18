@@ -16,5 +16,6 @@ dependencyResolutionManagement {
     }
 }
 
+include("dokkatoo-convention")
 include("kotlin-convention")
 include("publishing-convention")

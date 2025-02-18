@@ -10,6 +10,10 @@ plugins {
 
 group = "com.kelvsyc.gradle"
 
+java {
+    withSourcesJar()
+}
+
 kotlin {
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(21))

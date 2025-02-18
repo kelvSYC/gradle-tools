@@ -1,4 +1,5 @@
 plugins {
+    id("com.kelvsyc.internal.dokkatoo")
     id("com.kelvsyc.internal.kotlin-plugin")
     id("com.kelvsyc.internal.github-publishing")
 }
