@@ -15,6 +15,10 @@ dependencyResolutionManagement {
     }
 
     includeBuild("../gradle/platform")
+
+    versionCatalogs.register("libs") {
+        from(files("../gradle/libs.versions.toml"))
+    }
 }
 
 configure<ReckonExtension> {
@@ -25,6 +29,7 @@ configure<ReckonExtension> {
 }
 
 include("catalog")
+include("dokkatoo")
 include("platform")
 
 // Builds to be aggregated

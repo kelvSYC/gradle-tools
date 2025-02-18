@@ -19,6 +19,7 @@ tasks.register("assemble") {
     components.forEach {
         dependsOn(gradle.includedBuild(it).task(":$name"))
     }
+    dependsOn(gradle.includedBuild("aggregation").task(":dokkatoo:$name"))
 }
 
 tasks.register("build") {

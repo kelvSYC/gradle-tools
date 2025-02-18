@@ -4,6 +4,11 @@ plugins {
     id("com.kelvsyc.internal.github-publishing")
 }
 
+dokkatoo {
+    moduleName.set("Git Core")
+    modulePath.set(project.name)
+}
+
 gradlePlugin {
     plugins.register("git-core") {
         id = "com.kelvsyc.gradle.git-core"
