@@ -10,6 +10,7 @@ javaPlatform {
 }
 
 dependencies {
+    api(platform(libs.kotest.bom))
     api(platform(libs.kotlin.gradle.plugins.bom))
     constraints {
 

@@ -4,6 +4,7 @@ dokkatoo = "2.4.0"
 [libraries]
 # BOMs
 kotlin-gradle-plugins-bom = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom:2.0.21"
+kotest-bom = "io.kotest:kotest-bom:5.9.1"
 
 # Internal
 dependency-analysis-plugin = "com.autonomousapps:dependency-analysis-gradle-plugin:2.8.2"
@@ -11,11 +12,13 @@ detekt-plugin = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.7"
 dokkatoo-plugin = { module = "dev.adamko.dokkatoo:dokkatoo-plugin", version.ref = "dokkatoo" }
 gradlex-dependency-conflict-resolution-plugin = "org.gradlex:jvm-dependency-conflict-resolution:2.1.2"
 gradlex-reproducible-builds-plugin = "org.gradlex:reproducible-builds:1.0"
-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin" }
+kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin" } # version from BOM 'kotlin-gradle-plugins-bom'
 reckon-plugin = "org.ajoberstar.reckon:reckon-gradle:0.19.1"
 
 # API Dependencies
 jgit = "org.eclipse.jgit:org.eclipse.jgit:7.1.0.202411261347-r"
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core" } # version from BOM 'kotest-bom'
+kotest-runner = { module = "io.kotest:kotest-runner-junit5" } # version from BOM 'kotest-bom'
 
 [plugins]
 dokkatoo-html = { id = "dev.adamko.dokkatoo-html", version.ref = "dokkatoo" }

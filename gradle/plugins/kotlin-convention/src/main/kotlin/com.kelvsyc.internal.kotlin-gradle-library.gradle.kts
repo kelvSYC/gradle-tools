@@ -1,3 +1,5 @@
+import kotlin.jvm.optionals.getOrNull
+
 plugins {
     `java-library`
     kotlin("jvm")
@@ -20,8 +22,17 @@ kotlin {
     }
 }
 
+val libs = versionCatalogs.named("libs")
+
 dependencies {
     implementation(platform("com.kelvsyc.internal:platform"))
     compileOnlyApi(gradleApi())
     compileOnlyApi(gradleKotlinDsl())
+
+    libs.findLibrary("kotest-assertions-core").getOrNull()?.let { testImplementation(it) }
+    libs.findLibrary("kotest-runner").getOrNull()?.let { testImplementation(it) }
+}
+
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
 }

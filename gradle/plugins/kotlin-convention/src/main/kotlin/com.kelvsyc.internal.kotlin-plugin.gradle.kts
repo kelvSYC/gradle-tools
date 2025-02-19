@@ -1,3 +1,5 @@
+import kotlin.jvm.optionals.getOrNull
+
 plugins {
     `java-library`
     // FIXME https://github.com/gradle/gradle/issues/22428 - can't use `kotlin-dsl` due to it containing a version
@@ -21,6 +23,15 @@ kotlin {
     }
 }
 
+val libs = versionCatalogs.named("libs")
+
 dependencies {
     implementation(platform("com.kelvsyc.internal:platform"))
+
+    libs.findLibrary("kotest-assertions-core").getOrNull()?.let { testImplementation(it) }
+    libs.findLibrary("kotest-runner").getOrNull()?.let { testImplementation(it) }
+}
+
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
 }
