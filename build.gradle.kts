@@ -5,6 +5,7 @@ val components = buildList {
     add("gradle-extensions")
 
     // Gradle Plugins
+    add("clients-base")
     add("git-core")
 }
 
