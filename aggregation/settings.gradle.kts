@@ -33,5 +33,6 @@ include("dokkatoo")
 include("platform")
 
 // Builds to be aggregated
-includeBuild("../cores/git-core")
-includeBuild("../cores/gradle-extensions")
+file("../cores").list { dir, _ -> dir.isDirectory  }?.forEach {
+    includeBuild("../cores/$it")
+}
