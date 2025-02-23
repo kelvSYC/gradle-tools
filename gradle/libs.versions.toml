@@ -3,6 +3,7 @@ dokkatoo = "2.4.0"
 
 [libraries]
 # BOMs
+google-cloud-libraries-bom = "com.google.cloud:libraries-bom:26.54.0"
 kotlin-gradle-plugins-bom = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom:2.0.21"
 kotest-bom = "io.kotest:kotest-bom:5.9.1"
 
@@ -16,6 +17,7 @@ kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin" } # versi
 reckon-plugin = "org.ajoberstar.reckon:reckon-gradle:0.19.1"
 
 # API Dependencies
+google-cloud-storage = { module = "com.google.cloud:google-cloud-storage" } # version from BOM 'google-cloud-libraries-bom'
 jgit = "org.eclipse.jgit:org.eclipse.jgit:7.1.0.202411261347-r"
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core" } # version from BOM 'kotest-bom'
 kotest-runner = { module = "io.kotest:kotest-runner-junit5" } # version from BOM 'kotest-bom'
