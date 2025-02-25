@@ -10,4 +10,5 @@ dokkatoo {
 }
 
 dependencies {
+    implementation(libs.caffeine)
 }

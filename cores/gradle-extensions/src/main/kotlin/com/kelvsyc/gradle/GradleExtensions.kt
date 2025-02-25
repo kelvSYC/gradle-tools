@@ -1,5 +1,6 @@
-package com.kelvsyc.gradle.providers
+package com.kelvsyc.gradle
 
+import com.kelvsyc.gradle.internal.RootGradleDelegate
 import org.gradle.api.invocation.Gradle
 
 /**
@@ -7,5 +8,4 @@ import org.gradle.api.invocation.Gradle
  *
  * The root [Gradle] instance is the instance for which there is no parent [Gradle].
  */
-val Gradle.rootGradle
-    get() = generateSequence(this, Gradle::getParent).last()
+val Gradle.rootGradle by RootGradleDelegate

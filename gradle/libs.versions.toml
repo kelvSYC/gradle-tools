@@ -17,6 +17,7 @@ kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin" } # versi
 reckon-plugin = "org.ajoberstar.reckon:reckon-gradle:0.19.1"
 
 # API Dependencies
+caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.0"
 google-cloud-storage = { module = "com.google.cloud:google-cloud-storage" } # version from BOM 'google-cloud-libraries-bom'
 jgit = "org.eclipse.jgit:org.eclipse.jgit:7.1.0.202411261347-r"
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core" } # version from BOM 'kotest-bom'
