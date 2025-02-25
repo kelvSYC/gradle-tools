@@ -9,5 +9,5 @@ kotlin {
 }
 
 dependencies {
-    implementation(libs.reckon.plugin)
+    implementation(libs.semver.plugin)
 }
