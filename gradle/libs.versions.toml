@@ -3,7 +3,7 @@ dokkatoo = "2.4.0"
 
 [libraries]
 # BOMs
-aws-java-sdk-bom = "software.amazon.awssdk:bom:2.30.26"
+aws-java-sdk-bom = "software.amazon.awssdk:bom:2.30.28"
 google-cloud-libraries-bom = "com.google.cloud:libraries-bom:26.54.0"
 kotlin-gradle-plugins-bom = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom:2.0.21"
 kotest-bom = "io.kotest:kotest-bom:5.9.1"
