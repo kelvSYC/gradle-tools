@@ -3,6 +3,7 @@ dokkatoo = "2.4.0"
 
 [libraries]
 # BOMs
+aws-java-sdk-bom = "software.amazon.awssdk:bom:2.30.26"
 google-cloud-libraries-bom = "com.google.cloud:libraries-bom:26.54.0"
 kotlin-gradle-plugins-bom = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom:2.0.21"
 kotest-bom = "io.kotest:kotest-bom:5.9.1"
@@ -17,6 +18,10 @@ kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin" } # versi
 reckon-plugin = "org.ajoberstar.reckon:reckon-gradle:0.19.1"
 
 # API Dependencies
+aws-auth-java = { module = "software.amazon.awssdk:auth" } # version from BOM 'aws-java-sdk-bom'
+aws-regions-java = { module = "software.amazon.awssdk:regions" } # version from BOM 'aws-java-sdk-bom'
+aws-s3-java = { module = "software.amazon.awssdk:s3" } # version from BOM 'aws-java-sdk-bom'
+aws-s3-transfer-manager-java = { module = "software.amazon.awssdk:s3-transfer-manager" } # version from BOM 'aws-java-sdk-bom'
 caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.0"
 google-cloud-storage = { module = "com.google.cloud:google-cloud-storage" } # version from BOM 'google-cloud-libraries-bom'
 jgit = "org.eclipse.jgit:org.eclipse.jgit:7.1.0.202411261347-r"
