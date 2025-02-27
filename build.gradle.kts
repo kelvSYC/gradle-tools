@@ -5,8 +5,10 @@ val components = buildList {
     add("gradle-extensions")
 
     // Gradle Plugins
+    add("aws-s3-java-base")
     add("clients-base")
     add("git-core")
+    add("google-cloud-storage-base")
 }
 
 tasks.register("clean") {
