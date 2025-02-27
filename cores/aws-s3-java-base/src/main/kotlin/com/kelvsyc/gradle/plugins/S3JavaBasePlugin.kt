@@ -18,6 +18,7 @@ class S3JavaBasePlugin : Plugin<Project> {
         val extension = project.the<ClientsBaseExtension>()
         extension.service.get().registerBinding(S3ClientInfo::class, S3ClientInfoInternal::class)
         extension.service.get().registerBinding(S3AsyncClientInfo::class, S3AsyncClientInfoInternal::class)
-        extension.service.get().registerBinding(S3TransferManagerClientInfo::class, S3TransferManagerClientInfoInternal::class)
+        extension.service.get()
+            .registerBinding(S3TransferManagerClientInfo::class, S3TransferManagerClientInfoInternal::class)
     }
 }

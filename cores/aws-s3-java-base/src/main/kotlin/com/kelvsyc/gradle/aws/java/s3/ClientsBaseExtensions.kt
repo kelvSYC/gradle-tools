@@ -17,5 +17,8 @@ fun ClientsBaseExtension.registerAwsS3AsyncJavaClient(name: String, configureAct
 /**
  * Registers an AWS S3 Transfer Manager Client.
  */
-fun ClientsBaseExtension.registerAwsS3TransferManagerJavaClient(name: String, configureAction: S3TransferManagerClientInfo.() -> Unit) =
+fun ClientsBaseExtension.registerAwsS3TransferManagerJavaClient(
+    name: String,
+    configureAction: S3TransferManagerClientInfo.() -> Unit
+) =
     service.get().registerIfAbsent(name, configureAction)

@@ -10,7 +10,8 @@ interface S3AsyncClientInfo : ServiceClientInfo<S3AsyncClient> {
     /**
      * The AWS region that this client communicates with.
      *
-     * Leave unset to identify the region based on [DefaultAwsRegionProviderChain][software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain],
+     * Leave unset to identify the region based on
+     * [DefaultAwsRegionProviderChain][software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain],
      * the default used by the AWS Java SDK.
      */
     val region: Property<Region>
@@ -19,7 +20,8 @@ interface S3AsyncClientInfo : ServiceClientInfo<S3AsyncClient> {
      * The credentials to authenticate with AWS.
      *
      * If absent, an [AnonymousCredentialsProvider][software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider]
-     * will be used to authenticate with AWS. Use a [DefaultCredentialsProvider][software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider]
+     * will be used to authenticate with AWS. Use a
+     * [DefaultCredentialsProvider][software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider]
      * to use the default credentials used by the AWS Java SDK.
      */
     val credentials: Property<AwsCredentialsProvider>
