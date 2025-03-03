@@ -23,6 +23,10 @@ kotlin {
     }
 }
 
+detekt {
+    config.from(file("../../gradle/detekt.yml"))
+}
+
 val libs = versionCatalogs.named("libs")
 
 dependencies {
