@@ -10,6 +10,7 @@ val components = buildList {
     add("aws-s3-java-base")
     add("clients-base")
     add("git-core")
+    add("google-cloud-artifact-registry-base")
     add("google-cloud-storage-base")
 }
 

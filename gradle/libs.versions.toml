@@ -6,6 +6,7 @@ dokkatoo = "2.4.0"
 aws-java-sdk-bom = "software.amazon.awssdk:bom:2.30.26"
 google-cloud-libraries-bom = "com.google.cloud:libraries-bom:26.54.0"
 kotlin-gradle-plugins-bom = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom:2.0.21"
+kotlinx-coroutines-bom = "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.9.0"
 kotest-bom = "io.kotest:kotest-bom:5.9.1"
 
 # Internal
@@ -25,10 +26,12 @@ aws-codeartifact-java = { module = "software.amazon.awssdk:codeartifact" } # ver
 aws-s3-java = { module = "software.amazon.awssdk:s3" } # version from BOM 'aws-java-sdk-bom'
 aws-s3-transfer-manager-java = { module = "software.amazon.awssdk:s3-transfer-manager" } # version from BOM 'aws-java-sdk-bom'
 caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.0"
+google-cloud-artifact-registry = { module = "com.google.cloud:google-cloud-artifact-registry" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-storage = { module = "com.google.cloud:google-cloud-storage" } # version from BOM 'google-cloud-libraries-bom'
 jgit = "org.eclipse.jgit:org.eclipse.jgit:7.1.0.202411261347-r"
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core" } # version from BOM 'kotest-bom'
 kotest-runner = { module = "io.kotest:kotest-runner-junit5" } # version from BOM 'kotest-bom'
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" } # version from BOM 'kotlinx-coroutines-bom'
 
 [plugins]
 dokkatoo-html = { id = "dev.adamko.dokkatoo-html", version.ref = "dokkatoo" }
