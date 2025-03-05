@@ -7,6 +7,7 @@ val components = buildList {
 
     // Gradle Plugins
     add("aws-codeartifact-java-base")
+    add("aws-imds-java-base")
     add("aws-s3-java-base")
     add("clients-base")
     add("git-core")
