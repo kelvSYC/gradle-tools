@@ -1,6 +1,7 @@
 package com.kelvsyc.gradle.plugins
 
 import com.kelvsyc.gradle.aws.java.s3.BatchDownloadFromS3
+import com.kelvsyc.gradle.aws.java.s3.BatchUploadToS3
 import com.kelvsyc.gradle.aws.java.s3.S3AsyncClientInfo
 import com.kelvsyc.gradle.aws.java.s3.S3ClientInfo
 import com.kelvsyc.gradle.aws.java.s3.S3TransferManagerClientInfo
@@ -25,6 +26,11 @@ class S3JavaBasePlugin : Plugin<Project> {
             .registerBinding(S3TransferManagerClientInfo::class, S3TransferManagerClientInfoInternal::class)
 
         project.tasks.withType<BatchDownloadFromS3>().configureEach {
+            client.set(clientsService.zip(clientName, ClientsBaseService::getClient))
+            client.disallowChanges()
+            client.finalizeValueOnRead()
+        }
+        project.tasks.withType<BatchUploadToS3>().configureEach {
             client.set(clientsService.zip(clientName, ClientsBaseService::getClient))
             client.disallowChanges()
             client.finalizeValueOnRead()
