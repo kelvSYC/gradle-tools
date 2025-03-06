@@ -11,6 +11,7 @@ javaPlatform {
 
 dependencies {
     api(platform(libs.aws.java.sdk.bom))
+    api(platform(libs.aws.kotlin.sdk.bom))
     api(platform(libs.google.cloud.libraries.bom))
     api(platform(libs.kotest.bom))
     api(platform(libs.kotlin.gradle.plugins.bom))

@@ -4,6 +4,7 @@ dokkatoo = "2.4.0"
 [libraries]
 # BOMs
 aws-java-sdk-bom = "software.amazon.awssdk:bom:2.30.26"
+aws-kotlin-sdk-bom = "aws.sdk.kotlin:bom:1.4.34"
 google-cloud-libraries-bom = "com.google.cloud:libraries-bom:26.54.0"
 kotlin-gradle-plugins-bom = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom:2.0.21"
 kotlinx-coroutines-bom = "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.9.0"
@@ -27,6 +28,7 @@ aws-regions-java = { module = "software.amazon.awssdk:regions" } # version from 
 aws-codeartifact-java = { module = "software.amazon.awssdk:codeartifact" } # version from BOM 'aws-java-sdk-bom'
 aws-imds-java = { module = "software.amazon.awssdk:imds" } # version from BOM 'aws-java-sdk-bom'
 aws-s3-java = { module = "software.amazon.awssdk:s3" } # version from BOM 'aws-java-sdk-bom'
+aws-s3-kotlin = { module = "aws.sdk.kotlin:s3" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-s3-transfer-manager-java = { module = "software.amazon.awssdk:s3-transfer-manager" } # version from BOM 'aws-java-sdk-bom'
 aws-secrets-manager-caching-java = "com.amazonaws.secretsmanager:aws-secretsmanager-caching-java:2.0.0"
 aws-secrets-manager-java = { module = "software.amazon.awssdk:secretsmanager" } # version from BOM 'aws-java-sdk-bom'
