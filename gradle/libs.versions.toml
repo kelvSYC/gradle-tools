@@ -19,6 +19,7 @@ kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin" } # versi
 reckon-plugin = "org.ajoberstar.reckon:reckon-gradle:0.19.1"
 
 # API Dependencies
+artifactory-client-java = "org.jfrog.artifactory.client:artifactory-java-client-services:2.19.1"
 aws-auth-java = { module = "software.amazon.awssdk:auth" } # version from BOM 'aws-java-sdk-bom'
 aws-core-java = { module = "software.amazon.awssdk:aws-core" } # version from BOM 'aws-java-sdk-bom'
 aws-regions-java = { module = "software.amazon.awssdk:regions" } # version from BOM 'aws-java-sdk-bom'

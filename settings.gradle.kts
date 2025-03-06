@@ -1,5 +1,6 @@
 rootProject.name = "gradle-tools"
 
+includeBuild("cores/artifactory-base")
 includeBuild("cores/aws-codeartifact-java-base")
 includeBuild("cores/aws-imds-java-base")
 includeBuild("cores/aws-s3-java-base")
