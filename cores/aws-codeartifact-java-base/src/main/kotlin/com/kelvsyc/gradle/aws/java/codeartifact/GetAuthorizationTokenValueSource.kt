@@ -1,6 +1,8 @@
 package com.kelvsyc.gradle.aws.java.codeartifact
 
+import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import software.amazon.awssdk.services.codeartifact.CodeartifactClient
@@ -17,10 +19,8 @@ abstract class GetAuthorizationTokenValueSource : ValueSource<String, GetAuthori
      * Parameters for [GetRepositoryEndpointValueSource].
      */
     interface Parameters : ValueSourceParameters {
-        /**
-         * The underlying CodeArtifact client.
-         */
-        val client: Property<CodeartifactClient>
+        val service: Property<ClientsBaseService>
+        val clientName: Property<String>
 
         val domain: Property<String>
         val domainOwner: Property<String>
@@ -33,6 +33,8 @@ abstract class GetAuthorizationTokenValueSource : ValueSource<String, GetAuthori
         val duration: Property<Long>
     }
 
+    private val client: Provider<CodeartifactClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
+
     override fun obtain(): String? {
         val request = GetAuthorizationTokenRequest.builder().apply {
             domain(parameters.domain.get())
@@ -42,7 +44,7 @@ abstract class GetAuthorizationTokenValueSource : ValueSource<String, GetAuthori
         }.build()
 
         return try {
-            val response = parameters.client.get().getAuthorizationToken(request)
+            val response = client.get().getAuthorizationToken(request)
             response.authorizationToken()
         } catch (_: CodeartifactException) {
             null

@@ -1,6 +1,8 @@
 package com.kelvsyc.gradle.aws.java.codeartifact
 
+import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import software.amazon.awssdk.services.codeartifact.CodeartifactClient
@@ -19,10 +21,8 @@ abstract class GetRepositoryEndpointValueSource : ValueSource<String, GetReposit
      * Parameters to [GetRepositoryEndpointValueSource].
      */
     interface Parameters : ValueSourceParameters {
-        /**
-         * The underlying AWS client.
-         */
-        val client: Property<CodeartifactClient>
+        val service: Property<ClientsBaseService>
+        val clientName: Property<String>
 
         val domain: Property<String>
         val domainOwner: Property<String>
@@ -39,6 +39,8 @@ abstract class GetRepositoryEndpointValueSource : ValueSource<String, GetReposit
         val format: Property<PackageFormat>
     }
 
+    private val client: Provider<CodeartifactClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
+
     override fun obtain(): String? {
         val request = GetRepositoryEndpointRequest.builder().apply {
             domain(parameters.domain.get())
@@ -49,7 +51,7 @@ abstract class GetRepositoryEndpointValueSource : ValueSource<String, GetReposit
         }.build()
 
         return try {
-            val response = parameters.client.get().getRepositoryEndpoint(request)
+            val response = client.get().getRepositoryEndpoint(request)
             response.repositoryEndpoint()
         } catch (_: CodeartifactException) {
             null

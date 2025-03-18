@@ -1,6 +1,8 @@
 package com.kelvsyc.gradle.artifactory
 
+import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import org.jfrog.artifactory.client.Artifactory
@@ -22,11 +24,14 @@ abstract class AbstractArtifactValueSource<T, P : AbstractArtifactValueSource.Pa
      * subclass.
      */
     interface Parameters : ValueSourceParameters {
-        val client: Property<Artifactory>
+        val service: Property<ClientsBaseService>
+        val clientName: Property<String>
 
         val repository: Property<String>
         val path: Property<String>
     }
+
+    private val client: Provider<Artifactory> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     /**
      * Transforms the data retrieved from Artifactory.
@@ -38,7 +43,7 @@ abstract class AbstractArtifactValueSource<T, P : AbstractArtifactValueSource.Pa
     abstract fun doObtain(input: InputStream): T?
 
     override fun obtain(): T? {
-        val artifact = parameters.client.get()
+        val artifact = client.get()
             .repository(parameters.repository.get())
             .download(parameters.path.get())
 

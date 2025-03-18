@@ -1,6 +1,8 @@
 package com.kelvsyc.gradle.artifactory
 
+import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import org.jfrog.artifactory.client.Artifactory
@@ -24,10 +26,13 @@ abstract class AbstractStreamingRequestValueSource<T, P : AbstractStreamingReque
      * subclass.
      */
     interface Parameters : ValueSourceParameters {
-        val client: Property<Artifactory>
+        val service: Property<ClientsBaseService>
+        val clientName: Property<String>
 
         val request: Property<ArtifactoryRequest>
     }
+
+    private val client: Provider<Artifactory> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     /**
      * Transforms the response returned from Artifactory.
@@ -39,7 +44,7 @@ abstract class AbstractStreamingRequestValueSource<T, P : AbstractStreamingReque
     abstract fun doObtain(response: ArtifactoryStreamingResponse): T?
 
     override fun obtain(): T? {
-        val response = parameters.client.get().streamingRestCall(parameters.request.get())
+        val response = client.get().streamingRestCall(parameters.request.get())
         return doObtain(response)
     }
 }

@@ -1,6 +1,8 @@
 package com.kelvsyc.gradle.aws.java.s3
 
+import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import software.amazon.awssdk.core.ResponseBytes
@@ -24,10 +26,14 @@ abstract class AbstractS3ValueSource<T, P : AbstractS3ValueSource.Parameters> : 
      * subclass.
      */
     interface Parameters : ValueSourceParameters {
-        val client: Property<S3Client>
+        val service: Property<ClientsBaseService>
+        val clientName: Property<String>
+
         val bucket: Property<String>
         val key: Property<String>
     }
+
+    private val client: Provider<S3Client> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     private val request = parameters.bucket.zip(parameters.key) { bucket, key ->
         GetObjectRequest.builder().apply {
@@ -46,7 +52,7 @@ abstract class AbstractS3ValueSource<T, P : AbstractS3ValueSource.Parameters> : 
     abstract fun doObtain(content: ResponseBytes<GetObjectResponse>): T?
 
     override fun obtain(): T? {
-        val response = parameters.client.get().getObjectAsBytes(request.get())
+        val response = client.get().getObjectAsBytes(request.get())
         return doObtain(response)
     }
 }

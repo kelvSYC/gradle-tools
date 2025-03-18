@@ -1,6 +1,8 @@
 package com.kelvsyc.gradle.aws.java.codeartifact
 
+import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import software.amazon.awssdk.http.AbortableInputStream
@@ -26,7 +28,8 @@ abstract class AbstractGetGenericAssetValueSource<T, P : AbstractGetGenericAsset
      * [AbstractGetGenericAssetValueSource] subclass.
      */
     interface Parameters : ValueSourceParameters {
-        val client: Property<CodeartifactClient>
+        val service: Property<ClientsBaseService>
+        val clientName: Property<String>
 
         val domain: Property<String>
         val domainOwner: Property<String>
@@ -37,6 +40,8 @@ abstract class AbstractGetGenericAssetValueSource<T, P : AbstractGetGenericAsset
         val packageVersion: Property<String>
         val asset: Property<String>
     }
+
+    private val client: Provider<CodeartifactClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     abstract fun doObtain(response: GetPackageVersionAssetResponse, input: AbortableInputStream): T?
 
@@ -53,6 +58,6 @@ abstract class AbstractGetGenericAssetValueSource<T, P : AbstractGetGenericAsset
             asset(parameters.asset.get())
         }.build()
 
-        return parameters.client.get().getPackageVersionAsset(request, ::doObtain)
+        return client.get().getPackageVersionAsset(request, ::doObtain)
     }
 }

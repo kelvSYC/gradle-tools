@@ -1,6 +1,8 @@
 package com.kelvsyc.gradle.aws.java.imds
 
+import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import software.amazon.awssdk.core.document.Document
@@ -26,8 +28,11 @@ abstract class AbstractInstanceIdentityValueSource<T, P : AbstractInstanceIdenti
      * subclass.
      */
     interface Parameters : ValueSourceParameters {
-        val client: Property<Ec2MetadataClient>
+        val service: Property<ClientsBaseService>
+        val clientName: Property<String>
     }
+
+    private val client: Provider<Ec2MetadataClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     /**
      * Transforms the data retrieved from the IMDS Instance Identity document.
@@ -39,7 +44,7 @@ abstract class AbstractInstanceIdentityValueSource<T, P : AbstractInstanceIdenti
     abstract fun doObtain(document: Document): T?
 
     override fun obtain(): T? {
-        val response = parameters.client.get().get(DOCUMENT_REQUEST_PATH)
+        val response = client.get().get(DOCUMENT_REQUEST_PATH)
         return doObtain(response.asDocument())
     }
 }

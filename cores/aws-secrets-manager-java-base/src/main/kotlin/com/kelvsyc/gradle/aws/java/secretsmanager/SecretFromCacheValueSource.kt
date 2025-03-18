@@ -1,7 +1,9 @@
 package com.kelvsyc.gradle.aws.java.secretsmanager
 
 import com.amazonaws.secretsmanager.caching.SecretCache
+import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 
@@ -12,12 +14,15 @@ import org.gradle.api.provider.ValueSourceParameters
  */
 abstract class SecretFromCacheValueSource : ValueSource<String, SecretFromCacheValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
-        val client: Property<SecretCache>
+        val service: Property<ClientsBaseService>
+        val clientName: Property<String>
 
         val secretName: Property<String>
     }
 
+    private val client: Provider<SecretCache> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
+
     override fun obtain(): String? {
-        return parameters.client.get().getSecretString(parameters.secretName.get())
+        return client.get().getSecretString(parameters.secretName.get())
     }
 }

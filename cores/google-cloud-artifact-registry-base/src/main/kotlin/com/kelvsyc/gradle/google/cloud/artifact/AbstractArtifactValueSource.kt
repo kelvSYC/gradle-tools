@@ -3,9 +3,11 @@ package com.kelvsyc.gradle.google.cloud.artifact
 import com.google.devtools.artifactregistry.v1.ArtifactRegistryClient
 import com.google.devtools.artifactregistry.v1.FileName
 import com.google.devtools.artifactregistry.v1.GetFileRequest
+import com.kelvsyc.gradle.clients.ClientsBaseService
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import java.io.InputStream
@@ -19,13 +21,16 @@ import java.io.PipedOutputStream
  */
 abstract class AbstractArtifactValueSource<T, P : AbstractArtifactValueSource.Parameters> : ValueSource<T, P> {
     interface Parameters : ValueSourceParameters {
-        val client: Property<ArtifactRegistryClient>
+        val service: Property<ClientsBaseService>
+        val clientName: Property<String>
 
         val projectName: Property<String>
         val location: Property<String>
         val repository: Property<String>
         val filename: Property<String>
     }
+
+    private val client: Provider<ArtifactRegistryClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     abstract fun doObtain(input: InputStream): T?
 
@@ -46,7 +51,7 @@ abstract class AbstractArtifactValueSource<T, P : AbstractArtifactValueSource.Pa
             val input = PipedInputStream(out)
 
             val job = launch {
-                val response = parameters.client.get().getFile(request)
+                val response = client.get().getFile(request)
                 response.writeTo(out)
             }
             val result = doObtain(input)
