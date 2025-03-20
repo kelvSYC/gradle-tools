@@ -33,7 +33,7 @@ aws-sns-java = { module = "software.amazon.awssdk:sns" } # version from BOM 'aws
 caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.0"
 google-cloud-artifact-registry = { module = "com.google.cloud:google-cloud-artifact-registry" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-storage = { module = "com.google.cloud:google-cloud-storage" } # version from BOM 'google-cloud-libraries-bom'
-jgit = "org.eclipse.jgit:org.eclipse.jgit:7.1.0.202411261347-r"
+jgit = "org.eclipse.jgit:org.eclipse.jgit:7.2.0.202503040940-r"
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core" } # version from BOM 'kotest-bom'
 kotest-runner = { module = "io.kotest:kotest-runner-junit5" } # version from BOM 'kotest-bom'
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" } # version from BOM 'kotlinx-coroutines-bom'
