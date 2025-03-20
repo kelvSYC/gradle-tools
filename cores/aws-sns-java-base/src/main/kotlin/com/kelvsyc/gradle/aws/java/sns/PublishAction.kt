@@ -1,6 +1,8 @@
 package com.kelvsyc.gradle.aws.java.sns
 
+import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import software.amazon.awssdk.services.sns.SnsClient
@@ -14,12 +16,15 @@ import software.amazon.awssdk.services.sns.model.PublishRequest
  */
 abstract class PublishAction : WorkAction<PublishAction.Parameters> {
     interface Parameters : WorkParameters {
-        val client: Property<SnsClient>
+        val service: Property<ClientsBaseService>
+        val clientName: Property<String>
 
         val topicArn: Property<String>
         val subject: Property<String>
         val message: Property<String>
     }
+
+    private val client: Provider<SnsClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     override fun execute() {
         val request = PublishRequest.builder().apply {
@@ -30,6 +35,6 @@ abstract class PublishAction : WorkAction<PublishAction.Parameters> {
             message(parameters.message.get())
         }.build()
 
-        parameters.client.get().publish(request)
+        client.get().publish(request)
     }
 }

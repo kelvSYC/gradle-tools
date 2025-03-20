@@ -1,8 +1,10 @@
 package com.kelvsyc.gradle.aws.java.codeartifact
 
+import com.kelvsyc.gradle.clients.ClientsBaseService
 import com.kelvsyc.gradle.providers.asPath
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import software.amazon.awssdk.services.codeartifact.CodeartifactClient
@@ -17,10 +19,8 @@ abstract class GetGenericPackageVersionAssetAction : WorkAction<GetGenericPackag
      * Parameters for [GetGenericPackageVersionAssetAction].
      */
     interface Parameters : WorkParameters {
-        /**
-         * The underlying CodeArtifact client.
-         */
-        val client: Property<CodeartifactClient>
+        val service: Property<ClientsBaseService>
+        val clientName: Property<String>
 
         val domain: Property<String>
         val domainOwner: Property<String>
@@ -37,6 +37,8 @@ abstract class GetGenericPackageVersionAssetAction : WorkAction<GetGenericPackag
         val outputFile: RegularFileProperty
     }
 
+    private val client: Provider<CodeartifactClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
+
     override fun execute() {
         val request = GetPackageVersionAssetRequest.builder().apply {
             domain(parameters.domain.get())
@@ -50,6 +52,6 @@ abstract class GetGenericPackageVersionAssetAction : WorkAction<GetGenericPackag
             asset(parameters.asset.get())
         }.build()
 
-        parameters.client.get().getPackageVersionAsset(request, parameters.outputFile.asPath.get())
+        client.get().getPackageVersionAsset(request, parameters.outputFile.asPath.get())
     }
 }
