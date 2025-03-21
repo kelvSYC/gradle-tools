@@ -10,8 +10,8 @@ dokkatoo {
 }
 
 gradlePlugin {
-    plugins.register("imds-java-base") {
-        id = "com.kelvsyc.gradle.imds-java-base"
+    plugins.register("aws-imds-java-base") {
+        id = "com.kelvsyc.gradle.aws-imds-java-base"
         implementationClass = "com.kelvsyc.gradle.plugins.ImdsJavaBasePlugin"
     }
 }

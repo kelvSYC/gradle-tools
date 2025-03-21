@@ -10,7 +10,7 @@ dokkatoo {
 }
 
 gradlePlugin {
-    plugins.register("secrets-manager-java-base") {
+    plugins.register("aws-secrets-manager-java-base") {
         id = "com.kelvsyc.gradle.aws-secrets-manager-java-base"
         implementationClass = "com.kelvsyc.gradle.plugins.SecretsManagerJavaBasePlugin"
     }

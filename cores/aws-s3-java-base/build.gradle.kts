@@ -10,8 +10,8 @@ dokkatoo {
 }
 
 gradlePlugin {
-    plugins.register("s3-java-base") {
-        id = "com.kelvsyc.gradle.s3-java-base"
+    plugins.register("aws-s3-java-base") {
+        id = "com.kelvsyc.gradle.aws-s3-java-base"
         implementationClass = "com.kelvsyc.gradle.plugins.S3JavaBasePlugin"
     }
 }

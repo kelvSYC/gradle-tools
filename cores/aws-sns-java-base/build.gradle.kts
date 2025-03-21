@@ -10,8 +10,8 @@ dokkatoo {
 }
 
 gradlePlugin {
-    plugins.register("sns-java-base") {
-        id = "com.kelvsyc.gradle.sns-java-base"
+    plugins.register("aws-sns-java-base") {
+        id = "com.kelvsyc.gradle.aws-sns-java-base"
         implementationClass = "com.kelvsyc.gradle.plugins.SnsJavaBasePlugin"
     }
 }

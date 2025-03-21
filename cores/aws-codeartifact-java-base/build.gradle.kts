@@ -10,8 +10,8 @@ dokkatoo {
 }
 
 gradlePlugin {
-    plugins.register("codeartifact-java-base") {
-        id = "com.kelvsyc.gradle.codeartifact-java-base"
+    plugins.register("aws-codeartifact-java-base") {
+        id = "com.kelvsyc.gradle.aws-codeartifact-java-base"
         implementationClass = "com.kelvsyc.gradle.plugins.CodeArtifactJavaBasePlugin"
     }
 }
