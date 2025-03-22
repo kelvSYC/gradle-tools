@@ -47,6 +47,7 @@ out/
 # Gradle Support
 .idea/artifacts
 .idea/compiler.xml
+.idea/gradle.xml
 .idea/jarRepositories.xml
 .idea/misc.xml
 .idea/modules.xml
