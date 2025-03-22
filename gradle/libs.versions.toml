@@ -35,6 +35,9 @@ google-cloud-artifact-registry = { module = "com.google.cloud:google-cloud-artif
 google-cloud-storage = { module = "com.google.cloud:google-cloud-storage" } # version from BOM 'google-cloud-libraries-bom'
 jgit = "org.eclipse.jgit:org.eclipse.jgit:7.2.0.202503040940-r"
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core" } # version from BOM 'kotest-bom'
+kotest-assertions-shared = { module = "io.kotest:kotest-assertions-shared" } # version from BOM 'kotest-bom'
+kotest-framework-api = { module = "io.kotest:kotest-framework-api" } # version from BOM 'kotest-bom'
+kotest-framework-engine = { module = "io.kotest:kotest-framework-engine" } # version from BOM 'kotest-bom'
 kotest-runner = { module = "io.kotest:kotest-runner-junit5" } # version from BOM 'kotest-bom'
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" } # version from BOM 'kotlinx-coroutines-bom'
 

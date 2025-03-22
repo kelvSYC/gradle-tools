@@ -33,6 +33,9 @@ dependencies {
     implementation(platform("com.kelvsyc.internal:platform"))
 
     libs.findLibrary("kotest-assertions-core").getOrNull()?.let { testImplementation(it) }
+    libs.findLibrary("kotest-assertions-shared").getOrNull()?.let { testImplementation(it) }
+    libs.findLibrary("kotest-framework-api").getOrNull()?.let { testImplementation(it) }
+    libs.findLibrary("kotest-framework-engine").getOrNull()?.let { testImplementation(it) }
     libs.findLibrary("kotest-runner").getOrNull()?.let { testImplementation(it) }
 }
 
