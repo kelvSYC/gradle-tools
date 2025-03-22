@@ -3,6 +3,7 @@ group = "com.kelvsyc"
 val components = buildList {
     // Gradle Plugin Libraries
     add("aws-java-extensions")
+    add("aws-kotlin-extensions")
     add("gradle-extensions")
 
     // Gradle Plugins
