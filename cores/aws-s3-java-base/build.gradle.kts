@@ -17,12 +17,12 @@ gradlePlugin {
 }
 
 dependencies {
-    implementation("com.kelvsyc.gradle:aws-java-extensions")
-    implementation("com.kelvsyc.gradle:clients-base")
-    implementation("com.kelvsyc.gradle:gradle-extensions") // build 'gradle-extensions'
+    api("com.kelvsyc.gradle:aws-java-extensions")
+    api("com.kelvsyc.gradle:clients-base")
 
-    api(libs.aws.auth.java)
-    api(libs.aws.regions.java)
     api(libs.aws.s3.java)
     api(libs.aws.s3.transfer.manager.java)
+    implementation(libs.aws.auth.java)
+    implementation(libs.aws.core.java)
+    implementation(libs.aws.regions.java)
 }

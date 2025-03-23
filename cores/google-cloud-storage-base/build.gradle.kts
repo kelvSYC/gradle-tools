@@ -17,8 +17,7 @@ gradlePlugin {
 }
 
 dependencies {
-    implementation("com.kelvsyc.gradle:clients-base")
-    implementation("com.kelvsyc.gradle:gradle-extensions") // build 'gradle-extensions'
+    api("com.kelvsyc.gradle:clients-base")
 
     api(libs.google.cloud.storage)
 }

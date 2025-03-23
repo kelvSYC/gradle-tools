@@ -23,6 +23,12 @@ kotlin {
     }
 }
 
+jvmDependencyConflicts {
+    logging {
+        enforceSlf4JSimple()
+    }
+}
+
 detekt {
     config.from(file("../../gradle/detekt.yml"))
 }

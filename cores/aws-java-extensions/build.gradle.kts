@@ -10,8 +10,9 @@ dokkatoo {
 }
 
 dependencies {
-    implementation("com.kelvsyc.gradle:clients-base")
+    api("com.kelvsyc.gradle:clients-base")
 
-    implementation(libs.aws.core.java)
-    implementation(libs.aws.regions.java)
+    api(libs.aws.auth.java)
+    api(libs.aws.core.java)
+    api(libs.aws.regions.java)
 }

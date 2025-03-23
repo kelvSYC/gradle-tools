@@ -7,4 +7,3 @@ plugins {
 }
 
 includeBuild("../clients-base")
-includeBuild("../gradle-extensions")
