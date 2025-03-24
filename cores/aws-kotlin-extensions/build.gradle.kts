@@ -12,7 +12,8 @@ dokkatoo {
 dependencies {
     api("com.kelvsyc.gradle:clients-base")
 
-    implementation(libs.aws.config.kotlin)
     api(libs.aws.smithy.client)
     api(libs.aws.smithy.credentials)
+    implementation(libs.aws.config.kotlin)
+    implementation(libs.aws.smithy.runtime.core)
 }

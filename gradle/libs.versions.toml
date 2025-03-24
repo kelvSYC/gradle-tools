@@ -25,6 +25,7 @@ artifactory-client-impl = "org.jfrog.artifactory.client:artifactory-java-client-
 aws-auth-java = { module = "software.amazon.awssdk:auth" } # version from BOM 'aws-java-sdk-bom'
 aws-config-kotlin = { module = "aws.sdk.kotlin:aws-config" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-core-java = { module = "software.amazon.awssdk:aws-core" } # version from BOM 'aws-java-sdk-bom'
+aws-core-kotlin = { module = "aws.sdk.kotlin:aws-core" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-regions-java = { module = "software.amazon.awssdk:regions" } # version from BOM 'aws-java-sdk-bom'
 aws-codeartifact-java = { module = "software.amazon.awssdk:codeartifact" } # version from BOM 'aws-java-sdk-bom'
 aws-codeartifact-kotlin = { module = "aws.sdk.kotlin:codeartifact" } # version from BOM 'aws-kotlin-sdk-bom'
@@ -37,6 +38,7 @@ aws-secrets-manager-java = { module = "software.amazon.awssdk:secretsmanager" } 
 aws-secrets-manager-kotlin = { module = "aws.sdk.kotlin:secretsmanager" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-smithy-client = { module = "aws.smithy.kotlin:smithy-client" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-smithy-credentials = { module = "aws.smithy.kotlin:aws-credentials" } # version from BOM 'aws-kotlin-sdk-bom'
+aws-smithy-runtime-core = { module = "aws.smithy.kotlin:runtime-core" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-sns-java = { module = "software.amazon.awssdk:sns" } # version from BOM 'aws-java-sdk-bom'
 caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.0"
 google-cloud-artifact-registry = { module = "com.google.cloud:google-cloud-artifact-registry" } # version from BOM 'google-cloud-libraries-bom'

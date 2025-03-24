@@ -17,9 +17,12 @@ gradlePlugin {
 }
 
 dependencies {
-    implementation("com.kelvsyc.gradle:aws-kotlin-extensions")
-    implementation("com.kelvsyc.gradle:clients-base")
-    implementation("com.kelvsyc.gradle:gradle-extensions") // build 'gradle-extensions'
+    api("com.kelvsyc.gradle:aws-kotlin-extensions")
+    api("com.kelvsyc.gradle:clients-base")
 
     api(libs.aws.codeartifact.kotlin)
+    implementation(libs.aws.smithy.client)
+    implementation(libs.aws.smithy.credentials)
+    implementation(libs.aws.smithy.runtime.core)
+    implementation(libs.kotlinx.coroutines.core)
 }
