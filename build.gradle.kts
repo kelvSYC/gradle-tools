@@ -16,6 +16,7 @@ val components = buildList {
     add("aws-secrets-manager-java-base")
     add("aws-secrets-manager-kotlin-base")
     add("aws-sns-java-base")
+    add("aws-sns-kotlin-base")
     add("clients-base")
     add("git-core")
     add("google-cloud-artifact-registry-base")

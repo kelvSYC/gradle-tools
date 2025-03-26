@@ -40,6 +40,7 @@ aws-smithy-client = { module = "aws.smithy.kotlin:smithy-client" } # version fro
 aws-smithy-credentials = { module = "aws.smithy.kotlin:aws-credentials" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-smithy-runtime-core = { module = "aws.smithy.kotlin:runtime-core" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-sns-java = { module = "software.amazon.awssdk:sns" } # version from BOM 'aws-java-sdk-bom'
+aws-sns-kotlin = { module = "aws.sdk.kotlin:sns" } # version from BOM 'aws-kotlin-sdk-bom'
 caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.0"
 google-cloud-artifact-registry = { module = "com.google.cloud:google-cloud-artifact-registry" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-storage = { module = "com.google.cloud:google-cloud-storage" } # version from BOM 'google-cloud-libraries-bom'
