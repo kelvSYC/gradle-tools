@@ -11,6 +11,7 @@ val components = buildList {
     add("aws-codeartifact-java-base")
     add("aws-codeartifact-kotlin-base")
     add("aws-imds-java-base")
+    add("aws-imds-kotlin-base")
     add("aws-s3-java-base")
     add("aws-s3-kotlin-base")
     add("aws-secrets-manager-java-base")
