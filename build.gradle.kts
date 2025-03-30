@@ -19,6 +19,7 @@ val components = buildList {
     add("aws-sns-java-base")
     add("aws-sns-kotlin-base")
     add("aws-sqs-java-base")
+    add("aws-sqs-kotlin-base")
     add("clients-base")
     add("git-core")
     add("google-cloud-artifact-registry-base")

@@ -42,6 +42,7 @@ aws-smithy-runtime-core = { module = "aws.smithy.kotlin:runtime-core" } # versio
 aws-sns-java = { module = "software.amazon.awssdk:sns" } # version from BOM 'aws-java-sdk-bom'
 aws-sns-kotlin = { module = "aws.sdk.kotlin:sns" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-sqs-java = { module = "software.amazon.awssdk:sqs" } # version from BOM 'aws-java-sdk-bom'
+aws-sqs-kotlin = { module = "aws.sdk.kotlin:sqs" } # version from BOM 'aws-kotlin-sdk-bom'
 caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.0"
 google-cloud-artifact-registry = { module = "com.google.cloud:google-cloud-artifact-registry" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-storage = { module = "com.google.cloud:google-cloud-storage" } # version from BOM 'google-cloud-libraries-bom'
