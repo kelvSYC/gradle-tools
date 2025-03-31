@@ -16,6 +16,7 @@ val components = buildList {
     add("aws-s3-kotlin-base")
     add("aws-secrets-manager-java-base")
     add("aws-secrets-manager-kotlin-base")
+    add("aws-ses-java-base")
     add("aws-sns-java-base")
     add("aws-sns-kotlin-base")
     add("aws-sqs-java-base")
