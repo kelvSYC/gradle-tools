@@ -37,6 +37,7 @@ aws-secrets-manager-caching-java = "com.amazonaws.secretsmanager:aws-secretsmana
 aws-secrets-manager-java = { module = "software.amazon.awssdk:secretsmanager" } # version from BOM 'aws-java-sdk-bom'
 aws-secrets-manager-kotlin = { module = "aws.sdk.kotlin:secretsmanager" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-ses-java = { module = "software.amazon.awssdk:ses" } # version from BOM 'aws-java-sdk-bom'
+aws-ses-kotlin = { module = "aws.sdk.kotlin:ses" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-smithy-client = { module = "aws.smithy.kotlin:smithy-client" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-smithy-credentials = { module = "aws.smithy.kotlin:aws-credentials" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-smithy-runtime-core = { module = "aws.smithy.kotlin:runtime-core" } # version from BOM 'aws-kotlin-sdk-bom'
