@@ -22,5 +22,6 @@ includeBuild("cores/git-core")
 includeBuild("cores/google-cloud-artifact-registry-base")
 includeBuild("cores/google-cloud-storage-base")
 includeBuild("cores/gradle-extensions")
+includeBuild("cores/guava-extensions")
 
 includeBuild("aggregation")
