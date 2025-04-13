@@ -50,5 +50,8 @@ value class CanonicalFloatStore private constructor(override val bits: IntBitSto
     override val isNaN: Boolean
         get() = exponent == exponentBias + 1 && significand != traits.zero
 
+    override val isMathematicalInteger: Boolean
+        get() = isFinite && (isZero || precision - significand.trailingZeroes <= exponent)
+
     override fun toFloat() = Float.fromBits(bits.bits)
 }

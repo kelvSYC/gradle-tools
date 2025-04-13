@@ -44,4 +44,11 @@ value class ShortBitStore(override val bits: Short) : BitStore<ShortBitStore, Sh
         check(position in 0..< sizeBits) { "Position must be within range" }
         return bits and (1 shl position).toShort() != 0.toShort()
     }
+
+    override fun asSet(): Set<Int> {
+        return (0..sizeBits).filter(this::get).toSet()
+    }
+
+    override val trailingZeroes: Int
+        get() = bits.countTrailingZeroBits()
 }

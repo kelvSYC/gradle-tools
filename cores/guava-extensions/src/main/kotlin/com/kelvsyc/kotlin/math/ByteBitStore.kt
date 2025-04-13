@@ -44,4 +44,11 @@ value class ByteBitStore(override val bits: Byte) : BitStore<ByteBitStore, Byte>
         check(position in 0..< sizeBits) { "Position must be within range" }
         return bits and (1 shl position).toByte() != 0.toByte()
     }
+
+    override fun asSet(): Set<Int> {
+        return (0..sizeBits).filter(this::get).toSet()
+    }
+
+    override val trailingZeroes: Int
+        get() = bits.countTrailingZeroBits()
 }

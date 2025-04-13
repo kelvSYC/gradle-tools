@@ -55,4 +55,11 @@ interface BitStore<S : BitStore<S, R>, R> {
     infix fun ushr(bitCount: Int): S
 
     operator fun get(position: Int): Boolean
+
+    /**
+     * Return this bit store as a set of integers representing the bits that are set.
+     */
+    fun asSet(): Set<Int>
+
+    val trailingZeroes: Int
 }

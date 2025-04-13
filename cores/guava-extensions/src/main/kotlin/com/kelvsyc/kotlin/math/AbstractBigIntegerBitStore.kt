@@ -39,4 +39,11 @@ abstract class AbstractBigIntegerBitStore<S : AbstractBigIntegerBitStore<S>>(ove
     }
 
     override fun get(position: Int) = bits.testBit(position)
+
+    override fun asSet(): Set<Int> {
+        return (0..traits.sizeBits).filter(this::get).toSet()
+    }
+
+    override val trailingZeroes: Int
+        get() = bits.lowestSetBit
 }

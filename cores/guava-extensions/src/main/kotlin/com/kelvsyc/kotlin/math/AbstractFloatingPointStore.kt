@@ -54,4 +54,8 @@ abstract class AbstractFloatingPointStore<F : AbstractFloatingPointStore<F, S, R
     override val isNaN by lazy {
         exponent == traits.exponentBias + 1 && significand == storeTraits.zero
     }
+
+    override val isMathematicalInteger by lazy {
+        isFinite && (isZero || traits.precision - significand.trailingZeroes <= exponent)
+    }
 }

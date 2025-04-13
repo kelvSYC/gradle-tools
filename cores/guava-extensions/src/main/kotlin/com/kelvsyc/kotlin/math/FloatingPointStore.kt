@@ -151,4 +151,9 @@ interface FloatingPointStore<S : BitStore<S, R>, R> {
      * Returns `true` if this value represents a "not-a-number" (NaN) value.
      */
     val isNaN: Boolean
+
+    /**
+     * Returns `true` if this value represents a mathematical integer.
+     */
+    val isMathematicalInteger: Boolean
 }

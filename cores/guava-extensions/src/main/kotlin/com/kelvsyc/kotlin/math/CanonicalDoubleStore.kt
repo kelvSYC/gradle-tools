@@ -50,5 +50,8 @@ value class CanonicalDoubleStore private constructor(override val bits: LongBitS
     override val isNaN: Boolean
         get() = exponent == exponentBias + 1 && significand != traits.zero
 
+    override val isMathematicalInteger: Boolean
+        get() = isFinite && (isZero || precision - significand.trailingZeroes <= exponent)
+
     override fun toDouble() = Double.fromBits(bits.bits)
 }
