@@ -4,6 +4,10 @@ package com.kelvsyc.kotlin.math
  * Extension of a [FloatingPointStore] for the [Float] type.
  */
 interface FloatStore<S : BitStore<S, R>, R> : FloatingPointStore<S, R> {
+    companion object {
+        fun create(value: Float) = CanonicalFloatStore.create(value)
+    }
+
     /**
      * Base class representing metadata relating to a [FloatStore].
      */
