@@ -4,6 +4,7 @@ package com.kelvsyc.kotlin.math
  * [BitStore] implementation backed by an [Int]
  */
 @JvmInline
+@Suppress("detekt:TooManyFunctions")
 value class IntBitStore(override val bits: Int) : BitStore<IntBitStore, Int> {
     companion object : BitStore.BitStoreConstants<IntBitStore, Int> {
         override val sizeBits = Int.SIZE_BITS

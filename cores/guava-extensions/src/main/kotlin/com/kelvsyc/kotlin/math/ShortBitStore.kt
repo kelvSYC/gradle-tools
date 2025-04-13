@@ -9,6 +9,7 @@ import kotlin.experimental.xor
  * [BitStore] implementation backed by a [Short].
  */
 @JvmInline
+@Suppress("detekt:TooManyFunctions")
 value class ShortBitStore(override val bits: Short) : BitStore<ShortBitStore, Short> {
     companion object : BitStore.BitStoreConstants<ShortBitStore, Short> {
         override val sizeBits = Short.SIZE_BITS
@@ -38,6 +39,7 @@ value class ShortBitStore(override val bits: Short) : BitStore<ShortBitStore, Sh
 
     override fun shl(bitCount: Int) = ShortBitStore((bits.toInt() shl bitCount).toShort())
     override fun shr(bitCount: Int) = ShortBitStore((bits.toInt() shr bitCount).toShort())
+    @Suppress("detekt:MagicNumber")
     override fun ushr(bitCount: Int) = ShortBitStore(((bits.toInt() and 0xFFFF) ushr bitCount).toShort())
 
     override fun get(position: Int): Boolean {

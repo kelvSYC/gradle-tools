@@ -8,6 +8,7 @@ package com.kelvsyc.kotlin.math
  * @param S self-type
  * @param R the backing data store type
  */
+@Suppress("detekt:TooManyFunctions")
 interface BitStore<S : BitStore<S, R>, R> {
     /**
      * Interface representing metadata relating to a [BitStore].

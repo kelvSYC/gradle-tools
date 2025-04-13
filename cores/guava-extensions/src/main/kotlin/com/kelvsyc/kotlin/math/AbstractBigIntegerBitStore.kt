@@ -8,6 +8,7 @@ import java.math.BigInteger
  * Note that this is not a value class wrapper around a [BigInteger], as the size of the bit store needs to be supplied
  * separately.
  */
+@Suppress("detekt:TooManyFunctions")
 abstract class AbstractBigIntegerBitStore<S : AbstractBigIntegerBitStore<S>>(override val bits: BigInteger) : BitStore<S, BigInteger> {
     abstract class BitStoreConstants<S : AbstractBigIntegerBitStore<S>> : BitStore.BitStoreConstants<S, BigInteger> {
         override val zero by lazy { create(BigInteger.ZERO) }

@@ -9,6 +9,7 @@ import kotlin.experimental.xor
  * [BitStore] implementation backed by a [Byte].
  */
 @JvmInline
+@Suppress("detekt:TooManyFunctions")
 value class ByteBitStore(override val bits: Byte) : BitStore<ByteBitStore, Byte> {
     companion object : BitStore.BitStoreConstants<ByteBitStore, Byte> {
         override val sizeBits = Byte.SIZE_BITS
@@ -38,6 +39,7 @@ value class ByteBitStore(override val bits: Byte) : BitStore<ByteBitStore, Byte>
 
     override fun shl(bitCount: Int) = ByteBitStore((bits.toInt() shl bitCount).toByte())
     override fun shr(bitCount: Int) = ByteBitStore((bits.toInt() shr bitCount).toByte())
+    @Suppress("detekt:MagicNumber")
     override fun ushr(bitCount: Int) = ByteBitStore(((bits.toInt() and 0xFF) ushr bitCount).toByte())
 
     override fun get(position: Int): Boolean {
