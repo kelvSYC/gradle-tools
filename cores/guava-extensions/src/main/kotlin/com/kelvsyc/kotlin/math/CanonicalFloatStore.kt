@@ -1,5 +1,7 @@
 package com.kelvsyc.kotlin.math
 
+import com.kelvsyc.kotlin.guava.math.isPowerOfTwo
+
 /**
  * Canonical [FloatStore] implementation, where the backing store is an [IntBitStore].
  */
@@ -52,6 +54,12 @@ value class CanonicalFloatStore private constructor(override val bits: IntBitSto
 
     override val isMathematicalInteger: Boolean
         get() = isFinite && (isZero || precision - significand.trailingZeroes <= exponent)
+    override val isPowerOfTwo: Boolean
+        get() = if (isPositive && !isZero && isFinite) {
+            significand.bits.isPowerOfTwo
+        } else {
+            false
+        }
 
     override fun toFloat() = Float.fromBits(bits.bits)
 }

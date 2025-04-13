@@ -1,5 +1,7 @@
 package com.kelvsyc.kotlin.math
 
+import com.kelvsyc.kotlin.guava.math.isPowerOfTwo
+
 /**
  * Canonical [DoubleStore] implementation, where the backing store is a [LongBitStore].
  */
@@ -52,6 +54,12 @@ value class CanonicalDoubleStore private constructor(override val bits: LongBitS
 
     override val isMathematicalInteger: Boolean
         get() = isFinite && (isZero || precision - significand.trailingZeroes <= exponent)
+    override val isPowerOfTwo: Boolean
+        get() = if (isPositive && !isZero && isFinite) {
+            significand.bits.isPowerOfTwo
+        } else {
+            false
+        }
 
     override fun toDouble() = Double.fromBits(bits.bits)
 }

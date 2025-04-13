@@ -156,4 +156,9 @@ interface FloatingPointStore<S : BitStore<S, R>, R> {
      * Returns `true` if this value represents a mathematical integer.
      */
     val isMathematicalInteger: Boolean
+
+    /**
+     * Returns `true` if this value represents a power of two - `2^k` for some integer `k`.
+     */
+    val isPowerOfTwo: Boolean
 }

@@ -58,4 +58,13 @@ abstract class AbstractFloatingPointStore<F : AbstractFloatingPointStore<F, S, R
     override val isMathematicalInteger by lazy {
         isFinite && (isZero || traits.precision - significand.trailingZeroes <= exponent)
     }
+    override val isPowerOfTwo by lazy {
+        if (isPositive && !isZero && isFinite) {
+            // The significand must be a power of two
+            // This is inefficient, but we can't do better without knowing more about R
+            significand.asSet().size == 1
+        } else {
+            false
+        }
+    }
 }
