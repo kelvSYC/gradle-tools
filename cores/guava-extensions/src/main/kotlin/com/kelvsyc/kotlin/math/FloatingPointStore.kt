@@ -24,7 +24,7 @@ interface FloatingPointStore<S : BitStore<S, R>, R> {
      * @param R the concrete backing type of the backing [BitStore]
      */
     abstract class AbstractCompanion<F : FloatingPointStore<S, R>, S : BitStore<S, R>, R> {
-        protected abstract val traits: BitStore.BitStoreConstants<S, R>
+        protected abstract val traits: BitStore.AbstractCompanion<S, R>
 
         /**
          * Returns the number of bits in instances of the floating-point type.

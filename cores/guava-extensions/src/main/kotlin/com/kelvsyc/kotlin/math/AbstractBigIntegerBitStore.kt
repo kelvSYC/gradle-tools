@@ -10,7 +10,7 @@ import java.math.BigInteger
  */
 @Suppress("detekt:TooManyFunctions")
 abstract class AbstractBigIntegerBitStore<S : AbstractBigIntegerBitStore<S>>(override val bits: BigInteger) : BitStore<S, BigInteger> {
-    abstract class BitStoreConstants<S : AbstractBigIntegerBitStore<S>> : BitStore.BitStoreConstants<S, BigInteger> {
+    abstract class AbstractCompanion<S : AbstractBigIntegerBitStore<S>> : BitStore.AbstractCompanion<S, BigInteger> {
         override val zero by lazy { create(BigInteger.ZERO) }
         override val one by lazy { create(BigInteger.ONE) }
 
@@ -20,7 +20,7 @@ abstract class AbstractBigIntegerBitStore<S : AbstractBigIntegerBitStore<S>>(ove
         }
     }
 
-    protected abstract val traits: BitStoreConstants<S>
+    protected abstract val traits: AbstractCompanion<S>
 
     override fun plus(other: S): S = traits.create(bits + other.bits)
     override fun minus(other: S): S = traits.create(bits - other.bits)

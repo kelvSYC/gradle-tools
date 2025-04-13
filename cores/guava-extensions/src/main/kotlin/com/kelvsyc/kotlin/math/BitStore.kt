@@ -17,7 +17,7 @@ interface BitStore<S : BitStore<S, R>, R> {
      *
      * @param S The type of the [BitStore]
      */
-    interface BitStoreConstants<S : BitStore<S, R>, R> {
+    interface AbstractCompanion<S : BitStore<S, R>, R> {
         /**
          * Returns the number of bits in instances of the type [S].
          */

@@ -11,7 +11,7 @@ import kotlin.experimental.xor
 @JvmInline
 @Suppress("detekt:TooManyFunctions")
 value class ByteBitStore(override val bits: Byte) : BitStore<ByteBitStore, Byte> {
-    companion object : BitStore.BitStoreConstants<ByteBitStore, Byte> {
+    companion object : BitStore.AbstractCompanion<ByteBitStore, Byte> {
         override val sizeBits = Byte.SIZE_BITS
 
         override val zero = ByteBitStore(0.toByte())

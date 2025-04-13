@@ -7,7 +7,7 @@ package com.kelvsyc.kotlin.math
  */
 abstract class AbstractFloatingPointStore<F : AbstractFloatingPointStore<F, S, R>, S : BitStore<S, R>, R> : FloatingPointStore<S, R> {
     protected abstract val traits: FloatingPointStore.AbstractCompanion<F, S, R>
-    protected abstract val storeTraits: BitStore.BitStoreConstants<S, R>
+    protected abstract val storeTraits: BitStore.AbstractCompanion<S, R>
 
     override val isNegative by lazy {
         bits[traits.sizeBits - 1]
