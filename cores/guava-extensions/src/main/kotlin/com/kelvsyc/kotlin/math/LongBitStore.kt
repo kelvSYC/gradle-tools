@@ -5,7 +5,7 @@ package com.kelvsyc.kotlin.math
  */
 @JvmInline
 @Suppress("detekt:TooManyFunctions")
-value class LongBitStore(override val bits: Long) : BitStore<LongBitStore, Long> {
+value class LongBitStore private constructor(override val bits: Long) : BitStore<LongBitStore, Long> {
     companion object : BitStore.AbstractCompanion<LongBitStore, Long> {
         override val sizeBits = Long.SIZE_BITS
 

@@ -9,7 +9,7 @@ import java.math.BigInteger
  * separately.
  */
 @Suppress("detekt:TooManyFunctions")
-abstract class AbstractBigIntegerBitStore<S : AbstractBigIntegerBitStore<S>>(override val bits: BigInteger) : BitStore<S, BigInteger> {
+abstract class AbstractBigIntegerBitStore<S : AbstractBigIntegerBitStore<S>> protected constructor(override val bits: BigInteger) : BitStore<S, BigInteger> {
     abstract class AbstractCompanion<S : AbstractBigIntegerBitStore<S>> : BitStore.AbstractCompanion<S, BigInteger> {
         override fun create(bits: Iterable<Int>): S {
             val raw = bits.fold(BigInteger.ZERO, BigInteger::setBit)

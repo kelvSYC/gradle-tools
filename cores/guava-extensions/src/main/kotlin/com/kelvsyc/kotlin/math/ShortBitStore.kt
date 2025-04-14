@@ -10,7 +10,7 @@ import kotlin.experimental.xor
  */
 @JvmInline
 @Suppress("detekt:TooManyFunctions")
-value class ShortBitStore(override val bits: Short) : BitStore<ShortBitStore, Short> {
+value class ShortBitStore private constructor(override val bits: Short) : BitStore<ShortBitStore, Short> {
     companion object : BitStore.AbstractCompanion<ShortBitStore, Short> {
         override val sizeBits = Short.SIZE_BITS
 
