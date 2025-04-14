@@ -7,7 +7,6 @@ package com.kelvsyc.kotlin.math
  */
 abstract class AbstractFloatingPointStore<F : AbstractFloatingPointStore<F, S, R>, S : BitStore<S, R>, R> : FloatingPointStore<S, R> {
     protected abstract val traits: FloatingPointStore.AbstractCompanion<F, S, R>
-    protected abstract val storeTraits: BitStore.AbstractCompanion<S, R>
 
     override val isNegative by lazy {
         bits[traits.sizeBits - 1]
@@ -37,10 +36,10 @@ abstract class AbstractFloatingPointStore<F : AbstractFloatingPointStore<F, S, R
     }
 
     override val isSubNormal by lazy {
-        biasedExponent == 0 && significand != storeTraits.zero
+        biasedExponent == 0 && !traits.rawIsZero(rawSignificand.bits)
     }
     override val isZero: Boolean by lazy {
-        biasedExponent == 0 && significand == storeTraits.zero
+        biasedExponent == 0 && traits.rawIsZero(rawSignificand.bits)
     }
     override val isFinite by lazy {
         exponent <= traits.maxExponent
@@ -49,10 +48,10 @@ abstract class AbstractFloatingPointStore<F : AbstractFloatingPointStore<F, S, R
         exponent >= traits.minExponent
     }
     override val isInfinity by lazy {
-        exponent == traits.exponentBias + 1 && significand == storeTraits.zero
+        exponent == traits.exponentBias + 1 && traits.rawIsZero(rawSignificand.bits)
     }
     override val isNaN by lazy {
-        exponent == traits.exponentBias + 1 && significand == storeTraits.zero
+        exponent == traits.exponentBias + 1 && !traits.rawIsZero(rawSignificand.bits)
     }
 
     override val isMathematicalInteger by lazy {

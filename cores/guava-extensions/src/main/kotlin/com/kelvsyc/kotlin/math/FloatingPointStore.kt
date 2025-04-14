@@ -42,6 +42,13 @@ interface FloatingPointStore<S : BitStore<S, R>, R> {
         abstract val rawToInt: (R) -> Int
 
         /**
+         * Returns a function that returns `true` if the raw type represents a zero.
+         *
+         * Used to compare [significand]
+         */
+        abstract val rawIsZero: (R) -> Boolean
+
+        /**
          * Returns the number of bits for the exponent of the floating-point type.
          */
         val exponentWidth by lazy { sizeBits - precision }

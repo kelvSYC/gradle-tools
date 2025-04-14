@@ -10,9 +10,6 @@ import java.util.*
  */
 abstract class AbstractBitSetBitStore<S : AbstractBitSetBitStore<S>> protected constructor(override val bits: BitSet) : BitStore<S, BitSet> {
     abstract class AbstractCompanion<S : AbstractBitSetBitStore<S>> : BitStore.AbstractCompanion<S, BitSet> {
-        override val zero by lazy { create(BitSet(sizeBits)) }
-        override val one by lazy { create(BitSet(sizeBits).also { it.set(0) }) }
-
         override fun create(bits: Iterable<Int>): S {
             val raw = BitSet(sizeBits)
             bits.filter { it in 0..< sizeBits }.forEach(raw::set)

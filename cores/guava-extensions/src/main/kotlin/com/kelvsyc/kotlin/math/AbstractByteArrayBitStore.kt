@@ -22,9 +22,6 @@ abstract class AbstractByteArrayBitStore<S : AbstractByteArrayBitStore<S>> prote
             }
         }
 
-        override val zero by lazy { create(ByteArray(sizeBytes)) }
-        override val one by lazy { create(setOf(0)) }
-
         override fun create(bits: Iterable<Int>): S {
             val raw = ByteArray(sizeBytes)
             bits.forEach {

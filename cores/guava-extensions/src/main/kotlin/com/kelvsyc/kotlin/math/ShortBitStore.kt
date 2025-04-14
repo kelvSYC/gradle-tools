@@ -14,9 +14,6 @@ value class ShortBitStore(override val bits: Short) : BitStore<ShortBitStore, Sh
     companion object : BitStore.AbstractCompanion<ShortBitStore, Short> {
         override val sizeBits = Short.SIZE_BITS
 
-        override val zero = ShortBitStore(0.toShort())
-        override val one = ShortBitStore(1.toShort())
-
         override fun create(bits: Iterable<Int>): ShortBitStore {
             val raw = bits.filter {
                 it in 0 ..< sizeBits

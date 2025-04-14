@@ -9,9 +9,6 @@ value class IntBitStore(override val bits: Int) : BitStore<IntBitStore, Int> {
     companion object : BitStore.AbstractCompanion<IntBitStore, Int> {
         override val sizeBits = Int.SIZE_BITS
 
-        override val zero = IntBitStore(0)
-        override val one = IntBitStore(1)
-
         override fun create(bits: Iterable<Int>): IntBitStore {
             val raw = bits.filter {
                 it in 0 ..< sizeBits

@@ -10,6 +10,7 @@ value class CanonicalFloatStore private constructor(override val bits: IntBitSto
     companion object : FloatStore.AbstractCompanion<CanonicalFloatStore, IntBitStore, Int>() {
         override val traits = IntBitStore
         override val rawToInt: (Int) -> Int = { it }
+        override val rawIsZero: (Int) -> Boolean = { it == 0 }
 
         override fun create(raw: IntBitStore) = CanonicalFloatStore(raw)
         override fun create(value: Float) = CanonicalFloatStore(IntBitStore(value.toRawBits()))
@@ -40,17 +41,17 @@ value class CanonicalFloatStore private constructor(override val bits: IntBitSto
         }
 
     override val isSubNormal: Boolean
-        get() = biasedExponent == 0 && significand != traits.zero
+        get() = biasedExponent == 0 && rawSignificand.bits != 0
     override val isZero: Boolean
-        get() = biasedExponent == 0 && significand == traits.zero
+        get() = biasedExponent == 0 && rawSignificand.bits == 0
     override val isFinite: Boolean
         get() = exponent <= maxExponent
     override val isNormal: Boolean
         get() = exponent >= minExponent
     override val isInfinity: Boolean
-        get() = exponent == exponentBias + 1 && significand == traits.zero
+        get() = exponent == exponentBias + 1 && rawSignificand.bits == 0
     override val isNaN: Boolean
-        get() = exponent == exponentBias + 1 && significand != traits.zero
+        get() = exponent == exponentBias + 1 && rawSignificand.bits != 0
 
     override val isMathematicalInteger: Boolean
         get() = isFinite && (isZero || precision - significand.trailingZeroes <= exponent)

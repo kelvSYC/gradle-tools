@@ -9,9 +9,6 @@ value class LongBitStore(override val bits: Long) : BitStore<LongBitStore, Long>
     companion object : BitStore.AbstractCompanion<LongBitStore, Long> {
         override val sizeBits = Long.SIZE_BITS
 
-        override val zero = LongBitStore(0)
-        override val one = LongBitStore(1)
-
         override fun create(bits: Iterable<Int>): LongBitStore {
             val raw = bits.filter {
                 it in 0 ..< sizeBits

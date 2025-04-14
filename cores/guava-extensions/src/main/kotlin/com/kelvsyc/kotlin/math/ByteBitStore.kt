@@ -14,9 +14,6 @@ value class ByteBitStore(override val bits: Byte) : BitStore<ByteBitStore, Byte>
     companion object : BitStore.AbstractCompanion<ByteBitStore, Byte> {
         override val sizeBits = Byte.SIZE_BITS
 
-        override val zero = ByteBitStore(0.toByte())
-        override val one = ByteBitStore(1.toByte())
-
         override fun create(bits: Iterable<Int>): ByteBitStore {
             val raw = bits.filter {
                 it in 0 ..< sizeBits

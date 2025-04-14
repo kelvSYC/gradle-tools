@@ -23,9 +23,6 @@ interface BitStore<S : BitStore<S, R>, R> {
          */
         val sizeBits: Int
 
-        val zero: S
-        val one: S
-
         /**
          * Creates a bit store with the specified raw representation.
          */

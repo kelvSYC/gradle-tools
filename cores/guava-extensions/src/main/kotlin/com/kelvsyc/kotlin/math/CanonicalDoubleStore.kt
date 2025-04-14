@@ -10,6 +10,7 @@ value class CanonicalDoubleStore private constructor(override val bits: LongBitS
     companion object : DoubleStore.AbstractCompanion<CanonicalDoubleStore, LongBitStore, Long>() {
         override val traits = LongBitStore
         override val rawToInt = Long::toInt
+        override val rawIsZero: (Long) -> Boolean = { it == 0L }
 
         override fun create(raw: LongBitStore) = CanonicalDoubleStore(raw)
         override fun create(value: Double) = CanonicalDoubleStore(LongBitStore(value.toRawBits()))
@@ -40,17 +41,17 @@ value class CanonicalDoubleStore private constructor(override val bits: LongBitS
         }
 
     override val isSubNormal: Boolean
-        get() = biasedExponent == 0 && significand != traits.zero
+        get() = biasedExponent == 0 && rawSignificand.bits != 0L
     override val isZero: Boolean
-        get() = biasedExponent == 0 && significand == traits.zero
+        get() = biasedExponent == 0 && rawSignificand.bits == 0L
     override val isFinite: Boolean
         get() = exponent <= maxExponent
     override val isNormal: Boolean
         get() = exponent >= minExponent
     override val isInfinity: Boolean
-        get() = exponent == exponentBias + 1 && significand == traits.zero
+        get() = exponent == exponentBias + 1 && rawSignificand.bits == 0L
     override val isNaN: Boolean
-        get() = exponent == exponentBias + 1 && significand != traits.zero
+        get() = exponent == exponentBias + 1 && rawSignificand.bits != 0L
 
     override val isMathematicalInteger: Boolean
         get() = isFinite && (isZero || precision - significand.trailingZeroes <= exponent)
