@@ -29,9 +29,6 @@ value class ByteBitStore(override val bits: Byte) : BitStore<ByteBitStore, Byte>
         override fun create(bits: Byte) = ByteBitStore(bits)
     }
 
-    override fun plus(other: ByteBitStore) = ByteBitStore((bits + other.bits).toByte())
-    override fun minus(other: ByteBitStore) = ByteBitStore((bits - other.bits).toByte())
-
     override fun and(other: ByteBitStore) = ByteBitStore(bits and other.bits)
     override fun or(other: ByteBitStore) = ByteBitStore(bits or other.bits)
     override fun xor(other: ByteBitStore) = ByteBitStore(bits xor other.bits)

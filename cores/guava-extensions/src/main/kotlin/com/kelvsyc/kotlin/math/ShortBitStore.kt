@@ -29,9 +29,6 @@ value class ShortBitStore(override val bits: Short) : BitStore<ShortBitStore, Sh
         override fun create(bits: Short) = ShortBitStore(bits)
     }
 
-    override fun plus(other: ShortBitStore) = ShortBitStore((bits + other.bits).toShort())
-    override fun minus(other: ShortBitStore) = ShortBitStore((bits - other.bits).toShort())
-
     override fun and(other: ShortBitStore) = ShortBitStore(bits and other.bits)
     override fun or(other: ShortBitStore) = ShortBitStore(bits or other.bits)
     override fun xor(other: ShortBitStore) = ShortBitStore(bits xor other.bits)

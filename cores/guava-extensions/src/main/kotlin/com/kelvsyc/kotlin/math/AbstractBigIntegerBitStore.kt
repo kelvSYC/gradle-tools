@@ -22,9 +22,6 @@ abstract class AbstractBigIntegerBitStore<S : AbstractBigIntegerBitStore<S>>(ove
 
     protected abstract val traits: AbstractCompanion<S>
 
-    override fun plus(other: S): S = traits.create(bits + other.bits)
-    override fun minus(other: S): S = traits.create(bits - other.bits)
-
     override fun and(other: S): S = traits.create(bits and other.bits)
     override fun or(other: S): S = traits.create(bits or other.bits)
     override fun xor(other: S): S = traits.create(bits xor other.bits)

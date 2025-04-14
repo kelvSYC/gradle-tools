@@ -43,9 +43,6 @@ interface BitStore<S : BitStore<S, R>, R> {
      */
     val bits: R
 
-    operator fun plus(other: S): S
-    operator fun minus(other: S): S
-
     infix fun and(other: S): S
     infix fun or(other: S): S
     infix fun xor(other: S): S

@@ -24,9 +24,6 @@ value class LongBitStore(override val bits: Long) : BitStore<LongBitStore, Long>
         override fun create(bits: Long) = LongBitStore(bits)
     }
 
-    override fun plus(other: LongBitStore) = LongBitStore(bits + other.bits)
-    override fun minus(other: LongBitStore) = LongBitStore(bits - other.bits)
-
     override fun and(other: LongBitStore) = LongBitStore(bits and other.bits)
     override fun or(other: LongBitStore) = LongBitStore(bits or other.bits)
     override fun xor(other: LongBitStore) = LongBitStore(bits xor other.bits)

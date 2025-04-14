@@ -24,9 +24,6 @@ value class IntBitStore(override val bits: Int) : BitStore<IntBitStore, Int> {
         override fun create(bits: Int) = IntBitStore(bits)
     }
 
-    override fun plus(other: IntBitStore) = IntBitStore(bits + other.bits)
-    override fun minus(other: IntBitStore) = IntBitStore(bits - other.bits)
-
     override fun and(other: IntBitStore) = IntBitStore(bits and other.bits)
     override fun or(other: IntBitStore) = IntBitStore(bits or other.bits)
     override fun xor(other: IntBitStore) = IntBitStore(bits xor other.bits)
