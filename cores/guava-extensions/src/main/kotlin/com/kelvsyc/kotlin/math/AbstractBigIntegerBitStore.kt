@@ -40,5 +40,5 @@ abstract class AbstractBigIntegerBitStore<S : AbstractBigIntegerBitStore<S>> pro
     }
 
     override val trailingZeroes: Int
-        get() = bits.lowestSetBit
+        get() = if (bits == BigInteger.ZERO) traits.sizeBits else bits.lowestSetBit
 }
