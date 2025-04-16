@@ -17,9 +17,7 @@ abstract class AbstractByteArrayBitStore<S : AbstractByteArrayBitStore<S>> prote
          * The number of bytes needed to hold the store.
          */
         val sizeBytes by lazy {
-            (sizeBits / Byte.SIZE_BITS).let {
-                if (sizeBits % Byte.SIZE_BITS == 0) it else it + 1
-            }
+            Math.ceilDiv(sizeBits, Byte.SIZE_BITS)
         }
 
         override fun create(bits: Iterable<Int>): S {
@@ -75,7 +73,7 @@ abstract class AbstractByteArrayBitStore<S : AbstractByteArrayBitStore<S>> prote
         val raw = ByteArray(traits.sizeBytes)
         for (i in traits.sizeBytes - 1 downTo 0) {
             val sourceIndex = i + offsetBytes
-            if (i >= traits.sizeBytes) {
+            if (sourceIndex >= traits.sizeBytes) {
                 raw[i] = 0
             } else {
                 // src = shiftMod most signifcant bits from bits[sourceIndex]

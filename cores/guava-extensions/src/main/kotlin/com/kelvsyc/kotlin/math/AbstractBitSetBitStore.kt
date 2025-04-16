@@ -1,6 +1,7 @@
 package com.kelvsyc.kotlin.math
 
 import java.util.*
+import kotlin.streams.asSequence
 
 /**
  * Abstract base class for [BitStore] instances backed by a [BitSet].
@@ -48,13 +49,6 @@ abstract class AbstractBitSetBitStore<S : AbstractBitSetBitStore<S>> protected c
         return traits.create(raw)
     }
 
-    private val setBits by lazy {
-        generateSequence(
-            seedFunction = { bits.nextSetBit(0).takeIf{ it in 0 ..< traits.sizeBits } },
-            nextFunction = { bits.nextSetBit(it + 1).takeIf { it in 0 ..< traits.sizeBits } }
-        )
-    }
-
     override fun shl(bitCount: Int): S {
         val raw = BitSet(traits.sizeBits)
         for (i in bitCount ..< traits.sizeBits) {
@@ -70,11 +64,7 @@ abstract class AbstractBitSetBitStore<S : AbstractBitSetBitStore<S>> protected c
         for (i in 0 ..< traits.sizeBits - bitCount) {
             raw[i] = bits[i + bitCount]
         }
-        if (signed) {
-            for (i in traits.sizeBits - bitCount ..< traits.sizeBits) {
-                raw[i] = true
-            }
-        }
+        raw.set(traits.sizeBits - bitCount, traits.sizeBits, signed)
         return traits.create(raw)
     }
 
@@ -92,7 +82,7 @@ abstract class AbstractBitSetBitStore<S : AbstractBitSetBitStore<S>> protected c
     }
 
     override fun asSet(): Set<Int> {
-        return setBits.toSet()
+        return bits.stream().asSequence().toSet()
     }
 
     override val trailingZeroes by lazy {
