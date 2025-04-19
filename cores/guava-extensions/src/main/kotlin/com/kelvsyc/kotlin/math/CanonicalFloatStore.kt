@@ -13,7 +13,7 @@ value class CanonicalFloatStore private constructor(override val bits: IntBitSto
         override val rawIsZero: (Int) -> Boolean = { it == 0 }
 
         override fun create(raw: IntBitStore) = CanonicalFloatStore(raw)
-        override fun create(value: Float) = CanonicalFloatStore(IntBitStore(value.toRawBits()))
+        override fun create(value: Float) = CanonicalFloatStore(IntBitStore.create(value.toRawBits()))
     }
 
     override val isNegative: Boolean

@@ -19,6 +19,7 @@ import kotlin.reflect.safeCast
  * @param T a self-type
  * @param F the underlying floating-point number type
  */
+@Suppress("detekt:TooManyFunctions")
 abstract class AbstractDoubleFloatingPoint<T : AbstractDoubleFloatingPoint<T, F>, F : Any> protected constructor(protected val value: F, protected val error: F) : Comparable<T> {
     // The implementation of this class is based on the C++ robust-predicate library
     // https://github.com/dengwirda/robust-predicate
@@ -74,7 +75,7 @@ abstract class AbstractDoubleFloatingPoint<T : AbstractDoubleFloatingPoint<T, F>
         abstract val fma: ((F, F, F) -> F)?
     }
 
-    class AbstractArithmetic<T : AbstractDoubleFloatingPoint<T, F>, F : Any>: Arithmetic<T> {
+    abstract class AbstractArithmetic<T : AbstractDoubleFloatingPoint<T, F>, F : Any>: Arithmetic<T> {
         override fun add(lhs: T, rhs: T): T = lhs + rhs
         override fun subtract(lhs: T, rhs: T): T = lhs - rhs
         override fun multiply(lhs: T, rhs: T): T = lhs * rhs
@@ -88,13 +89,13 @@ abstract class AbstractDoubleFloatingPoint<T : AbstractDoubleFloatingPoint<T, F>
     // Implementation of the FAST-TWO-SUM algorithm as outlined in Shewchuk
     // Adds two numbers and expresses it in the form of a sum and error pair.
     // Precondition: abs(a) >= abs(b)
-    private fun fastTwoSum(a: F, b: F): Pair<F, F> {
+    protected fun fastTwoSum(a: F, b: F): Pair<F, F> {
         val s = arithmetic.add(a, b)
         val bVirt = arithmetic.subtract(s, a)
         val e = arithmetic.subtract(b, bVirt)
         return s to e
     }
-    private fun fastTwoDiff(a: F, b: F): Pair<F, F> {
+    protected fun fastTwoDiff(a: F, b: F): Pair<F, F> {
         val s = arithmetic.subtract(a, b)
         val bVirt = arithmetic.subtract(a, s)
         val e = arithmetic.subtract(bVirt, b)
@@ -103,7 +104,7 @@ abstract class AbstractDoubleFloatingPoint<T : AbstractDoubleFloatingPoint<T, F>
 
     // Implementation of the TWO-SUM algorithm as outlined in Shewchuk
     // Adds two numbers and expresses it in the form of a sum and error pair.
-    private fun twoSum(a: F, b: F): Pair<F, F> {
+    protected fun twoSum(a: F, b: F): Pair<F, F> {
         val s = arithmetic.add(a, b)
         val bVirt = arithmetic.subtract(s, a)
         val aVirt = arithmetic.subtract(s, bVirt)
@@ -112,7 +113,7 @@ abstract class AbstractDoubleFloatingPoint<T : AbstractDoubleFloatingPoint<T, F>
         val e = arithmetic.add(aRound, bRound)
         return s to e
     }
-    private fun twoDiff(a: F, b: F): Pair<F, F> {
+    protected fun twoDiff(a: F, b: F): Pair<F, F> {
         val s = arithmetic.subtract(a, b)
         val bVirt = arithmetic.subtract(a, s)
         val aVirt = arithmetic.add(s, bVirt)
@@ -122,18 +123,18 @@ abstract class AbstractDoubleFloatingPoint<T : AbstractDoubleFloatingPoint<T, F>
         return s to e
     }
 
-    private fun twoSum(aH: F, al: F, b: F): Pair<F, F> {
+    protected fun twoSum(aH: F, al: F, b: F): Pair<F, F> {
         val (t1, t0) = twoSum(aH, b)
         val newT0 = arithmetic.add(t0, al)
         return fastTwoSum(t1, newT0)
     }
-    private fun twoDiff(aH: F, aL: F, b: F): Pair<F, F> {
+    protected fun twoDiff(aH: F, aL: F, b: F): Pair<F, F> {
         val (t1, t0) = twoDiff(aH, b)
         val newT0 = arithmetic.add(t0, aL)
         return fastTwoSum(t1, newT0)
     }
 
-    private fun twoDiff(aH: F, aL: F, bH: F, bL: F): Pair<F, F> {
+    protected fun twoDiff(aH: F, aL: F, bH: F, bL: F): Pair<F, F> {
         val (s1, s0) = twoDiff(aH, bH)
         val (t1, t0) = twoDiff(aL, bL)
         val (w1, w0) = fastTwoSum(s1, arithmetic.add(s0, t1))
@@ -142,7 +143,7 @@ abstract class AbstractDoubleFloatingPoint<T : AbstractDoubleFloatingPoint<T, F>
 
     // Implementation of the SPLIT algorithm as outlined in Shewchuk
     // Splits a floating point number into two, where the significand of the first is evenly split among the two outputs
-    private fun split(a: F): Pair<F, F> {
+    protected fun split(a: F): Pair<F, F> {
         val c = arithmetic.multiply(a, traits.splitter)
         val b = arithmetic.subtract(c, a)
         val s = arithmetic.subtract(c, b)
@@ -151,13 +152,12 @@ abstract class AbstractDoubleFloatingPoint<T : AbstractDoubleFloatingPoint<T, F>
 
     // Implementation of the TWO-PROD algorithm as outlined in Shewchuk
     // Multiplies two floating point numbers together, and expresses it in the form of a product and error pair
-    private fun twoProd(a: F, b: F): Pair<F, F> {
+    protected fun twoProd(a: F, b: F): Pair<F, F> {
+        val s = arithmetic.multiply(a, b)
         // Note that there are two algorithms, depending on whether F supports fma
         return if (traits.fma != null) {
-            val s = arithmetic.multiply(a, b)
             s to traits.fma!!(a, b, arithmetic.negate(s))
         } else {
-            val s = arithmetic.multiply(a, b)
             val (ah, al) = split(a)
             val (bh, bl) = split(b)
 
@@ -167,7 +167,7 @@ abstract class AbstractDoubleFloatingPoint<T : AbstractDoubleFloatingPoint<T, F>
             s to arithmetic.subtract(arithmetic.multiply(al, bl), e3)
         }
     }
-    private fun twoProd(aH: F, aL: F, b: F): Pair<F, F> {
+    protected fun twoProd(aH: F, aL: F, b: F): Pair<F, F> {
         val (t0, t1) = twoProd(aH, b)
         val newT0 = if (traits.fma != null) {
             traits.fma!!(aL, b, t0)

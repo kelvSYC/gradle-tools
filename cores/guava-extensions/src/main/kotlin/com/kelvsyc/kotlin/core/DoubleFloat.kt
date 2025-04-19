@@ -1,6 +1,7 @@
 package com.kelvsyc.kotlin.core
 
 import kotlin.reflect.KClass
+import com.kelvsyc.kotlin.core.Arithmetic as BaseArithmetic
 
 /**
  * Implementation of a "double-double", a representation of a higher-precision floating-point value backed by two
@@ -23,7 +24,9 @@ class DoubleFloat private constructor(value: Float, error: Float) : AbstractDoub
         override val fma: ((Float, Float, Float) -> Float) = Math::fma
     }
 
-    override val arithmetic: Arithmetic<Float> = Arithmetic.FloatArithmetic
+    class Arithmetic : AbstractArithmetic<DoubleFloat, Float>()
+
+    override val arithmetic: BaseArithmetic<Float> = BaseArithmetic.FloatArithmetic
     override val traits: AbstractCompanion<DoubleFloat, Float> = Companion
 
     /**

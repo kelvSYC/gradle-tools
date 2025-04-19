@@ -13,7 +13,7 @@ value class CanonicalDoubleStore private constructor(override val bits: LongBitS
         override val rawIsZero: (Long) -> Boolean = { it == 0L }
 
         override fun create(raw: LongBitStore) = CanonicalDoubleStore(raw)
-        override fun create(value: Double) = CanonicalDoubleStore(LongBitStore(value.toRawBits()))
+        override fun create(value: Double) = CanonicalDoubleStore(LongBitStore.create(value.toRawBits()))
     }
 
     override val isNegative: Boolean

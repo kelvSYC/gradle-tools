@@ -12,6 +12,7 @@ import com.google.common.base.Converter
  * @param T the type for which bitwise operations are defined
  * @param U the delegated type for which bitwise operations are performed
  */
+@Suppress("detekt:TooManyFunctions")
 abstract class AbstractConverterBasedBitwise<T : Any, U : Any> : Bitwise<T> {
     /**
      * [Converter] instance that converts objects of the specified type to the delegate type.
