@@ -17,7 +17,7 @@ dokkatoo-plugin = { module = "dev.adamko.dokkatoo:dokkatoo-plugin", version.ref 
 gradlex-dependency-conflict-resolution-plugin = "org.gradlex:jvm-dependency-conflict-resolution:2.1.2"
 gradlex-reproducible-builds-plugin = "org.gradlex:reproducible-builds:1.0"
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin" } # version from BOM 'kotlin-gradle-plugins-bom'
-reckon-plugin = "org.ajoberstar.reckon:reckon-gradle:0.19.1"
+reckon-plugin = "org.ajoberstar.reckon:reckon-gradle:0.19.2"
 
 # API Dependencies
 artifactory-client-api = "org.jfrog.artifactory.client:artifactory-java-client-api:2.19.1"
@@ -46,8 +46,10 @@ aws-sns-kotlin = { module = "aws.sdk.kotlin:sns" } # version from BOM 'aws-kotli
 aws-sqs-java = { module = "software.amazon.awssdk:sqs" } # version from BOM 'aws-java-sdk-bom'
 aws-sqs-kotlin = { module = "aws.sdk.kotlin:sqs" } # version from BOM 'aws-kotlin-sdk-bom'
 caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.0"
+commons-lang = "org.apache.commons:commons-lang3:3.17.0"
 google-cloud-artifact-registry = { module = "com.google.cloud:google-cloud-artifact-registry" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-storage = { module = "com.google.cloud:google-cloud-storage" } # version from BOM 'google-cloud-libraries-bom'
+guava = "com.google.guava:guava:33.4.7-jre"
 jgit = "org.eclipse.jgit:org.eclipse.jgit:7.2.0.202503040940-r"
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core" } # version from BOM 'kotest-bom'
 kotest-assertions-shared = { module = "io.kotest:kotest-assertions-shared" } # version from BOM 'kotest-bom'
