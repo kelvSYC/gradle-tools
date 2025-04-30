@@ -26,6 +26,10 @@ val components = buildList {
     add("git-core")
     add("google-cloud-artifact-registry-base")
     add("google-cloud-storage-base")
+
+    // Kotlin Plugin Libraries
+    add("commons-lang-extensions")
+    add("guava-extensions")
 }
 
 tasks.register("clean") {
