@@ -1,5 +1,6 @@
 rootProject.name = "gradle-tools"
 
+// Gradle components
 includeBuild("cores/artifactory-base")
 includeBuild("cores/aws-codeartifact-java-base")
 includeBuild("cores/aws-codeartifact-kotlin-base")
@@ -24,5 +25,8 @@ includeBuild("cores/google-cloud-artifact-registry-base")
 includeBuild("cores/google-cloud-storage-base")
 includeBuild("cores/gradle-extensions")
 includeBuild("cores/guava-extensions")
+
+// Kotlin extension components
+includeBuild("extensions/commons-numbers-extensions")
 
 includeBuild("aggregation")
