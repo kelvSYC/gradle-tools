@@ -1,5 +1,6 @@
 package com.kelvsyc.kotlin.commons.numbers.fraction
 
+import org.apache.commons.numbers.fraction.BigFraction
 import org.apache.commons.numbers.fraction.Fraction
 
 operator fun Fraction.unaryPlus(): Fraction = this
@@ -66,3 +67,8 @@ operator fun Fraction.div(rhs: Int) = divide(rhs)
  * @see Fraction.divide
  */
 operator fun Fraction.div(rhs: Fraction) = divide(rhs)
+
+/**
+ * Converts this value to a [BigFraction].
+ */
+fun Fraction.toBigFraction() = BigFraction.of(numerator, denominator)
