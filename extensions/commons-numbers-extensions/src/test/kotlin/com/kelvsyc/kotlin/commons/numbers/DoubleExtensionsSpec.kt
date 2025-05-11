@@ -1,8 +1,10 @@
 package com.kelvsyc.kotlin.commons.numbers
 
 import io.kotest.core.spec.style.FunSpec
+import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.verify
+import org.apache.commons.numbers.complex.Complex
 import org.apache.commons.numbers.core.DD
 import org.apache.commons.numbers.fraction.BigFraction
 import org.apache.commons.numbers.fraction.Fraction
@@ -35,6 +37,12 @@ class DoubleExtensionsSpec : FunSpec() {
                     BigFraction.from(value)
                 }
             }
+        }
+        test("subtract Complex") {
+            val value = 1.0
+            val rhs = mockk<Complex>(relaxed = true)
+            value - rhs
+            verify { rhs.subtractFrom(value) }
         }
     }
 }
