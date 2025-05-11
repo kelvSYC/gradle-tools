@@ -49,6 +49,7 @@ aws-sqs-kotlin = { module = "aws.sdk.kotlin:sqs" } # version from BOM 'aws-kotli
 caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.0"
 commons-lang = "org.apache.commons:commons-lang3:3.17.0"
 commons-numbers-core = { module = "org.apache.commons:commons-numbers-core" } # version from BOM 'commons-numbers-bom'
+commons-numbers-fraction = { module = "org.apache.commons:commons-numbers-fraction" } # version from BOM 'commons-numbers-bom'
 google-cloud-artifact-registry = { module = "com.google.cloud:google-cloud-artifact-registry" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-storage = { module = "com.google.cloud:google-cloud-storage" } # version from BOM 'google-cloud-libraries-bom'
 guava = "com.google.guava:guava:33.4.7-jre"
