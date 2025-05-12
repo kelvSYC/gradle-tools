@@ -6,6 +6,12 @@ import org.apache.commons.numbers.fraction.BigFraction
 import org.apache.commons.numbers.fraction.Fraction
 
 /**
+ * Creates a new [Complex] by taking this value as the imaginary part
+ */
+val Double.i
+    get() = Complex.ofCartesian(0.0, this)
+
+/**
  * Delegating function converting this value to a [DD].
  *
  * @see DD.of

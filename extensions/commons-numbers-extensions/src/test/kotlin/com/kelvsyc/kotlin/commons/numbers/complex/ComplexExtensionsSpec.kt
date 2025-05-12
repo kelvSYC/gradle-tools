@@ -1,12 +1,23 @@
 package com.kelvsyc.kotlin.commons.numbers.complex
 
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.blocking.forAll
+import io.kotest.matchers.equals.shouldBeEqual
 import io.mockk.mockk
 import io.mockk.verify
 import org.apache.commons.numbers.complex.Complex
 
 class ComplexExtensionsSpec : FunSpec() {
     init {
+        test("destructure") {
+            forAll<Complex> {
+                val (re, im) = it
+
+                re shouldBeEqual it.real
+                im shouldBeEqual it.imaginary
+            }
+        }
+
         test("negate") {
             val value = mockk<Complex>(relaxed = true)
             -value

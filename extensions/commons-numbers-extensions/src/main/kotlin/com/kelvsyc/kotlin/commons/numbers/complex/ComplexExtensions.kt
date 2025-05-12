@@ -1,6 +1,17 @@
+@file:Suppress("detekt:TooManyFunctions")
 package com.kelvsyc.kotlin.commons.numbers.complex
 
 import org.apache.commons.numbers.complex.Complex
+
+/**
+ * Destructuring operator allowing for the extraction of the real part of a [Complex].
+ */
+operator fun Complex.component1(): Double = real
+
+/**
+ * Destructuring operator allowing for the extraction of the imaginary part of a [Complex].
+ */
+operator fun Complex.component2(): Double = imaginary
 
 operator fun Complex.unaryPlus(): Complex = this
 

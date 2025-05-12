@@ -15,4 +15,5 @@ dependencies {
     api(libs.commons.numbers.fraction)
 
     testImplementation(libs.mockk)
+    testImplementation(libs.kotest.property)
 }
