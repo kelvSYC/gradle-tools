@@ -24,9 +24,9 @@ includeBuild("cores/git-core")
 includeBuild("cores/google-cloud-artifact-registry-base")
 includeBuild("cores/google-cloud-storage-base")
 includeBuild("cores/gradle-extensions")
-includeBuild("cores/guava-extensions")
 
 // Kotlin extension components
 includeBuild("extensions/commons-numbers-extensions")
+includeBuild("extensions/guava-extensions")
 
 includeBuild("aggregation")
