@@ -62,3 +62,7 @@ tasks.register("publish") {
     dependsOn(gradle.includedBuild("aggregation").task(":catalog:$name"))
     dependsOn(gradle.includedBuild("aggregation").task(":platform:$name"))
 }
+
+tasks.register("dokkatooGenerate") {
+    dependsOn(gradle.includedBuild("aggregation").task(":dokkatoo:dokkatooGenerate"))
+}

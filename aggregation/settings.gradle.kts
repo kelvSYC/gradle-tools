@@ -36,3 +36,6 @@ include("platform")
 file("../cores").list { dir, _ -> dir.isDirectory  }?.forEach {
     includeBuild("../cores/$it")
 }
+file("../extensions").list { dir, _ -> dir.isDirectory  }?.forEach {
+    includeBuild("../extensions/$it")
+}
