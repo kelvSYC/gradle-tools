@@ -19,13 +19,13 @@ includeBuild("cores/aws-sns-kotlin-base")
 includeBuild("cores/aws-sqs-java-base")
 includeBuild("cores/aws-sqs-kotlin-base")
 includeBuild("cores/clients-base")
-includeBuild("cores/commons-lang-extensions")
 includeBuild("cores/git-core")
 includeBuild("cores/google-cloud-artifact-registry-base")
 includeBuild("cores/google-cloud-storage-base")
 includeBuild("cores/gradle-extensions")
 
 // Kotlin extension components
+includeBuild("extensions/commons-lang-extensions")
 includeBuild("extensions/commons-numbers-extensions")
 includeBuild("extensions/guava-extensions")
 
