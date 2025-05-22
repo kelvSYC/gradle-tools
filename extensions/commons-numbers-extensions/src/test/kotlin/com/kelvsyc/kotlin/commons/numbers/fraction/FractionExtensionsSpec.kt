@@ -1,10 +1,5 @@
 package com.kelvsyc.kotlin.commons.numbers.fraction
 
-import com.kelvsyc.kotlin.commons.numbers.div
-import com.kelvsyc.kotlin.commons.numbers.minus
-import com.kelvsyc.kotlin.commons.numbers.plus
-import com.kelvsyc.kotlin.commons.numbers.times
-import com.kelvsyc.kotlin.commons.numbers.unaryMinus
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.data.blocking.forAll
 import io.kotest.matchers.equals.shouldBeEqual
