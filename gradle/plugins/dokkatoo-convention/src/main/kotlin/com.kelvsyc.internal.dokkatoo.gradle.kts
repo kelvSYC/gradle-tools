@@ -10,7 +10,17 @@ dokkatoo {
         enableKotlinStdLibDocumentationLink.set(true)
 
         externalDocumentationLinks.register("gradle") {
-            url.set(uri("https://docs.gradle.org/current/kotlin-dsl/gradle"))
+            url("https://docs.gradle.org/current/kotlin-dsl/gradle")
+        }
+        externalDocumentationLinks.register("commons-lang") {
+            url("https://commons.apache.org/proper/commons-lang/apidocs")
+        }
+        externalDocumentationLinks.register("commons-numbers") {
+            url("https://commons.apache.org/proper/commons-numbers/commons-numbers-docs/apidocs")
+        }
+        externalDocumentationLinks.register("guava") {
+            url("https://javadoc.io/doc/com.google.guava/guava/latest")
+            packageListUrl("https://javadoc.io/doc/com.google.guava/guava/latest/element-list")
         }
 
         sourceLink {

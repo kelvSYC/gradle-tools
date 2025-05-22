@@ -4,6 +4,16 @@ package com.kelvsyc.kotlin.commons.numbers.fraction
 import org.apache.commons.numbers.fraction.BigFraction
 import java.math.BigInteger
 
+/**
+ * Destructuring operator allowing for the extraction of the numerator of a [BigFraction].
+ */
+operator fun BigFraction.component1(): BigInteger = numerator
+
+/**
+ * Destructuring operator allowing for the extraction of the denominator of a [BigFraction].
+ */
+operator fun BigFraction.component2(): BigInteger = denominator
+
 operator fun BigFraction.unaryPlus(): BigFraction = this
 
 /**

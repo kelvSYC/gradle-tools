@@ -6,6 +6,8 @@ import com.kelvsyc.kotlin.commons.numbers.plus
 import com.kelvsyc.kotlin.commons.numbers.times
 import com.kelvsyc.kotlin.commons.numbers.unaryMinus
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.blocking.forAll
+import io.kotest.matchers.equals.shouldBeEqual
 import io.mockk.mockk
 import io.mockk.verify
 import org.apache.commons.numbers.fraction.BigFraction
@@ -13,6 +15,14 @@ import java.math.BigInteger
 
 class BigFractionExtensionsSpec : FunSpec() {
     init {
+        test("destructure") {
+            forAll<BigFraction> {
+                val (numerator, denominator) = it
+                numerator shouldBeEqual it.numerator
+                denominator shouldBeEqual it.denominator
+            }
+        }
+
         test("negate") {
             val value = mockk<BigFraction>(relaxed = true)
             -value

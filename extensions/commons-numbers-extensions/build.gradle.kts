@@ -10,8 +10,10 @@ dokkatoo {
 }
 
 dependencies {
+    api(libs.commons.numbers.complex)
     api(libs.commons.numbers.core)
     api(libs.commons.numbers.fraction)
 
     testImplementation(libs.mockk)
+    testImplementation(libs.kotest.property)
 }

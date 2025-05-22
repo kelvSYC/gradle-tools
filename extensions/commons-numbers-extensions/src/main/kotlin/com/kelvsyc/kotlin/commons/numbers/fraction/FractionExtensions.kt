@@ -1,6 +1,18 @@
+@file:Suppress("detekt:TooManyFunctions")
 package com.kelvsyc.kotlin.commons.numbers.fraction
 
+import org.apache.commons.numbers.fraction.BigFraction
 import org.apache.commons.numbers.fraction.Fraction
+
+/**
+ * Destructuring operator allowing for the extraction of the numerator of a [Fraction].
+ */
+operator fun Fraction.component1(): Int = numerator
+
+/**
+ * Destructuring operator allowing for the extraction of the denominator of a [Fraction].
+ */
+operator fun Fraction.component2(): Int = denominator
 
 operator fun Fraction.unaryPlus(): Fraction = this
 
@@ -66,3 +78,8 @@ operator fun Fraction.div(rhs: Int) = divide(rhs)
  * @see Fraction.divide
  */
 operator fun Fraction.div(rhs: Fraction) = divide(rhs)
+
+/**
+ * Converts this value to a [BigFraction].
+ */
+fun Fraction.toBigFraction() = BigFraction.of(numerator, denominator)

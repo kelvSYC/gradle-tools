@@ -6,12 +6,22 @@ import com.kelvsyc.kotlin.commons.numbers.plus
 import com.kelvsyc.kotlin.commons.numbers.times
 import com.kelvsyc.kotlin.commons.numbers.unaryMinus
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.data.blocking.forAll
+import io.kotest.matchers.equals.shouldBeEqual
 import io.mockk.mockk
 import io.mockk.verify
 import org.apache.commons.numbers.fraction.Fraction
 
 class FractionExtensionsSpec : FunSpec() {
     init {
+        test("destructure") {
+            forAll<Fraction> {
+                val (numerator, denominator) = it
+                numerator shouldBeEqual it.numerator
+                denominator shouldBeEqual it.denominator
+            }
+        }
+
         test("negate") {
             val value = mockk<Fraction>(relaxed = true)
             -value
@@ -65,6 +75,14 @@ class FractionExtensionsSpec : FunSpec() {
             val rhs = Fraction.ONE
             value / rhs
             verify { value.divide(rhs) }
+        }
+
+        test("toBigFraction") {
+            val value = Fraction.of(1, 2)
+            val bigValue = value.toBigFraction()
+
+            value.numerator shouldBeEqual bigValue.numeratorAsInt
+            value.denominator shouldBeEqual bigValue.denominatorAsInt
         }
     }
 }
