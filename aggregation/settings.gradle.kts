@@ -30,6 +30,7 @@ configure<ReckonExtension> {
 
 include("catalog")
 include("dokkatoo")
+include("jacoco")
 include("platform")
 
 // Builds to be aggregated

@@ -66,3 +66,7 @@ tasks.register("publish") {
 tasks.register("dokkatooGenerate") {
     dependsOn(gradle.includedBuild("aggregation").task(":dokkatoo:dokkatooGenerate"))
 }
+
+tasks.register("jacoco") {
+    dependsOn(gradle.includedBuild("aggregation").task(":jacoco:testCodeCoverageReport"))
+}
