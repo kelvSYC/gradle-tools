@@ -27,8 +27,9 @@ val components = buildList {
     add("google-cloud-artifact-registry-base")
     add("google-cloud-storage-base")
 
-    // Kotlin Plugin Libraries
+    // Kotlin Extension Libraries
     add("commons-lang-extensions")
+    add("commons-numbers-extensions")
     add("guava-extensions")
 }
 
