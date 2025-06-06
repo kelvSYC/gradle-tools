@@ -45,6 +45,7 @@ tasks.register("assemble") {
         dependsOn(gradle.includedBuild(it).task(":$name"))
     }
     dependsOn(gradle.includedBuild("aggregation").task(":dokkatoo:$name"))
+    dependsOn(gradle.includedBuild("aggregation").task(":jacoco:$name"))
 }
 
 tasks.register("build") {
@@ -52,6 +53,8 @@ tasks.register("build") {
         dependsOn(gradle.includedBuild(it).task(":$name"))
     }
     dependsOn(gradle.includedBuild("aggregation").task(":catalog:generateCatalogAsToml"))
+    dependsOn(gradle.includedBuild("aggregation").task(":dokkatoo:$name"))
+    dependsOn(gradle.includedBuild("aggregation").task(":jacoco:testCodeCoverageReport"))
     dependsOn(gradle.includedBuild("aggregation").task(":platform:$name"))
 }
 
