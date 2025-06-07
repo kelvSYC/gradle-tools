@@ -17,6 +17,7 @@ jobs:
       contents: read
     outputs:
       aggregate-jacoco-id: ${{ steps.upload-aggregate-jacoco.outputs.artifact-id }}
+      aggregate-kdoc-id: ${{ steps.upload-aggregate-kdoc.outputs.artifact-id }}
 
     steps:
       - name: Checkout
@@ -34,6 +35,12 @@ jobs:
           build-scan-terms-of-use-agree: "yes"
       - name: Build
         run: ./gradlew --info --stacktrace :build
+      - name: Upload Aggregate KDoc
+        id: upload-aggregate-kdoc
+        uses: actions/upload-artifact@v4
+        with:
+          name: kdoc-aggregate
+          path: aggregation/dokkatoo/build/dokka/html
       - name: Upload Aggregate JaCoCo Code Coverage Report
         id: upload-aggregate-jacoco
         uses: actions/upload-artifact@v4
