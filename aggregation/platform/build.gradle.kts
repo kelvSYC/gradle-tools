@@ -29,6 +29,15 @@ dependencies {
                 api("$pluginModule:$version")
             }
         }
+
+        val extensionComponents = gradle.includedBuilds.filter {
+            it.projectDir.parentFile.name == "extensions"
+        }
+        extensionComponents.forEach {
+            val baseModule = "$group:${it.name}"
+
+            api("$baseModule:$version")
+        }
     }
 }
 
