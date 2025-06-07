@@ -32,6 +32,7 @@ include("catalog")
 include("dokkatoo")
 include("jacoco")
 include("platform")
+include("testing")
 
 // Builds to be aggregated
 file("../cores").list { dir, _ -> dir.isDirectory  }?.forEach {

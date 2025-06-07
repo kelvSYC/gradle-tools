@@ -56,6 +56,7 @@ tasks.register("build") {
     dependsOn(gradle.includedBuild("aggregation").task(":dokkatoo:$name"))
     dependsOn(gradle.includedBuild("aggregation").task(":jacoco:testCodeCoverageReport"))
     dependsOn(gradle.includedBuild("aggregation").task(":platform:$name"))
+    dependsOn(gradle.includedBuild("aggregation").task(":testing:testAggregateTestReport"))
 }
 
 tasks.register("publish") {
@@ -68,6 +69,10 @@ tasks.register("publish") {
 
 tasks.register("dokkatooGenerate") {
     dependsOn(gradle.includedBuild("aggregation").task(":dokkatoo:dokkatooGenerate"))
+}
+
+tasks.register("test") {
+    dependsOn(gradle.includedBuild("aggregation").task(":testing:testAggregateTestReport"))
 }
 
 tasks.register("jacoco") {

@@ -18,6 +18,7 @@ jobs:
     outputs:
       aggregate-jacoco-id: ${{ steps.upload-aggregate-jacoco.outputs.artifact-id }}
       aggregate-kdoc-id: ${{ steps.upload-aggregate-kdoc.outputs.artifact-id }}
+      aggregate-test-id: ${{ steps.upload-aggregate-test.outputs.artifact-id }}
 
     steps:
       - name: Checkout
@@ -35,6 +36,12 @@ jobs:
           build-scan-terms-of-use-agree: "yes"
       - name: Build
         run: ./gradlew --info --stacktrace :build
+      - name: Upload Aggregate Test Report
+        id: upload-aggregate-test
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-aggregate
+          path: aggregation/testing/build/reports/tests/test/aggregated-results
       - name: Upload Aggregate KDoc
         id: upload-aggregate-kdoc
         uses: actions/upload-artifact@v4
