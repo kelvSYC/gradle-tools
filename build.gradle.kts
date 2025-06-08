@@ -27,8 +27,9 @@ val components = buildList {
     add("google-cloud-artifact-registry-base")
     add("google-cloud-storage-base")
 
-    // Kotlin Plugin Libraries
+    // Kotlin Extension Libraries
     add("commons-lang-extensions")
+    add("commons-numbers-extensions")
     add("guava-extensions")
 }
 
@@ -44,6 +45,7 @@ tasks.register("assemble") {
         dependsOn(gradle.includedBuild(it).task(":$name"))
     }
     dependsOn(gradle.includedBuild("aggregation").task(":dokkatoo:$name"))
+    dependsOn(gradle.includedBuild("aggregation").task(":jacoco:$name"))
 }
 
 tasks.register("build") {
@@ -51,7 +53,10 @@ tasks.register("build") {
         dependsOn(gradle.includedBuild(it).task(":$name"))
     }
     dependsOn(gradle.includedBuild("aggregation").task(":catalog:generateCatalogAsToml"))
+    dependsOn(gradle.includedBuild("aggregation").task(":dokkatoo:$name"))
+    dependsOn(gradle.includedBuild("aggregation").task(":jacoco:testCodeCoverageReport"))
     dependsOn(gradle.includedBuild("aggregation").task(":platform:$name"))
+    dependsOn(gradle.includedBuild("aggregation").task(":testing:testAggregateTestReport"))
 }
 
 tasks.register("publish") {
@@ -60,4 +65,16 @@ tasks.register("publish") {
     }
     dependsOn(gradle.includedBuild("aggregation").task(":catalog:$name"))
     dependsOn(gradle.includedBuild("aggregation").task(":platform:$name"))
+}
+
+tasks.register("dokkatooGenerate") {
+    dependsOn(gradle.includedBuild("aggregation").task(":dokkatoo:dokkatooGenerate"))
+}
+
+tasks.register("test") {
+    dependsOn(gradle.includedBuild("aggregation").task(":testing:testAggregateTestReport"))
+}
+
+tasks.register("jacoco") {
+    dependsOn(gradle.includedBuild("aggregation").task(":jacoco:testCodeCoverageReport"))
 }

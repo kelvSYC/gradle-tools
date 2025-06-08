@@ -26,6 +26,13 @@ catalog {
                 plugin(it.name, "$pluginIdPrefix.${it.name}").versionRef(projectVersionAlias)
             }
         }
+
+        val extensionComponents = gradle.includedBuilds.filter {
+            it.projectDir.parentFile.name == "extensions"
+        }
+        extensionComponents.forEach {
+            library(it.name, group.toString(), it.name).versionRef(projectVersionAlias)
+        }
     }
 }
 
