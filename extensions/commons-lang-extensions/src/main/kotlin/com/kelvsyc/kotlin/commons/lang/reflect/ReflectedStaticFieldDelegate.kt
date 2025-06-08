@@ -13,8 +13,8 @@ import kotlin.reflect.KProperty
  *                  supertypes.
  * @param forceAccess `true` if scope restrictions need to be broken, or `false` to limit to public fields.
  */
-class ReflectedStaticFieldDelegate<T>(private val targetClass: Class<*>, private val declared: Boolean = false, private val forceAccess: Boolean = false) : ReadWriteProperty<Any, T> {
-    override fun getValue(thisRef: Any, property: KProperty<*>): T {
+class ReflectedStaticFieldDelegate<T>(private val targetClass: Class<*>, private val declared: Boolean = false, private val forceAccess: Boolean = false) : ReadWriteProperty<Any?, T> {
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
         return if (declared) {
             FieldUtils.readDeclaredStaticField(targetClass, property.name, forceAccess) as T
         } else {
@@ -22,7 +22,7 @@ class ReflectedStaticFieldDelegate<T>(private val targetClass: Class<*>, private
         }
     }
 
-    override fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         if (declared) {
             FieldUtils.writeDeclaredStaticField(targetClass, property.name, value, forceAccess)
         } else {

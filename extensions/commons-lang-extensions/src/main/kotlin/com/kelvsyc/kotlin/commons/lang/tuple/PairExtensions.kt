@@ -22,3 +22,13 @@ fun <A, B, C> Triple<A, B, C>.toCommonsTriple() = CommonsTriple.of(first, second
  * Returns this [Triple][CommonsTriple] as a Kotlin [Triple].
  */
 fun <L, M, R> CommonsTriple<L, M, R>.toKotlinTriple() = Triple(left, middle, right)
+
+operator fun <L, R> CommonsPair<L, R>.component1(): L = left
+
+operator fun <L, R> CommonsPair<L, R>.component2(): R = right
+
+operator fun <L, M, R> CommonsTriple<L, M, R>.component1(): L = left
+
+operator fun <L, M, R> CommonsTriple<L, M, R>.component2(): M = middle
+
+operator fun <L, M, R> CommonsTriple<L, M, R>.component3(): R = right

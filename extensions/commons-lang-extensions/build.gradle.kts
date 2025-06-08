@@ -13,4 +13,6 @@ dokkatoo {
 dependencies {
     api(libs.commons.lang)
     implementation(kotlin("reflect"))
+
+    testImplementation(libs.mockk)
 }
