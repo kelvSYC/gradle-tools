@@ -46,7 +46,7 @@ aws-sns-java = { module = "software.amazon.awssdk:sns" } # version from BOM 'aws
 aws-sns-kotlin = { module = "aws.sdk.kotlin:sns" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-sqs-java = { module = "software.amazon.awssdk:sqs" } # version from BOM 'aws-java-sdk-bom'
 aws-sqs-kotlin = { module = "aws.sdk.kotlin:sqs" } # version from BOM 'aws-kotlin-sdk-bom'
-caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.0"
+caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.1"
 commons-lang = "org.apache.commons:commons-lang3:3.17.0"
 commons-numbers-complex = { module = "org.apache.commons:commons-numbers-complex" } # version from BOM 'commons-numbers-bom'
 commons-numbers-core = { module = "org.apache.commons:commons-numbers-core" } # version from BOM 'commons-numbers-bom'
