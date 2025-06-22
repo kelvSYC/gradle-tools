@@ -2,7 +2,9 @@ package com.kelvsyc.kotlin.guava.math
 
 import com.google.common.math.DoubleMath
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.forAll
+import io.kotest.property.checkAll
+import io.mockk.every
+import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.verify
 import java.math.RoundingMode
@@ -11,7 +13,10 @@ class DoubleExtensionsSpec : FunSpec() {
     init {
         test("log2 (rounding)") {
             mockkStatic(DoubleMath::class) {
-                forAll<Double, RoundingMode> { value, mode ->
+                checkAll<Double, RoundingMode> { value, mode ->
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { DoubleMath.log2(any(), any()) } returns 0
+
                     value.log2(mode)
 
                     verify {
@@ -23,7 +28,10 @@ class DoubleExtensionsSpec : FunSpec() {
 
         test("roundToInt") {
             mockkStatic(DoubleMath::class) {
-                forAll<Double, RoundingMode> { value, mode ->
+                checkAll<Double, RoundingMode> { value, mode ->
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { DoubleMath.roundToInt(any(), any()) } returns 0
+
                     value.roundToInt(mode)
 
                     verify {
@@ -35,7 +43,10 @@ class DoubleExtensionsSpec : FunSpec() {
 
         test("roundToLong") {
             mockkStatic(DoubleMath::class) {
-                forAll<Double, RoundingMode> { value, mode ->
+                checkAll<Double, RoundingMode> { value, mode ->
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { DoubleMath.roundToLong(any(), any()) } returns 0L
+
                     value.roundToLong(mode)
 
                     verify {
@@ -47,7 +58,10 @@ class DoubleExtensionsSpec : FunSpec() {
 
         test("roundToBigInteger") {
             mockkStatic(DoubleMath::class) {
-                forAll<Double, RoundingMode> { value, mode ->
+                checkAll<Double, RoundingMode> { value, mode ->
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { DoubleMath.roundToBigInteger(any(), any()) } returns mockk()
+
                     value.roundToBigInteger(mode)
 
                     verify {
@@ -59,7 +73,10 @@ class DoubleExtensionsSpec : FunSpec() {
 
         test("isMathematicalInteger") {
             mockkStatic(DoubleMath::class) {
-                forAll<Double> {
+                checkAll<Double> {
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { DoubleMath.isMathematicalInteger(any()) } returns false
+
                     it.isMathematicalInteger
 
                     verify {
@@ -71,7 +88,10 @@ class DoubleExtensionsSpec : FunSpec() {
 
         test("isPowerOfTwo") {
             mockkStatic(DoubleMath::class) {
-                forAll<Double> {
+                checkAll<Double> {
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { DoubleMath.isPowerOfTwo(any()) } returns false
+
                     it.isPowerOfTwo
 
                     verify {
@@ -83,7 +103,10 @@ class DoubleExtensionsSpec : FunSpec() {
 
         test("log2") {
             mockkStatic(DoubleMath::class) {
-                forAll<Double> {
+                checkAll<Double> {
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { DoubleMath.log2(any()) } returns 0.0
+
                     it.log2
 
                     verify {

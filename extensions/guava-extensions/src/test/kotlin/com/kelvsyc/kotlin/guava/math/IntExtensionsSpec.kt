@@ -2,7 +2,8 @@ package com.kelvsyc.kotlin.guava.math
 
 import com.google.common.math.IntMath
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.forAll
+import io.kotest.property.checkAll
+import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.verify
 import java.math.RoundingMode
@@ -11,7 +12,10 @@ class IntExtensionsSpec : FunSpec() {
     init {
         test("log10") {
             mockkStatic(IntMath::class) {
-                forAll<Int, RoundingMode> { value, mode ->
+                checkAll<Int, RoundingMode> { value, mode ->
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { IntMath.log10(any(), any()) } returns 0
+
                     value.log10(mode)
 
                     verify {
@@ -23,7 +27,10 @@ class IntExtensionsSpec : FunSpec() {
 
         test("log2") {
             mockkStatic(IntMath::class) {
-                forAll<Int, RoundingMode> { value, mode ->
+                checkAll<Int, RoundingMode> { value, mode ->
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { IntMath.log2(any(), any()) } returns 0
+
                     value.log2(mode)
 
                     verify {
@@ -35,7 +42,10 @@ class IntExtensionsSpec : FunSpec() {
 
         test("sqrt") {
             mockkStatic(IntMath::class) {
-                forAll<Int, RoundingMode> { value, mode ->
+                checkAll<Int, RoundingMode> { value, mode ->
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { IntMath.sqrt(any(), any()) } returns 0
+
                     value.sqrt(mode)
 
                     verify {
@@ -47,7 +57,10 @@ class IntExtensionsSpec : FunSpec() {
 
         test("ceilingPowerOfTwo") {
             mockkStatic(IntMath::class) {
-                forAll<Int> {
+                checkAll<Int> {
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { IntMath.ceilingPowerOfTwo(any()) } returns 0
+
                     it.ceilingPowerOfTwo
 
                     verify {
@@ -59,7 +72,10 @@ class IntExtensionsSpec : FunSpec() {
 
         test("floorPowerOfTwo") {
             mockkStatic(IntMath::class) {
-                forAll<Int> {
+                checkAll<Int> {
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { IntMath.floorPowerOfTwo(any()) } returns 0
+
                     it.floorPowerOfTwo
 
                     verify {
@@ -71,7 +87,10 @@ class IntExtensionsSpec : FunSpec() {
 
         test("isPowerOfTwo") {
             mockkStatic(IntMath::class) {
-                forAll<Int> {
+                checkAll<Int> {
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { IntMath.isPowerOfTwo(any()) } returns false
+
                     it.isPowerOfTwo
 
                     verify {
@@ -83,7 +102,10 @@ class IntExtensionsSpec : FunSpec() {
 
         test("isPrime") {
             mockkStatic(IntMath::class) {
-                forAll<Int> {
+                checkAll<Int> {
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { IntMath.isPrime(any()) } returns false
+
                     it.isPrime
 
                     verify {

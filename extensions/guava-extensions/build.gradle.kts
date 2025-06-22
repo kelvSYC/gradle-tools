@@ -12,5 +12,7 @@ dokkatoo {
 
 dependencies {
     api(libs.guava)
+
+    testImplementation(libs.kotest.property)
     testImplementation(libs.mockk)
 }

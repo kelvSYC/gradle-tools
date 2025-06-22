@@ -2,7 +2,9 @@ package com.kelvsyc.kotlin.guava.math
 
 import com.google.common.math.BigIntegerMath
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.forAll
+import io.kotest.property.checkAll
+import io.mockk.every
+import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.verify
 import java.math.BigInteger
@@ -12,7 +14,10 @@ class BigIntegerExtensionsSpec : FunSpec() {
     init {
         test("log10") {
             mockkStatic(BigIntegerMath::class) {
-                forAll<BigInteger, RoundingMode> { value, mode ->
+                checkAll<BigInteger, RoundingMode> { value, mode ->
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { BigIntegerMath.log10(any(), any()) } returns 0
+
                     value.log10(mode)
 
                     verify {
@@ -24,7 +29,10 @@ class BigIntegerExtensionsSpec : FunSpec() {
 
         test("log2") {
             mockkStatic(BigIntegerMath::class) {
-                forAll<BigInteger, RoundingMode> { value, mode ->
+                checkAll<BigInteger, RoundingMode> { value, mode ->
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { BigIntegerMath.log2(any(), any()) } returns 0
+
                     value.log2(mode)
 
                     verify {
@@ -36,7 +44,10 @@ class BigIntegerExtensionsSpec : FunSpec() {
 
         test("roundToDouble") {
             mockkStatic(BigIntegerMath::class) {
-                forAll<BigInteger, RoundingMode> { value, mode ->
+                checkAll<BigInteger, RoundingMode> { value, mode ->
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { BigIntegerMath.roundToDouble(any(), any()) } returns 0.0
+
                     value.roundToDouble(mode)
 
                     verify {
@@ -48,7 +59,10 @@ class BigIntegerExtensionsSpec : FunSpec() {
 
         test("sqrt") {
             mockkStatic(BigIntegerMath::class) {
-                forAll<BigInteger, RoundingMode> { value, mode ->
+                checkAll<BigInteger, RoundingMode> { value, mode ->
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { BigIntegerMath.sqrt(any(), any()) } returns mockk()
+
                     value.sqrt(mode)
 
                     verify {
@@ -60,7 +74,10 @@ class BigIntegerExtensionsSpec : FunSpec() {
 
         test("ceilingPowerOfTwo") {
             mockkStatic(BigIntegerMath::class) {
-                forAll<BigInteger> {
+                checkAll<BigInteger> {
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { BigIntegerMath.ceilingPowerOfTwo(any()) } returns mockk()
+
                     it.ceilingPowerOfTwo
 
                     verify {
@@ -72,7 +89,10 @@ class BigIntegerExtensionsSpec : FunSpec() {
 
         test("floorPowerOfTwo") {
             mockkStatic(BigIntegerMath::class) {
-                forAll<BigInteger> {
+                checkAll<BigInteger> {
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { BigIntegerMath.floorPowerOfTwo(any()) } returns mockk()
+
                     it.floorPowerOfTwo
 
                     verify {
@@ -84,7 +104,10 @@ class BigIntegerExtensionsSpec : FunSpec() {
 
         test("isPowerOfTwo") {
             mockkStatic(BigIntegerMath::class) {
-                forAll<BigInteger> {
+                checkAll<BigInteger> {
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { BigIntegerMath.isPowerOfTwo(any()) } returns false
+
                     it.isPowerOfTwo
 
                     verify {

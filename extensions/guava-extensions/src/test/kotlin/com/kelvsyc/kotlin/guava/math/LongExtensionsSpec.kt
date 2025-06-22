@@ -2,7 +2,8 @@ package com.kelvsyc.kotlin.guava.math
 
 import com.google.common.math.LongMath
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.forAll
+import io.kotest.property.checkAll
+import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.verify
 import java.math.RoundingMode
@@ -11,7 +12,10 @@ class LongExtensionsSpec : FunSpec() {
     init {
         test("log10") {
             mockkStatic(LongMath::class) {
-                forAll<Long, RoundingMode> { value, mode ->
+                checkAll<Long, RoundingMode> { value, mode ->
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { LongMath.log10(any(), any()) } returns 0
+
                     value.log10(mode)
 
                     verify {
@@ -23,7 +27,10 @@ class LongExtensionsSpec : FunSpec() {
 
         test("log2") {
             mockkStatic(LongMath::class) {
-                forAll<Long, RoundingMode> { value, mode ->
+                checkAll<Long, RoundingMode> { value, mode ->
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { LongMath.log2(any(), any()) } returns 0
+
                     value.log2(mode)
 
                     verify {
@@ -35,7 +42,10 @@ class LongExtensionsSpec : FunSpec() {
 
         test("roundToDouble") {
             mockkStatic(LongMath::class) {
-                forAll<Long, RoundingMode> { value, mode ->
+                checkAll<Long, RoundingMode> { value, mode ->
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { LongMath.roundToDouble(any(), any()) } returns 0.0
+
                     value.roundToDouble(mode)
 
                     verify {
@@ -48,7 +58,10 @@ class LongExtensionsSpec : FunSpec() {
 
         test("sqrt") {
             mockkStatic(LongMath::class) {
-                forAll<Long, RoundingMode> { value, mode ->
+                checkAll<Long, RoundingMode> { value, mode ->
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { LongMath.sqrt(any(), any()) } returns 0L
+
                     value.sqrt(mode)
 
                     verify {
@@ -59,7 +72,10 @@ class LongExtensionsSpec : FunSpec() {
         }
         test("ceilingPowerOfTwo") {
             mockkStatic(LongMath::class) {
-                forAll<Long> {
+                checkAll<Long> {
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { LongMath.ceilingPowerOfTwo(any()) } returns 0L
+
                     it.ceilingPowerOfTwo
 
                     verify {
@@ -71,7 +87,10 @@ class LongExtensionsSpec : FunSpec() {
 
         test("floorPowerOfTwo") {
             mockkStatic(LongMath::class) {
-                forAll<Long> {
+                checkAll<Long> {
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { LongMath.floorPowerOfTwo(any()) } returns 0L
+
                     it.floorPowerOfTwo
 
                     verify {
@@ -83,7 +102,10 @@ class LongExtensionsSpec : FunSpec() {
 
         test("isPowerOfTwo") {
             mockkStatic(LongMath::class) {
-                forAll<Long> {
+                checkAll<Long> {
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { LongMath.isPowerOfTwo(any()) } returns false
+
                     it.isPowerOfTwo
 
                     verify {
@@ -95,7 +117,10 @@ class LongExtensionsSpec : FunSpec() {
 
         test("isPrime") {
             mockkStatic(LongMath::class) {
-                forAll<Long> {
+                checkAll<Long> {
+                    // FIXME workaround for https://github.com/mockk/mockk/issues/929
+                    every { LongMath.isPrime(any()) } returns false
+
                     it.isPrime
 
                     verify {
