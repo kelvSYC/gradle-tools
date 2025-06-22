@@ -25,7 +25,8 @@ fun Double.roundToInt(mode: RoundingMode) = DoubleMath.roundToInt(this, mode)
 fun Double.roundToLong(mode: RoundingMode) = DoubleMath.roundToLong(this, mode)
 
 /**
- * Returns the [BigInteger] value that is equal to this value, rounded with the specified rounding mode, if possible.
+ * Returns the [BigInteger][java.math.BigInteger] value that is equal to this value, rounded with the specified rounding
+ * mode, if possible.
  */
 fun Double.roundToBigInteger(mode: RoundingMode) = DoubleMath.roundToBigInteger(this, mode)
 
