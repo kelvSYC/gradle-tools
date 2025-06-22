@@ -1,8 +1,8 @@
 package com.kelvsyc.kotlin.commons.numbers
 
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.blocking.forAll
 import io.kotest.matchers.equals.shouldBeEqual
+import io.kotest.property.checkAll
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.verify
@@ -14,7 +14,7 @@ import org.apache.commons.numbers.fraction.Fraction
 class DoubleExtensionsSpec : FunSpec() {
     init {
         test("imaginary") {
-            forAll<Double> {
+            checkAll<Double> {
                 val value = it.i
 
                 value.real shouldBeEqual 0.0
