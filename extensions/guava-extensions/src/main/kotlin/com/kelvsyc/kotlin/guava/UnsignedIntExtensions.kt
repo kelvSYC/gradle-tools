@@ -5,13 +5,13 @@ import com.google.common.primitives.UnsignedInteger
 /**
  * Returns this value as a Kotlin [UInt]
  */
-val UnsignedInteger.toUInt
+val UnsignedInteger.asUInt
     get() = toInt().toUInt()
 
 /**
  * Returns this value as a Guava [UnsignedInteger].
  */
-val UInt.toGuavaUnsignedInt
+val UInt.asGuavaUnsignedInteger
     get() = UnsignedInteger.fromIntBits(toInt())
 
 /**
@@ -19,11 +19,11 @@ val UInt.toGuavaUnsignedInt
  *
  * @see UnsignedInteger.dividedBy
  */
-fun UnsignedInteger.div(other: UnsignedInteger) = dividedBy(other)
+operator fun UnsignedInteger.div(other: UnsignedInteger) = dividedBy(other)
 
 /**
  * Syntactic sugar to enable the `%` operator when working with Guava [UnsignedInteger]
  *
  * @see UnsignedInteger.mod
  */
-fun UnsignedInteger.rem(other: UnsignedInteger) = mod(other)
+operator fun UnsignedInteger.rem(other: UnsignedInteger) = mod(other)
