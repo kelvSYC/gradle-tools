@@ -73,7 +73,7 @@ fun <E : Any> multisetOf(vararg elements: E): Multiset<E> = buildMultiset {
 /**
  * Returns a new [EnumMultiset].
  */
-inline fun <reified E : Enum<E>> enumMultiSetOf() = EnumMultiset.create(E::class.java)
+inline fun <reified E : Enum<E>> enumMultisetOf() = EnumMultiset.create(E::class.java)
 
 /**
  * Returns a new [EnumMultiset] with the given elements.
@@ -119,5 +119,5 @@ fun <E: Comparable<E>> treeMultisetOf(vararg elements: E) = TreeMultiset.create(
  * Returns a new [TreeMultiset] sorted according to the specified comparator, with the given elements.
  */
 fun <E> treeMultisetOf(comparator: Comparator<in E>, vararg elements: E) = treeMultisetOf(comparator).also {
-    it.addAll(elements.asIterable())
+    it.addAll(elements.asList())
 }

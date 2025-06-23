@@ -3,6 +3,10 @@ plugins {
     `java-library`
 }
 
+jacoco {
+    version = "0.8.13" // FIXME Get from version catalog
+}
+
 tasks.test {
     finalizedBy(tasks.jacocoTestReport)
 }
