@@ -12,6 +12,8 @@ dokkatoo {
 
 dependencies {
     implementation(libs.caffeine)
+
+    testImplementation(libs.kotest.property)
     testImplementation(libs.mockk)
 }
 
