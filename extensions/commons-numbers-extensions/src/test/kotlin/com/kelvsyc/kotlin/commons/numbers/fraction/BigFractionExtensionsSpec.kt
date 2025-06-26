@@ -1,8 +1,8 @@
 package com.kelvsyc.kotlin.commons.numbers.fraction
 
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.blocking.forAll
 import io.kotest.matchers.equals.shouldBeEqual
+import io.kotest.property.checkAll
 import io.mockk.mockk
 import io.mockk.verify
 import org.apache.commons.numbers.fraction.BigFraction
@@ -11,7 +11,7 @@ import java.math.BigInteger
 class BigFractionExtensionsSpec : FunSpec() {
     init {
         test("destructure") {
-            forAll<BigFraction> {
+            checkAll<BigFraction>(arbitraryBigFraction) {
                 val (numerator, denominator) = it
                 numerator shouldBeEqual it.numerator
                 denominator shouldBeEqual it.denominator

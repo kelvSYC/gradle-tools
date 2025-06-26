@@ -13,8 +13,8 @@ import kotlin.reflect.KProperty
  *                  fields declared in supertypes.
  * @param forceAccess `true` if scope restrictions need to be broken, or `false` to limit to public fields.
  */
-class ReflectedFieldDelegate<T>(private val target: Any, private val declared: Boolean = false, private val forceAccess: Boolean = false) : ReadWriteProperty<Any, T> {
-    override fun getValue(thisRef: Any, property: KProperty<*>): T {
+class ReflectedFieldDelegate<T>(private val target: Any, private val declared: Boolean = false, private val forceAccess: Boolean = false) : ReadWriteProperty<Any?, T> {
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
         return if (declared) {
             FieldUtils.readDeclaredField(target, property.name, forceAccess) as T
         } else {
@@ -22,7 +22,7 @@ class ReflectedFieldDelegate<T>(private val target: Any, private val declared: B
         }
     }
 
-    override fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         if (declared) {
             FieldUtils.writeDeclaredField(target, property.name, value)
         } else {

@@ -1,8 +1,8 @@
 package com.kelvsyc.kotlin.commons.numbers.fraction
 
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.data.blocking.forAll
 import io.kotest.matchers.equals.shouldBeEqual
+import io.kotest.property.checkAll
 import io.mockk.mockk
 import io.mockk.verify
 import org.apache.commons.numbers.fraction.Fraction
@@ -10,7 +10,7 @@ import org.apache.commons.numbers.fraction.Fraction
 class FractionExtensionsSpec : FunSpec() {
     init {
         test("destructure") {
-            forAll<Fraction> {
+            checkAll<Fraction>(arbitraryFraction) {
                 val (numerator, denominator) = it
                 numerator shouldBeEqual it.numerator
                 denominator shouldBeEqual it.denominator

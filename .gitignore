@@ -44,6 +44,9 @@ out/
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
 
+# Android Support
+.idea/AndroidProjectSystem.xml
+
 # Gradle Support
 .idea/artifacts
 .idea/compiler.xml
@@ -55,6 +58,9 @@ out/
 .idea/modules
 *.iml
 *.ipr
+
+# Kotlin Support
+.idea/kotlinc.xml
 
 .idea/libraries/
 *.iws

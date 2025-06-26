@@ -38,6 +38,8 @@ dependencies {
     implementation(platform("com.kelvsyc.internal:platform"))
     compileOnlyApi(gradleApi())
     compileOnlyApi(gradleKotlinDsl())
+    testRuntimeOnly(gradleApi())
+    testRuntimeOnly(gradleKotlinDsl())
 
     libs.findLibrary("kotest-assertions-core").getOrNull()?.let { testImplementation(it) }
     libs.findLibrary("kotest-assertions-shared").getOrNull()?.let { testImplementation(it) }

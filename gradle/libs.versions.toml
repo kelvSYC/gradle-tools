@@ -6,13 +6,13 @@ dokkatoo = "2.4.0"
 aws-java-sdk-bom = "software.amazon.awssdk:bom:2.31.56"
 aws-kotlin-sdk-bom = "aws.sdk.kotlin:bom:1.4.98"
 commons-numbers-bom = "org.apache.commons:commons-numbers-bom:1.2"
-google-cloud-libraries-bom = "com.google.cloud:libraries-bom:26.61.0"
+google-cloud-libraries-bom = "com.google.cloud:libraries-bom:26.62.0"
 kotlin-gradle-plugins-bom = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom:2.0.21"
 kotlinx-coroutines-bom = "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.2"
 kotest-bom = "io.kotest:kotest-bom:5.9.1"
 
 # Internal
-dependency-analysis-plugin = "com.autonomousapps:dependency-analysis-gradle-plugin:2.18.0"
+dependency-analysis-plugin = "com.autonomousapps:dependency-analysis-gradle-plugin:2.19.0"
 detekt-plugin = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8"
 dokkatoo-plugin = { module = "dev.adamko.dokkatoo:dokkatoo-plugin", version.ref = "dokkatoo" }
 gradlex-dependency-conflict-resolution-plugin = "org.gradlex:jvm-dependency-conflict-resolution:2.1.2"
@@ -46,7 +46,7 @@ aws-sns-java = { module = "software.amazon.awssdk:sns" } # version from BOM 'aws
 aws-sns-kotlin = { module = "aws.sdk.kotlin:sns" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-sqs-java = { module = "software.amazon.awssdk:sqs" } # version from BOM 'aws-java-sdk-bom'
 aws-sqs-kotlin = { module = "aws.sdk.kotlin:sqs" } # version from BOM 'aws-kotlin-sdk-bom'
-caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.0"
+caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.1"
 commons-lang = "org.apache.commons:commons-lang3:3.17.0"
 commons-numbers-complex = { module = "org.apache.commons:commons-numbers-complex" } # version from BOM 'commons-numbers-bom'
 commons-numbers-core = { module = "org.apache.commons:commons-numbers-core" } # version from BOM 'commons-numbers-bom'
@@ -58,11 +58,12 @@ jgit = "org.eclipse.jgit:org.eclipse.jgit:7.3.0.202506031305-r"
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core" } # version from BOM 'kotest-bom'
 kotest-assertions-shared = { module = "io.kotest:kotest-assertions-shared" } # version from BOM 'kotest-bom'
 kotest-framework-api = { module = "io.kotest:kotest-framework-api" } # version from BOM 'kotest-bom'
+kotest-framework-datatest = { module = "io.kotest:kotest-framework-datatest" } # version from BOM 'kotest-bom'
 kotest-framework-engine = { module = "io.kotest:kotest-framework-engine" } # version from BOM 'kotest-bom'
 kotest-property = { module = "io.kotest:kotest-property" } # version from BOM 'kotest-bom'
 kotest-runner = { module = "io.kotest:kotest-runner-junit5" } # version from BOM 'kotest-bom'
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" } # version from BOM 'kotlinx-coroutines-bom'
-mockk = "io.mockk:mockk:1.14.2"
+mockk = "io.mockk:mockk:1.14.4"
 
 [plugins]
 dokkatoo-html = { id = "dev.adamko.dokkatoo-html", version.ref = "dokkatoo" }

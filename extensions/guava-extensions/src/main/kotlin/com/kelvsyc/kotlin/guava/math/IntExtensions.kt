@@ -38,7 +38,7 @@ val Int.ceilingPowerOfTwo
  * @see IntMath.floorPowerOfTwo
  */
 val Int.floorPowerOfTwo
-    get() = IntMath.ceilingPowerOfTwo(this)
+    get() = IntMath.floorPowerOfTwo(this)
 
 /**
  * Returns `true` if this value represents a power of two.

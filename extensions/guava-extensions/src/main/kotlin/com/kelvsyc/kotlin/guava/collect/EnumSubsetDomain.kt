@@ -32,7 +32,7 @@ class EnumSubsetDomain<E : Enum<E>>(private val enumClass: Class<E>, private val
     }
 
     override fun next(value: EnumSubset<E>): EnumSubset<E>? {
-        return value.takeIf { it.containsAll(entries) }?.let {
+        return value.takeIf { !it.containsAll(entries) }?.let {
             val newBitValue = getBitValue(it) + BigInteger.ONE
             fromBigInteger(newBitValue)
         }
@@ -50,6 +50,6 @@ class EnumSubsetDomain<E : Enum<E>>(private val enumClass: Class<E>, private val
         return newBitValue.toLong()
     }
 
-    override fun minValue(): EnumSubset<E> = EnumSubset.of(emptySet())
-    override fun maxValue(): EnumSubset<E> = EnumSubset.of(entries)
+    override fun minValue(): EnumSubset<E> = EnumSubset.of(EnumSet.noneOf(enumClass))
+    override fun maxValue(): EnumSubset<E> = EnumSubset.of(EnumSet.allOf(enumClass))
 }

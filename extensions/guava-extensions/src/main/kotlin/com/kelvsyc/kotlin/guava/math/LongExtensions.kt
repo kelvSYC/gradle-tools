@@ -45,7 +45,7 @@ val Long.ceilingPowerOfTwo
  * @see LongMath.floorPowerOfTwo
  */
 val Long.floorPowerOfTwo
-    get() = LongMath.ceilingPowerOfTwo(this)
+    get() = LongMath.floorPowerOfTwo(this)
 
 /**
  * Returns `true` if this value represents a power of two.
