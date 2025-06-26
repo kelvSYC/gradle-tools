@@ -4,7 +4,7 @@ plugins {
 }
 
 jacoco {
-    version = "0.8.13" // FIXME Get from version catalog
+    toolVersion = "0.8.13" // FIXME Get from version catalog
 }
 
 tasks.test {

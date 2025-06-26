@@ -19,11 +19,11 @@ val ULong.asGuavaUnsignedLong
  *
  * @see UnsignedLong.dividedBy
  */
-fun UnsignedLong.div(other: UnsignedLong) = dividedBy(other)
+operator fun UnsignedLong.div(other: UnsignedLong) = dividedBy(other)
 
 /**
  * Syntactic sugar to enable the `%` operator when working with Guava [UnsignedLong]
  *
  * @see UnsignedLong.mod
  */
-fun UnsignedLong.rem(other: UnsignedLong) = mod(other)
+operator fun UnsignedLong.rem(other: UnsignedLong) = mod(other)

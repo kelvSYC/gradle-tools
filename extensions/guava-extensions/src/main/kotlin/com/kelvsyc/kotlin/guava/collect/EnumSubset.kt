@@ -17,9 +17,22 @@ import java.util.*
 @JvmInline
 value class EnumSubset<E : Enum<E>> private constructor(private val value: EnumSet<E>): Set<E> by value, Comparable<EnumSubset<E>> {
     companion object {
+        inline fun <reified E : Enum<E>> of() = of(EnumSet.noneOf(E::class.java))
         fun <E : Enum<E>> of(elements: EnumSet<E>) = EnumSubset(EnumSet.copyOf(elements))
-        fun <E : Enum<E>> of(elements: Iterable<E>) = EnumSubset(EnumSet.copyOf(elements.toList()))
-        fun <E : Enum<E>> of(vararg elements: E) = EnumSubset(EnumSet.copyOf(elements.asList()))
+        inline fun <reified E : Enum<E>> of(elements: Iterable<E>) = elements.toList().let {
+            if (it.isNotEmpty()) {
+                of(EnumSet.copyOf(it))
+            } else {
+                of()
+            }
+        }
+        inline fun <reified E : Enum<E>> of(vararg elements: E) = elements.toList().let {
+            if (it.isNotEmpty()) {
+                of(EnumSet.copyOf(it))
+            } else {
+                of()
+            }
+        }
     }
 
     private val ordinals

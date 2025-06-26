@@ -30,6 +30,10 @@ abstract class PropertiesFromFileValueSource : ValueSource<Properties, Propertie
                 }
             }
         } catch (_: IOException) {
+            // Error reading file
+            null
+        } catch (_: IllegalArgumentException) {
+            // Malformed unicode encoding detected
             null
         }
     }

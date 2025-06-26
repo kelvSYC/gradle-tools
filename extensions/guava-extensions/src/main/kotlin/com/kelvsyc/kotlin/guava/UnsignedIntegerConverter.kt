@@ -7,7 +7,7 @@ import com.google.common.primitives.UnsignedInteger
  * [Converter] implementation converting Guava [UnsignedInteger] and Kotlin [UInt].
  */
 object UnsignedIntegerConverter : Converter<UnsignedInteger, UInt>() {
-    override fun doBackward(b: UInt): UnsignedInteger = b.toGuavaUnsignedInt
+    override fun doBackward(b: UInt): UnsignedInteger = b.asGuavaUnsignedInteger
 
-    override fun doForward(a: UnsignedInteger): UInt = a.toUInt
+    override fun doForward(a: UnsignedInteger): UInt = a.asUInt
 }
