@@ -17,6 +17,7 @@ class ClientsBasePluginSpec : FunSpec() {
             projectFile.writeText("""
                 plugins {
                     id("com.kelvsyc.gradle.clients-base")
+                    id("jacoco-testkit-coverage")
                 }
                 
                 tasks.register("printOutput") {
@@ -51,6 +52,7 @@ class ClientsBasePluginSpec : FunSpec() {
             settingsFile.writeText("""
                 plugins {
                     id("com.kelvsyc.gradle.clients-base")
+                    id("jacoco-testkit-coverage")
                 }
             """.trimIndent())
             projectFile.writeText("""
@@ -86,6 +88,7 @@ class ClientsBasePluginSpec : FunSpec() {
             settingsFile.writeText("""
                 plugins {
                     id("com.kelvsyc.gradle.clients-base")
+                    id("jacoco-testkit-coverage")
                 }
                 logger.lifecycle("settings extension by type: {}", extensions.findByType<${ClientsBaseExtension::class.qualifiedName}>() != null)
                 logger.lifecycle("settings extension by name: {}", extensions.findByName("${ClientsBasePlugin.EXTENSION_NAME}") != null)
@@ -163,6 +166,7 @@ class ClientsBasePluginSpec : FunSpec() {
                 }
                 
                 apply<${ClientsBasePlugin::class.qualifiedName}>()
+                apply<io.github.gmazzo.gradle.testkit.jacoco.JacocoTestKitReportCoveragePlugin>()
             """.trimIndent())
             settingsFile.writeText("""
                 logger.lifecycle("settings extension by name: {}", extensions.findByName("${ClientsBasePlugin.EXTENSION_NAME}") != null)
@@ -199,6 +203,7 @@ class ClientsBasePluginSpec : FunSpec() {
                 }
                 
                 apply<${ClientsBasePlugin::class.qualifiedName}>()
+                apply<io.github.gmazzo.gradle.testkit.jacoco.JacocoTestKitReportCoveragePlugin>()
                 logger.lifecycle("init extension by type: {}", extensions.findByType<${ClientsBaseExtension::class.qualifiedName}>() != null)
                 logger.lifecycle("init extension by name: {}", extensions.findByName("${ClientsBasePlugin.EXTENSION_NAME}") != null)
             """.trimIndent())
@@ -227,11 +232,13 @@ class ClientsBasePluginSpec : FunSpec() {
             settingsFile.writeText("""
                 plugins {
                     id("com.kelvsyc.gradle.clients-base")
+                    id("jacoco-testkit-coverage")
                 }
             """.trimIndent())
             projectFile.writeText("""
                 plugins {
                     id("com.kelvsyc.gradle.clients-base")
+                    id("jacoco-testkit-coverage")
                 }
                 
                 tasks.register("doNothing")
