@@ -3,6 +3,7 @@ plugins {
     id("com.kelvsyc.internal.jacoco")
     id("com.kelvsyc.internal.kotlin-plugin")
     id("com.kelvsyc.internal.github-publishing")
+    alias(libs.plugins.gradle.testkit.jacoco)
 }
 
 dokkatoo {

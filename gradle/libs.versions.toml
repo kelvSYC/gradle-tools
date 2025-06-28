@@ -67,3 +67,4 @@ mockk = "io.mockk:mockk:1.14.4"
 
 [plugins]
 dokkatoo-html = { id = "dev.adamko.dokkatoo-html", version.ref = "dokkatoo" }
+gradle-testkit-jacoco = "io.github.gmazzo.gradle.testkit.jacoco:1.0.4"
