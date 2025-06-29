@@ -90,7 +90,7 @@ abstract class ClientsBaseService : BuildService<BuildServiceParameters.None>, A
      * cached for later use once created.
      *
      * Returns `null` if there are no registered clients with that name, or if the registered client with that name is
-     * not o fthe specified tgype.
+     * not of the specified tgype.
      *
      * @param name  The registered name of the client
      * @param clientInfoType    The type of the client registration
@@ -114,7 +114,7 @@ abstract class ClientsBaseService : BuildService<BuildServiceParameters.None>, A
      * cached for later use once created.
      *
      * Returns `null` if there are no registered clients with that name, or if the registered client with that name is
-     * not o fthe specified tgype.
+     * not of the specified tgype.
      *
      * @param name  The registered name of the client
      * @param clientInfoType    The type of the client registration
