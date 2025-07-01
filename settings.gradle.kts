@@ -28,5 +28,6 @@ includeBuild("cores/gradle-extensions")
 includeBuild("extensions/commons-lang-extensions")
 includeBuild("extensions/commons-numbers-extensions")
 includeBuild("extensions/guava-extensions")
+includeBuild("extensions/kotlin-core")
 
 includeBuild("aggregation")

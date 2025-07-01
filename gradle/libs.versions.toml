@@ -1,5 +1,6 @@
 [versions]
 dokkatoo = "2.4.0"
+kotlin = "2.0.21"
 
 [libraries]
 # BOMs
@@ -7,7 +8,7 @@ aws-java-sdk-bom = "software.amazon.awssdk:bom:2.32.2"
 aws-kotlin-sdk-bom = "aws.sdk.kotlin:bom:1.4.117"
 commons-numbers-bom = "org.apache.commons:commons-numbers-bom:1.2"
 google-cloud-libraries-bom = "com.google.cloud:libraries-bom:26.64.0"
-kotlin-gradle-plugins-bom = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom:2.0.21"
+kotlin-gradle-plugins-bom = { module = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom", version.ref = "kotlin" }
 kotlinx-coroutines-bom = "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.9.0"
 kotest-bom = "io.kotest:kotest-bom:5.9.1"
 
@@ -68,3 +69,4 @@ mockk = "io.mockk:mockk:1.14.5"
 [plugins]
 dokkatoo-html = { id = "dev.adamko.dokkatoo-html", version.ref = "dokkatoo" }
 gradle-testkit-jacoco = "io.github.gmazzo.gradle.testkit.jacoco:1.0.4"
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

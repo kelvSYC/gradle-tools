@@ -20,7 +20,12 @@ dependencies {
         dokkatoo("$group:${it.name}") // from included build $it.name
     }
     extensionComponents.forEach {
-        dokkatoo("$group:${it.name}") // from included build $it.name
+        if (it.name == "kotlin-core") {
+            // FIXME Placeholder due to kotlin-core using a different group ID
+            dokkatoo("com.kelvsyc.kotlin:kotlin-core")
+        } else {
+            dokkatoo("$group:${it.name}") // from included build $it.name
+        }
     }
 }
 
