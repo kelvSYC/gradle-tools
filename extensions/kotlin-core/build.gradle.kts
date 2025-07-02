@@ -1,12 +1,7 @@
-@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
-
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
-
 plugins {
     id("com.kelvsyc.internal.dokkatoo")
     id("com.kelvsyc.internal.github-publishing")
-    alias(libs.plugins.kotlin.multiplatform)
+    id("com.kelvsyc.internal.kotlin-multiplatform-jvm-library")
 }
 
 group = "com.kelvsyc.kotlin"
@@ -17,10 +12,7 @@ dokkatoo {
 }
 
 kotlin {
-    jvm()
-
-    compilerOptions {
-        apiVersion.set(KotlinVersion.KOTLIN_1_8)
-        languageVersion.set(KotlinVersion.KOTLIN_1_9)
+    sourceSets.commonTest.dependencies {
+        implementation(libs.mockk)
     }
 }
