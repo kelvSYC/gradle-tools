@@ -10,4 +10,5 @@ kotlin {
 
 dependencies {
     implementation(platform("com.kelvsyc.internal:platform"))
+    implementation(libs.kotlin.plugin)
 }
