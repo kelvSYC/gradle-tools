@@ -67,8 +67,8 @@ val testResultsElements = configurations.consumable("testResultsElementsForJvmTe
     // FIXME how do we accommodate multiple JVM targets and their respective test suites?
     attributes.attribute(TestSuiteName.TEST_SUITE_NAME_ATTRIBUTE, objects.named("test"))
 
-    // FIXME is it possible to wire this in to 'jvmTest' task output directly?
-    outgoing.artifact(layout.buildDirectory.dir("test-results/jvmTest/binary")) {
+    val binaryDir = tasks.named<Test>("jvmTest").flatMap { it.binaryResultsDirectory }
+    outgoing.artifact(binaryDir) {
         type = ArtifactTypeDefinition.DIRECTORY_TYPE
     }
 }
