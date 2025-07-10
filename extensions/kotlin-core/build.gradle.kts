@@ -14,6 +14,11 @@ dokkatoo {
 
 kotlin {
     sourceSets.commonTest.dependencies {
+        implementation(libs.kotest.property)
         implementation(libs.mockk)
+    }
+
+    sourceSets.jvmMain.dependencies {
+        implementation(libs.guava)
     }
 }
