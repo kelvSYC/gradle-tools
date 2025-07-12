@@ -75,14 +75,6 @@ abstract class AbstractDoubleFloatingPoint<T : AbstractDoubleFloatingPoint<T, F>
         abstract val fma: ((F, F, F) -> F)?
     }
 
-    abstract class AbstractArithmetic<T : AbstractDoubleFloatingPoint<T, F>, F : Any>: Arithmetic<T> {
-        override fun add(lhs: T, rhs: T): T = lhs + rhs
-        override fun subtract(lhs: T, rhs: T): T = lhs - rhs
-        override fun multiply(lhs: T, rhs: T): T = lhs * rhs
-        override fun divide(lhs: T, rhs: T): T = lhs / rhs
-        override fun negate(value: T): T = -value
-    }
-
     protected abstract val traits: AbstractCompanion<T, F>
     protected abstract val arithmetic: Arithmetic<F>
 

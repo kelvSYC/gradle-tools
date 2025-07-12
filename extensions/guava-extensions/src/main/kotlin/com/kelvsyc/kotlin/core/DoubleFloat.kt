@@ -24,8 +24,6 @@ class DoubleFloat private constructor(value: Float, error: Float) : AbstractDoub
         override val fma: ((Float, Float, Float) -> Float) = Math::fma
     }
 
-    class Arithmetic : AbstractArithmetic<DoubleFloat, Float>()
-
     override val arithmetic: BaseArithmetic<Float> = BaseArithmetic.FloatArithmetic
     override val traits: AbstractCompanion<DoubleFloat, Float> = Companion
 

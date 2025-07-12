@@ -5,6 +5,8 @@ import kotlin.experimental.inv
 import kotlin.experimental.or
 import kotlin.experimental.xor
 import kotlin.Byte as KByte
+import kotlin.Double as KDouble
+import kotlin.Float as KFloat
 import kotlin.Int as KInt
 import kotlin.Long as KLong
 import kotlin.Short as KShort
@@ -20,7 +22,14 @@ object TypeTraits {
     /**
      * Traits object for the [Byte][KByte] type.
      */
-    object Byte : Bitwise<KByte>, BitShift<KByte>, BitRotate<KByte> {
+    @Suppress("detekt:TooManyFunctions")
+    object Byte : Addition<KByte>, Multiplication<KByte>, Bitwise<KByte>, BitShift<KByte>, BitRotate<KByte>, Signed<KByte> {
+        override fun add(lhs: KByte, rhs: KByte): KByte = (lhs + rhs).toByte()
+        override fun subtract(lhs: KByte, rhs: KByte): KByte = (lhs - rhs).toByte()
+
+        override fun multiply(lhs: KByte, rhs: KByte): KByte = (lhs * rhs).toByte()
+        override fun divide(lhs: KByte, rhs: KByte): KByte = (lhs / rhs).toByte()
+
         override fun and(lhs: KByte, rhs: KByte): KByte = lhs and rhs
         override fun or(lhs: KByte, rhs: KByte): KByte = lhs or rhs
         override fun xor(lhs: KByte, rhs: KByte): KByte = lhs xor rhs
@@ -32,12 +41,23 @@ object TypeTraits {
 
         override fun rotateLeft(value: KByte, bitCount: KInt): KByte = value.rotateLeft(bitCount)
         override fun rotateRight(value: KByte, bitCount: KInt): KByte = value.rotateRight(bitCount)
+
+        override fun isPositive(value: KByte): Boolean = value > 0
+        override fun isNegative(value: KByte): Boolean = value < 0
+        override fun negate(value: KByte): KByte = (-value).toByte()
     }
 
     /**
      * Traits object for the [UByte][KUByte] type.
      */
-    object UByte : Bitwise<KUByte>, BitShift<KUByte>, BitRotate<KUByte> {
+    @Suppress("detekt:TooManyFunctions")
+    object UByte : Addition<KUByte>, Multiplication<KUByte>, Bitwise<KUByte>, BitShift<KUByte>, BitRotate<KUByte> {
+        override fun add(lhs: KUByte, rhs: KUByte): KUByte = (lhs + rhs).toUByte()
+        override fun subtract(lhs: KUByte, rhs: KUByte): KUByte = (lhs - rhs).toUByte()
+
+        override fun multiply(lhs: KUByte, rhs: KUByte): KUByte = (lhs * rhs).toUByte()
+        override fun divide(lhs: KUByte, rhs: KUByte): KUByte = (lhs / rhs).toUByte()
+
         override fun and(lhs: KUByte, rhs: KUByte): KUByte = lhs and rhs
         override fun or(lhs: KUByte, rhs: KUByte): KUByte = lhs or rhs
         override fun xor(lhs: KUByte, rhs: KUByte): KUByte = lhs xor rhs
@@ -54,7 +74,14 @@ object TypeTraits {
     /**
      * Traits object for the [Short][KShort] type.
      */
-    object Short : Bitwise<KShort>, BitShift<KShort>, BitRotate<KShort> {
+    @Suppress("detekt:TooManyFunctions")
+    object Short : Addition<KShort>, Multiplication<KShort>, Bitwise<KShort>, BitShift<KShort>, BitRotate<KShort>, Signed<KShort> {
+        override fun add(lhs: KShort, rhs: KShort): KShort = (lhs + rhs).toShort()
+        override fun subtract(lhs: KShort, rhs: KShort): KShort = (lhs - rhs).toShort()
+
+        override fun multiply(lhs: KShort, rhs: KShort): KShort = (lhs * rhs).toShort()
+        override fun divide(lhs: KShort, rhs: KShort): KShort = (lhs / rhs).toShort()
+
         override fun and(lhs: KShort, rhs: KShort): KShort = lhs and rhs
         override fun or(lhs: KShort, rhs: KShort): KShort = lhs or rhs
         override fun xor(lhs: KShort, rhs: KShort): KShort = lhs xor rhs
@@ -66,12 +93,23 @@ object TypeTraits {
 
         override fun rotateLeft(value: KShort, bitCount: KInt): KShort = value.rotateLeft(bitCount)
         override fun rotateRight(value: KShort, bitCount: KInt): KShort = value.rotateRight(bitCount)
+
+        override fun isPositive(value: KShort): Boolean = value > 0
+        override fun isNegative(value: KShort): Boolean = value < 0
+        override fun negate(value: KShort): KShort = (-value).toShort()
     }
 
     /**
      * Traits object for the [UShort][KUShort] type.
      */
-    object UShort : Bitwise<KUShort>, BitShift<KUShort>, BitRotate<KUShort> {
+    @Suppress("detekt:TooManyFunctions")
+    object UShort : Addition<KUShort>, Multiplication<KUShort>, Bitwise<KUShort>, BitShift<KUShort>, BitRotate<KUShort> {
+        override fun add(lhs: KUShort, rhs: KUShort): KUShort = (lhs + rhs).toUShort()
+        override fun subtract(lhs: KUShort, rhs: KUShort): KUShort = (lhs - rhs).toUShort()
+
+        override fun multiply(lhs: KUShort, rhs: KUShort): KUShort = (lhs * rhs).toUShort()
+        override fun divide(lhs: KUShort, rhs: KUShort): KUShort = (lhs / rhs).toUShort()
+
         override fun and(lhs: KUShort, rhs: KUShort): KUShort = lhs and rhs
         override fun or(lhs: KUShort, rhs: KUShort): KUShort = lhs or rhs
         override fun xor(lhs: KUShort, rhs: KUShort): KUShort = lhs xor rhs
@@ -88,7 +126,14 @@ object TypeTraits {
     /**
      * Traits object for the [Int][KInt] type.
      */
-    object Int : Bitwise<KInt>, BitShift<KInt>, BitRotate<KInt> {
+    @Suppress("detekt:TooManyFunctions")
+    object Int : Addition<KInt>, Multiplication<KInt>, Bitwise<KInt>, BitShift<KInt>, BitRotate<KInt>, Signed<KInt> {
+        override fun add(lhs: KInt, rhs: KInt): KInt = lhs + rhs
+        override fun subtract(lhs: KInt, rhs: KInt): KInt = lhs - rhs
+
+        override fun multiply(lhs: KInt, rhs: KInt): KInt = lhs * rhs
+        override fun divide(lhs: KInt, rhs: KInt): KInt = lhs / rhs
+
         override fun and(lhs: KInt, rhs: KInt): KInt = lhs and rhs
         override fun or(lhs: KInt, rhs: KInt): KInt = lhs or rhs
         override fun xor(lhs: KInt, rhs: KInt): KInt = lhs xor rhs
@@ -100,12 +145,23 @@ object TypeTraits {
 
         override fun rotateLeft(value: KInt, bitCount: KInt): KInt = value.rotateLeft(bitCount)
         override fun rotateRight(value: KInt, bitCount: KInt): KInt = value.rotateRight(bitCount)
+
+        override fun isPositive(value: KInt): Boolean = value > 0
+        override fun isNegative(value: KInt): Boolean = value < 0
+        override fun negate(value: KInt): KInt = -value
     }
 
     /**
      * Traits object for the [UInt][KUInt] type.
      */
-    object UInt : Bitwise<KUInt>, BitShift<KUInt>, BitRotate<KUInt> {
+    @Suppress("detekt:TooManyFunctions")
+    object UInt : Addition<KUInt>, Multiplication<KUInt>, Bitwise<KUInt>, BitShift<KUInt>, BitRotate<KUInt> {
+        override fun add(lhs: KUInt, rhs: KUInt): KUInt = lhs + rhs
+        override fun subtract(lhs: KUInt, rhs: KUInt): KUInt = lhs - rhs
+
+        override fun multiply(lhs: KUInt, rhs: KUInt): KUInt = lhs * rhs
+        override fun divide(lhs: KUInt, rhs: KUInt): KUInt = lhs / rhs
+
         override fun and(lhs: KUInt, rhs: KUInt): KUInt = lhs and rhs
         override fun or(lhs: KUInt, rhs: KUInt): KUInt = lhs or rhs
         override fun xor(lhs: KUInt, rhs: KUInt): KUInt = lhs xor rhs
@@ -122,7 +178,14 @@ object TypeTraits {
     /**
      * Traits object for the [Long][KLong] type.
      */
-    object Long : Bitwise<KLong>, BitShift<KLong>, BitRotate<KLong> {
+    @Suppress("detekt:TooManyFunctions")
+    object Long : Addition<KLong>, Multiplication<KLong>, Bitwise<KLong>, BitShift<KLong>, BitRotate<KLong>, Signed<KLong> {
+        override fun add(lhs: KLong, rhs: KLong): KLong = lhs + rhs
+        override fun subtract(lhs: KLong, rhs: KLong): KLong = lhs - rhs
+
+        override fun multiply(lhs: KLong, rhs: KLong): KLong = lhs * rhs
+        override fun divide(lhs: KLong, rhs: KLong): KLong = lhs / rhs
+
         override fun and(lhs: KLong, rhs: KLong): KLong = lhs and rhs
         override fun or(lhs: KLong, rhs: KLong): KLong = lhs or rhs
         override fun xor(lhs: KLong, rhs: KLong): KLong = lhs xor rhs
@@ -134,12 +197,23 @@ object TypeTraits {
 
         override fun rotateLeft(value: KLong, bitCount: KInt): KLong = value.rotateLeft(bitCount)
         override fun rotateRight(value: KLong, bitCount: KInt): KLong = value.rotateRight(bitCount)
+
+        override fun isPositive(value: KLong): Boolean = value > 0
+        override fun isNegative(value: KLong): Boolean = value < 0
+        override fun negate(value: KLong): KLong = -value
     }
 
     /**
      * Traits object for the [ULong][KULong] type.
      */
-    object ULong : Bitwise<KULong>, BitShift<KULong>, BitRotate<KULong> {
+    @Suppress("detekt:TooManyFunctions")
+    object ULong : Addition<KULong>, Multiplication<KULong>, Bitwise<KULong>, BitShift<KULong>, BitRotate<KULong> {
+        override fun add(lhs: KULong, rhs: KULong): KULong = lhs + rhs
+        override fun subtract(lhs: KULong, rhs: KULong): KULong = lhs - rhs
+
+        override fun multiply(lhs: KULong, rhs: KULong): KULong = lhs * rhs
+        override fun divide(lhs: KULong, rhs: KULong): KULong = lhs / rhs
+
         override fun and(lhs: KULong, rhs: KULong): KULong = lhs and rhs
         override fun or(lhs: KULong, rhs: KULong): KULong = lhs or rhs
         override fun xor(lhs: KULong, rhs: KULong): KULong = lhs xor rhs
@@ -151,5 +225,29 @@ object TypeTraits {
 
         override fun rotateLeft(value: KULong, bitCount: KInt): KULong = value.rotateLeft(bitCount)
         override fun rotateRight(value: KULong, bitCount: KInt): KULong = value.rotateRight(bitCount)
+    }
+
+    object Float: Addition<KFloat>, Multiplication<KFloat>, Signed<KFloat> {
+        override fun add(lhs: KFloat, rhs: KFloat): KFloat = lhs + rhs
+        override fun subtract(lhs: KFloat, rhs: KFloat): KFloat = lhs - rhs
+
+        override fun multiply(lhs: KFloat, rhs: KFloat): KFloat = lhs * rhs
+        override fun divide(lhs: KFloat, rhs: KFloat): KFloat = lhs / rhs
+
+        override fun isPositive(value: KFloat): Boolean = value > 0
+        override fun isNegative(value: KFloat): Boolean = value < 0
+        override fun negate(value: KFloat): KFloat = -value
+    }
+
+    object Double: Addition<KDouble>, Multiplication<KDouble>, Signed<KDouble> {
+        override fun add(lhs: KDouble, rhs: KDouble): KDouble = lhs + rhs
+        override fun subtract(lhs: KDouble, rhs: KDouble): KDouble = lhs - rhs
+
+        override fun multiply(lhs: KDouble, rhs: KDouble): KDouble = lhs * rhs
+        override fun divide(lhs: KDouble, rhs: KDouble): KDouble = lhs / rhs
+
+        override fun isPositive(value: KDouble): Boolean = value > 0
+        override fun isNegative(value: KDouble): Boolean = value < 0
+        override fun negate(value: KDouble): KDouble = -value
     }
 }
