@@ -1,0 +1,77 @@
+package com.kelvsyc.kotlin.core
+
+/**
+ * Value representing a 16-bit `binary16` floating-point value.
+ *
+ * This class performs its operations by widening these values to [Float] and then performing a narrowing conversion in
+ * the end. Under certain circumstances, it may cause a loss of precision.
+ *
+ * @param bits The bits used to represent the number, in the form of a 16-bit integral value (a [Short]).
+ */
+@JvmInline
+value class Float16(val bits: Short): Comparable<Float16> {
+    companion object {
+        /**
+         * [Converter] implementation used to convert values between [Float16] (representing a [Short]) and [Float].
+         */
+        val converter = Converter.of(java.lang.Float::floatToFloat16, java.lang.Float::float16ToFloat)
+
+        /**
+         * [Comparator] implemenation used to compare two [Float16] values by widening both values to [Float] and
+         * performing the comparison as [Float] values.
+         */
+        val comparator = Comparator.comparing<Float16, Float> { converter.reverse(it.bits) }
+
+        /**
+         * Constant representing `0.0`.
+         */
+        val zero = Float16(0)
+
+        private val wrappedUnaryPlus = converter.wrap(Float::unaryPlus)
+        private val wrappedUnaryMinus = converter.wrap(Float::unaryMinus)
+        private val wrappedPlus = converter.wrap(Float::plus)
+        private val wrappedMinus = converter.wrap(Float::minus)
+        private val wrappedTimes = converter.wrap(Float::times)
+        private val wrappedDiv = converter.wrap(Float::div)
+        private val wrappedRem = converter.wrap(Float::rem)
+    }
+
+    object Traits : Addition<Float16>, Multiplication<Float16>, Signed<Float16> {
+        override fun add(lhs: Float16, rhs: Float16): Float16 = lhs + rhs
+        override fun subtract(lhs: Float16, rhs: Float16): Float16 = lhs - rhs
+
+        override fun multiply(lhs: Float16, rhs: Float16): Float16 = lhs * rhs
+        override fun divide(lhs: Float16, rhs: Float16): Float16 = lhs / rhs
+
+        override fun isPositive(value: Float16): Boolean = value > zero
+        override fun isNegative(value: Float16): Boolean = value < zero
+        override fun negate(value: Float16): Float16 = -value
+    }
+
+    /**
+     * Creates a new `WideningHalf` from an actual [Float].
+     *
+     * Note that this is considered a narrowing operation, and thus the created value is the closest value to the given
+     * value given the nearest even rounding mode.
+     *
+     * @see java.lang.Float.floatToFloat16
+     */
+    constructor(value: Float) : this(converter(value))
+
+    /**
+     * Converts this value to a [Float].
+     *
+     * This is considered a widening operation.
+     */
+    fun toFloat(): Float = java.lang.Float.float16ToFloat(bits)
+
+    operator fun unaryPlus(): Float16 = Float16(wrappedUnaryPlus(bits))
+    operator fun unaryMinus(): Float16 = Float16(wrappedUnaryMinus(bits))
+    operator fun plus(rhs: Float16): Float16 = Float16(wrappedPlus(bits, rhs.bits))
+    operator fun minus(rhs: Float16): Float16 = Float16(wrappedMinus(bits, rhs.bits))
+    operator fun times(rhs: Float16): Float16 = Float16(wrappedTimes(bits, rhs.bits))
+    operator fun div(rhs: Float16): Float16 = Float16(wrappedDiv(bits, rhs.bits))
+    operator fun rem(rhs: Float16): Float16 = Float16(wrappedRem(bits, rhs.bits))
+
+    override fun compareTo(other: Float16): Int = comparator.compare(this, other)
+}
