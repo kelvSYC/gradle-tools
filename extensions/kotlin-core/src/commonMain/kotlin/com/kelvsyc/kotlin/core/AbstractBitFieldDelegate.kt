@@ -1,0 +1,59 @@
+package com.kelvsyc.kotlin.core
+
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
+import kotlin.reflect.KProperty0
+
+/**
+ * Partial implementation of a delegated property whose value is packed as bits contained in a different property.
+ *
+ * @param backingProperty The backing property
+ * @param off The bit offset of the value within the backing property
+ * @param len The number of bits the value takes up within the backing property
+ * @param T The declared type of this property
+ * @param B The type of the backing property
+ */
+abstract class AbstractBitFieldDelegate<T, B>(
+    protected open val backingProperty: KProperty0<B>,
+    protected val off: Int,
+    protected val len: Int
+) : ReadOnlyProperty<Any?, T> {
+    /**
+     * Object providing the bit shifting operations needed for the conversion.
+     */
+    protected abstract val bitShift: BitShift<B>
+
+    /**
+     * Object providing the bit masking operations needed for the conversion.
+     */
+    protected abstract val bitwise: Bitwise<B>
+
+    /**
+     * Converter used to convert instances of the backing property to instances of the declared type.
+     *
+     * Values supplied to the forward converter will have already been bit shifted beforehand, while values returned
+     * from the reverse converter will be subsequently bit shifted.
+     *
+     * The forward converter is only used in [getValue], while the reverse converter is only used in [AbstractMutableBitFieldDelegate.setValue]
+     */
+    protected abstract val converter: Converter<B, T>
+
+    /**
+     * The bit mask used to extract the value from the backing property.
+     */
+    protected val mask by lazy {
+        getMask(off, len)
+    }
+
+    /**
+     * Retrieves the bit mask used to mask the value from the backing property.
+     */
+    protected abstract fun getMask(offset: Int, length: Int): B
+
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
+        val baseValue = backingProperty.get()
+        val masked = bitwise.and(baseValue, mask)
+        val shifted = bitShift.rightShift(masked, off)
+        return converter(shifted)
+    }
+}
