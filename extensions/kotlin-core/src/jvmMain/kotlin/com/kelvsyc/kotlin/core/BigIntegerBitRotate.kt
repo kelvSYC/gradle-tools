@@ -7,14 +7,13 @@ import java.math.BigInteger
  *
  * The implementation relies on a suitable [BitShift] to supply the underlying bit shifting operations.
  *
+ * @param sizeBits The size of the fixed-size [BigInteger].
  * @param bitShift Implementation of [BitShift] providing the bit shifting operations.
  */
-abstract class AbstractBigIntegerBitRotate(private val bitShift: BitShift<BigInteger>) : BitRotate<BigInteger> {
-    /**
-     * The size of the fixed-size [BigInteger].
-     */
-    abstract val sizeBits: Int
-
+class BigIntegerBitRotate(
+    private val sizeBits: Int,
+    private val bitShift: BitShift<BigInteger> = BigIntegerBitShift(sizeBits)
+) : BitRotate<BigInteger> {
     override fun rotateLeft(value: BigInteger, bitCount: Int): BigInteger {
         val n = bitCount % sizeBits
         val left = bitShift.leftShift(value, n)

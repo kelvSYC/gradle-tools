@@ -4,13 +4,10 @@ import java.math.BigInteger
 
 /**
  * Implementation of [Bitwise] for types that can be represented as a fixed-size [BigInteger].
+ *
+ * @param sizeBits The size of the fixed-size [BigInteger].
  */
-abstract class AbstractBigIntegerBitwise : Bitwise<BigInteger> {
-    /**
-     * The size of the fixed-size [BigInteger].
-     */
-    abstract val sizeBits: Int
-
+class BigIntegerBitwise(private val sizeBits: Int) : Bitwise<BigInteger> {
     private val mask by lazy {
         // masking is required in case the converter returns a large negative integer.
         (BigInteger.ONE shl sizeBits) - BigInteger.ONE

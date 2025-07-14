@@ -7,13 +7,10 @@ import java.util.*
  *
  * Note that all unary operations treat its operand as being mutable, and all binary operations treat its left operand
  * as being mutable.
+ *
+ * @param sizeBits The size of the fixed-size [BitSet].
  */
-abstract class AbstractBitSetBitwise : Bitwise<BitSet> {
-    /**
-     * The size of the fixed-size [BitSet].
-     */
-    abstract val sizeBits: Int
-
+class BitSetBitwise(private val sizeBits: Int) : Bitwise<BitSet> {
     override fun and(lhs: BitSet, rhs: BitSet): BitSet = lhs.also { it.and(rhs) }
     override fun or(lhs: BitSet, rhs: BitSet): BitSet = lhs.also { it.or(rhs) }
     override fun xor(lhs: BitSet, rhs: BitSet): BitSet = lhs.also { it.xor(rhs) }

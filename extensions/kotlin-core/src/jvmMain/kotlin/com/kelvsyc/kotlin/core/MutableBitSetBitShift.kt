@@ -5,17 +5,15 @@ import java.util.*
 /**
  * Implementation of [BitShift] for types that can be represented as a fixed-size [BitSet].
  *
- * Note that all operations treat its value as being mutable.
+ * Note that all operations treat its value as being mutable. Use [BitSetBitShift] for bitwise operations that treat its
+ * value as being immutable.
+ *
+ * @param sizeBits The size of the fixed-size [BitSet].
  */
-abstract class AbstractBitSetBitShift : BitShift<BitSet> {
-    /**
-     * The size of the fixed-size [BitSet].
-     */
-    abstract val sizeBits: Int
-
+class MutableBitSetBitShift(private val sizeBits: Int) : BitShift<BitSet> {
     @OptIn(ExperimentalStdlibApi::class)
     override fun leftShift(value: BitSet, bitCount: Int): BitSet = value.also {
-        for (i in bitCount ..< sizeBits) {
+        for (i in sizeBits - 1 downTo bitCount) {
             it[i] = it[i - bitCount]
         }
         it.clear(0, bitCount)
