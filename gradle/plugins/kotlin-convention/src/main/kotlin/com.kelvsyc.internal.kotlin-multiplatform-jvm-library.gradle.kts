@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import kotlin.jvm.optionals.getOrNull
 
 plugins {
-    kotlin("multiplatform")
+    id("com.kelvsyc.internal.kotlin-multiplatform-jvm-base")
     id("com.autonomousapps.dependency-analysis")
     id("org.gradlex.jvm-dependency-conflict-resolution")
     id("org.gradlex.reproducible-builds")
@@ -15,8 +15,6 @@ plugins {
 val libs = versionCatalogs.named("libs")
 
 kotlin {
-    jvm()
-
     withSourcesJar(publish = true)
 
     jvmToolchain {

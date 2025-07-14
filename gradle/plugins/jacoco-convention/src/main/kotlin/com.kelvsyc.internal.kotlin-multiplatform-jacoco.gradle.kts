@@ -1,6 +1,6 @@
 import org.gradle.kotlin.dsl.getValue
+import org.gradle.kotlin.dsl.invoke
 import org.gradle.kotlin.dsl.jacoco
-import org.gradle.kotlin.dsl.kotlin
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.registering
@@ -9,12 +9,7 @@ import java.util.Optional
 
 plugins {
     jacoco
-    kotlin("multiplatform")
-}
-
-kotlin {
-    // FIXME find a way to conditionally apply jacoco configuration on presence of a JVM target
-    jvm()
+    id("com.kelvsyc.internal.kotlin-multiplatform-jvm-base")
 }
 
 // Because Kotlin Multiplatform plugin doesn't integrate with the JaCoCo plugin, we have to
@@ -26,26 +21,19 @@ val jacocoJvmTestReport by tasks.registering(JacocoReport::class) {
 
     dependsOn(tasks.named("jvmTest"))
 
-    // Wish we could use mapKt() in gradle-extensions, but alas...
-    executionData.from(
-        tasks.named("jvmTest").map {
-            Optional.ofNullable(it.the<JacocoTaskExtension>().destinationFile)
-        }.
-        filter(Optional<File>::isPresent).
-        map(Optional<File>::get)
-    )
+    // This is how they do it in the jacoco plugin for Java sources, so we have to realize jvmTest here
+    executionData(tasks.jvmTest.get())
 
-//    executionData.from(layout.buildDirectory.file("jacoco/jvmTest.exec"))
-    sourceDirectories.from(kotlin.sourceSets.commonMain.map { it.kotlin })
-    sourceDirectories.from(kotlin.sourceSets.named("jvmMain").map { it.kotlin })
-    classDirectories.from(layout.buildDirectory.dir("classes/kotlin/jvm"))
+    sourceDirectories.from(kotlin.sourceSets.commonMain.map { it.kotlin.sourceDirectories })
+    sourceDirectories.from(kotlin.sourceSets.jvmMain.map { it.kotlin.sourceDirectories })
+    classDirectories.from(kotlin.jvm().compilations.named("main").map { it.output.classesDirs })
 
     reports {
         html.required.set(true)
     }
 }
 
-tasks.named("jvmTest") {
+tasks.jvmTest {
     finalizedBy(jacocoJvmTestReport)
 }
 
@@ -60,8 +48,7 @@ val coverageDataElements = configurations.consumable("coverageDataElementsForJvm
     // FIXME how do we accommodate multiple JVM targets and their respective test suites?
     attributes.attribute(TestSuiteName.TEST_SUITE_NAME_ATTRIBUTE, objects.named("test"))
 
-    val resultsFile = tasks.named("jvmTest")
-        .map {
+    val resultsFile = tasks.jvmTest.map {
             Optional.ofNullable(it.the<JacocoTaskExtension>().destinationFile)
         }
         .filter(Optional<File>::isPresent)
@@ -85,10 +72,10 @@ val jvmMainSourceElements = configurations.consumable("jvmMainSourceElements") {
     outgoing.artifacts(kotlin.sourceSets.commonMain.map { it.resources.srcDirs }) {
         type = ArtifactTypeDefinition.DIRECTORY_TYPE
     }
-    outgoing.artifacts(kotlin.sourceSets.named("jvmMain").map { it.kotlin.srcDirs }) {
+    outgoing.artifacts(kotlin.sourceSets.jvmMain.map { it.kotlin.srcDirs }) {
         type = ArtifactTypeDefinition.DIRECTORY_TYPE
     }
-    outgoing.artifacts(kotlin.sourceSets.named("jvmMain").map { it.resources.srcDirs }) {
+    outgoing.artifacts(kotlin.sourceSets.jvmMain.map { it.resources.srcDirs }) {
         type = ArtifactTypeDefinition.DIRECTORY_TYPE
     }
 }
