@@ -15,7 +15,7 @@ abstract class AbstractMutableIntBasedBitFieldDelegate<T>(
     @OptIn(ExperimentalStdlibApi::class)
     override fun getMask(offset: Int, length: Int): Int {
         require(offset >= 0 && offset < Int.SIZE_BITS) { "Offset must be in range" }
-        require(length > 0 && offset + length < Int.SIZE_BITS) { "Length must be in range" }
+        require(length > 0 && offset + length <= Int.SIZE_BITS) { "Length must be in range" }
 
         var result = 0
         for (it in 0 ..< length) {
