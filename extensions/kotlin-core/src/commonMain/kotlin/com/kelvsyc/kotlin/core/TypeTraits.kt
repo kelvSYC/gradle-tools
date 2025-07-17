@@ -23,7 +23,31 @@ object TypeTraits {
      * Traits object for the [Byte][KByte] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object Byte : Addition<KByte>, Multiplication<KByte>, Bitwise<KByte>, BitShift<KByte>, BitRotate<KByte>, Signed<KByte> {
+    object Byte : BitCollection<KByte>,
+        Addition<KByte>, Multiplication<KByte>, Bitwise<KByte>, BitShift<KByte>, BitRotate<KByte>, Signed<KByte> {
+        @OptIn(ExperimentalStdlibApi::class)
+        override fun asBitSequence(value: KByte): Sequence<Boolean> = sequence {
+            var mask = 1
+            for (i in 0 ..< KByte.SIZE_BITS) {
+                yield(value.toInt() and mask != 0)
+                mask = mask shl 1
+            }
+        }
+
+        @OptIn(ExperimentalStdlibApi::class)
+        override fun getSetBits(value: KByte): Set<KInt> = buildSet {
+            var mask = 1
+            for (i in 0 ..< KByte.SIZE_BITS) {
+                if (value.toInt() and mask != 0) {
+                    add(i)
+                }
+                mask = mask shl 1
+            }
+        }
+
+        override fun countLeadingZeroBits(value: KByte): KInt = value.countLeadingZeroBits()
+        override fun countTrailingZeroBits(value: KByte): KInt = value.countTrailingZeroBits()
+
         override fun add(lhs: KByte, rhs: KByte): KByte = (lhs + rhs).toByte()
         override fun subtract(lhs: KByte, rhs: KByte): KByte = (lhs - rhs).toByte()
 
@@ -51,7 +75,31 @@ object TypeTraits {
      * Traits object for the [UByte][KUByte] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object UByte : Addition<KUByte>, Multiplication<KUByte>, Bitwise<KUByte>, BitShift<KUByte>, BitRotate<KUByte> {
+    object UByte : BitCollection<KUByte>,
+        Addition<KUByte>, Multiplication<KUByte>, Bitwise<KUByte>, BitShift<KUByte>, BitRotate<KUByte> {
+        @OptIn(ExperimentalStdlibApi::class)
+        override fun asBitSequence(value: KUByte): Sequence<Boolean> = sequence {
+            var mask = 1
+            for (i in 0 ..< KUByte.SIZE_BITS) {
+                yield(value.toInt() and mask != 0)
+                mask = mask shl 1
+            }
+        }
+
+        @OptIn(ExperimentalStdlibApi::class)
+        override fun getSetBits(value: KUByte): Set<KInt> = buildSet {
+            var mask = 1
+            for (i in 0 ..< KUByte.SIZE_BITS) {
+                if (value.toInt() and mask != 0) {
+                    add(i)
+                }
+                mask = mask shl 1
+            }
+        }
+
+        override fun countLeadingZeroBits(value: KUByte): KInt = value.countLeadingZeroBits()
+        override fun countTrailingZeroBits(value: KUByte): KInt = value.countTrailingZeroBits()
+
         override fun add(lhs: KUByte, rhs: KUByte): KUByte = (lhs + rhs).toUByte()
         override fun subtract(lhs: KUByte, rhs: KUByte): KUByte = (lhs - rhs).toUByte()
 
@@ -75,7 +123,31 @@ object TypeTraits {
      * Traits object for the [Short][KShort] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object Short : Addition<KShort>, Multiplication<KShort>, Bitwise<KShort>, BitShift<KShort>, BitRotate<KShort>, Signed<KShort> {
+    object Short : BitCollection<KShort>,
+        Addition<KShort>, Multiplication<KShort>, Bitwise<KShort>, BitShift<KShort>, BitRotate<KShort>, Signed<KShort> {
+        @OptIn(ExperimentalStdlibApi::class)
+        override fun asBitSequence(value: KShort): Sequence<Boolean> = sequence {
+            var mask = 1
+            for (i in 0 ..< KShort.SIZE_BITS) {
+                yield(value.toInt() and mask != 0)
+                mask = mask shl 1
+            }
+        }
+
+        @OptIn(ExperimentalStdlibApi::class)
+        override fun getSetBits(value: KShort): Set<KInt> = buildSet {
+            var mask = 1
+            for (i in 0 ..< KShort.SIZE_BITS) {
+                if (value.toInt() and mask != 0) {
+                    add(i)
+                }
+                mask = mask shl 1
+            }
+        }
+
+        override fun countLeadingZeroBits(value: KShort): KInt = value.countLeadingZeroBits()
+        override fun countTrailingZeroBits(value: KShort): KInt = value.countTrailingZeroBits()
+
         override fun add(lhs: KShort, rhs: KShort): KShort = (lhs + rhs).toShort()
         override fun subtract(lhs: KShort, rhs: KShort): KShort = (lhs - rhs).toShort()
 
@@ -103,7 +175,31 @@ object TypeTraits {
      * Traits object for the [UShort][KUShort] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object UShort : Addition<KUShort>, Multiplication<KUShort>, Bitwise<KUShort>, BitShift<KUShort>, BitRotate<KUShort> {
+    object UShort : BitCollection<KUShort>,
+        Addition<KUShort>, Multiplication<KUShort>, Bitwise<KUShort>, BitShift<KUShort>, BitRotate<KUShort> {
+        @OptIn(ExperimentalStdlibApi::class)
+        override fun asBitSequence(value: KUShort): Sequence<Boolean> = sequence {
+            var mask = 1
+            for (i in 0 ..< KUShort.SIZE_BITS) {
+                yield(value.toInt() and mask != 0)
+                mask = mask shl 1
+            }
+        }
+
+        @OptIn(ExperimentalStdlibApi::class)
+        override fun getSetBits(value: KUShort): Set<KInt> = buildSet {
+            var mask = 1
+            for (i in 0 ..< KUShort.SIZE_BITS) {
+                if (value.toInt() and mask != 0) {
+                    add(i)
+                }
+                mask = mask shl 1
+            }
+        }
+
+        override fun countLeadingZeroBits(value: KUShort): KInt = value.countLeadingZeroBits()
+        override fun countTrailingZeroBits(value: KUShort): KInt = value.countTrailingZeroBits()
+
         override fun add(lhs: KUShort, rhs: KUShort): KUShort = (lhs + rhs).toUShort()
         override fun subtract(lhs: KUShort, rhs: KUShort): KUShort = (lhs - rhs).toUShort()
 
@@ -127,7 +223,31 @@ object TypeTraits {
      * Traits object for the [Int][KInt] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object Int : Addition<KInt>, Multiplication<KInt>, Bitwise<KInt>, BitShift<KInt>, BitRotate<KInt>, Signed<KInt> {
+    object Int : BitCollection<KInt>,
+        Addition<KInt>, Multiplication<KInt>, Bitwise<KInt>, BitShift<KInt>, BitRotate<KInt>, Signed<KInt> {
+        @OptIn(ExperimentalStdlibApi::class)
+        override fun asBitSequence(value: KInt): Sequence<Boolean> = sequence {
+            var mask = 1
+            for (i in 0 ..< KInt.SIZE_BITS) {
+                yield(value and mask != 0)
+                mask = mask shl 1
+            }
+        }
+
+        @OptIn(ExperimentalStdlibApi::class)
+        override fun getSetBits(value: KInt): Set<KInt> = buildSet {
+            var mask = 1
+            for (i in 0 ..< KInt.SIZE_BITS) {
+                if (value and mask != 0) {
+                    add(i)
+                }
+                mask = mask shl 1
+            }
+        }
+
+        override fun countLeadingZeroBits(value: KInt): KInt = value.countLeadingZeroBits()
+        override fun countTrailingZeroBits(value: KInt): KInt = value.countTrailingZeroBits()
+
         override fun add(lhs: KInt, rhs: KInt): KInt = lhs + rhs
         override fun subtract(lhs: KInt, rhs: KInt): KInt = lhs - rhs
 
@@ -155,7 +275,31 @@ object TypeTraits {
      * Traits object for the [UInt][KUInt] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object UInt : Addition<KUInt>, Multiplication<KUInt>, Bitwise<KUInt>, BitShift<KUInt>, BitRotate<KUInt> {
+    object UInt : BitCollection<KUInt>,
+        Addition<KUInt>, Multiplication<KUInt>, Bitwise<KUInt>, BitShift<KUInt>, BitRotate<KUInt> {
+        @OptIn(ExperimentalStdlibApi::class)
+        override fun asBitSequence(value: KUInt): Sequence<Boolean> = sequence {
+            var mask = 1U
+            for (i in 0 ..< KUInt.SIZE_BITS) {
+                yield(value and mask != 0U)
+                mask = mask shl 1
+            }
+        }
+
+        @OptIn(ExperimentalStdlibApi::class)
+        override fun getSetBits(value: KUInt): Set<KInt> = buildSet {
+            var mask = 1U
+            for (i in 0 ..< KUInt.SIZE_BITS) {
+                if (value and mask != 0U) {
+                    add(i)
+                }
+                mask = mask shl 1
+            }
+        }
+
+        override fun countLeadingZeroBits(value: KUInt): KInt = value.countLeadingZeroBits()
+        override fun countTrailingZeroBits(value: KUInt): KInt = value.countTrailingZeroBits()
+
         override fun add(lhs: KUInt, rhs: KUInt): KUInt = lhs + rhs
         override fun subtract(lhs: KUInt, rhs: KUInt): KUInt = lhs - rhs
 
@@ -179,7 +323,31 @@ object TypeTraits {
      * Traits object for the [Long][KLong] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object Long : Addition<KLong>, Multiplication<KLong>, Bitwise<KLong>, BitShift<KLong>, BitRotate<KLong>, Signed<KLong> {
+    object Long : BitCollection<KLong>,
+        Addition<KLong>, Multiplication<KLong>, Bitwise<KLong>, BitShift<KLong>, BitRotate<KLong>, Signed<KLong> {
+        @OptIn(ExperimentalStdlibApi::class)
+        override fun asBitSequence(value: KLong): Sequence<Boolean> = sequence {
+            var mask = 1L
+            for (i in 0 ..< KLong.SIZE_BITS) {
+                yield(value and mask != 0L)
+                mask = mask shl 1
+            }
+        }
+
+        @OptIn(ExperimentalStdlibApi::class)
+        override fun getSetBits(value: KLong): Set<KInt> = buildSet {
+            var mask = 1L
+            for (i in 0 ..< KLong.SIZE_BITS) {
+                if (value and mask != 0L) {
+                    add(i)
+                }
+                mask = mask shl 1
+            }
+        }
+
+        override fun countLeadingZeroBits(value: KLong): KInt = value.countLeadingZeroBits()
+        override fun countTrailingZeroBits(value: KLong): KInt = value.countTrailingZeroBits()
+
         override fun add(lhs: KLong, rhs: KLong): KLong = lhs + rhs
         override fun subtract(lhs: KLong, rhs: KLong): KLong = lhs - rhs
 
@@ -207,7 +375,31 @@ object TypeTraits {
      * Traits object for the [ULong][KULong] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object ULong : Addition<KULong>, Multiplication<KULong>, Bitwise<KULong>, BitShift<KULong>, BitRotate<KULong> {
+    object ULong : BitCollection<KULong>,
+        Addition<KULong>, Multiplication<KULong>, Bitwise<KULong>, BitShift<KULong>, BitRotate<KULong> {
+        @OptIn(ExperimentalStdlibApi::class)
+        override fun asBitSequence(value: KULong): Sequence<Boolean> = sequence {
+            var mask = 1UL
+            for (i in 0 ..< KULong.SIZE_BITS) {
+                yield(value and mask != 0UL)
+                mask = mask shl 1
+            }
+        }
+
+        @OptIn(ExperimentalStdlibApi::class)
+        override fun getSetBits(value: KULong): Set<KInt> = buildSet {
+            var mask = 1UL
+            for (i in 0 ..< KULong.SIZE_BITS) {
+                if (value and mask != 0UL) {
+                    add(i)
+                }
+                mask = mask shl 1
+            }
+        }
+
+        override fun countLeadingZeroBits(value: KULong): KInt = value.countLeadingZeroBits()
+        override fun countTrailingZeroBits(value: KULong): KInt = value.countTrailingZeroBits()
+
         override fun add(lhs: KULong, rhs: KULong): KULong = lhs + rhs
         override fun subtract(lhs: KULong, rhs: KULong): KULong = lhs - rhs
 
