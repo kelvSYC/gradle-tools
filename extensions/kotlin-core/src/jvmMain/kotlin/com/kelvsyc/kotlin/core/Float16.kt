@@ -46,6 +46,7 @@ value class Float16(val bits: Short): Comparable<Float16> {
         override fun isPositive(value: Float16): Boolean = value > zero
         override fun isNegative(value: Float16): Boolean = value < zero
         override fun negate(value: Float16): Float16 = -value
+        override fun absoluteValue(value: Float16): Float16 = if (isPositive(value)) value else -value
     }
 
     /**

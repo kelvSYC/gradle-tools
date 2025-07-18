@@ -30,4 +30,11 @@ interface Signed<T> {
      * a zero is supplied.
      */
     fun negate(value: T): T
+
+    /**
+     * Returns a positive value of the same magnitude.
+     *
+     * A type with an unsigned zero must return itself.
+     */
+    fun absoluteValue(value: T): T
 }

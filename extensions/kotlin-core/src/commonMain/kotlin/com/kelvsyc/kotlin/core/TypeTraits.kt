@@ -4,6 +4,7 @@ import kotlin.experimental.and
 import kotlin.experimental.inv
 import kotlin.experimental.or
 import kotlin.experimental.xor
+import kotlin.math.absoluteValue
 import kotlin.Byte as KByte
 import kotlin.Double as KDouble
 import kotlin.Float as KFloat
@@ -69,6 +70,7 @@ object TypeTraits {
         override fun isPositive(value: KByte): Boolean = value > 0
         override fun isNegative(value: KByte): Boolean = value < 0
         override fun negate(value: KByte): KByte = (-value).toByte()
+        override fun absoluteValue(value: KByte): KByte = value.toInt().absoluteValue.toByte()
     }
 
     /**
@@ -169,6 +171,7 @@ object TypeTraits {
         override fun isPositive(value: KShort): Boolean = value > 0
         override fun isNegative(value: KShort): Boolean = value < 0
         override fun negate(value: KShort): KShort = (-value).toShort()
+        override fun absoluteValue(value: KShort): KShort = value.toInt().absoluteValue.toShort()
     }
 
     /**
@@ -269,6 +272,7 @@ object TypeTraits {
         override fun isPositive(value: KInt): Boolean = value > 0
         override fun isNegative(value: KInt): Boolean = value < 0
         override fun negate(value: KInt): KInt = -value
+        override fun absoluteValue(value: KInt): KInt = value.absoluteValue
     }
 
     /**
@@ -369,6 +373,7 @@ object TypeTraits {
         override fun isPositive(value: KLong): Boolean = value > 0
         override fun isNegative(value: KLong): Boolean = value < 0
         override fun negate(value: KLong): KLong = -value
+        override fun absoluteValue(value: KLong): KLong = value.absoluteValue
     }
 
     /**
@@ -441,5 +446,6 @@ object TypeTraits {
         override fun isPositive(value: KDouble): Boolean = value > 0
         override fun isNegative(value: KDouble): Boolean = value < 0
         override fun negate(value: KDouble): KDouble = -value
+        override fun absoluteValue(value: KDouble): KDouble = value.absoluteValue
     }
 }

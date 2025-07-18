@@ -8,6 +8,7 @@ import kotlin.experimental.and
 import kotlin.experimental.inv
 import kotlin.experimental.or
 import kotlin.experimental.xor
+import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalStdlibApi::class)
 class TypeTraitsSpec : FunSpec() {
@@ -759,6 +760,9 @@ class TypeTraitsSpec : FunSpec() {
             checkAll<Byte> {
                 traits.negate(it) shouldBeEqual (-it).toByte()
             }
+            checkAll<Byte> {
+                traits.absoluteValue(it) shouldBeEqual it.toInt().absoluteValue.toByte()
+            }
         }
 
         test("Signed Short") {
@@ -771,6 +775,9 @@ class TypeTraitsSpec : FunSpec() {
             }
             checkAll<Short> {
                 traits.negate(it) shouldBeEqual (-it).toShort()
+            }
+            checkAll<Short> {
+                traits.absoluteValue(it) shouldBeEqual it.toInt().absoluteValue.toShort()
             }
         }
 
@@ -785,6 +792,9 @@ class TypeTraitsSpec : FunSpec() {
             checkAll<Int> {
                 traits.negate(it) shouldBeEqual -it
             }
+            checkAll<Int> {
+                traits.absoluteValue(it) shouldBeEqual it.absoluteValue
+            }
         }
 
         test("Signed Long") {
@@ -797,6 +807,9 @@ class TypeTraitsSpec : FunSpec() {
             }
             checkAll<Long> {
                 traits.negate(it) shouldBeEqual -it
+            }
+            checkAll<Long> {
+                traits.absoluteValue(it) shouldBeEqual it.absoluteValue
             }
         }
 
@@ -811,6 +824,9 @@ class TypeTraitsSpec : FunSpec() {
             checkAll<Float> {
                 traits.negate(it) shouldBeEqual -it
             }
+            checkAll<Float> {
+                traits.absoluteValue(it) shouldBeEqual it.absoluteValue
+            }
         }
 
         test("Signed Double") {
@@ -823,6 +839,9 @@ class TypeTraitsSpec : FunSpec() {
             }
             checkAll<Double> {
                 traits.negate(it) shouldBeEqual -it
+            }
+            checkAll<Double> {
+                traits.absoluteValue(it) shouldBeEqual it.absoluteValue
             }
         }
     }

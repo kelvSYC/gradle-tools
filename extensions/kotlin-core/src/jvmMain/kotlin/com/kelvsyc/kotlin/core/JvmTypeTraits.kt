@@ -17,6 +17,7 @@ object JvmTypeTraits {
         override fun isPositive(value: JBigInteger): Boolean = value.signum() == 1
         override fun isNegative(value: JBigInteger): Boolean = value.signum() == -1
         override fun negate(value: JBigInteger): JBigInteger = -value
+        override fun absoluteValue(value: JBigInteger): JBigInteger = value.abs()
     }
 
     object BigDecimal : Addition<JBigDecimal>, Multiplication<JBigDecimal>, Signed<JBigDecimal> {
@@ -29,5 +30,6 @@ object JvmTypeTraits {
         override fun isPositive(value: JBigDecimal): Boolean = value.signum() == 1
         override fun isNegative(value: JBigDecimal): Boolean = value.signum() == -1
         override fun negate(value: JBigDecimal): JBigDecimal = -value
+        override fun absoluteValue(value: JBigDecimal): JBigDecimal = value.abs()
     }
 }
