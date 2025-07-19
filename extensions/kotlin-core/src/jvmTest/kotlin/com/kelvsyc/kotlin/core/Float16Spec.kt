@@ -6,6 +6,22 @@ import io.kotest.property.checkAll
 
 class Float16Spec : FunSpec() {
     init {
+        test("FloatingPoint") {
+            val traits = Float16.Traits
+            checkAll<Short> {
+                val value = Float16(it)
+                traits.isFinite(value) shouldBeEqual Float16Bits.ofValue(value).isFinite
+            }
+            checkAll<Short> {
+                val value = Float16(it)
+                traits.isInfinite(value) shouldBeEqual Float16Bits.ofValue(value).isInfinite
+            }
+            checkAll<Short> {
+                val value = Float16(it)
+                traits.isNaN(value) shouldBeEqual Float16Bits.ofValue(value).isNaN
+            }
+        }
+
         test("Addition Float") {
             val traits = Float16.Traits
             checkAll<Short, Short> { lhsRaw, rhsRaw ->

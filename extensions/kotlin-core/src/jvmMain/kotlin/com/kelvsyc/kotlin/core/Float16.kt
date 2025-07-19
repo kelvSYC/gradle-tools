@@ -36,7 +36,13 @@ value class Float16(val bits: Short): Comparable<Float16> {
         private val wrappedRem = converter.wrap(Float::rem)
     }
 
-    object Traits : Addition<Float16>, Multiplication<Float16>, Signed<Float16> {
+    @Suppress("detekt:TooManyFunctions")
+    object Traits : FloatingPoint<Float16>, Addition<Float16>, Multiplication<Float16>, Signed<Float16> {
+        override val zero: Float16 = Float16(0)
+        override fun isNaN(value: Float16): Boolean = Float16Bits.ofValue(value).isNaN
+        override fun isFinite(value: Float16): Boolean = Float16Bits.ofValue(value).isFinite
+        override fun isInfinite(value: Float16): Boolean = Float16Bits.ofValue(value).isInfinite
+
         override fun add(lhs: Float16, rhs: Float16): Float16 = lhs + rhs
         override fun subtract(lhs: Float16, rhs: Float16): Float16 = lhs - rhs
 

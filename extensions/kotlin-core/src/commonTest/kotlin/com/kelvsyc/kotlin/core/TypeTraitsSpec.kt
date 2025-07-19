@@ -13,6 +13,32 @@ import kotlin.math.absoluteValue
 @OptIn(ExperimentalStdlibApi::class)
 class TypeTraitsSpec : FunSpec() {
     init {
+        test("FloatingPoint Float") {
+            val traits = TypeTraits.Float
+            checkAll<Float> {
+                traits.isFinite(it) shouldBeEqual it.isFinite()
+            }
+            checkAll<Float> {
+                traits.isInfinite(it) shouldBeEqual it.isInfinite()
+            }
+            checkAll<Float> {
+                traits.isNaN(it) shouldBeEqual it.isNaN()
+            }
+        }
+
+        test("FloatingPoint Double") {
+            val traits = TypeTraits.Double
+            checkAll<Double> {
+                traits.isFinite(it) shouldBeEqual it.isFinite()
+            }
+            checkAll<Double> {
+                traits.isInfinite(it) shouldBeEqual it.isInfinite()
+            }
+            checkAll<Double> {
+                traits.isNaN(it) shouldBeEqual it.isNaN()
+            }
+        }
+
         test("BitCollection Byte") {
             val traits = TypeTraits.Byte
             checkAll<Byte> {

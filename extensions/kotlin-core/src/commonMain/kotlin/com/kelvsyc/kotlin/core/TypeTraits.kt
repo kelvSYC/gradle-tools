@@ -424,7 +424,13 @@ object TypeTraits {
         override fun rotateRight(value: KULong, bitCount: KInt): KULong = value.rotateRight(bitCount)
     }
 
-    object Float: Addition<KFloat>, Multiplication<KFloat>, Signed<KFloat> {
+    @Suppress("detekt:TooManyFunctions")
+    object Float: FloatingPoint<KFloat>, Addition<KFloat>, Multiplication<KFloat>, Signed<KFloat> {
+        override val zero: KFloat = 0.0f
+        override fun isNaN(value: KFloat): Boolean = value.isNaN()
+        override fun isFinite(value: KFloat): Boolean = value.isFinite()
+        override fun isInfinite(value: KFloat): Boolean = value.isInfinite()
+
         override fun add(lhs: KFloat, rhs: KFloat): KFloat = lhs + rhs
         override fun subtract(lhs: KFloat, rhs: KFloat): KFloat = lhs - rhs
 
@@ -434,9 +440,16 @@ object TypeTraits {
         override fun isPositive(value: KFloat): Boolean = value > 0
         override fun isNegative(value: KFloat): Boolean = value < 0
         override fun negate(value: KFloat): KFloat = -value
+        override fun absoluteValue(value: KFloat): KFloat = value.absoluteValue
     }
 
-    object Double: Addition<KDouble>, Multiplication<KDouble>, Signed<KDouble> {
+    @Suppress("detekt:TooManyFunctions")
+    object Double: FloatingPoint<KDouble>, Addition<KDouble>, Multiplication<KDouble>, Signed<KDouble> {
+        override val zero: KDouble = 0.0
+        override fun isNaN(value: KDouble): Boolean = value.isNaN()
+        override fun isFinite(value: KDouble): Boolean = value.isFinite()
+        override fun isInfinite(value: KDouble): Boolean = value.isInfinite()
+
         override fun add(lhs: KDouble, rhs: KDouble): KDouble = lhs + rhs
         override fun subtract(lhs: KDouble, rhs: KDouble): KDouble = lhs - rhs
 
