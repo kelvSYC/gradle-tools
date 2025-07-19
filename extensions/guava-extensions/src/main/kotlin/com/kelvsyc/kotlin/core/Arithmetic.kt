@@ -8,23 +8,6 @@ package com.kelvsyc.kotlin.core
  * @param T The type supporting bitwise operations.
  */
 interface Arithmetic<T> {
-    object FloatArithmetic : Arithmetic<Float> {
-        override fun add(lhs: Float, rhs: Float): Float = lhs + rhs
-        override fun subtract(lhs: Float, rhs: Float): Float = lhs - rhs
-        override fun multiply(lhs: Float, rhs: Float): Float = lhs * rhs
-        override fun divide(lhs: Float, rhs: Float): Float = lhs / rhs
-
-        override fun negate(value: Float): Float = -value
-    }
-    object DoubleArithmetic : Arithmetic<Double> {
-        override fun add(lhs: Double, rhs: Double): Double = lhs + rhs
-        override fun subtract(lhs: Double, rhs: Double): Double = lhs - rhs
-        override fun multiply(lhs: Double, rhs: Double): Double = lhs * rhs
-        override fun divide(lhs: Double, rhs: Double): Double = lhs / rhs
-
-        override fun negate(value: Double): Double = -value
-    }
-
     fun add(lhs: T, rhs: T): T
     fun subtract(lhs: T, rhs: T): T
     fun multiply(lhs: T, rhs: T): T
