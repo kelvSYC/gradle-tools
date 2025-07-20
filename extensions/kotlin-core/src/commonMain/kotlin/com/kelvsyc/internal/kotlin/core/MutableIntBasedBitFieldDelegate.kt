@@ -1,12 +1,16 @@
 package com.kelvsyc.internal.kotlin.core
 
 import com.kelvsyc.kotlin.core.AbstractMutableBitFieldDelegate
+import com.kelvsyc.kotlin.core.Converter
 import com.kelvsyc.kotlin.core.TypeTraits
 import kotlin.reflect.KMutableProperty0
 
-abstract class AbstractMutableIntBasedBitFieldDelegate<T>(
-    backingProperty: KMutableProperty0<Int>, off: Int, len: Int
-) : AbstractMutableBitFieldDelegate<T, Int>(backingProperty, off, len) {
+class MutableIntBasedBitFieldDelegate<T>(
+    backingProperty: KMutableProperty0<Int>,
+    off: Int,
+    len: Int,
+    converter: Converter<Int, T>
+) : AbstractMutableBitFieldDelegate<T, Int>(backingProperty, off, len, converter) {
     override val bitShift
         get() = TypeTraits.Int
     override val bitwise
