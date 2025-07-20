@@ -1,5 +1,6 @@
 package com.kelvsyc.kotlin.core.fp
 
+import com.kelvsyc.kotlin.core.DoubleBits
 import com.kelvsyc.kotlin.core.FloatingPoint
 import com.kelvsyc.kotlin.core.TypeTraits
 import kotlin.math.absoluteValue
@@ -45,6 +46,24 @@ class DoubleDouble private constructor(
         override fun create(high: Double, low: Double) = DoubleDouble(high, low)
     }
 
+    object Multiplication: AbstractDoubleFloatingPointMultiplication<Double, DoubleDouble>() {
+        override val traits
+            get() = TypeTraits.Double
+        override val baseAddition
+            get() = TypeTraits.Double
+        override val baseMultiplication
+            get() = TypeTraits.Double
+        override val signed
+            get() = TypeTraits.Double
+        override val addition
+            get() = Addition
+
+        override fun create(high: Double, low: Double): DoubleDouble = DoubleDouble(high, low)
+
+        // 2^ceil(Double.PRECISION/2) + 1 == 2^27 + 1
+        override val splitPoint: Double = DoubleBits(0x41A0000002000000).toFloatingPoint()
+    }
+
     override fun toFloatingPoint(): Double = high + low
 
     operator fun unaryMinus(): DoubleDouble = Signed.negate(this)
@@ -52,4 +71,8 @@ class DoubleDouble private constructor(
     operator fun plus(rhs: DoubleDouble): DoubleDouble = Addition.twoSum(this, rhs)
     operator fun minus(rhs: Double): DoubleDouble = Addition.twoSum(this, -rhs)
     operator fun minus(rhs: DoubleDouble): DoubleDouble = Addition.twoSum(this, -rhs)
+    operator fun times(rhs: Double): DoubleDouble = Multiplication.twoProduct(this, rhs)
+    operator fun times(rhs: DoubleDouble): DoubleDouble = Multiplication.twoProduct(this, rhs)
+    operator fun div(rhs: Double): DoubleDouble = Multiplication.twoDivide(this, rhs)
+    operator fun div(rhs: DoubleDouble): DoubleDouble = Multiplication.twoDivide(this, rhs)
 }

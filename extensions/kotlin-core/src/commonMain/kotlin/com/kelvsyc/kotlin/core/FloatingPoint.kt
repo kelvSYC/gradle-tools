@@ -6,6 +6,8 @@ package com.kelvsyc.kotlin.core
 interface FloatingPoint<T> {
     val zero: T
 
+    val one: T
+
     fun isNaN(value: T): Boolean
 
     fun isFinite(value: T): Boolean

@@ -25,7 +25,7 @@ value class Float16(val bits: Short): Comparable<Float16> {
         /**
          * Constant representing `0.0`.
          */
-        val zero = Float16(0)
+        val zero = Traits.zero
 
         private val wrappedUnaryPlus = converter.wrap(Float::unaryPlus)
         private val wrappedUnaryMinus = converter.wrap(Float::unaryMinus)
@@ -39,6 +39,7 @@ value class Float16(val bits: Short): Comparable<Float16> {
     @Suppress("detekt:TooManyFunctions")
     object Traits : FloatingPoint<Float16>, Addition<Float16>, Multiplication<Float16>, Signed<Float16> {
         override val zero: Float16 = Float16(0)
+        override val one: Float16 = Float16(0x3C00)
         override fun isNaN(value: Float16): Boolean = Float16Bits.ofValue(value).isNaN
         override fun isFinite(value: Float16): Boolean = Float16Bits.ofValue(value).isFinite
         override fun isInfinite(value: Float16): Boolean = Float16Bits.ofValue(value).isInfinite

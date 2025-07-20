@@ -427,6 +427,7 @@ object TypeTraits {
     @Suppress("detekt:TooManyFunctions")
     object Float: FloatingPoint<KFloat>, Addition<KFloat>, Multiplication<KFloat>, Signed<KFloat> {
         override val zero: KFloat = 0.0f
+        override val one: KFloat = 1.0f
         override fun isNaN(value: KFloat): Boolean = value.isNaN()
         override fun isFinite(value: KFloat): Boolean = value.isFinite()
         override fun isInfinite(value: KFloat): Boolean = value.isInfinite()
@@ -446,6 +447,7 @@ object TypeTraits {
     @Suppress("detekt:TooManyFunctions")
     object Double: FloatingPoint<KDouble>, Addition<KDouble>, Multiplication<KDouble>, Signed<KDouble> {
         override val zero: KDouble = 0.0
+        override val one: KDouble = 1.0
         override fun isNaN(value: KDouble): Boolean = value.isNaN()
         override fun isFinite(value: KDouble): Boolean = value.isFinite()
         override fun isInfinite(value: KDouble): Boolean = value.isInfinite()
