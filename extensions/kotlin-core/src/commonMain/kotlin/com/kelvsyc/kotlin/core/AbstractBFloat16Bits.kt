@@ -1,7 +1,5 @@
 package com.kelvsyc.kotlin.core
 
-import com.kelvsyc.internal.kotlin.core.AbstractShortBasedBitFieldDelegate
-
 /**
  * Partial implementation of the bit representation of a `bfloat16` floating-point value.
  *
@@ -46,11 +44,7 @@ abstract class AbstractBFloat16Bits<T>(protected val bits: Short) : FloatingPoin
     }
 
     override val signBit by flag(this::bits, SIZE_BITS - 1)
-    override val biasedExponent by object : AbstractShortBasedBitFieldDelegate<Int>(
-        this::bits, PRECISION - 1, EXPONENT_WIDTH
-    ) {
-        override val converter = Converter.of(Short::toInt, Int::toShort)
-    }
+    override val biasedExponent by bitfield(this::bits, PRECISION - 1, EXPONENT_WIDTH, Short::toInt)
     override val mantissa by bitfield(this::bits, 0, PRECISION - 1)
 
     override val isNormal by lazy { biasedExponent != 0 && biasedExponent != (1 shl EXPONENT_WIDTH) - 1 }

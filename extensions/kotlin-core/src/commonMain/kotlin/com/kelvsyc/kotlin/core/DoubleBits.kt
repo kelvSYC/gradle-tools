@@ -1,7 +1,5 @@
 package com.kelvsyc.kotlin.core
 
-import com.kelvsyc.internal.kotlin.core.AbstractLongBasedBitFieldDelegate
-
 /**
  * Bit representation of a `binary64` floating-point value (ie. a [Double]).
  */
@@ -51,10 +49,7 @@ class DoubleBits(private val bits: Long) : FloatingPointBits<Double, Long> {
     constructor(value: Double) : this(converter(value))
 
     override val signBit by flag(this::bits, SIZE_BITS - 1)
-    override val biasedExponent by object : AbstractLongBasedBitFieldDelegate<Int>(
-        this::bits, PRECISION - 1, EXPONENT_WIDTH) {
-        override val converter = Converter.of(Long::toInt, Int::toLong)
-    }
+    override val biasedExponent by bitfield(this::bits, PRECISION - 1, EXPONENT_WIDTH, Long::toInt)
     override val mantissa by bitfield(this::bits, 0, PRECISION - 1)
 
     override val isNormal by lazy { biasedExponent != 0 && biasedExponent != (1 shl EXPONENT_WIDTH) - 1 }

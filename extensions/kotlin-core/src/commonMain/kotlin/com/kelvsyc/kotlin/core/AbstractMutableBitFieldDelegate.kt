@@ -19,6 +19,18 @@ abstract class AbstractMutableBitFieldDelegate<T, B>(
     off: Int,
     len: Int
 ) : AbstractBitFieldDelegate<T, B>(backingProperty, off, len), ReadWriteProperty<Any?, T> {
+    /**
+     * Converter used to convert instances of the backing property to instances of the declared type.
+     *
+     * Values supplied to the forward converter will have already been bit shifted beforehand, while values returned
+     * from the reverse converter will be subsequently bit shifted.
+     *
+     * The forward converter is only used in [getValue], while the reverse converter is only used in [setValue]
+     */
+    protected abstract val converter: Converter<B, T>
+
+    final override fun convert(bits: B): T = converter(bits)
+
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         val baseValue = converter.reverse(value)
         val shifted = bitShift.leftShift(baseValue, off)
