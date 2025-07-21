@@ -1,5 +1,7 @@
 package com.kelvsyc.kotlin.core
 
+import com.kelvsyc.kotlin.core.traits.Decimal32Traits
+
 /**
  * Partial implementation of the bit representation of a `decimal32` floating-point value, where the [significand] is
  * stored in binary integer decimal (BID) encoding.
@@ -10,9 +12,9 @@ package com.kelvsyc.kotlin.core
  *
  * @param T the floating-point type
  */
-abstract class AbstractBID32Bits<T>(bits: Int) : AbstractDecimal32Bits<T>(bits) {
-    private val lowExponent by bitfield(this::bits, SIZE_BITS - EXPONENT_BITS - 1, EXPONENT_BITS)
-    private val highExponent by bitfield(this::bits, SIZE_BITS - EXPONENT_BITS - 3, EXPONENT_BITS)
+abstract class AbstractBID32Bits<T>(bits: Int, traits: Decimal32Traits<T>) : AbstractDecimal32Bits<T>(bits, traits) {
+    private val lowExponent by bitfield(this::bits, traits.sizeBits - traits.exponentBits - 1, traits.exponentBits)
+    private val highExponent by bitfield(this::bits, traits.sizeBits - traits.exponentBits - 3, traits.exponentBits)
 
     override val biasedExponent: Int? by lazy {
         when (discriminator) {
@@ -21,14 +23,13 @@ abstract class AbstractBID32Bits<T>(bits: Int) : AbstractDecimal32Bits<T>(bits) 
             else -> null
         }
     }
-    override val exponent: Int? by lazy { biasedExponent?.let {it - EXPONENT_BIAS} }
 
-    private val lowSignificand by bitfield(this::bits, 0, CONTINUATION_WIDTH + 3)
-    private val highSignificand by bitfield(this::bits, 0, CONTINUATION_WIDTH + 1)
+    private val lowSignificand by bitfield(this::bits, 0, traits.continuationWidth + 3)
+    private val highSignificand by bitfield(this::bits, 0, traits.continuationWidth + 1)
     override val significand: Int? by lazy {
         when (discriminator) {
             Discriminator.LOW -> lowSignificand
-            Discriminator.HIGH -> highSignificand or (1 shl (SIGNIFICAND_BITS - 1))
+            Discriminator.HIGH -> highSignificand or (1 shl (traits.significandBits - 1))
             else -> null
         }
     }

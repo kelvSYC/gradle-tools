@@ -1,5 +1,7 @@
 package com.kelvsyc.kotlin.core
 
+import com.kelvsyc.kotlin.core.traits.Binary32Traits
+import com.kelvsyc.kotlin.core.traits.Binary64Traits
 import kotlin.experimental.and
 import kotlin.experimental.inv
 import kotlin.experimental.or
@@ -425,7 +427,11 @@ object TypeTraits {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object Float: FloatingPoint<KFloat>, Addition<KFloat>, Multiplication<KFloat>, Signed<KFloat> {
+    object Float : Binary32Traits<KFloat>, FloatingPoint<KFloat>, Addition<KFloat>, Multiplication<KFloat>, Signed<KFloat> {
+        override val positiveInfinity: KFloat by KFloat.Companion::POSITIVE_INFINITY
+        override val negativeInfinity: KFloat by KFloat.Companion::NEGATIVE_INFINITY
+        override val NaN: KFloat by KFloat.Companion::NaN
+
         override val zero: KFloat = 0.0f
         override val one: KFloat = 1.0f
         override fun isNaN(value: KFloat): Boolean = value.isNaN()
@@ -445,7 +451,11 @@ object TypeTraits {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object Double: FloatingPoint<KDouble>, Addition<KDouble>, Multiplication<KDouble>, Signed<KDouble> {
+    object Double : Binary64Traits<KDouble>, FloatingPoint<KDouble>, Addition<KDouble>, Multiplication<KDouble>, Signed<KDouble> {
+        override val positiveInfinity: KDouble by KDouble.Companion::POSITIVE_INFINITY
+        override val negativeInfinity: KDouble by KDouble.Companion::NEGATIVE_INFINITY
+        override val NaN: KDouble by KDouble.Companion::NaN
+
         override val zero: KDouble = 0.0
         override val one: KDouble = 1.0
         override fun isNaN(value: KDouble): Boolean = value.isNaN()

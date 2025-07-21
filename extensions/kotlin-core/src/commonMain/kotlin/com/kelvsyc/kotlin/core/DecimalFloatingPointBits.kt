@@ -54,6 +54,16 @@ interface DecimalFloatingPointBits<T, B> {
     val exponent: Int?
 
     /**
+     * Retrieves the unbiased integral exponent of the value.
+     *
+     * Like binary floating-point values, decimal floating-point values are stored with an exponent bias. The returned
+     * exponent should be interpreted as if the significand was to be interpreted as an integral value.
+     *
+     * This function returns `null` on infinite and NaN values.
+     */
+    val integralExponent: Int?
+
+    /**
      * Retrieves the significand of the value.
      *
      * Note that the actual numeric value of the significand is implementation-dependent, but it is guaranteed to be

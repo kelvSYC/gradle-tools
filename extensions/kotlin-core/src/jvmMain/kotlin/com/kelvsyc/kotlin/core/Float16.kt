@@ -1,5 +1,7 @@
 package com.kelvsyc.kotlin.core
 
+import com.kelvsyc.kotlin.core.traits.Binary16Traits
+
 /**
  * Value representing a 16-bit `binary16` floating-point value.
  *
@@ -37,7 +39,12 @@ value class Float16(val bits: Short): Comparable<Float16> {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object Traits : FloatingPoint<Float16>, Addition<Float16>, Multiplication<Float16>, Signed<Float16> {
+    object Traits : Binary16Traits<Float16>,
+        FloatingPoint<Float16>, Addition<Float16>, Multiplication<Float16>, Signed<Float16> {
+        override val positiveInfinity: Float16 = Float16(0x7C00)
+        override val negativeInfinity: Float16 = Float16(0xFC00.toShort())
+        override val NaN: Float16 = Float16(0xFCE0.toShort())
+
         override val zero: Float16 = Float16(0)
         override val one: Float16 = Float16(0x3C00)
         override fun isNaN(value: Float16): Boolean = Float16Bits.ofValue(value).isNaN
@@ -71,7 +78,7 @@ value class Float16(val bits: Short): Comparable<Float16> {
      *
      * This is considered a widening operation.
      */
-    fun toFloat(): Float = java.lang.Float.float16ToFloat(bits)
+    fun toFloat(): Float = converter.reverse(bits)
 
     operator fun unaryPlus(): Float16 = Float16(wrappedUnaryPlus(bits))
     operator fun unaryMinus(): Float16 = Float16(wrappedUnaryMinus(bits))

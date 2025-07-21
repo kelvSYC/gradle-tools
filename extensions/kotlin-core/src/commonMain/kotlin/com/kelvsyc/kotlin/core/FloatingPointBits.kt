@@ -40,6 +40,15 @@ interface FloatingPointBits<T, B> {
     val exponent: Int
 
     /**
+     * Retrieves the unbiased exponent value.
+     *
+     * This value is obtained from subtracting the integral exponent bias from [biasedExponent]. As such, the two biased
+     * exponents with special meaning (0 and the largest value) will be represented by values that are one smaller than
+     * the smallest unbiased integral exponent or one larger than the largest unbiased integral exponent.
+     */
+    val integralExponent: Int
+
+    /**
      * Retrieves the significand of the floating-point value.
      *
      * For [normal][isNormal] floating point values, the significand consists of a "leading bit" representing the

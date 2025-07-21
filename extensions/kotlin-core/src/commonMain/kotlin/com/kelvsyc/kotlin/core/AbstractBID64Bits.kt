@@ -1,5 +1,7 @@
 package com.kelvsyc.kotlin.core
 
+import com.kelvsyc.kotlin.core.traits.Decimal64Traits
+
 /**
  * Partial implementation of the bit representation of a `decimal64` floating-point value, where the [significand] is
  * stored in binary integer decimal (BID) encoding.
@@ -10,9 +12,11 @@ package com.kelvsyc.kotlin.core
  *
  * @param T the floating-point type
  */
-abstract class AbstractBID64Bits<T>(bits: Long) : AbstractDecimal64Bits<T>(bits) {
-    private val lowExponent by bitfield(this::bits, SIZE_BITS - EXPONENT_BITS - 1, EXPONENT_BITS, Long::toInt)
-    private val highExponent by bitfield(this::bits, SIZE_BITS - EXPONENT_BITS - 3, EXPONENT_BITS, Long::toInt)
+abstract class AbstractBID64Bits<T>(bits: Long, traits: Decimal64Traits<T>) : AbstractDecimal64Bits<T>(bits, traits) {
+    private val lowExponent by bitfield(
+        this::bits, traits.sizeBits - traits.exponentBits - 1, traits.exponentBits, Long::toInt)
+    private val highExponent by bitfield(
+        this::bits, traits.sizeBits - traits.exponentBits - 3, traits.exponentBits, Long::toInt)
 
     override val biasedExponent: Int? by lazy {
         when (discriminator) {
@@ -21,14 +25,13 @@ abstract class AbstractBID64Bits<T>(bits: Long) : AbstractDecimal64Bits<T>(bits)
             else -> null
         }
     }
-    override val exponent: Int? by lazy { biasedExponent?.let {it - EXPONENT_BIAS} }
 
-    private val lowSignificand by bitfield(this::bits, 0, CONTINUATION_WIDTH + 3)
-    private val highSignificand by bitfield(this::bits, 0, CONTINUATION_WIDTH + 1)
+    private val lowSignificand by bitfield(this::bits, 0, traits.continuationWidth + 3)
+    private val highSignificand by bitfield(this::bits, 0, traits.continuationWidth + 1)
     override val significand: Long? by lazy {
         when (discriminator) {
             Discriminator.LOW -> lowSignificand
-            Discriminator.HIGH -> highSignificand or (1L shl (SIGNIFICAND_BITS - 1))
+            Discriminator.HIGH -> highSignificand or (1L shl (traits.significandBits - 1))
             else -> null
         }
     }

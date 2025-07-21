@@ -1,5 +1,7 @@
 package com.kelvsyc.kotlin.core
 
+import com.kelvsyc.kotlin.core.traits.Decimal32Traits
+
 /**
  * Partial implementation of the bit representation of a `decimal32` floating-point value, where the [significand] is
  * stored in densely packed decimal (DPD) encoding.
@@ -9,7 +11,7 @@ package com.kelvsyc.kotlin.core
  *
  * @param T the floating-point type
  */
-abstract class AbstractDPD32Bits<T>(bits: Int) : AbstractDecimal32Bits<T>(bits) {
+abstract class AbstractDPD32Bits<T>(bits: Int, traits: Decimal32Traits<T>) : AbstractDecimal32Bits<T>(bits, traits) {
     override val biasedExponent: Int? by lazy {
         // In DPD, the combination field is subdivided into the top five bits and the bottom 6 bits
         // The top five bits contain 3 bits of the significand for low values and 1 bit for high values
@@ -19,10 +21,9 @@ abstract class AbstractDPD32Bits<T>(bits: Int) : AbstractDecimal32Bits<T>(bits) 
             else -> null
         }
     }
-    override val exponent: Int? by lazy { biasedExponent?.let {it - EXPONENT_BIAS } }
 
-    private val lowSignificand by bitfield(this::bits, CONTINUATION_WIDTH + EXPONENT_BITS - 2, 3)
-    private val highSignificand by bitfield(this::bits, CONTINUATION_WIDTH + EXPONENT_BITS - 2, 1)
+    private val lowSignificand by bitfield(this::bits, traits.continuationWidth + traits.exponentBits - 2, 3)
+    private val highSignificand by bitfield(this::bits, traits.continuationWidth + traits.exponentBits - 2, 1)
     private val leadingDigit by lazy {
         when (discriminator) {
             Discriminator.LOW -> lowSignificand
@@ -32,7 +33,7 @@ abstract class AbstractDPD32Bits<T>(bits: Int) : AbstractDecimal32Bits<T>(bits) 
     }
     override val significand: Int? by lazy {
         when (discriminator) {
-            Discriminator.LOW, Discriminator.HIGH -> (leadingDigit!! shl CONTINUATION_WIDTH) or continuation
+            Discriminator.LOW, Discriminator.HIGH -> (leadingDigit!! shl traits.continuationWidth) or continuation
             else -> null
         }
     }
@@ -42,7 +43,7 @@ abstract class AbstractDPD32Bits<T>(bits: Int) : AbstractDecimal32Bits<T>(bits) 
         leadingDigit?.let {
             val stringForm = buildString {
                 append(it)
-                val blockCount = (PRECISION - 1) / 3
+                val blockCount = (traits.precision - 1) / 3
                 for (i in blockCount - 1 downTo 0) {
                     val block by bitfield(this@AbstractDPD32Bits::bits, i * 10, 10, Int::toShort)
                     val dpd = DenselyPackedDecimal(block)
