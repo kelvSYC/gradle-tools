@@ -11,10 +11,7 @@ class ByteArrayBitShiftSpec : FunSpec() {
     init {
         test("leftShift") {
             checkAll(Arb.int(), Arb.int(0 ..< Int.SIZE_BITS)) { value, bitCount ->
-                val bytes = ByteArray(Int.SIZE_BYTES)
-                for (i in 0 ..< Int.SIZE_BYTES) {
-                    bytes[i] = (value shr (i * Byte.SIZE_BITS)).toByte()
-                }
+                val bytes = TypeTraits.Int.asByteArray(value)
 
                 val result = ByteArrayBitShift.leftShift(bytes, bitCount)
                 val rebuilt = result.foldIndexed(0) { index, acc, b ->
@@ -27,10 +24,7 @@ class ByteArrayBitShiftSpec : FunSpec() {
 
         test("rightShift") {
             checkAll(Arb.int(), Arb.int(0 ..< Int.SIZE_BITS)) { value, bitCount ->
-                val bytes = ByteArray(Int.SIZE_BYTES)
-                for (i in 0 ..< Int.SIZE_BYTES) {
-                    bytes[i] = (value shr (i * Byte.SIZE_BITS)).toByte()
-                }
+                val bytes = TypeTraits.Int.asByteArray(value)
 
                 val result = ByteArrayBitShift.rightShift(bytes, bitCount)
                 val rebuilt = result.foldIndexed(0) { index, acc, b ->
@@ -43,10 +37,7 @@ class ByteArrayBitShiftSpec : FunSpec() {
 
         test("arithmeticRightShift") {
             checkAll(Arb.int(), Arb.int(0 ..< Int.SIZE_BITS)) { value, bitCount ->
-                val bytes = ByteArray(Int.SIZE_BYTES)
-                for (i in 0 ..< Int.SIZE_BYTES) {
-                    bytes[i] = (value shr (i * Byte.SIZE_BITS)).toByte()
-                }
+                val bytes = TypeTraits.Int.asByteArray(value)
 
                 val result = ByteArrayBitShift.arithmeticRightShift(bytes, bitCount)
                 val rebuilt = result.foldIndexed(0) { index, acc, b ->

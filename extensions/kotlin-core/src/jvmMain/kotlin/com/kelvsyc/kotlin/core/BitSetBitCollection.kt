@@ -24,6 +24,8 @@ class BitSetBitCollection(private val sizeBits: Int) : BitCollection<BitSet> {
         }
     }
 
+    override fun asByteArray(value: BitSet): ByteArray = value.toByteArray().copyOf(sizeBits)
+
     override fun getSetBits(value: BitSet): Set<Int> = value.stream().toList().toSet()
 
     override fun isZero(value: BitSet): Boolean = value.isEmpty

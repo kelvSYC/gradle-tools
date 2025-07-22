@@ -20,6 +20,8 @@ object ByteBitCollection : BitCollection<Byte> {
         }
     }
 
+    override fun asByteArray(value: Byte): ByteArray = ByteArray(Byte.SIZE_BYTES) { value }
+
     @OptIn(ExperimentalStdlibApi::class)
     override fun getSetBits(value: Byte): Set<Int> = buildSet {
         var mask = 1
@@ -54,6 +56,8 @@ object UByteBitCollection : BitCollection<UByte> {
         }
     }
 
+    override fun asByteArray(value: UByte): ByteArray = ByteArray(UByte.SIZE_BYTES) { value.toByte() }
+
     @OptIn(ExperimentalStdlibApi::class)
     override fun getSetBits(value: UByte): Set<Int> = buildSet {
         var mask = 1
@@ -86,6 +90,10 @@ object ShortBitCollection : BitCollection<Short> {
             yield(value.toInt() and mask != 0)
             mask = mask shl 1
         }
+    }
+
+    override fun asByteArray(value: Short): ByteArray = ByteArray(Short.SIZE_BYTES) {
+        (value.toInt() ushr (it * Byte.SIZE_BITS)).toByte()
     }
 
     @OptIn(ExperimentalStdlibApi::class)
@@ -122,6 +130,10 @@ object UShortBitCollection : BitCollection<UShort> {
         }
     }
 
+    override fun asByteArray(value: UShort): ByteArray = ByteArray(UShort.SIZE_BYTES) {
+        (value.toInt() ushr (it * Byte.SIZE_BITS)).toByte()
+    }
+
     @OptIn(ExperimentalStdlibApi::class)
     override fun getSetBits(value: UShort): Set<Int> = buildSet {
         var mask = 1
@@ -154,6 +166,10 @@ object IntBitCollection : BitCollection<Int> {
             yield(value and mask != 0)
             mask = mask shl 1
         }
+    }
+
+    override fun asByteArray(value: Int): ByteArray = ByteArray(Int.SIZE_BYTES) {
+        (value ushr (it * Byte.SIZE_BITS)).toByte()
     }
 
     @OptIn(ExperimentalStdlibApi::class)
@@ -190,6 +206,10 @@ object UIntBitCollection : BitCollection<UInt> {
         }
     }
 
+    override fun asByteArray(value: UInt): ByteArray = ByteArray(UInt.SIZE_BYTES) {
+        (value shr (it * Byte.SIZE_BITS)).toByte()
+    }
+
     @OptIn(ExperimentalStdlibApi::class)
     override fun getSetBits(value: UInt): Set<Int> = buildSet {
         var mask = 1U
@@ -224,6 +244,10 @@ object LongBitCollection : BitCollection<Long> {
         }
     }
 
+    override fun asByteArray(value: Long): ByteArray = ByteArray(Long.SIZE_BYTES) {
+        (value ushr (it * Byte.SIZE_BITS)).toByte()
+    }
+
     @OptIn(ExperimentalStdlibApi::class)
     override fun getSetBits(value: Long): Set<Int> = buildSet {
         var mask = 1L
@@ -256,6 +280,10 @@ object ULongBitCollection : BitCollection<ULong> {
             yield(value and mask != 0UL)
             mask = mask shl 1
         }
+    }
+
+    override fun asByteArray(value: ULong): ByteArray = ByteArray(Long.SIZE_BYTES) {
+        (value shr (it * Byte.SIZE_BITS)).toByte()
     }
 
     @OptIn(ExperimentalStdlibApi::class)

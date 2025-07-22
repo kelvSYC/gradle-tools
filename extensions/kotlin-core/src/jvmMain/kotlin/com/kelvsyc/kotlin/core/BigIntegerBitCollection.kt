@@ -20,6 +20,16 @@ class BigIntegerBitCollection(private val sizeBits: Int) : BitCollection<BigInte
     }
 
     @OptIn(ExperimentalStdlibApi::class)
+    override fun asByteArray(value: BigInteger): ByteArray = ByteArray(sizeBits.ceilDiv(Byte.SIZE_BITS)) {
+        // Note that value.toByteArray() is not correct, since the endianness is wrong
+        // And twos-complement emulation might get in the way
+        (0 ..< Byte.SIZE_BITS).fold(0) { acc, i ->
+            val pos = it * Byte.SIZE_BITS + i
+            if (value.testBit(pos)) (acc or (1 shl i)) else acc
+        }.toByte()
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
     override fun getSetBits(value: BigInteger): Set<Int> = buildSet {
         for (i in 0 ..< sizeBits) {
             if (value.testBit(i)) add(i)

@@ -9,16 +9,8 @@ class ByteArrayBitwiseSpec : FunSpec() {
     init {
         test("same size and") {
             checkAll<Int, Int> { lhs, rhs ->
-                val lhsBytes = ByteArray(Int.SIZE_BYTES).also {
-                    for (i in 0 ..< Int.SIZE_BYTES) {
-                        it[i] = (lhs shr (i * Byte.SIZE_BITS)).toByte()
-                    }
-                }
-                val rhsBytes = ByteArray(Int.SIZE_BYTES).also {
-                    for (i in 0 ..< Int.SIZE_BYTES) {
-                        it[i] = (rhs shr (i * Byte.SIZE_BITS)).toByte()
-                    }
-                }
+                val lhsBytes = TypeTraits.Int.asByteArray(lhs)
+                val rhsBytes = TypeTraits.Int.asByteArray(rhs)
 
                 val result = ByteArrayBitwise.and(lhsBytes, rhsBytes)
                 val rebuilt = result.foldIndexed(0) { index, acc, b ->
@@ -31,16 +23,8 @@ class ByteArrayBitwiseSpec : FunSpec() {
 
         test("different size and") {
             checkAll<Int, Short> { lhs, rhs ->
-                val lhsBytes = ByteArray(Int.SIZE_BYTES).also {
-                    for (i in 0 ..< Int.SIZE_BYTES) {
-                        it[i] = (lhs shr (i * Byte.SIZE_BITS)).toByte()
-                    }
-                }
-                val rhsBytes = ByteArray(Short.SIZE_BYTES).also {
-                    for (i in 0 ..< Short.SIZE_BYTES) {
-                        it[i] = (rhs.toInt() shr (i * Byte.SIZE_BITS)).toByte()
-                    }
-                }
+                val lhsBytes = TypeTraits.Int.asByteArray(lhs)
+                val rhsBytes = TypeTraits.Short.asByteArray(rhs)
 
                 val result = ByteArrayBitwise.and(lhsBytes, rhsBytes)
                 val rebuilt = result.foldIndexed(0) { index, acc, b ->
@@ -53,16 +37,8 @@ class ByteArrayBitwiseSpec : FunSpec() {
 
         test("same size or") {
             checkAll<Int, Int> { lhs, rhs ->
-                val lhsBytes = ByteArray(Int.SIZE_BYTES).also {
-                    for (i in 0 ..< Int.SIZE_BYTES) {
-                        it[i] = (lhs shr (i * Byte.SIZE_BITS)).toByte()
-                    }
-                }
-                val rhsBytes = ByteArray(Int.SIZE_BYTES).also {
-                    for (i in 0 ..< Int.SIZE_BYTES) {
-                        it[i] = (rhs shr (i * Byte.SIZE_BITS)).toByte()
-                    }
-                }
+                val lhsBytes = TypeTraits.Int.asByteArray(lhs)
+                val rhsBytes = TypeTraits.Int.asByteArray(rhs)
 
                 val result = ByteArrayBitwise.or(lhsBytes, rhsBytes)
                 val rebuilt = result.foldIndexed(0) { index, acc, b ->
@@ -75,16 +51,8 @@ class ByteArrayBitwiseSpec : FunSpec() {
 
         test("different size or") {
             checkAll<Int, Short> { lhs, rhs ->
-                val lhsBytes = ByteArray(Int.SIZE_BYTES).also {
-                    for (i in 0 ..< Int.SIZE_BYTES) {
-                        it[i] = (lhs shr (i * Byte.SIZE_BITS)).toByte()
-                    }
-                }
-                val rhsBytes = ByteArray(Short.SIZE_BYTES).also {
-                    for (i in 0 ..< Short.SIZE_BYTES) {
-                        it[i] = (rhs.toInt() shr (i * Byte.SIZE_BITS)).toByte()
-                    }
-                }
+                val lhsBytes = TypeTraits.Int.asByteArray(lhs)
+                val rhsBytes = TypeTraits.Short.asByteArray(rhs)
 
                 val result = ByteArrayBitwise.or(lhsBytes, rhsBytes)
                 val rebuilt = result.foldIndexed(0) { index, acc, b ->
@@ -97,16 +65,8 @@ class ByteArrayBitwiseSpec : FunSpec() {
 
         test("same size xor") {
             checkAll<Int, Int> { lhs, rhs ->
-                val lhsBytes = ByteArray(Int.SIZE_BYTES).also {
-                    for (i in 0 ..< Int.SIZE_BYTES) {
-                        it[i] = (lhs shr (i * Byte.SIZE_BITS)).toByte()
-                    }
-                }
-                val rhsBytes = ByteArray(Int.SIZE_BYTES).also {
-                    for (i in 0 ..< Int.SIZE_BYTES) {
-                        it[i] = (rhs shr (i * Byte.SIZE_BITS)).toByte()
-                    }
-                }
+                val lhsBytes = TypeTraits.Int.asByteArray(lhs)
+                val rhsBytes = TypeTraits.Int.asByteArray(rhs)
 
                 val result = ByteArrayBitwise.xor(lhsBytes, rhsBytes)
                 val rebuilt = result.foldIndexed(0) { index, acc, b ->
@@ -119,16 +79,8 @@ class ByteArrayBitwiseSpec : FunSpec() {
 
         test("different size xor") {
             checkAll<Int, Short> { lhs, rhs ->
-                val lhsBytes = ByteArray(Int.SIZE_BYTES).also {
-                    for (i in 0 ..< Int.SIZE_BYTES) {
-                        it[i] = (lhs shr (i * Byte.SIZE_BITS)).toByte()
-                    }
-                }
-                val rhsBytes = ByteArray(Short.SIZE_BYTES).also {
-                    for (i in 0 ..< Short.SIZE_BYTES) {
-                        it[i] = (rhs.toInt() shr (i * Byte.SIZE_BITS)).toByte()
-                    }
-                }
+                val lhsBytes = TypeTraits.Int.asByteArray(lhs)
+                val rhsBytes = TypeTraits.Short.asByteArray(rhs)
 
                 val result = ByteArrayBitwise.xor(lhsBytes, rhsBytes)
                 val rebuilt = result.foldIndexed(0) { index, acc, b ->
@@ -141,11 +93,7 @@ class ByteArrayBitwiseSpec : FunSpec() {
 
         test("inv") {
             checkAll<Int> { value ->
-                val bytes = ByteArray(Int.SIZE_BYTES).also {
-                    for (i in 0 ..< Int.SIZE_BYTES) {
-                        it[i] = (value shr (i * Byte.SIZE_BITS)).toByte()
-                    }
-                }
+                val bytes = TypeTraits.Int.asByteArray(value)
 
                 val result = ByteArrayBitwise.inv(bytes)
                 val rebuilt = result.foldIndexed(0) { index, acc, b ->

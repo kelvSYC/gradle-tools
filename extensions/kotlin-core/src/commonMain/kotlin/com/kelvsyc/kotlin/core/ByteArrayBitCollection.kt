@@ -44,6 +44,8 @@ object ByteArrayBitCollection : BitCollection<ByteArray> {
         }
     }
 
+    override fun asByteArray(value: ByteArray): ByteArray = value
+
     @OptIn(ExperimentalStdlibApi::class)
     override fun getSetBits(value: ByteArray): Set<Int>  = buildSet {
         value.forEachIndexed { index, b ->

@@ -17,6 +17,11 @@ interface BitCollection<T> {
     fun asBitSequence(value: T): Sequence<Boolean>
 
     /**
+     * Returns the bit collection as an array of bytes, with the least significant byte first.
+     */
+    fun asByteArray(value: T): ByteArray
+
+    /**
      * Returns the value as a collection of integers denoting the bits that are set, with `0` being the least
      * significant bit.
      */
