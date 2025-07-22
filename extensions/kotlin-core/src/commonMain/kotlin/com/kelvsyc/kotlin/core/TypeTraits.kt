@@ -18,21 +18,30 @@ import com.kelvsyc.internal.kotlin.core.traits.ULongBitStore
 import com.kelvsyc.internal.kotlin.core.traits.ULongBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.UShortBitStore
 import com.kelvsyc.internal.kotlin.core.traits.UShortBitsBased
+import com.kelvsyc.kotlin.core.traits.ArrayLike
 import com.kelvsyc.kotlin.core.traits.Binary32Traits
 import com.kelvsyc.kotlin.core.traits.Binary64Traits
 import com.kelvsyc.kotlin.core.traits.BitStore
 import com.kelvsyc.kotlin.core.traits.BitsBased
 import kotlin.math.absoluteValue
 import kotlin.Byte as KByte
+import kotlin.ByteArray as KByteArray
 import kotlin.Double as KDouble
 import kotlin.Float as KFloat
 import kotlin.Int as KInt
+import kotlin.IntArray as KIntArray
 import kotlin.Long as KLong
+import kotlin.LongArray as KLongArray
 import kotlin.Short as KShort
+import kotlin.ShortArray as KShortArray
 import kotlin.UByte as KUByte
+import kotlin.UByteArray as KUByteArray
 import kotlin.UInt as KUInt
+import kotlin.UIntArray as KUIntArray
 import kotlin.ULong as KULong
+import kotlin.ULongArray as KULongArray
 import kotlin.UShort as KUShort
+import kotlin.UShortArray as KUShortArray
 
 /**
  * Object holder for type traits for common Kotlin types.
@@ -294,5 +303,57 @@ object TypeTraits {
         override fun isNegative(value: KDouble): Boolean = value < 0
         override fun negate(value: KDouble): KDouble = -value
         override fun absoluteValue(value: KDouble): KDouble = value.absoluteValue
+    }
+
+    object ByteArray : ArrayLike<KByteArray, KByte> {
+        override fun create(size: KInt, init: (KInt) -> KByte): KByteArray = KByteArray(size, init)
+        override fun getAt(array: KByteArray, index: KInt): KByte = array[index]
+        override fun getSize(array: KByteArray): KInt = array.size
+    }
+
+    @OptIn(ExperimentalUnsignedTypes::class)
+    object UByteArray : ArrayLike<KUByteArray, KUByte> {
+        override fun create(size: KInt, init: (KInt) -> KUByte): KUByteArray = KUByteArray(size, init)
+        override fun getAt(array: KUByteArray, index: KInt): KUByte = array[index]
+        override fun getSize(array: KUByteArray): KInt = array.size
+    }
+
+    object ShortArray : ArrayLike<KShortArray, KShort> {
+        override fun create(size: KInt, init: (KInt) -> KShort): KShortArray = KShortArray(size, init)
+        override fun getAt(array: KShortArray, index: KInt): KShort = array[index]
+        override fun getSize(array: KShortArray): KInt = array.size
+    }
+
+    @OptIn(ExperimentalUnsignedTypes::class)
+    object UShortArray : ArrayLike<KUShortArray, KUShort> {
+        override fun create(size: KInt, init: (KInt) -> KUShort): KUShortArray = KUShortArray(size, init)
+        override fun getAt(array: KUShortArray, index: KInt): KUShort = array[index]
+        override fun getSize(array: KUShortArray): KInt = array.size
+    }
+
+    object IntArray : ArrayLike<KIntArray, KInt> {
+        override fun create(size: KInt, init: (KInt) -> KInt): KIntArray = KIntArray(size, init)
+        override fun getAt(array: KIntArray, index: KInt): KInt = array[index]
+        override fun getSize(array: KIntArray): KInt = array.size
+    }
+
+    @OptIn(ExperimentalUnsignedTypes::class)
+    object UIntArray : ArrayLike<KUIntArray, KUInt> {
+        override fun create(size: KInt, init: (KInt) -> KUInt): KUIntArray = KUIntArray(size, init)
+        override fun getAt(array: KUIntArray, index: KInt): KUInt = array[index]
+        override fun getSize(array: KUIntArray): KInt = array.size
+    }
+
+    object LongArray : ArrayLike<KLongArray, KLong> {
+        override fun create(size: KInt, init: (KInt) -> KLong): KLongArray = KLongArray(size, init)
+        override fun getAt(array: KLongArray, index: KInt): KLong = array[index]
+        override fun getSize(array: KLongArray): KInt = array.size
+    }
+
+    @OptIn(ExperimentalUnsignedTypes::class)
+    object ULongArray : ArrayLike<KULongArray, KULong> {
+        override fun create(size: KInt, init: (KInt) -> KULong): KULongArray = KULongArray(size, init)
+        override fun getAt(array: KULongArray, index: KInt): KULong = array[index]
+        override fun getSize(array: KULongArray): KInt = array.size
     }
 }
