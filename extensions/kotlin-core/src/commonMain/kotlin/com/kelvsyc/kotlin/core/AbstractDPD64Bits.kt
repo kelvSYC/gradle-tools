@@ -45,7 +45,7 @@ abstract class AbstractDPD64Bits<T>(bits: Long, traits: Decimal64Traits<T>) : Ab
                 append(it)
                 val blockCount = (traits.precision - 1) / 3
                 for (i in blockCount - 1 downTo 0) {
-                    val block by bitfield(this@AbstractDPD64Bits::bits, i * 10, 10, Long::toShort)
+                    val block by bitfield(this@AbstractDPD64Bits::bits, i * 10, 10, TypeTraits.Long, Long::toShort)
                     val dpd = DenselyPackedDecimal(block)
                     append(dpd.asString)
                 }

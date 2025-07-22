@@ -1,6 +1,7 @@
 package com.kelvsyc.kotlin.core
 
 import com.kelvsyc.kotlin.core.traits.Binary16Traits
+import com.kelvsyc.kotlin.core.traits.BitsBased
 
 /**
  * Value representing a 16-bit `binary16` floating-point value.
@@ -39,8 +40,12 @@ value class Float16(val bits: Short): Comparable<Float16> {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object Traits : Binary16Traits<Float16>,
+    object Traits : BitsBased<Float16, Short>,
+        Binary16Traits<Float16>,
         FloatingPoint<Float16>, Addition<Float16>, Multiplication<Float16>, Signed<Float16> {
+        override val sizeBits: Int by Short.Companion::SIZE_BITS
+        override val converter = Converter.of(Float16::bits, ::Float16)
+
         override val positiveInfinity: Float16 = Float16(0x7C00)
         override val negativeInfinity: Float16 = Float16(0xFC00.toShort())
         override val NaN: Float16 = Float16(0xFCE0.toShort())

@@ -14,9 +14,9 @@ import com.kelvsyc.kotlin.core.traits.Decimal64Traits
  */
 abstract class AbstractBID64Bits<T>(bits: Long, traits: Decimal64Traits<T>) : AbstractDecimal64Bits<T>(bits, traits) {
     private val lowExponent by bitfield(
-        this::bits, traits.sizeBits - traits.exponentBits - 1, traits.exponentBits, Long::toInt)
+        this::bits, traits.sizeBits - traits.exponentBits - 1, traits.exponentBits, TypeTraits.Long, Long::toInt)
     private val highExponent by bitfield(
-        this::bits, traits.sizeBits - traits.exponentBits - 3, traits.exponentBits, Long::toInt)
+        this::bits, traits.sizeBits - traits.exponentBits - 3, traits.exponentBits, TypeTraits.Long, Long::toInt)
 
     override val biasedExponent: Int? by lazy {
         when (discriminator) {

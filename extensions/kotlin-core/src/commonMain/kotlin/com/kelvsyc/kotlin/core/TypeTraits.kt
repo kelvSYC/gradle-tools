@@ -1,7 +1,18 @@
 package com.kelvsyc.kotlin.core
 
+import com.kelvsyc.internal.kotlin.core.traits.ByteBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.DoubleBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.FloatBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.IntBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.LongBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.ShortBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.UByteBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.UIntBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.ULongBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.UShortBitsBased
 import com.kelvsyc.kotlin.core.traits.Binary32Traits
 import com.kelvsyc.kotlin.core.traits.Binary64Traits
+import com.kelvsyc.kotlin.core.traits.BitsBased
 import kotlin.experimental.and
 import kotlin.experimental.inv
 import kotlin.experimental.or
@@ -26,7 +37,9 @@ object TypeTraits {
      * Traits object for the [Byte][KByte] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object Byte : BitCollection<KByte>,
+    object Byte :
+        BitsBased<KByte, KByte> by ByteBitsBased,
+        BitCollection<KByte>,
         Addition<KByte>, Multiplication<KByte>, Bitwise<KByte>, BitShift<KByte>, BitRotate<KByte>, Signed<KByte> {
         @OptIn(ExperimentalStdlibApi::class)
         override fun asBitSequence(value: KByte): Sequence<Boolean> = sequence {
@@ -79,7 +92,9 @@ object TypeTraits {
      * Traits object for the [UByte][KUByte] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object UByte : BitCollection<KUByte>,
+    object UByte :
+        BitsBased<KUByte, KByte> by UByteBitsBased,
+        BitCollection<KUByte>,
         Addition<KUByte>, Multiplication<KUByte>, Bitwise<KUByte>, BitShift<KUByte>, BitRotate<KUByte> {
         @OptIn(ExperimentalStdlibApi::class)
         override fun asBitSequence(value: KUByte): Sequence<Boolean> = sequence {
@@ -127,7 +142,9 @@ object TypeTraits {
      * Traits object for the [Short][KShort] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object Short : BitCollection<KShort>,
+    object Short :
+        BitsBased<KShort, KShort> by ShortBitsBased,
+        BitCollection<KShort>,
         Addition<KShort>, Multiplication<KShort>, Bitwise<KShort>, BitShift<KShort>, BitRotate<KShort>, Signed<KShort> {
         @OptIn(ExperimentalStdlibApi::class)
         override fun asBitSequence(value: KShort): Sequence<Boolean> = sequence {
@@ -180,7 +197,9 @@ object TypeTraits {
      * Traits object for the [UShort][KUShort] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object UShort : BitCollection<KUShort>,
+    object UShort :
+        BitsBased<KUShort, KShort> by UShortBitsBased,
+        BitCollection<KUShort>,
         Addition<KUShort>, Multiplication<KUShort>, Bitwise<KUShort>, BitShift<KUShort>, BitRotate<KUShort> {
         @OptIn(ExperimentalStdlibApi::class)
         override fun asBitSequence(value: KUShort): Sequence<Boolean> = sequence {
@@ -228,7 +247,9 @@ object TypeTraits {
      * Traits object for the [Int][KInt] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object Int : BitCollection<KInt>,
+    object Int :
+        BitsBased<KInt, KInt> by IntBitsBased,
+        BitCollection<KInt>,
         Addition<KInt>, Multiplication<KInt>, Bitwise<KInt>, BitShift<KInt>, BitRotate<KInt>, Signed<KInt> {
         @OptIn(ExperimentalStdlibApi::class)
         override fun asBitSequence(value: KInt): Sequence<Boolean> = sequence {
@@ -281,7 +302,9 @@ object TypeTraits {
      * Traits object for the [UInt][KUInt] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object UInt : BitCollection<KUInt>,
+    object UInt :
+        BitsBased<KUInt, KInt> by UIntBitsBased,
+        BitCollection<KUInt>,
         Addition<KUInt>, Multiplication<KUInt>, Bitwise<KUInt>, BitShift<KUInt>, BitRotate<KUInt> {
         @OptIn(ExperimentalStdlibApi::class)
         override fun asBitSequence(value: KUInt): Sequence<Boolean> = sequence {
@@ -329,7 +352,9 @@ object TypeTraits {
      * Traits object for the [Long][KLong] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object Long : BitCollection<KLong>,
+    object Long :
+        BitsBased<KLong, KLong> by LongBitsBased,
+        BitCollection<KLong>,
         Addition<KLong>, Multiplication<KLong>, Bitwise<KLong>, BitShift<KLong>, BitRotate<KLong>, Signed<KLong> {
         @OptIn(ExperimentalStdlibApi::class)
         override fun asBitSequence(value: KLong): Sequence<Boolean> = sequence {
@@ -382,7 +407,9 @@ object TypeTraits {
      * Traits object for the [ULong][KULong] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object ULong : BitCollection<KULong>,
+    object ULong :
+        BitsBased<KULong, KLong> by ULongBitsBased,
+        BitCollection<KULong>,
         Addition<KULong>, Multiplication<KULong>, Bitwise<KULong>, BitShift<KULong>, BitRotate<KULong> {
         @OptIn(ExperimentalStdlibApi::class)
         override fun asBitSequence(value: KULong): Sequence<Boolean> = sequence {
@@ -427,7 +454,9 @@ object TypeTraits {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object Float : Binary32Traits<KFloat>, FloatingPoint<KFloat>, Addition<KFloat>, Multiplication<KFloat>, Signed<KFloat> {
+    object Float :
+        BitsBased<KFloat, KInt> by FloatBitsBased,
+        Binary32Traits<KFloat>, FloatingPoint<KFloat>, Addition<KFloat>, Multiplication<KFloat>, Signed<KFloat> {
         override val positiveInfinity: KFloat by KFloat.Companion::POSITIVE_INFINITY
         override val negativeInfinity: KFloat by KFloat.Companion::NEGATIVE_INFINITY
         override val NaN: KFloat by KFloat.Companion::NaN
@@ -451,7 +480,9 @@ object TypeTraits {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object Double : Binary64Traits<KDouble>, FloatingPoint<KDouble>, Addition<KDouble>, Multiplication<KDouble>, Signed<KDouble> {
+    object Double :
+        BitsBased<KDouble, KLong> by DoubleBitsBased,
+        Binary64Traits<KDouble>, FloatingPoint<KDouble>, Addition<KDouble>, Multiplication<KDouble>, Signed<KDouble> {
         override val positiveInfinity: KDouble by KDouble.Companion::POSITIVE_INFINITY
         override val negativeInfinity: KDouble by KDouble.Companion::NEGATIVE_INFINITY
         override val NaN: KDouble by KDouble.Companion::NaN

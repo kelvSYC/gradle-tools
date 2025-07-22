@@ -12,7 +12,7 @@ abstract class AbstractBinary64Bits<T>(
     override val traits: Binary64Traits<T>
 ) : AbstractFloatingPointBits<T, Long>(bits, traits) {
     override val signBit by flag(this::bits, traits.sizeBits - 1)
-    override val biasedExponent by bitfield(this::bits, traits.mantissaWidth, traits.exponentWidth, Long::toInt)
+    override val biasedExponent by bitfield(this::bits, traits.mantissaWidth, traits.exponentWidth, TypeTraits.Long, Long::toInt)
     override val mantissa by bitfield(this::bits, 0, traits.mantissaWidth)
 
     override val isNormal by lazy { biasedExponent != 0 && biasedExponent != (1 shl traits.exponentWidth) - 1 }

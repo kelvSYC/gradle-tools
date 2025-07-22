@@ -12,7 +12,7 @@ abstract class AbstractBinary16Bits<T>(
     override val traits: Binary16Traits<T>
 ) : AbstractFloatingPointBits<T, Short>(bits, traits) {
     override val signBit by flag(this::bits, traits.sizeBits - 1)
-    override val biasedExponent by bitfield(this::bits, traits.mantissaWidth, traits.exponentWidth, Short::toInt)
+    override val biasedExponent by bitfield(this::bits, traits.mantissaWidth, traits.exponentWidth, TypeTraits.Short, Short::toInt)
     override val mantissa by bitfield(this::bits, 0, traits.mantissaWidth)
 
     override val isZero by lazy { biasedExponent == 0 && mantissa.toInt() == 0 }

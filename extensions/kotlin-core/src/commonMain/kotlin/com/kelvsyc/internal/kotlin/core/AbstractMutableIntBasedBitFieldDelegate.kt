@@ -5,12 +5,12 @@ import com.kelvsyc.kotlin.core.Converter
 import com.kelvsyc.kotlin.core.TypeTraits
 import kotlin.reflect.KMutableProperty0
 
-class MutableIntBasedBitFieldDelegate<T>(
-    backingProperty: KMutableProperty0<Int>,
+abstract class AbstractMutableIntBasedBitFieldDelegate<S, T>(
+    backingProperty: KMutableProperty0<S>,
     off: Int,
     len: Int,
     converter: Converter<Int, T>
-) : AbstractMutableBitFieldDelegate<T, Int>(backingProperty, off, len, converter) {
+) : AbstractMutableBitFieldDelegate<S, T, Int>(backingProperty, off, len, converter) {
     override val bitShift
         get() = TypeTraits.Int
     override val bitwise
@@ -21,10 +21,7 @@ class MutableIntBasedBitFieldDelegate<T>(
         require(offset >= 0 && offset < Int.SIZE_BITS) { "Offset must be in range" }
         require(length > 0 && offset + length <= Int.SIZE_BITS) { "Length must be in range" }
 
-        var result = 0
-        for (it in 0 ..< length) {
-            result = result or (1 shl it)
-        }
+        val result = (1 shl length) - 1
         return result shl offset
     }
 }

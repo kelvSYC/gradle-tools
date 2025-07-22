@@ -17,13 +17,13 @@ abstract class AbstractDecimal64Bits<T>(
 
     override val signBit: Boolean by flag(this::bits, traits.sizeBits - 1)
     override val combination: Int by bitfield(
-        this::bits, traits.continuationWidth, traits.combinationWidth, Long::toInt)
+        this::bits, traits.continuationWidth, traits.combinationWidth, TypeTraits.Long, Long::toInt)
     override val continuation: Long by bitfield(this::bits, 0, traits.continuationWidth)
 
     override val exponent: Int? by lazy { biasedExponent?.let {it - traits.exponentBias} }
     override val integralExponent: Int? by lazy { biasedExponent?.let {it - traits.integralExponentBias} }
 
-    private val topBits by bitfield(this::bits, traits.sizeBits - 6, 5, Long::toInt)
+    private val topBits by bitfield(this::bits, traits.sizeBits - 6, 5, TypeTraits.Long, Long::toInt)
     protected val discriminator by lazy {
         topBits.let {
             if (it and 0x18 != 0x18) Discriminator.LOW

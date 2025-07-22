@@ -16,23 +16,25 @@ import kotlin.reflect.KProperty
  * @param len The number of bits the value takes up within the backing property
  * @param converter The converter used to convert instances of the backing property to instances of the declared type.
  * @param T The declared type of this property
- * @param B The type of the backing property
+ * @param S The type of the backing property
+ * @param B The type of the backing property's underlying bit store
  */
-abstract class AbstractMutableBitFieldDelegate<T, B>(
-    override val backingProperty: KMutableProperty0<B>,
+abstract class AbstractMutableBitFieldDelegate<S, T, B>(
+    override val backingProperty: KMutableProperty0<S>,
     off: Int,
     len: Int,
     protected val converter: Converter<B, T>
-) : AbstractBitFieldDelegate<T, B>(backingProperty, off, len), ReadWriteProperty<Any?, T> {
+) : AbstractBitFieldDelegate<S, T, B>(backingProperty, off, len), ReadWriteProperty<Any?, T> {
     final override fun convert(bits: B): T = converter(bits)
 
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         val baseValue = converter.reverse(value)
         val shifted = bitShift.leftShift(baseValue, off)
         val existingValue = backingProperty.get()
+        val existingBits = bitsBased.converter(existingValue)
         val inverseMask = bitwise.inv(mask)
         val masked = bitwise.and(shifted, mask)
-        val newValue = bitwise.or(bitwise.and(existingValue, inverseMask), masked)
-        backingProperty.set(newValue)
+        val newValue = bitwise.or(bitwise.and(existingBits, inverseMask), masked)
+        backingProperty.set(bitsBased.converter.reverse(newValue))
     }
 }

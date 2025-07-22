@@ -4,9 +4,9 @@ import com.kelvsyc.kotlin.core.AbstractBitFieldDelegate
 import com.kelvsyc.kotlin.core.TypeTraits
 import kotlin.reflect.KProperty0
 
-abstract class AbstractIntBasedBitFieldDelegate<T>(
-    backingProperty: KProperty0<Int>, off: Int, len: Int
-) : AbstractBitFieldDelegate<T, Int>(backingProperty, off, len) {
+abstract class AbstractIntBasedBitFieldDelegate<S, T>(
+    backingProperty: KProperty0<S>, off: Int, len: Int
+) : AbstractBitFieldDelegate<S, T, Int>(backingProperty, off, len) {
     override val bitShift
         get() = TypeTraits.Int
     override val bitwise
@@ -17,10 +17,7 @@ abstract class AbstractIntBasedBitFieldDelegate<T>(
         require(offset >= 0 && offset < Int.SIZE_BITS) { "Offset must be in range" }
         require(length > 0 && offset + length <= Int.SIZE_BITS) { "Length must be in range" }
 
-        var result = 0
-        for (it in 0 ..< length) {
-            result = result or (1 shl it)
-        }
+        val result = (1 shl length) - 1
         return result shl offset
     }
 }
