@@ -29,12 +29,12 @@ abstract class AbstractMutableBitFieldDelegate<S, T, B>(
 
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         val baseValue = converter.reverse(value)
-        val shifted = bitShift.leftShift(baseValue, off)
+        val shifted = bitstore.leftShift(baseValue, off)
         val existingValue = backingProperty.get()
         val existingBits = bitsBased.converter(existingValue)
-        val inverseMask = bitwise.inv(mask)
-        val masked = bitwise.and(shifted, mask)
-        val newValue = bitwise.or(bitwise.and(existingBits, inverseMask), masked)
+        val inverseMask = bitstore.inv(mask)
+        val masked = bitstore.and(shifted, mask)
+        val newValue = bitstore.or(bitstore.and(existingBits, inverseMask), masked)
         backingProperty.set(bitsBased.converter.reverse(newValue))
     }
 }

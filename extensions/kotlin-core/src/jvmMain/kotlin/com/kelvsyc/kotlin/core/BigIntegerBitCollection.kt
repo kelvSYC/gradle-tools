@@ -8,6 +8,12 @@ import java.math.BigInteger
  * @param sizeBits The size of the fixed-size [BigInteger].
  */
 class BigIntegerBitCollection(private val sizeBits: Int) : BitCollection<BigInteger> {
+    override fun fromBits(bits: IntRange): BigInteger {
+        require(bits.start >= 0 && bits.endInclusive < sizeBits) { "Bit collection contains values out of range" }
+
+        return bits.fold(BigInteger.ZERO, BigInteger::setBit)
+    }
+
     @OptIn(ExperimentalStdlibApi::class)
     override fun asBitSequence(value: BigInteger): Sequence<Boolean> = sequence {
         for (i in 0 ..< sizeBits) yield(value.testBit(i))
@@ -19,6 +25,8 @@ class BigIntegerBitCollection(private val sizeBits: Int) : BitCollection<BigInte
             if (value.testBit(i)) add(i)
         }
     }
+
+    override fun isZero(value: BigInteger): Boolean = value == BigInteger.ZERO
 
     override fun countLeadingZeroBits(value: BigInteger): Int {
         // sizeBits - value.bitLength() only works for positive values of BigInteger, due to BigInteger trying to

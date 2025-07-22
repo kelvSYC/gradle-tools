@@ -23,7 +23,7 @@ class MutableBitSetBitRotate(private val sizeBits: Int) : BitRotate<BitSet> {
             // Thus, we start with i, (i - n) + sizebits, and so on, with the last element being (i + n) % sizeBits
             val positions = generateSequence(i, nextFunction = {
                 val next = (it - n).mod(sizeBits)
-                next.takeIf { it != i }.also { println("\t\tnext: $it")}
+                next.takeIf { it != i }
             })
             positions.zipWithNext().forEach { (dstIndex, srcIndex) ->
                 // This loop starts with replacing result[i], and then replacing the value where it was moved from

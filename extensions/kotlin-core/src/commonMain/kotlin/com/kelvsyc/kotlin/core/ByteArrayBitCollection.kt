@@ -1,9 +1,41 @@
 package com.kelvsyc.kotlin.core
 
+import kotlin.math.absoluteValue
+import kotlin.math.sign
+
 /**
  * Implementation of [BitCollection] on [ByteArray], where bytes are arranged with the least significant byte first.
  */
 object ByteArrayBitCollection : BitCollection<ByteArray> {
+    override fun fromBits(bits: IntRange): ByteArray {
+        val size = bits.endInclusive.let { it.floorDiv(Byte.SIZE_BITS) + it.rem(Byte.SIZE_BITS).sign.absoluteValue }
+
+        val startIndex = bits.start / Byte.SIZE_BITS
+        val endIndex = bits.endInclusive / Byte.SIZE_BITS
+
+        val result = ByteArray(size)
+        if (startIndex == endIndex) {
+            // The start and end index are in the same byte, so only that byte needs to be set
+            val length = bits.endInclusive - bits.start
+            val value = ((1 shl length) - 1).toByte()
+            result[startIndex] = value
+        } else {
+            // The start and end index are in different bytes and thus require special values
+            // All bits in between the two indices should be set to 0xFF
+            val startBit = bits.start.rem(Byte.SIZE_BITS)
+            val endBit = bits.endInclusive.rem(Byte.SIZE_BITS)
+
+            @Suppress("detekt:MagicNumber")
+            val startValue = (0xFF shl startBit).toByte()
+            val endValue = ((1 shl endBit) - 1).toByte()
+
+            result[startIndex] = startValue
+            for (i in startIndex + 1 .. endIndex - 1) { result[i] = 0xFF.toByte() }
+            result[endIndex] = endValue
+        }
+        return result
+    }
+
     @OptIn(ExperimentalStdlibApi::class)
     override fun asBitSequence(value: ByteArray): Sequence<Boolean> = sequence {
         value.forEach {
@@ -27,6 +59,8 @@ object ByteArrayBitCollection : BitCollection<ByteArray> {
             }
         }
     }
+
+    override fun isZero(value: ByteArray): Boolean = value.all { it.toInt() == 0 }
 
     override fun countLeadingZeroBits(value: ByteArray): Int {
         val idx = value.indexOfLast { it.countLeadingZeroBits() != Byte.SIZE_BITS }
