@@ -1,14 +1,11 @@
 package com.kelvsyc.kotlin.core
 
-import kotlin.math.absoluteValue
-import kotlin.math.sign
-
 /**
  * Implementation of [BitCollection] on [ByteArray], where bytes are arranged with the least significant byte first.
  */
 object ByteArrayBitCollection : BitCollection<ByteArray> {
     override fun fromBits(bits: IntRange): ByteArray {
-        val size = bits.endInclusive.let { it.floorDiv(Byte.SIZE_BITS) + it.rem(Byte.SIZE_BITS).sign.absoluteValue }
+        val size = bits.endInclusive.ceilDiv(Byte.SIZE_BITS)
 
         val startIndex = bits.start / Byte.SIZE_BITS
         val endIndex = bits.endInclusive / Byte.SIZE_BITS
