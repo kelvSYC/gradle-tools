@@ -22,6 +22,7 @@ abstract class AbstractDecimal64Bits<T>(
 
     override val exponent: Int? by lazy { biasedExponent?.let {it - traits.exponentBias} }
     override val integralExponent: Int? by lazy { biasedExponent?.let {it - traits.integralExponentBias} }
+    override val payload: Long? by lazy { payloadInternal.takeIf {isNaN} }
 
     private val topBits by bitfield(this::bits, traits.sizeBits - 6, 5, TypeTraits.Long, Long::toInt)
     protected val discriminator by lazy {
@@ -34,6 +35,7 @@ abstract class AbstractDecimal64Bits<T>(
     }
 
     private val signalling by flag(this::bits, traits.sizeBits - 7)
+    private val payloadInternal by bitfield(this::bits, 0, traits.sizeBits - 7)
     override val isInfinite: Boolean by lazy { discriminator == Discriminator.INFINITE }
     override val isNaN: Boolean by lazy { discriminator == Discriminator.NAN }
     override val isQuietNaN: Boolean by lazy { isNaN && !signalling }

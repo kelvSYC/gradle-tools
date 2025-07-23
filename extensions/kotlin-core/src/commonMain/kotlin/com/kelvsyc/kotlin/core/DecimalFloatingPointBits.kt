@@ -1,5 +1,7 @@
 package com.kelvsyc.kotlin.core
 
+import com.kelvsyc.kotlin.core.fp.DecimalFloatingPoint
+
 /**
  * Interface representing the bit representation of a decimal floating-point value.
  *
@@ -163,7 +165,25 @@ interface DecimalFloatingPointBits<T, B> {
     val isSignallingNaN: Boolean
 
     /**
+     * Returns the payload of a NaN.
+     *
+     * This function returns `null` if this value is not a NaN.
+     */
+    val payload: B?
+
+    /**
      * Converts this bit representation to an instance of the decimal floating-point type.
      */
     fun toFloatingPoint(): T
+
+    /**
+     * Converts this bit representation to an instance of [DecimalFloatingPoint].
+     */
+    fun toDecimalFloatingPoint(): DecimalFloatingPoint<B> = if (isInfinite) {
+        DecimalFloatingPoint.Infinity(signBit)
+    } else if (isNaN) {
+        DecimalFloatingPoint.NaN(isSignallingNaN,payload!!)
+    } else {
+        DecimalFloatingPoint.Finite(signBit, integralExponent!!, significand!!)
+    }
 }
