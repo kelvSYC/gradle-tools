@@ -2,6 +2,7 @@ package com.kelvsyc.kotlin.core.fp
 
 import com.kelvsyc.kotlin.core.Addition
 import com.kelvsyc.kotlin.core.FloatingPoint
+import com.kelvsyc.kotlin.core.makePeeking
 
 /**
  * Implementation of addition and subtraction operations for doubled floating-point types.
@@ -157,22 +158,17 @@ abstract class AbstractDoubleFloatingPointAddition<F, D : DoubleFloatingPoint<F>
 
         // First, we merge the two lists
         val g = buildList {
-            val ait = a.iterator()
-            val bit = b.iterator()
-            var aNext: F? = null
-            var bNext: F? = null
-            while ((aNext != null || ait.hasNext()) && (bNext != null || bit.hasNext())) {
-                if (aNext == null) aNext = ait.next()
-                if (bNext == null) bNext = bit.next()
-
+            val ait = a.iterator().makePeeking()
+            val bit = b.iterator().makePeeking()
+            while (ait.hasNext() && bit.hasNext()) {
                 // Add the smaller of the two by magnitude
-                val cmp = comparator.compare(signed.base.absoluteValue(aNext!!), signed.base.absoluteValue(bNext!!))
+                val cmp = comparator.compare(
+                    signed.base.absoluteValue(ait.peek()), signed.base.absoluteValue(bit.peek())
+                )
                 if (cmp > 0) {
-                    add(bNext)
-                    bNext = null
+                    add(bit.next())
                 } else {
-                    add(aNext)
-                    aNext = null
+                    add(ait.next())
                 }
             }
             if (ait.hasNext()) {
