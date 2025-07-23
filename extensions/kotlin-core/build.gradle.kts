@@ -20,5 +20,7 @@ kotlin {
 
     sourceSets.jvmMain.dependencies {
         implementation(libs.guava)
+        implementation(libs.commons.lang)
+        implementation(libs.commons.io)
     }
 }
