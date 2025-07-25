@@ -12,9 +12,4 @@ import com.kelvsyc.kotlin.core.Bitwise
  *
  * @param The bit store type.
  */
-interface BitStore<T> : BitCollection<T>, Bitwise<T>, BitShift<T> {
-    /**
-     * The overall size, in bits, of this bit store.
-     */
-    val sizeBits: Int
-}
+interface BitStore<T> : BitCollection<T>, Bitwise<T>, BitShift<T>

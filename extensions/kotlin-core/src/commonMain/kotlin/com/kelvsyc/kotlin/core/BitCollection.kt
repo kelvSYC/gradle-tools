@@ -7,6 +7,11 @@ package com.kelvsyc.kotlin.core
  */
 interface BitCollection<T> {
     /**
+     * The size of the bit collection.
+     */
+    val sizeBits: Int
+
+    /**
      * Creates a bit collection whose set bits are specified by the supplied [IntRange].
      */
     fun fromBits(bits: IntRange): T

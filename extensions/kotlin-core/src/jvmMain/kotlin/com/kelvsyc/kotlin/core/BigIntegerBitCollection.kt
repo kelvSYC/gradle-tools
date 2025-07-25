@@ -7,7 +7,7 @@ import java.math.BigInteger
  *
  * @param sizeBits The size of the fixed-size [BigInteger].
  */
-class BigIntegerBitCollection(private val sizeBits: Int) : BitCollection<BigInteger> {
+class BigIntegerBitCollection(override val sizeBits: Int) : BitCollection<BigInteger> {
     override fun fromBits(bits: IntRange): BigInteger {
         require(bits.start >= 0 && bits.endInclusive < sizeBits) { "Bit collection contains values out of range" }
 

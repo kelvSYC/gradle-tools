@@ -8,7 +8,7 @@ import kotlin.streams.toList
  *
  * @param sizeBits The size of the fixed-size [BitSet].
  */
-class BitSetBitCollection(private val sizeBits: Int) : BitCollection<BitSet> {
+class BitSetBitCollection(override val sizeBits: Int) : BitCollection<BitSet> {
     override fun fromBits(bits: IntRange): BitSet {
         require(bits.start >= 0 && bits.endInclusive < sizeBits) { "Bit collection contains values out of range" }
 
@@ -24,7 +24,7 @@ class BitSetBitCollection(private val sizeBits: Int) : BitCollection<BitSet> {
         }
     }
 
-    override fun asByteArray(value: BitSet): ByteArray = value.toByteArray().copyOf(sizeBits)
+    override fun asByteArray(value: BitSet): ByteArray = value.toByteArray().copyOf(sizeBits / Byte.SIZE_BITS)
 
     override fun getSetBits(value: BitSet): Set<Int> = value.stream().toList().toSet()
 

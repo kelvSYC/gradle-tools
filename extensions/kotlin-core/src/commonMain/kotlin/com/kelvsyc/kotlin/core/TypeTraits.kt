@@ -305,55 +305,183 @@ object TypeTraits {
         override fun absoluteValue(value: KDouble): KDouble = value.absoluteValue
     }
 
+    @Suppress("detekt:TooManyFunctions")
     object ByteArray : ArrayLike<KByteArray, KByte> {
         override fun create(size: KInt, init: (KInt) -> KByte): KByteArray = KByteArray(size, init)
         override fun getAt(array: KByteArray, index: KInt): KByte = array[index]
         override fun getSize(array: KByteArray): KInt = array.size
+
+        override fun any(array: KByteArray, predicate: (KByte) -> Boolean): Boolean = array.any(predicate)
+        override fun all(array: KByteArray, predicate: (KByte) -> Boolean): Boolean = array.all(predicate)
+        override fun none(array: KByteArray, predicate: (KByte) -> Boolean): Boolean = array.none(predicate)
+
+        override fun <R> map(array: KByteArray, transform: (KByte) -> R): List<R> = array.map(transform)
+        override fun <R> mapIndexed(array: KByteArray, transform: (KInt, KByte) -> R): List<R> = array.mapIndexed(transform)
+        override fun <R> flatMap(array: KByteArray, transform: (KByte) -> Iterable<R>): List<R> = array.flatMap(transform)
+        override fun <R> flatMapIndexed(array: KByteArray, transform: (KInt, KByte) -> Iterable<R>): List<R> = array.flatMapIndexed(transform)
+
+        override fun forEach(array: KByteArray, action: (KByte) -> Unit) = array.forEach(action)
+        override fun forEachIndexed(array: KByteArray, action: (KInt, KByte) -> Unit) = array.forEachIndexed(action)
+
+        override fun indexOfFirst(array: KByteArray, predicate: (KByte) -> Boolean): KInt = array.indexOfFirst(predicate)
+        override fun indexOfLast(array: KByteArray, predicate: (KByte) -> Boolean): KInt = array.indexOfLast(predicate)
     }
 
+    @Suppress("detekt:TooManyFunctions")
     @OptIn(ExperimentalUnsignedTypes::class)
     object UByteArray : ArrayLike<KUByteArray, KUByte> {
         override fun create(size: KInt, init: (KInt) -> KUByte): KUByteArray = KUByteArray(size, init)
         override fun getAt(array: KUByteArray, index: KInt): KUByte = array[index]
         override fun getSize(array: KUByteArray): KInt = array.size
+
+        override fun any(array: KUByteArray, predicate: (KUByte) -> Boolean): Boolean = array.any(predicate)
+        override fun all(array: KUByteArray, predicate: (KUByte) -> Boolean): Boolean = array.all(predicate)
+        override fun none(array: KUByteArray, predicate: (KUByte) -> Boolean): Boolean = array.none(predicate)
+
+        override fun <R> map(array: KUByteArray, transform: (KUByte) -> R): List<R> = array.map(transform)
+        override fun <R> mapIndexed(array: KUByteArray, transform: (KInt, KUByte) -> R): List<R> = array.mapIndexed(transform)
+        override fun <R> flatMap(array: KUByteArray, transform: (KUByte) -> Iterable<R>): List<R> = array.flatMap(transform)
+        override fun <R> flatMapIndexed(array: KUByteArray, transform: (KInt, KUByte) -> Iterable<R>): List<R> = array.flatMapIndexed(transform)
+
+        override fun forEach(array: KUByteArray, action: (KUByte) -> Unit) = array.forEach(action)
+        override fun forEachIndexed(array: KUByteArray, action: (KInt, KUByte) -> Unit) = array.forEachIndexed(action)
+
+        override fun indexOfFirst(array: KUByteArray, predicate: (KUByte) -> Boolean): KInt = array.indexOfFirst(predicate)
+        override fun indexOfLast(array: KUByteArray, predicate: (KUByte) -> Boolean): KInt = array.indexOfLast(predicate)
     }
 
+    @Suppress("detekt:TooManyFunctions")
     object ShortArray : ArrayLike<KShortArray, KShort> {
         override fun create(size: KInt, init: (KInt) -> KShort): KShortArray = KShortArray(size, init)
         override fun getAt(array: KShortArray, index: KInt): KShort = array[index]
         override fun getSize(array: KShortArray): KInt = array.size
+
+        override fun any(array: KShortArray, predicate: (KShort) -> Boolean): Boolean = array.any(predicate)
+        override fun all(array: KShortArray, predicate: (KShort) -> Boolean): Boolean = array.all(predicate)
+        override fun none(array: KShortArray, predicate: (KShort) -> Boolean): Boolean = array.none(predicate)
+
+        override fun <R> map(array: KShortArray, transform: (KShort) -> R): List<R> = array.map(transform)
+        override fun <R> mapIndexed(array: KShortArray, transform: (KInt, KShort) -> R): List<R> = array.mapIndexed(transform)
+        override fun <R> flatMap(array: KShortArray, transform: (KShort) -> Iterable<R>): List<R> = array.flatMap(transform)
+        override fun <R> flatMapIndexed(array: KShortArray, transform: (KInt, KShort) -> Iterable<R>): List<R> = array.flatMapIndexed(transform)
+
+        override fun forEach(array: KShortArray, action: (KShort) -> Unit) = array.forEach(action)
+        override fun forEachIndexed(array: KShortArray, action: (KInt, KShort) -> Unit) = array.forEachIndexed(action)
+
+        override fun indexOfFirst(array: KShortArray, predicate: (KShort) -> Boolean): KInt = array.indexOfFirst(predicate)
+        override fun indexOfLast(array: KShortArray, predicate: (KShort) -> Boolean): KInt = array.indexOfLast(predicate)
     }
 
+    @Suppress("detekt:TooManyFunctions")
     @OptIn(ExperimentalUnsignedTypes::class)
     object UShortArray : ArrayLike<KUShortArray, KUShort> {
         override fun create(size: KInt, init: (KInt) -> KUShort): KUShortArray = KUShortArray(size, init)
         override fun getAt(array: KUShortArray, index: KInt): KUShort = array[index]
         override fun getSize(array: KUShortArray): KInt = array.size
+
+        override fun any(array: KUShortArray, predicate: (KUShort) -> Boolean): Boolean = array.any(predicate)
+        override fun all(array: KUShortArray, predicate: (KUShort) -> Boolean): Boolean = array.all(predicate)
+        override fun none(array: KUShortArray, predicate: (KUShort) -> Boolean): Boolean = array.none(predicate)
+
+        override fun <R> map(array: KUShortArray, transform: (KUShort) -> R): List<R> = array.map(transform)
+        override fun <R> mapIndexed(array: KUShortArray, transform: (KInt, KUShort) -> R): List<R> = array.mapIndexed(transform)
+        override fun <R> flatMap(array: KUShortArray, transform: (KUShort) -> Iterable<R>): List<R> = array.flatMap(transform)
+        override fun <R> flatMapIndexed(array: KUShortArray, transform: (KInt, KUShort) -> Iterable<R>): List<R> = array.flatMapIndexed(transform)
+
+        override fun forEach(array: KUShortArray, action: (KUShort) -> Unit) = array.forEach(action)
+        override fun forEachIndexed(array: KUShortArray, action: (KInt, KUShort) -> Unit) = array.forEachIndexed(action)
+
+        override fun indexOfFirst(array: KUShortArray, predicate: (KUShort) -> Boolean): KInt = array.indexOfFirst(predicate)
+        override fun indexOfLast(array: KUShortArray, predicate: (KUShort) -> Boolean): KInt = array.indexOfLast(predicate)
     }
 
+    @Suppress("detekt:TooManyFunctions")
     object IntArray : ArrayLike<KIntArray, KInt> {
         override fun create(size: KInt, init: (KInt) -> KInt): KIntArray = KIntArray(size, init)
         override fun getAt(array: KIntArray, index: KInt): KInt = array[index]
         override fun getSize(array: KIntArray): KInt = array.size
+
+        override fun any(array: KIntArray, predicate: (KInt) -> Boolean): Boolean = array.any(predicate)
+        override fun all(array: KIntArray, predicate: (KInt) -> Boolean): Boolean = array.all(predicate)
+        override fun none(array: KIntArray, predicate: (KInt) -> Boolean): Boolean = array.none(predicate)
+
+        override fun <R> map(array: KIntArray, transform: (KInt) -> R): List<R> = array.map(transform)
+        override fun <R> mapIndexed(array: KIntArray, transform: (KInt, KInt) -> R): List<R> = array.mapIndexed(transform)
+        override fun <R> flatMap(array: KIntArray, transform: (KInt) -> Iterable<R>): List<R> = array.flatMap(transform)
+        override fun <R> flatMapIndexed(array: KIntArray, transform: (KInt, KInt) -> Iterable<R>): List<R> = array.flatMapIndexed(transform)
+
+        override fun forEach(array: KIntArray, action: (KInt) -> Unit) = array.forEach(action)
+        override fun forEachIndexed(array: KIntArray, action: (KInt, KInt) -> Unit) = array.forEachIndexed(action)
+
+        override fun indexOfFirst(array: KIntArray, predicate: (KInt) -> Boolean): KInt = array.indexOfFirst(predicate)
+        override fun indexOfLast(array: KIntArray, predicate: (KInt) -> Boolean): KInt = array.indexOfLast(predicate)
     }
 
+    @Suppress("detekt:TooManyFunctions")
     @OptIn(ExperimentalUnsignedTypes::class)
     object UIntArray : ArrayLike<KUIntArray, KUInt> {
         override fun create(size: KInt, init: (KInt) -> KUInt): KUIntArray = KUIntArray(size, init)
         override fun getAt(array: KUIntArray, index: KInt): KUInt = array[index]
         override fun getSize(array: KUIntArray): KInt = array.size
+
+        override fun any(array: KUIntArray, predicate: (KUInt) -> Boolean): Boolean = array.any(predicate)
+        override fun all(array: KUIntArray, predicate: (KUInt) -> Boolean): Boolean = array.all(predicate)
+        override fun none(array: KUIntArray, predicate: (KUInt) -> Boolean): Boolean = array.none(predicate)
+
+        override fun <R> map(array: KUIntArray, transform: (KUInt) -> R): List<R> = array.map(transform)
+        override fun <R> mapIndexed(array: KUIntArray, transform: (KInt, KUInt) -> R): List<R> = array.mapIndexed(transform)
+        override fun <R> flatMap(array: KUIntArray, transform: (KUInt) -> Iterable<R>): List<R> = array.flatMap(transform)
+        override fun <R> flatMapIndexed(array: KUIntArray, transform: (KInt, KUInt) -> Iterable<R>): List<R> = array.flatMapIndexed(transform)
+
+        override fun forEach(array: KUIntArray, action: (KUInt) -> Unit) = array.forEach(action)
+        override fun forEachIndexed(array: KUIntArray, action: (KInt, KUInt) -> Unit) = array.forEachIndexed(action)
+
+        override fun indexOfFirst(array: KUIntArray, predicate: (KUInt) -> Boolean): KInt = array.indexOfFirst(predicate)
+        override fun indexOfLast(array: KUIntArray, predicate: (KUInt) -> Boolean): KInt = array.indexOfLast(predicate)
     }
 
+    @Suppress("detekt:TooManyFunctions")
     object LongArray : ArrayLike<KLongArray, KLong> {
         override fun create(size: KInt, init: (KInt) -> KLong): KLongArray = KLongArray(size, init)
         override fun getAt(array: KLongArray, index: KInt): KLong = array[index]
         override fun getSize(array: KLongArray): KInt = array.size
+
+        override fun any(array: KLongArray, predicate: (KLong) -> Boolean): Boolean = array.any(predicate)
+        override fun all(array: KLongArray, predicate: (KLong) -> Boolean): Boolean = array.all(predicate)
+        override fun none(array: KLongArray, predicate: (KLong) -> Boolean): Boolean = array.none(predicate)
+
+        override fun <R> map(array: KLongArray, transform: (KLong) -> R): List<R> = array.map(transform)
+        override fun <R> mapIndexed(array: KLongArray, transform: (KInt, KLong) -> R): List<R> = array.mapIndexed(transform)
+        override fun <R> flatMap(array: KLongArray, transform: (KLong) -> Iterable<R>): List<R> = array.flatMap(transform)
+        override fun <R> flatMapIndexed(array: KLongArray, transform: (KInt, KLong) -> Iterable<R>): List<R> = array.flatMapIndexed(transform)
+
+        override fun forEach(array: KLongArray, action: (KLong) -> Unit) = array.forEach(action)
+        override fun forEachIndexed(array: KLongArray, action: (KInt, KLong) -> Unit) = array.forEachIndexed(action)
+
+        override fun indexOfFirst(array: KLongArray, predicate: (KLong) -> Boolean): KInt = array.indexOfFirst(predicate)
+        override fun indexOfLast(array: KLongArray, predicate: (KLong) -> Boolean): KInt = array.indexOfLast(predicate)
     }
 
+    @Suppress("detekt:TooManyFunctions")
     @OptIn(ExperimentalUnsignedTypes::class)
     object ULongArray : ArrayLike<KULongArray, KULong> {
         override fun create(size: KInt, init: (KInt) -> KULong): KULongArray = KULongArray(size, init)
         override fun getAt(array: KULongArray, index: KInt): KULong = array[index]
         override fun getSize(array: KULongArray): KInt = array.size
+
+        override fun any(array: KULongArray, predicate: (KULong) -> Boolean): Boolean = array.any(predicate)
+        override fun all(array: KULongArray, predicate: (KULong) -> Boolean): Boolean = array.all(predicate)
+        override fun none(array: KULongArray, predicate: (KULong) -> Boolean): Boolean = array.none(predicate)
+
+        override fun <R> map(array: KULongArray, transform: (KULong) -> R): List<R> = array.map(transform)
+        override fun <R> mapIndexed(array: KULongArray, transform: (KInt, KULong) -> R): List<R> = array.mapIndexed(transform)
+        override fun <R> flatMap(array: KULongArray, transform: (KULong) -> Iterable<R>): List<R> = array.flatMap(transform)
+        override fun <R> flatMapIndexed(array: KULongArray, transform: (KInt, KULong) -> Iterable<R>): List<R> = array.flatMapIndexed(transform)
+
+        override fun forEach(array: KULongArray, action: (KULong) -> Unit) = array.forEach(action)
+        override fun forEachIndexed(array: KULongArray, action: (KInt, KULong) -> Unit) = array.forEachIndexed(action)
+
+        override fun indexOfFirst(array: KULongArray, predicate: (KULong) -> Boolean): KInt = array.indexOfFirst(predicate)
+        override fun indexOfLast(array: KULongArray, predicate: (KULong) -> Boolean): KInt = array.indexOfLast(predicate)
     }
 }
