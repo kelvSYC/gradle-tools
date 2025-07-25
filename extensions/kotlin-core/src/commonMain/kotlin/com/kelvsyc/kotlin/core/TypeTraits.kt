@@ -2,27 +2,36 @@ package com.kelvsyc.kotlin.core
 
 import com.kelvsyc.internal.kotlin.core.traits.ByteBitStore
 import com.kelvsyc.internal.kotlin.core.traits.ByteBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.ByteStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.DoubleBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.FloatBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.IntBitStore
 import com.kelvsyc.internal.kotlin.core.traits.IntBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.IntStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.LongBitStore
 import com.kelvsyc.internal.kotlin.core.traits.LongBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.LongStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.ShortBitStore
 import com.kelvsyc.internal.kotlin.core.traits.ShortBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.ShortStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.UByteBitStore
 import com.kelvsyc.internal.kotlin.core.traits.UByteBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.UByteStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.UIntBitStore
 import com.kelvsyc.internal.kotlin.core.traits.UIntBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.UIntStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.ULongBitStore
 import com.kelvsyc.internal.kotlin.core.traits.ULongBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.ULongStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.UShortBitStore
 import com.kelvsyc.internal.kotlin.core.traits.UShortBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.UShortStickyRightShift
 import com.kelvsyc.kotlin.core.traits.ArrayLike
 import com.kelvsyc.kotlin.core.traits.Binary32Traits
 import com.kelvsyc.kotlin.core.traits.Binary64Traits
 import com.kelvsyc.kotlin.core.traits.BitStore
 import com.kelvsyc.kotlin.core.traits.BitsBased
+import com.kelvsyc.kotlin.core.traits.StickyRightShift
 import kotlin.math.absoluteValue
 import kotlin.Byte as KByte
 import kotlin.ByteArray as KByteArray
@@ -54,6 +63,7 @@ object TypeTraits {
     object Byte :
         BitsBased<KByte, KByte> by ByteBitsBased,
         BitStore<KByte> by ByteBitStore,
+        StickyRightShift<KByte> by ByteStickyRightShift,
         Addition<KByte>, Multiplication<KByte>,
         BitRotate<KByte>, Signed<KByte> {
         // Multiple interfaces define it, so we override explicitly
@@ -81,6 +91,7 @@ object TypeTraits {
     object UByte :
         BitsBased<KUByte, KByte> by UByteBitsBased,
         BitStore<KUByte> by UByteBitStore,
+        StickyRightShift<KUByte> by UByteStickyRightShift,
         Addition<KUByte>, Multiplication<KUByte>,
         BitRotate<KUByte> {
         // Multiple interfaces define it, so we override explicitly
@@ -103,6 +114,7 @@ object TypeTraits {
     object Short :
         BitsBased<KShort, KShort> by ShortBitsBased,
         BitStore<KShort> by ShortBitStore,
+        StickyRightShift<KShort> by ShortStickyRightShift,
         Addition<KShort>, Multiplication<KShort>,
         BitRotate<KShort>, Signed<KShort> {
         // Multiple interfaces define it, so we override explicitly
@@ -130,6 +142,7 @@ object TypeTraits {
     object UShort :
         BitsBased<KUShort, KShort> by UShortBitsBased,
         BitStore<KUShort> by UShortBitStore,
+        StickyRightShift<KUShort> by UShortStickyRightShift,
         Addition<KUShort>, Multiplication<KUShort>,
         BitRotate<KUShort> {
         // Multiple interfaces define it, so we override explicitly
@@ -152,6 +165,7 @@ object TypeTraits {
     object Int :
         BitsBased<KInt, KInt> by IntBitsBased,
         BitStore<KInt> by IntBitStore,
+        StickyRightShift<KInt> by IntStickyRightShift,
         Addition<KInt>, Multiplication<KInt>,
         BitRotate<KInt>, Signed<KInt> {
         // Multiple interfaces define it, so we override explicitly
@@ -179,6 +193,7 @@ object TypeTraits {
     object UInt :
         BitsBased<KUInt, KInt> by UIntBitsBased,
         BitStore<KUInt> by UIntBitStore,
+        StickyRightShift<KUInt> by UIntStickyRightShift,
         Addition<KUInt>, Multiplication<KUInt>,
         BitRotate<KUInt> {
         // Multiple interfaces define it, so we override explicitly
@@ -201,6 +216,7 @@ object TypeTraits {
     object Long :
         BitsBased<KLong, KLong> by LongBitsBased,
         BitStore<KLong> by LongBitStore,
+        StickyRightShift<KLong> by LongStickyRightShift,
         Addition<KLong>, Multiplication<KLong>,
         BitRotate<KLong>, Signed<KLong> {
         // Multiple interfaces define it, so we override explicitly
@@ -232,6 +248,7 @@ object TypeTraits {
     object ULong :
         BitsBased<KULong, KLong> by ULongBitsBased,
         BitStore<KULong> by ULongBitStore,
+        StickyRightShift<KULong> by ULongStickyRightShift,
         Addition<KULong>, Multiplication<KULong>,
         BitRotate<KULong> {
         // Multiple interfaces define it, so we override explicitly
