@@ -244,10 +244,6 @@ object TypeTraits {
         override fun multiply(lhs: KLong, rhs: KLong): KLong = lhs * rhs
         override fun divide(lhs: KLong, rhs: KLong): KLong = lhs / rhs
 
-        override fun leftShift(value: KLong, bitCount: KInt): KLong = value shl bitCount
-        override fun rightShift(value: KLong, bitCount: KInt): KLong = value ushr bitCount
-        override fun arithmeticRightShift(value: KLong, bitCount: KInt): KLong = value shr bitCount
-
         override fun rotateLeft(value: KLong, bitCount: KInt): KLong = value.rotateLeft(bitCount)
         override fun rotateRight(value: KLong, bitCount: KInt): KLong = value.rotateRight(bitCount)
 
