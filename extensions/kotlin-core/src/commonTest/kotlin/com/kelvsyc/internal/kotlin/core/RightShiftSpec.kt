@@ -1,12 +1,14 @@
 package com.kelvsyc.internal.kotlin.core
 
 import com.kelvsyc.kotlin.core.TypeTraits
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.byte
 import io.kotest.property.arbitrary.int
 import io.kotest.property.arbitrary.long
+import io.kotest.property.arbitrary.negativeInt
 import io.kotest.property.arbitrary.nonNegativeInt
 import io.kotest.property.arbitrary.short
 import io.kotest.property.arbitrary.uByte
@@ -17,114 +19,202 @@ import io.kotest.property.checkAll
 
 class RightShiftSpec : FunSpec() {
     init {
-        test("Byte") {
+        context("Byte") {
             val traits = TypeTraits.Byte
-            val bitCountArb = Arb.nonNegativeInt(traits.sizeBits)
-            checkAll(Arb.byte(), bitCountArb) { value, bitCount ->
-                val result = traits.rightShift(value, bitCount)
+            val valueArb = Arb.byte()
+            test("Normal") {
+                val bitCountArb = Arb.nonNegativeInt(traits.sizeBits)
+                checkAll(valueArb, bitCountArb) { value, bitCount ->
+                    val result = traits.rightShift(value, bitCount)
 
-                if (bitCount >= traits.sizeBits) {
-                    result shouldBeEqual 0.toByte()
-                } else {
-                    result shouldBeEqual (value.toUByte().toInt() ushr bitCount).toByte()
+                    if (bitCount >= traits.sizeBits) {
+                        result shouldBeEqual 0.toByte()
+                    } else {
+                        result shouldBeEqual (value.toUByte().toInt() ushr bitCount).toByte()
+                    }
+                }
+            }
+            test("Negative Shift") {
+                val bitCountArb = Arb.negativeInt()
+                checkAll(valueArb, bitCountArb) { value, bitCount ->
+                    shouldThrow<IllegalArgumentException> {
+                        traits.leftShift(value, bitCount)
+                    }
                 }
             }
         }
 
-        test("UByte") {
+        context("UByte") {
             val traits = TypeTraits.UByte
-            val bitCountArb = Arb.nonNegativeInt(traits.sizeBits)
-            checkAll(Arb.uByte(), bitCountArb) { value, bitCount ->
-                val result = traits.rightShift(value, bitCount)
+            val valueArb = Arb.uByte()
+            test("Normal") {
+                val bitCountArb = Arb.nonNegativeInt(traits.sizeBits)
+                checkAll(valueArb, bitCountArb) { value, bitCount ->
+                    val result = traits.rightShift(value, bitCount)
 
-                if (bitCount >= traits.sizeBits) {
-                    result shouldBeEqual 0.toUByte()
-                } else {
-                    result shouldBeEqual (value.toInt() ushr bitCount).toUByte()
+                    if (bitCount >= traits.sizeBits) {
+                        result shouldBeEqual 0.toUByte()
+                    } else {
+                        result shouldBeEqual (value.toInt() ushr bitCount).toUByte()
+                    }
+                }
+            }
+            test("Negative Shift") {
+                val bitCountArb = Arb.negativeInt()
+                checkAll(valueArb, bitCountArb) { value, bitCount ->
+                    shouldThrow<IllegalArgumentException> {
+                        traits.leftShift(value, bitCount)
+                    }
                 }
             }
         }
 
-        test("Short") {
+        context("Short") {
             val traits = TypeTraits.Short
-            val bitCountArb = Arb.nonNegativeInt(traits.sizeBits)
-            checkAll(Arb.short(), bitCountArb) { value, bitCount ->
-                val result = traits.rightShift(value, bitCount)
+            val valueArb = Arb.short()
+            test("Normal") {
+                val bitCountArb = Arb.nonNegativeInt(traits.sizeBits)
+                checkAll(valueArb, bitCountArb) { value, bitCount ->
+                    val result = traits.rightShift(value, bitCount)
 
-                if (bitCount >= traits.sizeBits) {
-                    result shouldBeEqual 0.toShort()
-                } else {
-                    result shouldBeEqual (value.toUShort().toInt() ushr bitCount).toShort()
+                    if (bitCount >= traits.sizeBits) {
+                        result shouldBeEqual 0.toShort()
+                    } else {
+                        result shouldBeEqual (value.toUShort().toInt() ushr bitCount).toShort()
+                    }
+                }
+            }
+            test("Negative Shift") {
+                val bitCountArb = Arb.negativeInt()
+                checkAll(valueArb, bitCountArb) { value, bitCount ->
+                    shouldThrow<IllegalArgumentException> {
+                        traits.leftShift(value, bitCount)
+                    }
                 }
             }
         }
 
-        test("UShort") {
+        context("UShort") {
             val traits = TypeTraits.UShort
-            val bitCountArb = Arb.nonNegativeInt(traits.sizeBits)
-            checkAll(Arb.uShort(), bitCountArb) { value, bitCount ->
-                val result = traits.rightShift(value, bitCount)
+            val valueArb = Arb.uShort()
+            test("Normal") {
+                val bitCountArb = Arb.nonNegativeInt(traits.sizeBits)
+                checkAll(valueArb, bitCountArb) { value, bitCount ->
+                    val result = traits.rightShift(value, bitCount)
 
-                if (bitCount >= traits.sizeBits) {
-                    result shouldBeEqual 0.toUShort()
-                } else {
-                    result shouldBeEqual (value.toInt() ushr bitCount).toUShort()
+                    if (bitCount >= traits.sizeBits) {
+                        result shouldBeEqual 0.toUShort()
+                    } else {
+                        result shouldBeEqual (value.toInt() ushr bitCount).toUShort()
+                    }
+                }
+            }
+            test("Negative Shift") {
+                val bitCountArb = Arb.negativeInt()
+                checkAll(valueArb, bitCountArb) { value, bitCount ->
+                    shouldThrow<IllegalArgumentException> {
+                        traits.leftShift(value, bitCount)
+                    }
                 }
             }
         }
 
-        test("Int") {
+        context("Int") {
             val traits = TypeTraits.Int
-            val bitCountArb = Arb.nonNegativeInt(traits.sizeBits)
-            checkAll(Arb.int(), bitCountArb) { value, bitCount ->
-                val result = traits.rightShift(value, bitCount)
+            val valueArb = Arb.int()
+            test("Normal") {
+                val bitCountArb = Arb.nonNegativeInt(traits.sizeBits)
+                checkAll(valueArb, bitCountArb) { value, bitCount ->
+                    val result = traits.rightShift(value, bitCount)
 
-                if (bitCount >= traits.sizeBits) {
-                    result shouldBeEqual 0
-                } else {
-                    result shouldBeEqual (value ushr bitCount)
+                    if (bitCount >= traits.sizeBits) {
+                        result shouldBeEqual 0
+                    } else {
+                        result shouldBeEqual (value ushr bitCount)
+                    }
+                }
+            }
+            test("Negative Shift") {
+                val bitCountArb = Arb.negativeInt()
+                checkAll(valueArb, bitCountArb) { value, bitCount ->
+                    shouldThrow<IllegalArgumentException> {
+                        traits.leftShift(value, bitCount)
+                    }
                 }
             }
         }
 
-        test("UInt") {
+        context("UInt") {
             val traits = TypeTraits.UInt
-            val bitCountArb = Arb.nonNegativeInt(traits.sizeBits)
-            checkAll(Arb.uInt(), bitCountArb) { value, bitCount ->
-                val result = traits.rightShift(value, bitCount)
+            val valueArb = Arb.uInt()
+            test("Normal") {
+                val bitCountArb = Arb.nonNegativeInt(traits.sizeBits)
+                checkAll(valueArb, bitCountArb) { value, bitCount ->
+                    val result = traits.rightShift(value, bitCount)
 
-                if (bitCount >= traits.sizeBits) {
-                    result shouldBeEqual 0U
-                } else {
-                    result shouldBeEqual (value shr bitCount)
+                    if (bitCount >= traits.sizeBits) {
+                        result shouldBeEqual 0U
+                    } else {
+                        result shouldBeEqual (value shr bitCount)
+                    }
+                }
+            }
+            test("Negative Shift") {
+                val bitCountArb = Arb.negativeInt()
+                checkAll(valueArb, bitCountArb) { value, bitCount ->
+                    shouldThrow<IllegalArgumentException> {
+                        traits.leftShift(value, bitCount)
+                    }
                 }
             }
         }
 
-        test("Long") {
+        context("Long") {
             val traits = TypeTraits.Long
-            val bitCountArb = Arb.nonNegativeInt(traits.sizeBits)
-            checkAll(Arb.long(), bitCountArb) { value, bitCount ->
-                val result = traits.rightShift(value, bitCount)
+            val valueArb = Arb.long()
+            test("Normal") {
+                val bitCountArb = Arb.nonNegativeInt(traits.sizeBits)
+                checkAll(valueArb, bitCountArb) { value, bitCount ->
+                    val result = traits.rightShift(value, bitCount)
 
-                if (bitCount >= traits.sizeBits) {
-                    result shouldBeEqual 0L
-                } else {
-                    result shouldBeEqual (value ushr bitCount)
+                    if (bitCount >= traits.sizeBits) {
+                        result shouldBeEqual 0L
+                    } else {
+                        result shouldBeEqual (value ushr bitCount)
+                    }
+                }
+            }
+            test("Negative Shift") {
+                val bitCountArb = Arb.negativeInt()
+                checkAll(valueArb, bitCountArb) { value, bitCount ->
+                    shouldThrow<IllegalArgumentException> {
+                        traits.leftShift(value, bitCount)
+                    }
                 }
             }
         }
 
-        test("ULong") {
+        context("ULong") {
             val traits = TypeTraits.ULong
-            val bitCountArb = Arb.nonNegativeInt(traits.sizeBits)
-            checkAll(Arb.uLong(), bitCountArb) { value, bitCount ->
-                val result = traits.rightShift(value, bitCount)
+            val valueArb = Arb.uLong()
+            test("Normal") {
+                val bitCountArb = Arb.nonNegativeInt(traits.sizeBits)
+                checkAll(valueArb, bitCountArb) { value, bitCount ->
+                    val result = traits.rightShift(value, bitCount)
 
-                if (bitCount >= traits.sizeBits) {
-                    result shouldBeEqual 0UL
-                } else {
-                    result shouldBeEqual (value shr bitCount)
+                    if (bitCount >= traits.sizeBits) {
+                        result shouldBeEqual 0UL
+                    } else {
+                        result shouldBeEqual (value shr bitCount)
+                    }
+                }
+            }
+            test("Negative Shift") {
+                val bitCountArb = Arb.negativeInt()
+                checkAll(valueArb, bitCountArb) { value, bitCount ->
+                    shouldThrow<IllegalArgumentException> {
+                        traits.leftShift(value, bitCount)
+                    }
                 }
             }
         }
