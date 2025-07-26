@@ -1,7 +1,7 @@
 package com.kelvsyc.kotlin.core.traits
 
 import com.kelvsyc.kotlin.core.BitCollection
-import com.kelvsyc.kotlin.core.BitShift
+import com.kelvsyc.kotlin.core.traits.BitShift
 import com.kelvsyc.kotlin.core.Bitwise
 
 /**

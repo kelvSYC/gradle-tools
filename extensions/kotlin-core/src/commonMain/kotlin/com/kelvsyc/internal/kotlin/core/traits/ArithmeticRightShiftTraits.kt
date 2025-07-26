@@ -2,8 +2,9 @@ package com.kelvsyc.internal.kotlin.core.traits
 
 import com.kelvsyc.kotlin.core.traits.ArithmeticRightShift
 
-object ByteArithmeticRightShift : ArithmeticRightShift<Byte> {
-    override val sizeBits: Int by Byte.Companion::SIZE_BITS
+interface ByteArithmeticRightShift : ArithmeticRightShift<Byte>, ByteSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun arithmeticRightShift(value: Byte, bitCount: Int): Byte {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -13,8 +14,9 @@ object ByteArithmeticRightShift : ArithmeticRightShift<Byte> {
     }
 }
 
-object UByteArithmeticRightShift : ArithmeticRightShift<UByte> {
-    override val sizeBits: Int by UByte.Companion::SIZE_BITS
+interface UByteArithmeticRightShift : ArithmeticRightShift<UByte>, UByteSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun arithmeticRightShift(value: UByte, bitCount: Int): UByte {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -24,8 +26,9 @@ object UByteArithmeticRightShift : ArithmeticRightShift<UByte> {
     }
 }
 
-object ShortArithmeticRightShift : ArithmeticRightShift<Short> {
-    override val sizeBits: Int by Short.Companion::SIZE_BITS
+interface ShortArithmeticRightShift : ArithmeticRightShift<Short>, ShortSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun arithmeticRightShift(value: Short, bitCount: Int): Short {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -35,8 +38,9 @@ object ShortArithmeticRightShift : ArithmeticRightShift<Short> {
     }
 }
 
-object UShortArithmeticRightShift : ArithmeticRightShift<UShort> {
-    override val sizeBits: Int by UShort.Companion::SIZE_BITS
+interface UShortArithmeticRightShift : ArithmeticRightShift<UShort>, UShortSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun arithmeticRightShift(value: UShort, bitCount: Int): UShort {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -46,8 +50,9 @@ object UShortArithmeticRightShift : ArithmeticRightShift<UShort> {
     }
 }
 
-object IntArithmeticRightShift : ArithmeticRightShift<Int> {
-    override val sizeBits: Int by Int.Companion::SIZE_BITS
+interface IntArithmeticRightShift : ArithmeticRightShift<Int>, IntSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun arithmeticRightShift(value: Int, bitCount: Int): Int {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -57,8 +62,9 @@ object IntArithmeticRightShift : ArithmeticRightShift<Int> {
     }
 }
 
-object UIntArithmeticRightShift : ArithmeticRightShift<UInt> {
-    override val sizeBits: Int by UInt.Companion::SIZE_BITS
+interface UIntArithmeticRightShift : ArithmeticRightShift<UInt>, UIntSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun arithmeticRightShift(value: UInt, bitCount: Int): UInt {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -68,8 +74,9 @@ object UIntArithmeticRightShift : ArithmeticRightShift<UInt> {
     }
 }
 
-object LongArithmeticRightShift : ArithmeticRightShift<Long> {
-    override val sizeBits: Int by Long.Companion::SIZE_BITS
+interface LongArithmeticRightShift : ArithmeticRightShift<Long>, LongSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun arithmeticRightShift(value: Long, bitCount: Int): Long {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -79,8 +86,9 @@ object LongArithmeticRightShift : ArithmeticRightShift<Long> {
     }
 }
 
-object ULongArithmeticRightShift : ArithmeticRightShift<ULong> {
-    override val sizeBits: Int by ULong.Companion::SIZE_BITS
+interface ULongArithmeticRightShift : ArithmeticRightShift<ULong>, ULongSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun arithmeticRightShift(value: ULong, bitCount: Int): ULong {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }

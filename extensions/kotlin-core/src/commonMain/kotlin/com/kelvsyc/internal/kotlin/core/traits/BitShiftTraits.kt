@@ -1,70 +1,91 @@
 package com.kelvsyc.internal.kotlin.core.traits
 
-import com.kelvsyc.kotlin.core.BitShift
-import com.kelvsyc.kotlin.core.traits.ArithmeticRightShift
-import com.kelvsyc.kotlin.core.traits.LeftShift
-import com.kelvsyc.kotlin.core.traits.RightShift
+import com.kelvsyc.kotlin.core.traits.BitShift
 
-object ByteBitShift : BitShift<Byte>,
-    LeftShift<Byte> by ByteLeftShift,
-    RightShift<Byte> by ByteRightShift,
-    ArithmeticRightShift<Byte> by ByteArithmeticRightShift {
-    // Multiple interfaces define it, so we override explicitly
-    override val sizeBits: Int by Byte.Companion::SIZE_BITS
+interface ByteBitShift : BitShift<Byte>,
+    ByteSized,
+    ByteLeftShift,
+    ByteRightShift,
+    ByteArithmeticRightShift {
+    override val sizeBits: Int get() = super<ByteSized>.sizeBits
+    override fun leftShift(value: Byte, bitCount: Int): Byte = super.leftShift(value, bitCount)
+    override fun rightShift(value: Byte, bitCount: Int): Byte = super.rightShift(value, bitCount)
+    override fun arithmeticRightShift(value: Byte, bitCount: Int): Byte = super.arithmeticRightShift(value, bitCount)
 }
 
-object UByteBitShift : BitShift<UByte>,
-    LeftShift<UByte> by UByteLeftShift,
-    RightShift<UByte> by UByteRightShift,
-    ArithmeticRightShift<UByte> by UByteArithmeticRightShift {
-    // Multiple interfaces define it, so we override explicitly
-    override val sizeBits: Int by UByte.Companion::SIZE_BITS
+interface UByteBitShift : BitShift<UByte>,
+    UByteSized,
+    UByteLeftShift,
+    UByteRightShift,
+    UByteArithmeticRightShift {
+    override val sizeBits: Int get() = super<UByteSized>.sizeBits
+    override fun leftShift(value: UByte, bitCount: Int): UByte = super.leftShift(value, bitCount)
+    override fun rightShift(value: UByte, bitCount: Int): UByte = super.rightShift(value, bitCount)
+    override fun arithmeticRightShift(value: UByte, bitCount: Int): UByte = super.arithmeticRightShift(value, bitCount)
 }
 
-object ShortBitShift : BitShift<Short>,
-    LeftShift<Short> by ShortLeftShift,
-    RightShift<Short> by ShortRightShift,
-    ArithmeticRightShift<Short> by ShortArithmeticRightShift {
-    // Multiple interfaces define it, so we override explicitly
-    override val sizeBits: Int by Short.Companion::SIZE_BITS
+interface ShortBitShift : BitShift<Short>,
+    ShortSized,
+    ShortLeftShift,
+    ShortRightShift,
+    ShortArithmeticRightShift {
+    override val sizeBits: Int get() = super<ShortSized>.sizeBits
+    override fun leftShift(value: Short, bitCount: Int): Short = super.leftShift(value, bitCount)
+    override fun rightShift(value: Short, bitCount: Int): Short = super.rightShift(value, bitCount)
+    override fun arithmeticRightShift(value: Short, bitCount: Int): Short = super.arithmeticRightShift(value, bitCount)
 }
 
-object UShortBitShift : BitShift<UShort>,
-    LeftShift<UShort> by UShortLeftShift,
-    RightShift<UShort> by UShortRightShift,
-    ArithmeticRightShift<UShort> by UShortArithmeticRightShift {
-    // Multiple interfaces define it, so we override explicitly
-    override val sizeBits: Int by UShort.Companion::SIZE_BITS
+interface UShortBitShift : BitShift<UShort>,
+    UShortSized,
+    UShortLeftShift,
+    UShortRightShift,
+    UShortArithmeticRightShift {
+    override val sizeBits: Int get() = super<UShortSized>.sizeBits
+    override fun leftShift(value: UShort, bitCount: Int): UShort = super.leftShift(value, bitCount)
+    override fun rightShift(value: UShort, bitCount: Int): UShort = super.rightShift(value, bitCount)
+    override fun arithmeticRightShift(value: UShort, bitCount: Int): UShort = super.arithmeticRightShift(value, bitCount)
 }
 
-object IntBitShift : BitShift<Int>,
-    LeftShift<Int> by IntLeftShift,
-    RightShift<Int> by IntRightShift,
-    ArithmeticRightShift<Int> by IntArithmeticRightShift {
-    // Multiple interfaces define it, so we override explicitly
-    override val sizeBits: Int by Int.Companion::SIZE_BITS
+interface IntBitShift : BitShift<Int>,
+    IntSized,
+    IntLeftShift,
+    IntRightShift,
+    IntArithmeticRightShift {
+    override val sizeBits: Int get() = super<IntSized>.sizeBits
+    override fun leftShift(value: Int, bitCount: Int): Int = super.leftShift(value, bitCount)
+    override fun rightShift(value: Int, bitCount: Int): Int = super.rightShift(value, bitCount)
+    override fun arithmeticRightShift(value: Int, bitCount: Int): Int = super.arithmeticRightShift(value, bitCount)
 }
 
-object UIntBitShift : BitShift<UInt>,
-    LeftShift<UInt> by UIntLeftShift,
-    RightShift<UInt> by UIntRightShift,
-    ArithmeticRightShift<UInt> by UIntArithmeticRightShift {
-    // Multiple interfaces define it, so we override explicitly
-    override val sizeBits: Int by UInt.Companion::SIZE_BITS
+interface UIntBitShift : BitShift<UInt>,
+    UIntSized,
+    UIntLeftShift,
+    UIntRightShift,
+    UIntArithmeticRightShift {
+    override val sizeBits: Int get() = super<UIntSized>.sizeBits
+    override fun leftShift(value: UInt, bitCount: Int): UInt = super.leftShift(value, bitCount)
+    override fun rightShift(value: UInt, bitCount: Int): UInt = super.rightShift(value, bitCount)
+    override fun arithmeticRightShift(value: UInt, bitCount: Int): UInt = super.arithmeticRightShift(value, bitCount)
 }
 
-object LongBitShift : BitShift<Long>,
-    LeftShift<Long> by LongLeftShift,
-    RightShift<Long> by LongRightShift,
-    ArithmeticRightShift<Long> by LongArithmeticRightShift {
-    // Multiple interfaces define it, so we override explicitly
-    override val sizeBits: Int by Long.Companion::SIZE_BITS
+interface LongBitShift : BitShift<Long>,
+    LongSized,
+    LongLeftShift,
+    LongRightShift,
+    LongArithmeticRightShift {
+    override val sizeBits: Int get() = super<LongSized>.sizeBits
+    override fun leftShift(value: Long, bitCount: Int): Long = super.leftShift(value, bitCount)
+    override fun rightShift(value: Long, bitCount: Int): Long = super.rightShift(value, bitCount)
+    override fun arithmeticRightShift(value: Long, bitCount: Int): Long = super.arithmeticRightShift(value, bitCount)
 }
 
-object ULongBitShift : BitShift<ULong>,
-    LeftShift<ULong> by ULongLeftShift,
-    RightShift<ULong> by ULongRightShift,
-    ArithmeticRightShift<ULong> by ULongArithmeticRightShift {
-    // Multiple interfaces define it, so we override explicitly
-    override val sizeBits: Int by ULong.Companion::SIZE_BITS
+interface ULongBitShift : BitShift<ULong>,
+    ULongSized,
+    ULongLeftShift,
+    ULongRightShift,
+    ULongArithmeticRightShift {
+    override val sizeBits: Int get() = super<ULongSized>.sizeBits
+    override fun leftShift(value: ULong, bitCount: Int): ULong = super.leftShift(value, bitCount)
+    override fun rightShift(value: ULong, bitCount: Int): ULong = super.rightShift(value, bitCount)
+    override fun arithmeticRightShift(value: ULong, bitCount: Int): ULong = super.arithmeticRightShift(value, bitCount)
 }

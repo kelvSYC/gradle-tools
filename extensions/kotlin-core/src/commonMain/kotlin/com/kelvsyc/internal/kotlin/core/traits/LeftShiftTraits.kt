@@ -2,8 +2,9 @@ package com.kelvsyc.internal.kotlin.core.traits
 
 import com.kelvsyc.kotlin.core.traits.LeftShift
 
-object ByteLeftShift : LeftShift<Byte> {
-    override val sizeBits: Int by Byte.Companion::SIZE_BITS
+interface ByteLeftShift : LeftShift<Byte>, ByteSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun leftShift(value: Byte, bitCount: Int): Byte {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
@@ -13,8 +14,9 @@ object ByteLeftShift : LeftShift<Byte> {
     }
 }
 
-object UByteLeftShift : LeftShift<UByte> {
-    override val sizeBits: Int by Byte.Companion::SIZE_BITS
+interface UByteLeftShift : LeftShift<UByte>, UByteSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun leftShift(value: UByte, bitCount: Int): UByte {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
@@ -24,8 +26,9 @@ object UByteLeftShift : LeftShift<UByte> {
     }
 }
 
-object ShortLeftShift : LeftShift<Short> {
-    override val sizeBits: Int by Short.Companion::SIZE_BITS
+interface ShortLeftShift : LeftShift<Short>, ShortSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun leftShift(value: Short, bitCount: Int): Short {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
@@ -35,8 +38,9 @@ object ShortLeftShift : LeftShift<Short> {
     }
 }
 
-object UShortLeftShift : LeftShift<UShort> {
-    override val sizeBits: Int by Short.Companion::SIZE_BITS
+interface UShortLeftShift : LeftShift<UShort>, UShortSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun leftShift(value: UShort, bitCount: Int): UShort {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
@@ -46,8 +50,9 @@ object UShortLeftShift : LeftShift<UShort> {
     }
 }
 
-object IntLeftShift : LeftShift<Int> {
-    override val sizeBits: Int by Int.Companion::SIZE_BITS
+interface IntLeftShift : LeftShift<Int>, IntSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun leftShift(value: Int, bitCount: Int): Int {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
@@ -57,8 +62,9 @@ object IntLeftShift : LeftShift<Int> {
     }
 }
 
-object UIntLeftShift : LeftShift<UInt> {
-    override val sizeBits: Int by UInt.Companion::SIZE_BITS
+interface UIntLeftShift : LeftShift<UInt>, UIntSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun leftShift(value: UInt, bitCount: Int): UInt {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
@@ -68,8 +74,9 @@ object UIntLeftShift : LeftShift<UInt> {
     }
 }
 
-object LongLeftShift : LeftShift<Long> {
-    override val sizeBits: Int by Long.Companion::SIZE_BITS
+interface LongLeftShift : LeftShift<Long>, LongSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun leftShift(value: Long, bitCount: Int): Long {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
@@ -79,8 +86,9 @@ object LongLeftShift : LeftShift<Long> {
     }
 }
 
-object ULongLeftShift : LeftShift<ULong> {
-    override val sizeBits: Int by ULong.Companion::SIZE_BITS
+interface ULongLeftShift : LeftShift<ULong>, ULongSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun leftShift(value: ULong, bitCount: Int): ULong {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }

@@ -1,5 +1,7 @@
 package com.kelvsyc.kotlin.core
 
+import com.kelvsyc.kotlin.core.traits.BitShift
+
 /**
  * Implementation of [BitShift] on [ByteArray], where the result of all operations return new byte arrays.
  */

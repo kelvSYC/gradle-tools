@@ -2,8 +2,9 @@ package com.kelvsyc.internal.kotlin.core.traits
 
 import com.kelvsyc.kotlin.core.traits.RightShift
 
-object ByteRightShift : RightShift<Byte> {
-    override val sizeBits: Int by Byte.Companion::SIZE_BITS
+interface ByteRightShift : RightShift<Byte>, ByteSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun rightShift(value: Byte, bitCount: Int): Byte {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -13,8 +14,9 @@ object ByteRightShift : RightShift<Byte> {
     }
 }
 
-object UByteRightShift : RightShift<UByte> {
-    override val sizeBits: Int by Byte.Companion::SIZE_BITS
+interface UByteRightShift : RightShift<UByte>, UByteSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun rightShift(value: UByte, bitCount: Int): UByte {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -24,8 +26,9 @@ object UByteRightShift : RightShift<UByte> {
     }
 }
 
-object ShortRightShift : RightShift<Short> {
-    override val sizeBits: Int by Short.Companion::SIZE_BITS
+interface ShortRightShift : RightShift<Short>, ShortSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun rightShift(value: Short, bitCount: Int): Short {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -35,8 +38,9 @@ object ShortRightShift : RightShift<Short> {
     }
 }
 
-object UShortRightShift : RightShift<UShort> {
-    override val sizeBits: Int by Short.Companion::SIZE_BITS
+interface UShortRightShift : RightShift<UShort>, UShortSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun rightShift(value: UShort, bitCount: Int): UShort {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -46,8 +50,9 @@ object UShortRightShift : RightShift<UShort> {
     }
 }
 
-object IntRightShift : RightShift<Int> {
-    override val sizeBits: Int by Int.Companion::SIZE_BITS
+interface IntRightShift : RightShift<Int>, IntSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun rightShift(value: Int, bitCount: Int): Int {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -57,8 +62,9 @@ object IntRightShift : RightShift<Int> {
     }
 }
 
-object UIntRightShift : RightShift<UInt> {
-    override val sizeBits: Int by UInt.Companion::SIZE_BITS
+interface UIntRightShift : RightShift<UInt>, UIntSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun rightShift(value: UInt, bitCount: Int): UInt {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -68,8 +74,9 @@ object UIntRightShift : RightShift<UInt> {
     }
 }
 
-object LongRightShift : RightShift<Long> {
-    override val sizeBits: Int by Long.Companion::SIZE_BITS
+interface LongRightShift : RightShift<Long>, LongSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun rightShift(value: Long, bitCount: Int): Long {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -79,8 +86,9 @@ object LongRightShift : RightShift<Long> {
     }
 }
 
-object ULongRightShift : RightShift<ULong> {
-    override val sizeBits: Int by ULong.Companion::SIZE_BITS
+interface ULongRightShift : RightShift<ULong>, ULongSized {
+    override val sizeBits: Int
+        get() = super.sizeBits
 
     override fun rightShift(value: ULong, bitCount: Int): ULong {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
