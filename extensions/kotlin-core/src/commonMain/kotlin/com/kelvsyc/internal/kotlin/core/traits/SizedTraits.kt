@@ -57,3 +57,17 @@ interface ULongSized : Sized<ULong> {
     override val sizeBytes: Int
         get() = ULong.SIZE_BYTES
 }
+
+interface FloatSized : Sized<Float> {
+    override val sizeBits: Int
+        get() = Float.SIZE_BITS
+    override val sizeBytes: Int
+        get() = Float.SIZE_BYTES
+}
+
+interface DoubleSized : Sized<Double> {
+    override val sizeBits: Int
+        get() = Double.SIZE_BITS
+    override val sizeBytes: Int
+        get() = Double.SIZE_BYTES
+}

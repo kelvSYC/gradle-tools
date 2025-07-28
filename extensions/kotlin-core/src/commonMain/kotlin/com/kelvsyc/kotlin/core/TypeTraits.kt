@@ -5,50 +5,60 @@ import com.kelvsyc.internal.kotlin.core.traits.ByteBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.ByteBitStore
 import com.kelvsyc.internal.kotlin.core.traits.ByteBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.ByteRoundingRightShift
+import com.kelvsyc.internal.kotlin.core.traits.ByteSized
 import com.kelvsyc.internal.kotlin.core.traits.ByteStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.DoubleBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.DoubleSized
 import com.kelvsyc.internal.kotlin.core.traits.FloatBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.FloatSized
 import com.kelvsyc.internal.kotlin.core.traits.IntArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.IntBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.IntBitStore
 import com.kelvsyc.internal.kotlin.core.traits.IntBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.IntRoundingRightShift
+import com.kelvsyc.internal.kotlin.core.traits.IntSized
 import com.kelvsyc.internal.kotlin.core.traits.IntStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.LongArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.LongBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.LongBitStore
 import com.kelvsyc.internal.kotlin.core.traits.LongBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.LongRoundingRightShift
+import com.kelvsyc.internal.kotlin.core.traits.LongSized
 import com.kelvsyc.internal.kotlin.core.traits.LongStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.ShortArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.ShortBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.ShortBitStore
 import com.kelvsyc.internal.kotlin.core.traits.ShortBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.ShortRoundingRightShift
+import com.kelvsyc.internal.kotlin.core.traits.ShortSized
 import com.kelvsyc.internal.kotlin.core.traits.ShortStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.UByteArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.UByteBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.UByteBitStore
 import com.kelvsyc.internal.kotlin.core.traits.UByteBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.UByteRoundingRightShift
+import com.kelvsyc.internal.kotlin.core.traits.UByteSized
 import com.kelvsyc.internal.kotlin.core.traits.UByteStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.UIntArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.UIntBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.UIntBitStore
 import com.kelvsyc.internal.kotlin.core.traits.UIntBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.UIntRoundingRightShift
+import com.kelvsyc.internal.kotlin.core.traits.UIntSized
 import com.kelvsyc.internal.kotlin.core.traits.UIntStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.ULongArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.ULongBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.ULongBitStore
 import com.kelvsyc.internal.kotlin.core.traits.ULongBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.ULongRoundingRightShift
+import com.kelvsyc.internal.kotlin.core.traits.ULongSized
 import com.kelvsyc.internal.kotlin.core.traits.ULongStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.UShortArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.UShortBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.UShortBitStore
 import com.kelvsyc.internal.kotlin.core.traits.UShortBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.UShortRoundingRightShift
+import com.kelvsyc.internal.kotlin.core.traits.UShortSized
 import com.kelvsyc.internal.kotlin.core.traits.UShortStickyRightShift
 import com.kelvsyc.kotlin.core.traits.ArrayLike
 import com.kelvsyc.kotlin.core.traits.Binary32Traits
@@ -86,6 +96,7 @@ object TypeTraits {
      */
     @Suppress("detekt:TooManyFunctions")
     object Byte :
+        ByteSized,
         BitsBased<KByte, KByte> by ByteBitsBased,
         BitStore<KByte> by ByteBitStore,
         StickyRightShift<KByte> by ByteStickyRightShift,
@@ -113,6 +124,7 @@ object TypeTraits {
      */
     @Suppress("detekt:TooManyFunctions")
     object UByte :
+        UByteSized,
         BitsBased<KUByte, KByte> by UByteBitsBased,
         BitStore<KUByte> by UByteBitStore,
         StickyRightShift<KUByte> by UByteStickyRightShift,
@@ -134,6 +146,7 @@ object TypeTraits {
      */
     @Suppress("detekt:TooManyFunctions")
     object Short :
+        ShortSized,
         BitsBased<KShort, KShort> by ShortBitsBased,
         BitStore<KShort> by ShortBitStore,
         StickyRightShift<KShort> by ShortStickyRightShift,
@@ -161,6 +174,7 @@ object TypeTraits {
      */
     @Suppress("detekt:TooManyFunctions")
     object UShort :
+        UShortSized,
         BitsBased<KUShort, KShort> by UShortBitsBased,
         BitStore<KUShort> by UShortBitStore,
         StickyRightShift<KUShort> by UShortStickyRightShift,
@@ -182,6 +196,7 @@ object TypeTraits {
      */
     @Suppress("detekt:TooManyFunctions")
     object Int :
+        IntSized,
         BitsBased<KInt, KInt> by IntBitsBased,
         BitStore<KInt> by IntBitStore,
         StickyRightShift<KInt> by IntStickyRightShift,
@@ -209,6 +224,7 @@ object TypeTraits {
      */
     @Suppress("detekt:TooManyFunctions")
     object UInt :
+        UIntSized,
         BitsBased<KUInt, KInt> by UIntBitsBased,
         BitStore<KUInt> by UIntBitStore,
         StickyRightShift<KUInt> by UIntStickyRightShift,
@@ -230,6 +246,7 @@ object TypeTraits {
      */
     @Suppress("detekt:TooManyFunctions")
     object Long :
+        LongSized,
         BitsBased<KLong, KLong> by LongBitsBased,
         BitStore<KLong> by LongBitStore,
         StickyRightShift<KLong> by LongStickyRightShift,
@@ -257,6 +274,7 @@ object TypeTraits {
      */
     @Suppress("detekt:TooManyFunctions")
     object ULong :
+        ULongSized,
         BitsBased<KULong, KLong> by ULongBitsBased,
         BitStore<KULong> by ULongBitStore,
         StickyRightShift<KULong> by ULongStickyRightShift,
@@ -275,6 +293,7 @@ object TypeTraits {
 
     @Suppress("detekt:TooManyFunctions")
     object Float :
+        FloatSized,
         BitsBased<KFloat, KInt> by FloatBitsBased,
         Binary32Traits<KFloat>, FloatingPoint<KFloat>, Addition<KFloat>, Multiplication<KFloat>, Signed<KFloat> {
         // Multiple interfaces define it, so we override explicitly
@@ -304,6 +323,7 @@ object TypeTraits {
 
     @Suppress("detekt:TooManyFunctions")
     object Double :
+        DoubleSized,
         BitsBased<KDouble, KLong> by DoubleBitsBased,
         Binary64Traits<KDouble>, FloatingPoint<KDouble>, Addition<KDouble>, Multiplication<KDouble>, Signed<KDouble> {
         // Multiple interfaces define it, so we override explicitly
