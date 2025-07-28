@@ -1,5 +1,6 @@
 package com.kelvsyc.kotlin.core
 
+import com.kelvsyc.internal.kotlin.core.traits.ByteArrayBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.ByteArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.ByteBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.ByteBitStore
@@ -11,6 +12,7 @@ import com.kelvsyc.internal.kotlin.core.traits.DoubleBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.DoubleSized
 import com.kelvsyc.internal.kotlin.core.traits.FloatBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.FloatSized
+import com.kelvsyc.internal.kotlin.core.traits.IntArrayBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.IntArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.IntBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.IntBitStore
@@ -18,6 +20,7 @@ import com.kelvsyc.internal.kotlin.core.traits.IntBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.IntRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.IntSized
 import com.kelvsyc.internal.kotlin.core.traits.IntStickyRightShift
+import com.kelvsyc.internal.kotlin.core.traits.LongArrayBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.LongArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.LongBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.LongBitStore
@@ -25,6 +28,7 @@ import com.kelvsyc.internal.kotlin.core.traits.LongBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.LongRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.LongSized
 import com.kelvsyc.internal.kotlin.core.traits.LongStickyRightShift
+import com.kelvsyc.internal.kotlin.core.traits.ShortArrayBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.ShortArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.ShortBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.ShortBitStore
@@ -32,6 +36,7 @@ import com.kelvsyc.internal.kotlin.core.traits.ShortBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.ShortRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.ShortSized
 import com.kelvsyc.internal.kotlin.core.traits.ShortStickyRightShift
+import com.kelvsyc.internal.kotlin.core.traits.UByteArrayBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.UByteArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.UByteBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.UByteBitStore
@@ -39,6 +44,7 @@ import com.kelvsyc.internal.kotlin.core.traits.UByteBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.UByteRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.UByteSized
 import com.kelvsyc.internal.kotlin.core.traits.UByteStickyRightShift
+import com.kelvsyc.internal.kotlin.core.traits.UIntArrayBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.UIntArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.UIntBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.UIntBitStore
@@ -46,6 +52,7 @@ import com.kelvsyc.internal.kotlin.core.traits.UIntBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.UIntRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.UIntSized
 import com.kelvsyc.internal.kotlin.core.traits.UIntStickyRightShift
+import com.kelvsyc.internal.kotlin.core.traits.ULongArrayBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.ULongArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.ULongBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.ULongBitStore
@@ -53,6 +60,7 @@ import com.kelvsyc.internal.kotlin.core.traits.ULongBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.ULongRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.ULongSized
 import com.kelvsyc.internal.kotlin.core.traits.ULongStickyRightShift
+import com.kelvsyc.internal.kotlin.core.traits.UShortArrayBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.UShortArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.UShortBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.UShortBitStore
@@ -352,7 +360,7 @@ object TypeTraits {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object ByteArray : ArrayLike<KByteArray, KByte>, ByteArrayBitShift {
+    object ByteArray : ArrayLike<KByteArray, KByte>, ByteArrayBitShift, ByteArrayBitRotate {
         override fun create(size: KInt, init: (KInt) -> KByte): KByteArray = KByteArray(size, init)
         override fun getAt(array: KByteArray, index: KInt): KByte = array[index]
         override fun getSize(array: KByteArray): KInt = array.size
@@ -375,7 +383,7 @@ object TypeTraits {
 
     @Suppress("detekt:TooManyFunctions")
     @OptIn(ExperimentalUnsignedTypes::class)
-    object UByteArray : ArrayLike<KUByteArray, KUByte>, UByteArrayBitShift {
+    object UByteArray : ArrayLike<KUByteArray, KUByte>, UByteArrayBitShift, UByteArrayBitRotate {
         override fun create(size: KInt, init: (KInt) -> KUByte): KUByteArray = KUByteArray(size, init)
         override fun getAt(array: KUByteArray, index: KInt): KUByte = array[index]
         override fun getSize(array: KUByteArray): KInt = array.size
@@ -397,7 +405,7 @@ object TypeTraits {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object ShortArray : ArrayLike<KShortArray, KShort>, ShortArrayBitShift {
+    object ShortArray : ArrayLike<KShortArray, KShort>, ShortArrayBitShift, ShortArrayBitRotate {
         override fun create(size: KInt, init: (KInt) -> KShort): KShortArray = KShortArray(size, init)
         override fun getAt(array: KShortArray, index: KInt): KShort = array[index]
         override fun getSize(array: KShortArray): KInt = array.size
@@ -420,7 +428,7 @@ object TypeTraits {
 
     @Suppress("detekt:TooManyFunctions")
     @OptIn(ExperimentalUnsignedTypes::class)
-    object UShortArray : ArrayLike<KUShortArray, KUShort>, UShortArrayBitShift {
+    object UShortArray : ArrayLike<KUShortArray, KUShort>, UShortArrayBitShift, UShortArrayBitRotate {
         override fun create(size: KInt, init: (KInt) -> KUShort): KUShortArray = KUShortArray(size, init)
         override fun getAt(array: KUShortArray, index: KInt): KUShort = array[index]
         override fun getSize(array: KUShortArray): KInt = array.size
@@ -442,7 +450,7 @@ object TypeTraits {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object IntArray : ArrayLike<KIntArray, KInt>, IntArrayBitShift {
+    object IntArray : ArrayLike<KIntArray, KInt>, IntArrayBitShift, IntArrayBitRotate {
         override fun create(size: KInt, init: (KInt) -> KInt): KIntArray = KIntArray(size, init)
         override fun getAt(array: KIntArray, index: KInt): KInt = array[index]
         override fun getSize(array: KIntArray): KInt = array.size
@@ -465,7 +473,7 @@ object TypeTraits {
 
     @Suppress("detekt:TooManyFunctions")
     @OptIn(ExperimentalUnsignedTypes::class)
-    object UIntArray : ArrayLike<KUIntArray, KUInt>, UIntArrayBitShift {
+    object UIntArray : ArrayLike<KUIntArray, KUInt>, UIntArrayBitShift, UIntArrayBitRotate {
         override fun create(size: KInt, init: (KInt) -> KUInt): KUIntArray = KUIntArray(size, init)
         override fun getAt(array: KUIntArray, index: KInt): KUInt = array[index]
         override fun getSize(array: KUIntArray): KInt = array.size
@@ -487,7 +495,7 @@ object TypeTraits {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object LongArray : ArrayLike<KLongArray, KLong>, LongArrayBitShift {
+    object LongArray : ArrayLike<KLongArray, KLong>, LongArrayBitShift, LongArrayBitRotate {
         override fun create(size: KInt, init: (KInt) -> KLong): KLongArray = KLongArray(size, init)
         override fun getAt(array: KLongArray, index: KInt): KLong = array[index]
         override fun getSize(array: KLongArray): KInt = array.size
@@ -510,7 +518,7 @@ object TypeTraits {
 
     @Suppress("detekt:TooManyFunctions")
     @OptIn(ExperimentalUnsignedTypes::class)
-    object ULongArray : ArrayLike<KULongArray, KULong>, ULongArrayBitShift {
+    object ULongArray : ArrayLike<KULongArray, KULong>, ULongArrayBitShift, ULongArrayBitRotate {
         override fun create(size: KInt, init: (KInt) -> KULong): KULongArray = KULongArray(size, init)
         override fun getAt(array: KULongArray, index: KInt): KULong = array[index]
         override fun getSize(array: KULongArray): KInt = array.size
