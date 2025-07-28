@@ -1,5 +1,6 @@
 package com.kelvsyc.kotlin.core
 
+import com.kelvsyc.kotlin.core.traits.BitRotate
 import java.util.*
 
 /**

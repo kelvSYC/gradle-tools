@@ -1,6 +1,7 @@
 package com.kelvsyc.kotlin.core
 
 import com.kelvsyc.internal.kotlin.core.traits.ByteArrayBitShift
+import com.kelvsyc.internal.kotlin.core.traits.ByteBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.ByteBitStore
 import com.kelvsyc.internal.kotlin.core.traits.ByteBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.ByteRoundingRightShift
@@ -8,36 +9,43 @@ import com.kelvsyc.internal.kotlin.core.traits.ByteStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.DoubleBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.FloatBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.IntArrayBitShift
+import com.kelvsyc.internal.kotlin.core.traits.IntBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.IntBitStore
 import com.kelvsyc.internal.kotlin.core.traits.IntBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.IntRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.IntStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.LongArrayBitShift
+import com.kelvsyc.internal.kotlin.core.traits.LongBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.LongBitStore
 import com.kelvsyc.internal.kotlin.core.traits.LongBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.LongRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.LongStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.ShortArrayBitShift
+import com.kelvsyc.internal.kotlin.core.traits.ShortBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.ShortBitStore
 import com.kelvsyc.internal.kotlin.core.traits.ShortBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.ShortRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.ShortStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.UByteArrayBitShift
+import com.kelvsyc.internal.kotlin.core.traits.UByteBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.UByteBitStore
 import com.kelvsyc.internal.kotlin.core.traits.UByteBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.UByteRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.UByteStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.UIntArrayBitShift
+import com.kelvsyc.internal.kotlin.core.traits.UIntBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.UIntBitStore
 import com.kelvsyc.internal.kotlin.core.traits.UIntBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.UIntRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.UIntStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.ULongArrayBitShift
+import com.kelvsyc.internal.kotlin.core.traits.ULongBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.ULongBitStore
 import com.kelvsyc.internal.kotlin.core.traits.ULongBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.ULongRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.ULongStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.UShortArrayBitShift
+import com.kelvsyc.internal.kotlin.core.traits.UShortBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.UShortBitStore
 import com.kelvsyc.internal.kotlin.core.traits.UShortBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.UShortRoundingRightShift
@@ -83,7 +91,8 @@ object TypeTraits {
         StickyRightShift<KByte> by ByteStickyRightShift,
         RoundingRightShift<KByte> by ByteRoundingRightShift,
         Addition<KByte>, Multiplication<KByte>,
-        BitRotate<KByte>, Signed<KByte> {
+        ByteBitRotate,
+        Signed<KByte> {
         // Multiple interfaces define it, so we override explicitly
         override val sizeBits: KInt by KByte.Companion::SIZE_BITS
 
@@ -92,9 +101,6 @@ object TypeTraits {
 
         override fun multiply(lhs: KByte, rhs: KByte): KByte = (lhs * rhs).toByte()
         override fun divide(lhs: KByte, rhs: KByte): KByte = (lhs / rhs).toByte()
-
-        override fun rotateLeft(value: KByte, bitCount: KInt): KByte = value.rotateLeft(bitCount)
-        override fun rotateRight(value: KByte, bitCount: KInt): KByte = value.rotateRight(bitCount)
 
         override fun isPositive(value: KByte): Boolean = value > 0
         override fun isNegative(value: KByte): Boolean = value < 0
@@ -112,7 +118,7 @@ object TypeTraits {
         StickyRightShift<KUByte> by UByteStickyRightShift,
         RoundingRightShift<KUByte> by UByteRoundingRightShift,
         Addition<KUByte>, Multiplication<KUByte>,
-        BitRotate<KUByte> {
+        UByteBitRotate {
         // Multiple interfaces define it, so we override explicitly
         override val sizeBits: KInt by KUByte.Companion::SIZE_BITS
 
@@ -121,9 +127,6 @@ object TypeTraits {
 
         override fun multiply(lhs: KUByte, rhs: KUByte): KUByte = (lhs * rhs).toUByte()
         override fun divide(lhs: KUByte, rhs: KUByte): KUByte = (lhs / rhs).toUByte()
-
-        override fun rotateLeft(value: KUByte, bitCount: KInt): KUByte = value.rotateLeft(bitCount)
-        override fun rotateRight(value: KUByte, bitCount: KInt): KUByte = value.rotateRight(bitCount)
     }
 
     /**
@@ -136,7 +139,8 @@ object TypeTraits {
         StickyRightShift<KShort> by ShortStickyRightShift,
         RoundingRightShift<KShort> by ShortRoundingRightShift,
         Addition<KShort>, Multiplication<KShort>,
-        BitRotate<KShort>, Signed<KShort> {
+        ShortBitRotate,
+        Signed<KShort> {
         // Multiple interfaces define it, so we override explicitly
         override val sizeBits: KInt by KShort.Companion::SIZE_BITS
 
@@ -145,9 +149,6 @@ object TypeTraits {
 
         override fun multiply(lhs: KShort, rhs: KShort): KShort = (lhs * rhs).toShort()
         override fun divide(lhs: KShort, rhs: KShort): KShort = (lhs / rhs).toShort()
-
-        override fun rotateLeft(value: KShort, bitCount: KInt): KShort = value.rotateLeft(bitCount)
-        override fun rotateRight(value: KShort, bitCount: KInt): KShort = value.rotateRight(bitCount)
 
         override fun isPositive(value: KShort): Boolean = value > 0
         override fun isNegative(value: KShort): Boolean = value < 0
@@ -165,7 +166,7 @@ object TypeTraits {
         StickyRightShift<KUShort> by UShortStickyRightShift,
         RoundingRightShift<KUShort> by UShortRoundingRightShift,
         Addition<KUShort>, Multiplication<KUShort>,
-        BitRotate<KUShort> {
+        UShortBitRotate {
         // Multiple interfaces define it, so we override explicitly
         override val sizeBits: KInt by KUShort.Companion::SIZE_BITS
 
@@ -174,9 +175,6 @@ object TypeTraits {
 
         override fun multiply(lhs: KUShort, rhs: KUShort): KUShort = (lhs * rhs).toUShort()
         override fun divide(lhs: KUShort, rhs: KUShort): KUShort = (lhs / rhs).toUShort()
-
-        override fun rotateLeft(value: KUShort, bitCount: KInt): KUShort = value.rotateLeft(bitCount)
-        override fun rotateRight(value: KUShort, bitCount: KInt): KUShort = value.rotateRight(bitCount)
     }
 
     /**
@@ -189,7 +187,8 @@ object TypeTraits {
         StickyRightShift<KInt> by IntStickyRightShift,
         RoundingRightShift<KInt> by IntRoundingRightShift,
         Addition<KInt>, Multiplication<KInt>,
-        BitRotate<KInt>, Signed<KInt> {
+        IntBitRotate,
+        Signed<KInt> {
         // Multiple interfaces define it, so we override explicitly
         override val sizeBits: KInt by KInt.Companion::SIZE_BITS
 
@@ -198,9 +197,6 @@ object TypeTraits {
 
         override fun multiply(lhs: KInt, rhs: KInt): KInt = lhs * rhs
         override fun divide(lhs: KInt, rhs: KInt): KInt = lhs / rhs
-
-        override fun rotateLeft(value: KInt, bitCount: KInt): KInt = value.rotateLeft(bitCount)
-        override fun rotateRight(value: KInt, bitCount: KInt): KInt = value.rotateRight(bitCount)
 
         override fun isPositive(value: KInt): Boolean = value > 0
         override fun isNegative(value: KInt): Boolean = value < 0
@@ -218,7 +214,7 @@ object TypeTraits {
         StickyRightShift<KUInt> by UIntStickyRightShift,
         RoundingRightShift<KUInt> by UIntRoundingRightShift,
         Addition<KUInt>, Multiplication<KUInt>,
-        BitRotate<KUInt> {
+        UIntBitRotate {
         // Multiple interfaces define it, so we override explicitly
         override val sizeBits: KInt by KUInt.Companion::SIZE_BITS
 
@@ -227,9 +223,6 @@ object TypeTraits {
 
         override fun multiply(lhs: KUInt, rhs: KUInt): KUInt = lhs * rhs
         override fun divide(lhs: KUInt, rhs: KUInt): KUInt = lhs / rhs
-
-        override fun rotateLeft(value: KUInt, bitCount: KInt): KUInt = value.rotateLeft(bitCount)
-        override fun rotateRight(value: KUInt, bitCount: KInt): KUInt = value.rotateRight(bitCount)
     }
 
     /**
@@ -242,7 +235,8 @@ object TypeTraits {
         StickyRightShift<KLong> by LongStickyRightShift,
         RoundingRightShift<KLong> by LongRoundingRightShift,
         Addition<KLong>, Multiplication<KLong>,
-        BitRotate<KLong>, Signed<KLong> {
+        LongBitRotate,
+        Signed<KLong> {
         // Multiple interfaces define it, so we override explicitly
         override val sizeBits: KInt by KLong.Companion::SIZE_BITS
 
@@ -251,9 +245,6 @@ object TypeTraits {
 
         override fun multiply(lhs: KLong, rhs: KLong): KLong = lhs * rhs
         override fun divide(lhs: KLong, rhs: KLong): KLong = lhs / rhs
-
-        override fun rotateLeft(value: KLong, bitCount: KInt): KLong = value.rotateLeft(bitCount)
-        override fun rotateRight(value: KLong, bitCount: KInt): KLong = value.rotateRight(bitCount)
 
         override fun isPositive(value: KLong): Boolean = value > 0
         override fun isNegative(value: KLong): Boolean = value < 0
@@ -271,7 +262,7 @@ object TypeTraits {
         StickyRightShift<KULong> by ULongStickyRightShift,
         RoundingRightShift<KULong> by ULongRoundingRightShift,
         Addition<KULong>, Multiplication<KULong>,
-        BitRotate<KULong> {
+        ULongBitRotate {
         // Multiple interfaces define it, so we override explicitly
         override val sizeBits: KInt by KULong.Companion::SIZE_BITS
 
@@ -280,9 +271,6 @@ object TypeTraits {
 
         override fun multiply(lhs: KULong, rhs: KULong): KULong = lhs * rhs
         override fun divide(lhs: KULong, rhs: KULong): KULong = lhs / rhs
-
-        override fun rotateLeft(value: KULong, bitCount: KInt): KULong = value.rotateLeft(bitCount)
-        override fun rotateRight(value: KULong, bitCount: KInt): KULong = value.rotateRight(bitCount)
     }
 
     @Suppress("detekt:TooManyFunctions")

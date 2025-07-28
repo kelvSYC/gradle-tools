@@ -1,6 +1,7 @@
 package com.kelvsyc.kotlin.core
 
 import com.google.common.math.IntMath
+import com.kelvsyc.kotlin.core.traits.BitRotate
 import java.util.*
 import kotlin.math.absoluteValue
 
