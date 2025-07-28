@@ -11,11 +11,6 @@ package com.kelvsyc.kotlin.core.traits
  */
 interface LeftShift<T> {
     /**
-     * The size of the data type. Shifts in excess of this value should return zero.
-     */
-    val sizeBits: Int
-
-    /**
      * Shifts the specified value left by the specified number of bits.
      *
      * Implementations are not required to support a negative left shift.

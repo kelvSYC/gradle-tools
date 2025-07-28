@@ -11,11 +11,6 @@ package com.kelvsyc.kotlin.core.traits
  */
 interface ArithmeticRightShift<T> {
     /**
-     * The size of the data type. Shifts in excess of this value should return zero.
-     */
-    val sizeBits: Int
-
-    /**
      * Shifts the specified value right by the specified number of bits.
      *
      * Implementations are not required to support a negative right shift.
