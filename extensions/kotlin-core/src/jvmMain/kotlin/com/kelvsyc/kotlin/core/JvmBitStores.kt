@@ -1,7 +1,9 @@
 package com.kelvsyc.kotlin.core
 
+import com.kelvsyc.kotlin.core.traits.BigIntegerBitShift
 import com.kelvsyc.kotlin.core.traits.BitShift
 import com.kelvsyc.kotlin.core.traits.BitStore
+import com.kelvsyc.kotlin.core.traits.Sized
 import java.math.BigInteger
 import java.util.*
 
@@ -14,7 +16,9 @@ object JvmBitStores {
      */
     fun bigInteger(sizeBits: Int): BitStore<BigInteger> = object : BitStore<BigInteger>,
         BitCollection<BigInteger> by BigIntegerBitCollection(sizeBits),
-        BitShift<BigInteger> by BigIntegerBitShift(sizeBits),
+        BitShift<BigInteger> by BigIntegerBitShift(object : Sized<BigInteger> {
+            override val sizeBits: Int = sizeBits
+        }),
         Bitwise<BigInteger> by BigIntegerBitwise(sizeBits) {
         override val sizeBits: Int = sizeBits
     }

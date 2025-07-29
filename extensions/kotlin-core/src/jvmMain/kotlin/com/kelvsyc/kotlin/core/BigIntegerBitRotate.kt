@@ -1,7 +1,9 @@
 package com.kelvsyc.kotlin.core
 
+import com.kelvsyc.kotlin.core.traits.BigIntegerBitShift
 import com.kelvsyc.kotlin.core.traits.BitRotate
 import com.kelvsyc.kotlin.core.traits.BitShift
+import com.kelvsyc.kotlin.core.traits.Sized
 import java.math.BigInteger
 
 /**
@@ -14,7 +16,9 @@ import java.math.BigInteger
  */
 class BigIntegerBitRotate(
     private val sizeBits: Int,
-    private val bitShift: BitShift<BigInteger> = BigIntegerBitShift(sizeBits)
+    private val bitShift: BitShift<BigInteger> = BigIntegerBitShift(object : Sized<BigInteger> {
+        override val sizeBits: Int = sizeBits
+    })
 ) : BitRotate<BigInteger> {
     override fun rotateLeft(value: BigInteger, bitCount: Int): BigInteger {
         val n = bitCount % sizeBits
