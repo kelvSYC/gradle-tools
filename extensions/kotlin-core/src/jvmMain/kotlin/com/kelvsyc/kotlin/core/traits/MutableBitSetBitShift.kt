@@ -3,10 +3,10 @@ package com.kelvsyc.kotlin.core.traits
 import java.util.*
 
 /**
- * Implementation of [BitShift] for types that can be represented as a fixed-size [java.util.BitSet].
+ * Implementation of [BitShift] for types that can be represented as a fixed-size [BitSet].
  *
- * Note that all operations treat its value as being mutable. Use [BitSetBitShift] for bitwise operations that treat its
- * value as being immutable.
+ * Note that all operations treat its value as being mutable. Use [BitSetBitShift] for bit shift operations that treat
+ * its value as being immutable.
  *
  * @param sized Traits object providing size information on the bit collection.
  */

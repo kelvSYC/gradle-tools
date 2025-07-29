@@ -1,14 +1,20 @@
-package com.kelvsyc.kotlin.core
+package com.kelvsyc.kotlin.core.traits
 
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.property.checkAll
+import java.math.BigInteger
 
 class BigIntegerBitwiseSpec : FunSpec() {
     init {
+        val sized = object : Sized<BigInteger> {
+            override val sizeBits: Int = Int.SIZE_BITS
+        }
+        val traits = BigIntegerBitwise(sized)
+
         test("and") {
             checkAll<Int, Int> { lhs, rhs ->
-                val result = BigIntegerBitwise(Int.SIZE_BITS).and(lhs.toBigInteger(), rhs.toBigInteger())
+                val result = traits.and(lhs.toBigInteger(), rhs.toBigInteger())
                 val processed = result.toInt()
 
                 processed shouldBeEqual (lhs and rhs)
@@ -17,7 +23,7 @@ class BigIntegerBitwiseSpec : FunSpec() {
 
         test("or") {
             checkAll<Int, Int> { lhs, rhs ->
-                val result = BigIntegerBitwise(Int.SIZE_BITS).or(lhs.toBigInteger(), rhs.toBigInteger())
+                val result = traits.or(lhs.toBigInteger(), rhs.toBigInteger())
                 val processed = result.toInt()
 
                 processed shouldBeEqual (lhs or rhs)
@@ -26,7 +32,7 @@ class BigIntegerBitwiseSpec : FunSpec() {
 
         test("xor") {
             checkAll<Int, Int> { lhs, rhs ->
-                val result = BigIntegerBitwise(Int.SIZE_BITS).xor(lhs.toBigInteger(), rhs.toBigInteger())
+                val result = traits.xor(lhs.toBigInteger(), rhs.toBigInteger())
                 val processed = result.toInt()
 
                 processed shouldBeEqual (lhs xor rhs)
@@ -35,7 +41,7 @@ class BigIntegerBitwiseSpec : FunSpec() {
 
         test("inv") {
             checkAll<Int> {
-                val result = BigIntegerBitwise(Int.SIZE_BITS).inv(it.toBigInteger())
+                val result = traits.inv(it.toBigInteger())
                 val processed = result.toInt()
 
                 processed shouldBeEqual it.inv()

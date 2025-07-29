@@ -1,7 +1,9 @@
 package com.kelvsyc.kotlin.core
 
 import com.kelvsyc.kotlin.core.traits.BigIntegerBitShift
+import com.kelvsyc.kotlin.core.traits.BigIntegerBitwise
 import com.kelvsyc.kotlin.core.traits.BitSetBitShift
+import com.kelvsyc.kotlin.core.traits.BitSetBitwise
 import com.kelvsyc.kotlin.core.traits.BitShift
 import com.kelvsyc.kotlin.core.traits.BitStore
 import com.kelvsyc.kotlin.core.traits.Sized
@@ -15,24 +17,20 @@ object JvmBitStores {
     /**
      * Creates a [BitStore] instance for [BigInteger]s of a fixed size.
      */
-    fun bigInteger(sizeBits: Int): BitStore<BigInteger> = object : BitStore<BigInteger>,
-        BitCollection<BigInteger> by BigIntegerBitCollection(sizeBits),
-        BitShift<BigInteger> by BigIntegerBitShift(object : Sized<BigInteger> {
-            override val sizeBits: Int = sizeBits
-        }),
-        Bitwise<BigInteger> by BigIntegerBitwise(sizeBits) {
-        override val sizeBits: Int = sizeBits
+    fun bigInteger(sized: Sized<BigInteger>): BitStore<BigInteger> = object : BitStore<BigInteger>,
+        BitCollection<BigInteger> by BigIntegerBitCollection(sized.sizeBits),
+        BitShift<BigInteger> by BigIntegerBitShift(sized),
+        Bitwise<BigInteger> by BigIntegerBitwise(sized) {
+        override val sizeBits: Int = sized.sizeBits
     }
 
     /**
      * Creates a [BitStore] instance for [BitSet]s of a fixed size.
      */
-    fun bitSet(sizeBits: Int): BitStore<BitSet> = object : BitStore<BitSet>,
-        BitCollection<BitSet> by BitSetBitCollection(sizeBits),
-        BitShift<BitSet> by BitSetBitShift(object : Sized<BitSet> {
-            override val sizeBits: Int = sizeBits
-        }),
-        Bitwise<BitSet> by BitSetBitwise(sizeBits) {
-        override val sizeBits: Int = sizeBits
+    fun bitSet(sized: Sized<BitSet>): BitStore<BitSet> = object : BitStore<BitSet>,
+        BitCollection<BitSet> by BitSetBitCollection(sized.sizeBits),
+        BitShift<BitSet> by BitSetBitShift(sized),
+        Bitwise<BitSet> by BitSetBitwise(sized) {
+        override val sizeBits: Int = sized.sizeBits
     }
 }

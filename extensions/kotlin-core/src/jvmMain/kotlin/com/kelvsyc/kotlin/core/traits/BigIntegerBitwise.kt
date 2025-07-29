@@ -1,16 +1,17 @@
-package com.kelvsyc.kotlin.core
+package com.kelvsyc.kotlin.core.traits
 
+import com.kelvsyc.kotlin.core.Bitwise
 import java.math.BigInteger
 
 /**
  * Implementation of [Bitwise] for types that can be represented as a fixed-size [BigInteger].
  *
- * @param sizeBits The size of the fixed-size [BigInteger].
+ * @param sized Traits object providing size information on the bit collection.
  */
-class BigIntegerBitwise(private val sizeBits: Int) : Bitwise<BigInteger> {
+class BigIntegerBitwise(private val sized: Sized<BigInteger>) : Bitwise<BigInteger> {
     private val mask by lazy {
         // masking is required in case the converter returns a large negative integer.
-        (BigInteger.ONE shl sizeBits) - BigInteger.ONE
+        (BigInteger.ONE shl sized.sizeBits) - BigInteger.ONE
     }
 
     override fun and(lhs: BigInteger, rhs: BigInteger): BigInteger = (lhs and mask) and (rhs and mask)
