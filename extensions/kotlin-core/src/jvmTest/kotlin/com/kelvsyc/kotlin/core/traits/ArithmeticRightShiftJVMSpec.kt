@@ -16,7 +16,7 @@ class ArithmeticRightShiftJVMSpec : FunSpec() {
             val sized = object : Sized<BigInteger> {
                 override val sizeBits: Int = Int.SIZE_BITS
             }
-            val traits = BigIntegerArithmeticRightShift(sized)
+            val traits = BigIntegerBitShift(sized)
             test("Normal") {
                 checkAll(Arb.int(), Arb.int(0..<Int.SIZE_BITS)) { value, bitCount ->
                     val result = traits.arithmeticRightShift(value.toBigInteger(), bitCount)
@@ -30,8 +30,8 @@ class ArithmeticRightShiftJVMSpec : FunSpec() {
             val sized = object : Sized<BitSet> {
                 override val sizeBits: Int = Int.SIZE_BITS
             }
-            val traits = BitSetArithmeticRightShift(sized)
-            val mutableTraits = MutableBitSetArithmeticRightShift(sized)
+            val traits = BitSetBitShift(sized)
+            val mutableTraits = MutableBitSetBitShift(sized)
             test("Normal") {
                 checkAll(Arb.int(), Arb.int(0 ..< Int.SIZE_BITS)) { value, bitCount ->
                     val bytes = TypeTraits.Int.asByteArray(value)

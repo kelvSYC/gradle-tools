@@ -1,6 +1,7 @@
 package com.kelvsyc.kotlin.core.traits
 
 import java.util.*
+import kotlin.streams.asSequence
 
 /**
  * Implementation of [BitRotate] for types that can be represented as a fixed-size [BitSet].
@@ -12,13 +13,7 @@ import java.util.*
  */
 class BitSetBitRotate(private val sized: Sized<BitSet>) : BitRotate<BitSet> {
     override fun rotateLeft(value: BitSet, bitCount: Int): BitSet {
-        val setBits = generateSequence(seedFunction = {
-            value.nextSetBit(0).takeIf { it != -1 }
-        }) {
-            it.takeIf { it != Int.MAX_VALUE }?.let {
-                value.nextSetBit(it + 1).takeIf { it != -1 }
-            }
-        }
+        val setBits = value.stream().asSequence()
 
         val result = BitSet(sized.sizeBits).also {
             setBits.map { (it + bitCount).mod(sized.sizeBits) }.forEach(it::set)
