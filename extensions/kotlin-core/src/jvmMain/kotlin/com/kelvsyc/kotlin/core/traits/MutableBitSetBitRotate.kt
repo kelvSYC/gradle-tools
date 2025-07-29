@@ -1,7 +1,6 @@
-package com.kelvsyc.kotlin.core
+package com.kelvsyc.kotlin.core.traits
 
 import com.google.common.math.IntMath
-import com.kelvsyc.kotlin.core.traits.BitRotate
 import java.util.*
 import kotlin.math.absoluteValue
 
@@ -11,19 +10,19 @@ import kotlin.math.absoluteValue
  * Note that all operations treat its value as being mutable. Use [BitSetBitRotate] for bit rotation operations that
  * treat its value as being immutable.
  *
- * @param sizeBits The size of the fixed-size [BitSet].
+ * @param sized Traits object providing size information on the bit collection.
  */
-class MutableBitSetBitRotate(private val sizeBits: Int) : BitRotate<BitSet> {
+class MutableBitSetBitRotate(private val sized: Sized<BitSet>) : BitRotate<BitSet> {
     @OptIn(ExperimentalStdlibApi::class)
     override fun rotateLeft(value: BitSet, bitCount: Int): BitSet = value.also { result ->
-        val n = bitCount % sizeBits
-        val d = IntMath.gcd(sizeBits, n.absoluteValue)
+        val n = bitCount % sized.sizeBits
+        val d = IntMath.gcd(sized.sizeBits, n.absoluteValue)
         for (i in 0 ..< d) {
             val tempBit = result[i]
             // positions is the sequence (i, (i + n) % sizeBits, (i + 2n) % sizeBits, ...), but in reverse order
             // Thus, we start with i, (i - n) + sizebits, and so on, with the last element being (i + n) % sizeBits
             val positions = generateSequence(i, nextFunction = {
-                val next = (it - n).mod(sizeBits)
+                val next = (it - n).mod(sized.sizeBits)
                 next.takeIf { it != i }
             })
             positions.zipWithNext().forEach { (dstIndex, srcIndex) ->
@@ -33,7 +32,7 @@ class MutableBitSetBitRotate(private val sizeBits: Int) : BitRotate<BitSet> {
                 result[dstIndex] = result[srcIndex]
             }
             // Close the loop
-            result[(i + n).mod(sizeBits)] = tempBit
+            result[(i + n).mod(sized.sizeBits)] = tempBit
         }
     }
 

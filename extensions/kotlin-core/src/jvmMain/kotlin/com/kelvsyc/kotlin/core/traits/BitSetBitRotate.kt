@@ -1,6 +1,5 @@
-package com.kelvsyc.kotlin.core
+package com.kelvsyc.kotlin.core.traits
 
-import com.kelvsyc.kotlin.core.traits.BitRotate
 import java.util.*
 
 /**
@@ -9,9 +8,9 @@ import java.util.*
  * Note that all operations return new [BitSet] instances, without modifying the input. Use [MutableBitSetBitRotate] for
  * bit rotation operations that mutate its input.
  *
- * @param sizeBits The size of the fixed-size [BitSet].
+ * @param sized Traits object providing size information on the bit collection.
  */
-class BitSetBitRotate(private val sizeBits: Int) : BitRotate<BitSet> {
+class BitSetBitRotate(private val sized: Sized<BitSet>) : BitRotate<BitSet> {
     override fun rotateLeft(value: BitSet, bitCount: Int): BitSet {
         val setBits = generateSequence(seedFunction = {
             value.nextSetBit(0).takeIf { it != -1 }
@@ -21,8 +20,8 @@ class BitSetBitRotate(private val sizeBits: Int) : BitRotate<BitSet> {
             }
         }
 
-        val result = BitSet(sizeBits).also {
-            setBits.map { (it + bitCount).mod(sizeBits) }.forEach(it::set)
+        val result = BitSet(sized.sizeBits).also {
+            setBits.map { (it + bitCount).mod(sized.sizeBits) }.forEach(it::set)
         }
         return result
     }
