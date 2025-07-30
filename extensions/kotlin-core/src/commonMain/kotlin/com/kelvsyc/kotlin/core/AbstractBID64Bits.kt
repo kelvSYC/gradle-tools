@@ -1,6 +1,6 @@
 package com.kelvsyc.kotlin.core
 
-import com.kelvsyc.kotlin.core.traits.Decimal64Traits
+import com.kelvsyc.kotlin.core.traits.AbstractDecimal64Traits
 
 /**
  * Partial implementation of the bit representation of a `decimal64` floating-point value, where the [significand] is
@@ -12,7 +12,7 @@ import com.kelvsyc.kotlin.core.traits.Decimal64Traits
  *
  * @param T the floating-point type
  */
-abstract class AbstractBID64Bits<T>(bits: Long, traits: Decimal64Traits<T>) : AbstractDecimal64Bits<T>(bits, traits) {
+abstract class AbstractBID64Bits<T>(bits: Long, traits: AbstractDecimal64Traits<T>) : AbstractDecimal64Bits<T>(bits, traits) {
     private val lowExponent by bitfield(
         this::bits, traits.sizeBits - traits.exponentBits - 1, traits.exponentBits, TypeTraits.Long, Long::toInt)
     private val highExponent by bitfield(

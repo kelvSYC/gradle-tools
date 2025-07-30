@@ -57,3 +57,10 @@ class Decimal64Sized<T> : Sized<T> {
     }
     override val sizeBits: Int get() = SIZE_BITS
 }
+
+class Decimal128Sized<T> : Sized<T> {
+    companion object {
+        internal const val SIZE_BITS = 128
+    }
+    override val sizeBits: Int get() = SIZE_BITS
+}
