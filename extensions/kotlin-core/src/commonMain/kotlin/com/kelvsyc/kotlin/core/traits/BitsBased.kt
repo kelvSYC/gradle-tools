@@ -10,11 +10,6 @@ import com.kelvsyc.kotlin.core.Converter
  */
 interface BitsBased<T, B> {
     /**
-     * Returns the size of the type, in bits. This should be of a size that can be held by the backing bit store.
-     */
-    val sizeBits: Int
-
-    /**
      * Returns a [Converter] that converts between a type and its bit representation.
      */
     val converter: Converter<T, B>

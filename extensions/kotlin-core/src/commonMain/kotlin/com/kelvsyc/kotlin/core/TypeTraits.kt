@@ -112,9 +112,6 @@ object TypeTraits {
         Addition<KByte>, Multiplication<KByte>,
         ByteBitRotate,
         Signed<KByte> {
-        // Multiple interfaces define it, so we override explicitly
-        override val sizeBits: KInt by KByte.Companion::SIZE_BITS
-
         override fun add(lhs: KByte, rhs: KByte): KByte = (lhs + rhs).toByte()
         override fun subtract(lhs: KByte, rhs: KByte): KByte = (lhs - rhs).toByte()
 
@@ -139,9 +136,6 @@ object TypeTraits {
         RoundingRightShift<KUByte> by UByteRoundingRightShift,
         Addition<KUByte>, Multiplication<KUByte>,
         UByteBitRotate {
-        // Multiple interfaces define it, so we override explicitly
-        override val sizeBits: KInt by KUByte.Companion::SIZE_BITS
-
         override fun add(lhs: KUByte, rhs: KUByte): KUByte = (lhs + rhs).toUByte()
         override fun subtract(lhs: KUByte, rhs: KUByte): KUByte = (lhs - rhs).toUByte()
 
@@ -162,9 +156,6 @@ object TypeTraits {
         Addition<KShort>, Multiplication<KShort>,
         ShortBitRotate,
         Signed<KShort> {
-        // Multiple interfaces define it, so we override explicitly
-        override val sizeBits: KInt by KShort.Companion::SIZE_BITS
-
         override fun add(lhs: KShort, rhs: KShort): KShort = (lhs + rhs).toShort()
         override fun subtract(lhs: KShort, rhs: KShort): KShort = (lhs - rhs).toShort()
 
@@ -189,9 +180,6 @@ object TypeTraits {
         RoundingRightShift<KUShort> by UShortRoundingRightShift,
         Addition<KUShort>, Multiplication<KUShort>,
         UShortBitRotate {
-        // Multiple interfaces define it, so we override explicitly
-        override val sizeBits: KInt by KUShort.Companion::SIZE_BITS
-
         override fun add(lhs: KUShort, rhs: KUShort): KUShort = (lhs + rhs).toUShort()
         override fun subtract(lhs: KUShort, rhs: KUShort): KUShort = (lhs - rhs).toUShort()
 
@@ -212,9 +200,6 @@ object TypeTraits {
         Addition<KInt>, Multiplication<KInt>,
         IntBitRotate,
         Signed<KInt> {
-        // Multiple interfaces define it, so we override explicitly
-        override val sizeBits: KInt by KInt.Companion::SIZE_BITS
-
         override fun add(lhs: KInt, rhs: KInt): KInt = lhs + rhs
         override fun subtract(lhs: KInt, rhs: KInt): KInt = lhs - rhs
 
@@ -239,9 +224,6 @@ object TypeTraits {
         RoundingRightShift<KUInt> by UIntRoundingRightShift,
         Addition<KUInt>, Multiplication<KUInt>,
         UIntBitRotate {
-        // Multiple interfaces define it, so we override explicitly
-        override val sizeBits: KInt by KUInt.Companion::SIZE_BITS
-
         override fun add(lhs: KUInt, rhs: KUInt): KUInt = lhs + rhs
         override fun subtract(lhs: KUInt, rhs: KUInt): KUInt = lhs - rhs
 
@@ -262,9 +244,6 @@ object TypeTraits {
         Addition<KLong>, Multiplication<KLong>,
         LongBitRotate,
         Signed<KLong> {
-        // Multiple interfaces define it, so we override explicitly
-        override val sizeBits: KInt by KLong.Companion::SIZE_BITS
-
         override fun add(lhs: KLong, rhs: KLong): KLong = lhs + rhs
         override fun subtract(lhs: KLong, rhs: KLong): KLong = lhs - rhs
 
@@ -289,9 +268,6 @@ object TypeTraits {
         RoundingRightShift<KULong> by ULongRoundingRightShift,
         Addition<KULong>, Multiplication<KULong>,
         ULongBitRotate {
-        // Multiple interfaces define it, so we override explicitly
-        override val sizeBits: KInt by KULong.Companion::SIZE_BITS
-
         override fun add(lhs: KULong, rhs: KULong): KULong = lhs + rhs
         override fun subtract(lhs: KULong, rhs: KULong): KULong = lhs - rhs
 
