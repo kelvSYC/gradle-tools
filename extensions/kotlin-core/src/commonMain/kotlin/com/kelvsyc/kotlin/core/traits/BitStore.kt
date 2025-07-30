@@ -2,7 +2,7 @@ package com.kelvsyc.kotlin.core.traits
 
 import com.kelvsyc.kotlin.core.BitCollection
 import com.kelvsyc.kotlin.core.traits.BitShift
-import com.kelvsyc.kotlin.core.Bitwise
+import com.kelvsyc.kotlin.core.traits.Bitwise
 
 /**
  * Type trait denoting that the type can be used as a bit store.

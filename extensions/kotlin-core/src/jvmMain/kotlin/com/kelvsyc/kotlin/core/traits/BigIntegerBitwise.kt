@@ -1,6 +1,6 @@
 package com.kelvsyc.kotlin.core.traits
 
-import com.kelvsyc.kotlin.core.Bitwise
+import com.kelvsyc.kotlin.core.traits.Bitwise
 import java.math.BigInteger
 
 /**

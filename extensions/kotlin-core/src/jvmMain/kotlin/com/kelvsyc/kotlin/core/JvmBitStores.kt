@@ -6,6 +6,7 @@ import com.kelvsyc.kotlin.core.traits.BitSetBitShift
 import com.kelvsyc.kotlin.core.traits.BitSetBitwise
 import com.kelvsyc.kotlin.core.traits.BitShift
 import com.kelvsyc.kotlin.core.traits.BitStore
+import com.kelvsyc.kotlin.core.traits.Bitwise
 import com.kelvsyc.kotlin.core.traits.Sized
 import java.math.BigInteger
 import java.util.*

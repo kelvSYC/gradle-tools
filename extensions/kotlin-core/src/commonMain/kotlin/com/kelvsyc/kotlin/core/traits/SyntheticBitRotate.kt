@@ -1,7 +1,5 @@
 package com.kelvsyc.kotlin.core.traits
 
-import com.kelvsyc.kotlin.core.Bitwise
-
 /**
  * Implementation of [BitRotate] through a synthetic combination of a left shift and a right shift.
  *

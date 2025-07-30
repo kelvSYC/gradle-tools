@@ -1,6 +1,6 @@
 package com.kelvsyc.internal.kotlin.core.traits
 
-import com.kelvsyc.kotlin.core.Bitwise
+import com.kelvsyc.kotlin.core.traits.Bitwise
 import kotlin.experimental.and
 import kotlin.experimental.inv
 import kotlin.experimental.or

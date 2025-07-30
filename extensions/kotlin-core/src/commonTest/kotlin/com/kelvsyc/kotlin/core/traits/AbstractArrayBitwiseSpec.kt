@@ -1,7 +1,6 @@
-package com.kelvsyc.kotlin.core
+package com.kelvsyc.kotlin.core.traits
 
-import com.kelvsyc.kotlin.core.traits.ArrayLike
-import com.kelvsyc.kotlin.core.traits.arrayLike
+import com.kelvsyc.kotlin.core.TypeTraits
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.property.checkAll
@@ -11,9 +10,7 @@ import kotlin.experimental.or
 import kotlin.experimental.xor
 
 class AbstractArrayBitwiseSpec : FunSpec() {
-    class ByteArrayBitwise(size: Int? = null) : AbstractArrayBitwise<Array<Byte>, Byte>(size) {
-        override val traits: ArrayLike<Array<Byte>, Byte> = arrayLike()
-        override val base: Bitwise<Byte> = TypeTraits.Byte
+    class ByteArrayBitwise(size: Int? = null) : AbstractArrayBitwise<Array<Byte>, Byte>(size, arrayLike(), TypeTraits.Byte) {
         override val zero: Byte = 0
     }
 
