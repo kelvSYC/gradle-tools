@@ -1,6 +1,6 @@
 package com.kelvsyc.kotlin.core
 
-import com.kelvsyc.kotlin.core.traits.BFloat16Traits
+import com.kelvsyc.kotlin.core.traits.AbstractBFloat16Traits
 
 /**
  * Partial implementation of the bit representation of a `bfloat16` floating-point value.
@@ -12,7 +12,7 @@ import com.kelvsyc.kotlin.core.traits.BFloat16Traits
  */
 abstract class AbstractBFloat16Bits<T>(
     bits: Short,
-    override val traits: BFloat16Traits<T>
+    override val traits: AbstractBFloat16Traits<T>
 ) : AbstractFloatingPointBits<T, Short>(bits, traits) {
     override val signBit by flag(this::bits, traits.sizeBits - 1)
     override val biasedExponent by bitfield(this::bits, traits.mantissaWidth, traits.exponentWidth, TypeTraits.Short, Short::toInt)

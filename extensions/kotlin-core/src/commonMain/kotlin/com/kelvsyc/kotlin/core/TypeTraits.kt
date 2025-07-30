@@ -9,9 +9,7 @@ import com.kelvsyc.internal.kotlin.core.traits.ByteRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.ByteSized
 import com.kelvsyc.internal.kotlin.core.traits.ByteStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.DoubleBitsBased
-import com.kelvsyc.internal.kotlin.core.traits.DoubleSized
 import com.kelvsyc.internal.kotlin.core.traits.FloatBitsBased
-import com.kelvsyc.internal.kotlin.core.traits.FloatSized
 import com.kelvsyc.internal.kotlin.core.traits.IntArrayBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.IntArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.IntBitRotate
@@ -68,9 +66,9 @@ import com.kelvsyc.internal.kotlin.core.traits.UShortBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.UShortRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.UShortSized
 import com.kelvsyc.internal.kotlin.core.traits.UShortStickyRightShift
+import com.kelvsyc.kotlin.core.traits.AbstractBinary32Traits
+import com.kelvsyc.kotlin.core.traits.AbstractBinary64Traits
 import com.kelvsyc.kotlin.core.traits.ArrayLike
-import com.kelvsyc.kotlin.core.traits.Binary32Traits
-import com.kelvsyc.kotlin.core.traits.Binary64Traits
 import com.kelvsyc.kotlin.core.traits.BitStore
 import com.kelvsyc.kotlin.core.traits.BitsBased
 import com.kelvsyc.kotlin.core.traits.RoundingRightShift
@@ -276,13 +274,9 @@ object TypeTraits {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object Float :
-        FloatSized,
+    object Float : AbstractBinary32Traits<KFloat>(), // FIXME pass in FloatSized
         BitsBased<KFloat, KInt> by FloatBitsBased,
-        Binary32Traits<KFloat>, FloatingPoint<KFloat>, Addition<KFloat>, Multiplication<KFloat>, Signed<KFloat> {
-        // Multiple interfaces define it, so we override explicitly
-        override val sizeBits: KInt by KFloat.Companion::SIZE_BITS
-
+        FloatingPoint<KFloat>, Addition<KFloat>, Multiplication<KFloat>, Signed<KFloat> {
         override val positiveInfinity: KFloat by KFloat.Companion::POSITIVE_INFINITY
         override val negativeInfinity: KFloat by KFloat.Companion::NEGATIVE_INFINITY
         override val NaN: KFloat by KFloat.Companion::NaN
@@ -306,13 +300,9 @@ object TypeTraits {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object Double :
-        DoubleSized,
+    object Double : AbstractBinary64Traits<KDouble>(), // FIXME pass in DoubleSized
         BitsBased<KDouble, KLong> by DoubleBitsBased,
-        Binary64Traits<KDouble>, FloatingPoint<KDouble>, Addition<KDouble>, Multiplication<KDouble>, Signed<KDouble> {
-        // Multiple interfaces define it, so we override explicitly
-        override val sizeBits: KInt by KDouble.Companion::SIZE_BITS
-
+        FloatingPoint<KDouble>, Addition<KDouble>, Multiplication<KDouble>, Signed<KDouble> {
         override val positiveInfinity: KDouble by KDouble.Companion::POSITIVE_INFINITY
         override val negativeInfinity: KDouble by KDouble.Companion::NEGATIVE_INFINITY
         override val NaN: KDouble by KDouble.Companion::NaN

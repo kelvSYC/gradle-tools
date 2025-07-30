@@ -7,11 +7,6 @@ package com.kelvsyc.kotlin.core.traits
  */
 interface FloatingPointTraits<T> {
     /**
-     * The number of bits in the binary floating-point value.
-     */
-    val sizeBits: Int
-
-    /**
      * The number of bits in the mantissa portion of the significand of the binary floating-point value.
      */
     val mantissaWidth: Int
@@ -20,39 +15,33 @@ interface FloatingPointTraits<T> {
      * The number of bits in the exponent field of the binary floating-point value.
      */
     val exponentWidth: Int
-        get() = sizeBits - mantissaWidth - 1
 
     /**
      * The total number of bits in the significand of the binary floating-point value.
      */
     val precision: Int
-        get() = mantissaWidth + 1
 
     /**
      * The exponent bias of the binary floating-point value.
      */
     val exponentBias: Int
-        get() = (1 shl (exponentWidth - 1)) - 1
 
     /**
      * The exponent bias of the binary floating-point value, if the significand was to be interpreted as an integral
      * value.
      */
     val integralExponentBias: Int
-        get() = exponentBias + mantissaWidth
 
     /**
      * The range of valid exponents of a binary floating-point value.
      */
     val exponentRange: IntRange
-        get() = (1 - exponentBias) .. exponentBias
 
     /**
      * The range of valid exponents of a binary floating-point value, if the significand was to be interpreted as an
      * integral value.
      */
     val integralExponentRange: IntRange
-        get() = (1 - exponentBias - mantissaWidth) .. exponentBias - mantissaWidth
 
     /**
      * The value representing (positive) zero.

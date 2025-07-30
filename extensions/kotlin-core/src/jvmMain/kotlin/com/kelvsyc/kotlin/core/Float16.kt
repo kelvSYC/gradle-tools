@@ -1,6 +1,6 @@
 package com.kelvsyc.kotlin.core
 
-import com.kelvsyc.kotlin.core.traits.Binary16Traits
+import com.kelvsyc.kotlin.core.traits.AbstractBinary16Traits
 import com.kelvsyc.kotlin.core.traits.BitsBased
 
 /**
@@ -40,10 +40,9 @@ value class Float16(val bits: Short): Comparable<Float16> {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object Traits : BitsBased<Float16, Short>,
-        Binary16Traits<Float16>,
+    object Traits : AbstractBinary16Traits<Float16>(),
+        BitsBased<Float16, Short>,
         FloatingPoint<Float16>, Addition<Float16>, Multiplication<Float16>, Signed<Float16> {
-        override val sizeBits: Int by Short.Companion::SIZE_BITS
         override val converter = Converter.of(Float16::bits, ::Float16)
 
         override val positiveInfinity: Float16 = Float16(0x7C00)
