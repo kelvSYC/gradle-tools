@@ -1,6 +1,5 @@
 package com.kelvsyc.kotlin.core
 
-import com.kelvsyc.internal.kotlin.core.traits.ByteSized
 import com.kelvsyc.kotlin.core.traits.ArrayLike
 import com.kelvsyc.kotlin.core.traits.ArraySized
 import com.kelvsyc.kotlin.core.traits.arrayLike
@@ -12,7 +11,7 @@ import io.kotest.property.checkAll
 
 @OptIn(ExperimentalStdlibApi::class)
 class AbstractArrayBitCollectionSpec : FunSpec() {
-    class ByteArrayBitCollection(size: Int): AbstractArrayBitCollection<Array<Byte>, Byte>(ArraySized.ofObjectArray(size, object : ByteSized {})) {
+    class ByteArrayBitCollection(size: Int): AbstractArrayBitCollection<Array<Byte>, Byte>(ArraySized.ofObjectArray(size, TypeTraits.Byte)) {
         override val traits: ArrayLike<Array<Byte>, Byte> = arrayLike()
         override val base: BitCollection<Byte> = TypeTraits.Byte
     }

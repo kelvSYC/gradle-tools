@@ -6,68 +6,44 @@ import com.kelvsyc.kotlin.core.traits.LeftShift
 import com.kelvsyc.kotlin.core.traits.RightShift
 
 object ByteBitShift : BitShift<Byte>,
-    ByteSized,
     LeftShift<Byte> by ByteLeftShift,
     RightShift<Byte> by ByteRightShift,
-    ArithmeticRightShift<Byte> by ByteArithmeticRightShift {
-    override val sizeBits: Int get() = super<ByteSized>.sizeBits
-}
+    ArithmeticRightShift<Byte> by ByteArithmeticRightShift
 
 object UByteBitShift : BitShift<UByte>,
-    UByteSized,
     LeftShift<UByte> by UByteLeftShift,
     RightShift<UByte> by UByteRightShift,
-    ArithmeticRightShift<UByte> by UByteArithmeticRightShift {
-    override val sizeBits: Int get() = super<UByteSized>.sizeBits
-}
+    ArithmeticRightShift<UByte> by UByteArithmeticRightShift
 
 object ShortBitShift : BitShift<Short>,
-    ShortSized,
     LeftShift<Short> by ShortLeftShift,
     RightShift<Short> by ShortRightShift,
-    ArithmeticRightShift<Short> by ShortArithmeticRightShift {
-    override val sizeBits: Int get() = super<ShortSized>.sizeBits
-}
+    ArithmeticRightShift<Short> by ShortArithmeticRightShift
 
 object UShortBitShift : BitShift<UShort>,
-    UShortSized,
     LeftShift<UShort> by UShortLeftShift,
     RightShift<UShort> by UShortRightShift,
-    ArithmeticRightShift<UShort> by UShortArithmeticRightShift {
-    override val sizeBits: Int get() = super<UShortSized>.sizeBits
-}
+    ArithmeticRightShift<UShort> by UShortArithmeticRightShift
 
 object IntBitShift : BitShift<Int>,
-    IntSized,
     LeftShift<Int> by IntLeftShift,
     RightShift<Int> by IntRightShift,
-    ArithmeticRightShift<Int> by IntArithmeticRightShift {
-    override val sizeBits: Int get() = super<IntSized>.sizeBits
-}
+    ArithmeticRightShift<Int> by IntArithmeticRightShift
 
 object UIntBitShift : BitShift<UInt>,
-    UIntSized,
     LeftShift<UInt> by UIntLeftShift,
     RightShift<UInt> by UIntRightShift,
-    ArithmeticRightShift<UInt> by UIntArithmeticRightShift {
-    override val sizeBits: Int get() = super<UIntSized>.sizeBits
-}
+    ArithmeticRightShift<UInt> by UIntArithmeticRightShift
 
 object LongBitShift : BitShift<Long>,
-    LongSized,
     LeftShift<Long> by LongLeftShift,
     RightShift<Long> by LongRightShift,
-    ArithmeticRightShift<Long> by LongArithmeticRightShift {
-    override val sizeBits: Int get() = super<LongSized>.sizeBits
-}
+    ArithmeticRightShift<Long> by LongArithmeticRightShift
 
 object ULongBitShift : BitShift<ULong>,
-    ULongSized,
     LeftShift<ULong> by ULongLeftShift,
     RightShift<ULong> by ULongRightShift,
-    ArithmeticRightShift<ULong> by ULongArithmeticRightShift {
-    override val sizeBits: Int get() = super<ULongSized>.sizeBits
-}
+    ArithmeticRightShift<ULong> by ULongArithmeticRightShift
 
 object ByteArrayBitShift : BitShift<ByteArray>,
     LeftShift<ByteArray> by ByteArrayLeftShift,

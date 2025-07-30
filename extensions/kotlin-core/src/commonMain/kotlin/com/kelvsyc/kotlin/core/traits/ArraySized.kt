@@ -1,16 +1,7 @@
 package com.kelvsyc.kotlin.core.traits
 
-import com.kelvsyc.internal.kotlin.core.traits.ByteSized
-import com.kelvsyc.internal.kotlin.core.traits.DoubleSized
-import com.kelvsyc.internal.kotlin.core.traits.FloatSized
-import com.kelvsyc.internal.kotlin.core.traits.IntSized
-import com.kelvsyc.internal.kotlin.core.traits.LongSized
 import com.kelvsyc.internal.kotlin.core.traits.ObjectArraySized
-import com.kelvsyc.internal.kotlin.core.traits.ShortSized
-import com.kelvsyc.internal.kotlin.core.traits.UByteSized
-import com.kelvsyc.internal.kotlin.core.traits.UIntSized
-import com.kelvsyc.internal.kotlin.core.traits.ULongSized
-import com.kelvsyc.internal.kotlin.core.traits.UShortSized
+import com.kelvsyc.kotlin.core.TypeTraits
 
 /**
  * [Sized] implementation for fixed-sized arrays of a particular [Sized] type.
@@ -28,7 +19,7 @@ interface ArraySized<A, E> : Sized<A> {
             require(size >= 0) { "Cannot create an ArraySized object for negative array sizes" }
             return object : ArraySized<ByteArray, Byte> {
                 override val arraySize: Int = size
-                override val elementSized: Sized<Byte> = object : ByteSized {}
+                override val elementSized: Sized<Byte> = TypeTraits.Byte
                 override val sizeBits: Int = size * Byte.SIZE_BITS
                 override val sizeBytes: Int = size * Byte.SIZE_BYTES
             }
@@ -42,7 +33,7 @@ interface ArraySized<A, E> : Sized<A> {
             require(size >= 0) { "Cannot create an ArraySized object for negative array sizes" }
             return object : ArraySized<UByteArray, UByte> {
                 override val arraySize: Int = size
-                override val elementSized: Sized<UByte> = object : UByteSized {}
+                override val elementSized: Sized<UByte> = TypeTraits.UByte
                 override val sizeBits: Int = size * UByte.SIZE_BITS
                 override val sizeBytes: Int = size * UByte.SIZE_BYTES
             }
@@ -55,7 +46,7 @@ interface ArraySized<A, E> : Sized<A> {
             require(size >= 0) { "Cannot create an ArraySized object for negative array sizes" }
             return object : ArraySized<ShortArray, Short> {
                 override val arraySize: Int = size
-                override val elementSized: Sized<Short> = object : ShortSized {}
+                override val elementSized: Sized<Short> = TypeTraits.Short
                 override val sizeBits: Int = size * Short.SIZE_BITS
                 override val sizeBytes: Int = size * Short.SIZE_BYTES
             }
@@ -69,7 +60,7 @@ interface ArraySized<A, E> : Sized<A> {
             require(size >= 0) { "Cannot create an ArraySized object for negative array sizes" }
             return object : ArraySized<UShortArray, UShort> {
                 override val arraySize: Int = size
-                override val elementSized: Sized<UShort> = object : UShortSized {}
+                override val elementSized: Sized<UShort> = TypeTraits.UShort
                 override val sizeBits: Int = size * UShort.SIZE_BITS
                 override val sizeBytes: Int = size * UShort.SIZE_BYTES
             }
@@ -82,7 +73,7 @@ interface ArraySized<A, E> : Sized<A> {
             require(size >= 0) { "Cannot create an ArraySized object for negative array sizes" }
             return object : ArraySized<IntArray, Int> {
                 override val arraySize: Int = size
-                override val elementSized: Sized<Int> = object : IntSized {}
+                override val elementSized: Sized<Int> = TypeTraits.Int
                 override val sizeBits: Int = size * Int.SIZE_BITS
                 override val sizeBytes: Int = size * Int.SIZE_BYTES
             }
@@ -96,7 +87,7 @@ interface ArraySized<A, E> : Sized<A> {
             require(size >= 0) { "Cannot create an ArraySized object for negative array sizes" }
             return object : ArraySized<UIntArray, UInt> {
                 override val arraySize: Int = size
-                override val elementSized: Sized<UInt> = object : UIntSized {}
+                override val elementSized: Sized<UInt> = TypeTraits.UInt
                 override val sizeBits: Int = size * UInt.SIZE_BITS
                 override val sizeBytes: Int = size * UInt.SIZE_BYTES
             }
@@ -109,7 +100,7 @@ interface ArraySized<A, E> : Sized<A> {
             require(size >= 0) { "Cannot create an ArraySized object for negative array sizes" }
             return object : ArraySized<LongArray, Long> {
                 override val arraySize: Int = size
-                override val elementSized: Sized<Long> = object : LongSized {}
+                override val elementSized: Sized<Long> = TypeTraits.Long
                 override val sizeBits: Int = size * Long.SIZE_BITS
                 override val sizeBytes: Int = size * Long.SIZE_BYTES
             }
@@ -123,7 +114,7 @@ interface ArraySized<A, E> : Sized<A> {
             require(size >= 0) { "Cannot create an ArraySized object for negative array sizes" }
             return object : ArraySized<ULongArray, ULong> {
                 override val arraySize: Int = size
-                override val elementSized: Sized<ULong> = object : ULongSized {}
+                override val elementSized: Sized<ULong> = TypeTraits.ULong
                 override val sizeBits: Int = size * ULong.SIZE_BITS
                 override val sizeBytes: Int = size * ULong.SIZE_BYTES
             }
@@ -136,7 +127,7 @@ interface ArraySized<A, E> : Sized<A> {
             require(size >= 0) { "Cannot create an ArraySized object for negative array sizes" }
             return object : ArraySized<FloatArray, Float> {
                 override val arraySize: Int = size
-                override val elementSized: Sized<Float> = object : FloatSized {}
+                override val elementSized: Sized<Float> = TypeTraits.Float
                 override val sizeBits: Int = size * Float.SIZE_BITS
                 override val sizeBytes: Int = size * Float.SIZE_BYTES
             }
@@ -149,7 +140,7 @@ interface ArraySized<A, E> : Sized<A> {
             require(size >= 0) { "Cannot create an ArraySized object for negative array sizes" }
             return object : ArraySized<DoubleArray, Double> {
                 override val arraySize: Int = size
-                override val elementSized: Sized<Double> = object : DoubleSized{}
+                override val elementSized: Sized<Double> = TypeTraits.Double
                 override val sizeBits: Int = size * Double.SIZE_BITS
                 override val sizeBytes: Int = size * Double.SIZE_BYTES
             }

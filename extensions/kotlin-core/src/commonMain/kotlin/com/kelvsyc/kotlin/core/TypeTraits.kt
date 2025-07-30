@@ -9,7 +9,9 @@ import com.kelvsyc.internal.kotlin.core.traits.ByteRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.ByteSized
 import com.kelvsyc.internal.kotlin.core.traits.ByteStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.DoubleBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.DoubleSized
 import com.kelvsyc.internal.kotlin.core.traits.FloatBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.FloatSized
 import com.kelvsyc.internal.kotlin.core.traits.IntArrayBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.IntArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.IntBitRotate
@@ -73,6 +75,7 @@ import com.kelvsyc.kotlin.core.traits.BitShift
 import com.kelvsyc.kotlin.core.traits.BitStore
 import com.kelvsyc.kotlin.core.traits.BitsBased
 import com.kelvsyc.kotlin.core.traits.RoundingRightShift
+import com.kelvsyc.kotlin.core.traits.Sized
 import com.kelvsyc.kotlin.core.traits.StickyRightShift
 import kotlin.math.absoluteValue
 import kotlin.Byte as KByte
@@ -103,7 +106,7 @@ object TypeTraits {
      */
     @Suppress("detekt:TooManyFunctions")
     object Byte :
-        ByteSized,
+        Sized<KByte> by ByteSized,
         BitsBased<KByte, KByte> by ByteBitsBased,
         BitStore<KByte> by ByteBitStore,
         StickyRightShift<KByte> by ByteStickyRightShift,
@@ -128,7 +131,7 @@ object TypeTraits {
      */
     @Suppress("detekt:TooManyFunctions")
     object UByte :
-        UByteSized,
+        Sized<KUByte> by UByteSized,
         BitsBased<KUByte, KByte> by UByteBitsBased,
         BitStore<KUByte> by UByteBitStore,
         StickyRightShift<KUByte> by UByteStickyRightShift,
@@ -147,7 +150,7 @@ object TypeTraits {
      */
     @Suppress("detekt:TooManyFunctions")
     object Short :
-        ShortSized,
+        Sized<KShort> by ShortSized,
         BitsBased<KShort, KShort> by ShortBitsBased,
         BitStore<KShort> by ShortBitStore,
         StickyRightShift<KShort> by ShortStickyRightShift,
@@ -172,7 +175,7 @@ object TypeTraits {
      */
     @Suppress("detekt:TooManyFunctions")
     object UShort :
-        UShortSized,
+        Sized<KUShort> by UShortSized,
         BitsBased<KUShort, KShort> by UShortBitsBased,
         BitStore<KUShort> by UShortBitStore,
         StickyRightShift<KUShort> by UShortStickyRightShift,
@@ -191,7 +194,7 @@ object TypeTraits {
      */
     @Suppress("detekt:TooManyFunctions")
     object Int :
-        IntSized,
+        Sized<KInt> by IntSized,
         BitsBased<KInt, KInt> by IntBitsBased,
         BitStore<KInt> by IntBitStore,
         StickyRightShift<KInt> by IntStickyRightShift,
@@ -216,7 +219,7 @@ object TypeTraits {
      */
     @Suppress("detekt:TooManyFunctions")
     object UInt :
-        UIntSized,
+        Sized<KUInt> by UIntSized,
         BitsBased<KUInt, KInt> by UIntBitsBased,
         BitStore<KUInt> by UIntBitStore,
         StickyRightShift<KUInt> by UIntStickyRightShift,
@@ -235,7 +238,7 @@ object TypeTraits {
      */
     @Suppress("detekt:TooManyFunctions")
     object Long :
-        LongSized,
+        Sized<KLong> by LongSized,
         BitsBased<KLong, KLong> by LongBitsBased,
         BitStore<KLong> by LongBitStore,
         StickyRightShift<KLong> by LongStickyRightShift,
@@ -260,7 +263,7 @@ object TypeTraits {
      */
     @Suppress("detekt:TooManyFunctions")
     object ULong :
-        ULongSized,
+        Sized<KULong> by ULongSized,
         BitsBased<KULong, KLong> by ULongBitsBased,
         BitStore<KULong> by ULongBitStore,
         StickyRightShift<KULong> by ULongStickyRightShift,
@@ -275,7 +278,7 @@ object TypeTraits {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object Float : AbstractBinary32Traits<KFloat>(), // FIXME pass in FloatSized
+    object Float : AbstractBinary32Traits<KFloat>(FloatSized),
         BitsBased<KFloat, KInt> by FloatBitsBased,
         FloatingPoint<KFloat>, Addition<KFloat>, Multiplication<KFloat>, Signed<KFloat> {
         override val positiveInfinity: KFloat by KFloat.Companion::POSITIVE_INFINITY
@@ -301,7 +304,7 @@ object TypeTraits {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object Double : AbstractBinary64Traits<KDouble>(), // FIXME pass in DoubleSized
+    object Double : AbstractBinary64Traits<KDouble>(DoubleSized),
         BitsBased<KDouble, KLong> by DoubleBitsBased,
         FloatingPoint<KDouble>, Addition<KDouble>, Multiplication<KDouble>, Signed<KDouble> {
         override val positiveInfinity: KDouble by KDouble.Companion::POSITIVE_INFINITY
