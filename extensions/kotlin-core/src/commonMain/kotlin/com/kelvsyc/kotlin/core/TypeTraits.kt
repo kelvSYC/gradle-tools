@@ -69,6 +69,7 @@ import com.kelvsyc.internal.kotlin.core.traits.UShortStickyRightShift
 import com.kelvsyc.kotlin.core.traits.AbstractBinary32Traits
 import com.kelvsyc.kotlin.core.traits.AbstractBinary64Traits
 import com.kelvsyc.kotlin.core.traits.ArrayLike
+import com.kelvsyc.kotlin.core.traits.BitShift
 import com.kelvsyc.kotlin.core.traits.BitStore
 import com.kelvsyc.kotlin.core.traits.BitsBased
 import com.kelvsyc.kotlin.core.traits.RoundingRightShift
@@ -326,7 +327,7 @@ object TypeTraits {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object ByteArray : ArrayLike<KByteArray, KByte>, ByteArrayBitShift, ByteArrayBitRotate {
+    object ByteArray : ArrayLike<KByteArray, KByte>, BitShift<KByteArray> by ByteArrayBitShift, ByteArrayBitRotate {
         override fun create(size: KInt, init: (KInt) -> KByte): KByteArray = KByteArray(size, init)
         override fun getAt(array: KByteArray, index: KInt): KByte = array[index]
         override fun getSize(array: KByteArray): KInt = array.size
@@ -349,7 +350,7 @@ object TypeTraits {
 
     @Suppress("detekt:TooManyFunctions")
     @OptIn(ExperimentalUnsignedTypes::class)
-    object UByteArray : ArrayLike<KUByteArray, KUByte>, UByteArrayBitShift, UByteArrayBitRotate {
+    object UByteArray : ArrayLike<KUByteArray, KUByte>, BitShift<KUByteArray> by UByteArrayBitShift, UByteArrayBitRotate {
         override fun create(size: KInt, init: (KInt) -> KUByte): KUByteArray = KUByteArray(size, init)
         override fun getAt(array: KUByteArray, index: KInt): KUByte = array[index]
         override fun getSize(array: KUByteArray): KInt = array.size
@@ -371,7 +372,7 @@ object TypeTraits {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object ShortArray : ArrayLike<KShortArray, KShort>, ShortArrayBitShift, ShortArrayBitRotate {
+    object ShortArray : ArrayLike<KShortArray, KShort>, BitShift<KShortArray> by ShortArrayBitShift, ShortArrayBitRotate {
         override fun create(size: KInt, init: (KInt) -> KShort): KShortArray = KShortArray(size, init)
         override fun getAt(array: KShortArray, index: KInt): KShort = array[index]
         override fun getSize(array: KShortArray): KInt = array.size
@@ -394,7 +395,7 @@ object TypeTraits {
 
     @Suppress("detekt:TooManyFunctions")
     @OptIn(ExperimentalUnsignedTypes::class)
-    object UShortArray : ArrayLike<KUShortArray, KUShort>, UShortArrayBitShift, UShortArrayBitRotate {
+    object UShortArray : ArrayLike<KUShortArray, KUShort>, BitShift<KUShortArray> by UShortArrayBitShift, UShortArrayBitRotate {
         override fun create(size: KInt, init: (KInt) -> KUShort): KUShortArray = KUShortArray(size, init)
         override fun getAt(array: KUShortArray, index: KInt): KUShort = array[index]
         override fun getSize(array: KUShortArray): KInt = array.size
@@ -416,7 +417,7 @@ object TypeTraits {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object IntArray : ArrayLike<KIntArray, KInt>, IntArrayBitShift, IntArrayBitRotate {
+    object IntArray : ArrayLike<KIntArray, KInt>, BitShift<KIntArray> by IntArrayBitShift, IntArrayBitRotate {
         override fun create(size: KInt, init: (KInt) -> KInt): KIntArray = KIntArray(size, init)
         override fun getAt(array: KIntArray, index: KInt): KInt = array[index]
         override fun getSize(array: KIntArray): KInt = array.size
@@ -439,7 +440,7 @@ object TypeTraits {
 
     @Suppress("detekt:TooManyFunctions")
     @OptIn(ExperimentalUnsignedTypes::class)
-    object UIntArray : ArrayLike<KUIntArray, KUInt>, UIntArrayBitShift, UIntArrayBitRotate {
+    object UIntArray : ArrayLike<KUIntArray, KUInt>, BitShift<KUIntArray> by UIntArrayBitShift, UIntArrayBitRotate {
         override fun create(size: KInt, init: (KInt) -> KUInt): KUIntArray = KUIntArray(size, init)
         override fun getAt(array: KUIntArray, index: KInt): KUInt = array[index]
         override fun getSize(array: KUIntArray): KInt = array.size
@@ -461,7 +462,7 @@ object TypeTraits {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object LongArray : ArrayLike<KLongArray, KLong>, LongArrayBitShift, LongArrayBitRotate {
+    object LongArray : ArrayLike<KLongArray, KLong>, BitShift<KLongArray> by LongArrayBitShift, LongArrayBitRotate {
         override fun create(size: KInt, init: (KInt) -> KLong): KLongArray = KLongArray(size, init)
         override fun getAt(array: KLongArray, index: KInt): KLong = array[index]
         override fun getSize(array: KLongArray): KInt = array.size
@@ -484,7 +485,7 @@ object TypeTraits {
 
     @Suppress("detekt:TooManyFunctions")
     @OptIn(ExperimentalUnsignedTypes::class)
-    object ULongArray : ArrayLike<KULongArray, KULong>, ULongArrayBitShift, ULongArrayBitRotate {
+    object ULongArray : ArrayLike<KULongArray, KULong>, BitShift<KULongArray> by ULongArrayBitShift, ULongArrayBitRotate {
         override fun create(size: KInt, init: (KInt) -> KULong): KULongArray = KULongArray(size, init)
         override fun getAt(array: KULongArray, index: KInt): KULong = array[index]
         override fun getSize(array: KULongArray): KInt = array.size

@@ -2,7 +2,7 @@ package com.kelvsyc.internal.kotlin.core.traits
 
 import com.kelvsyc.kotlin.core.traits.LeftShift
 
-interface ByteLeftShift : LeftShift<Byte> {
+object ByteLeftShift : LeftShift<Byte> {
     override fun leftShift(value: Byte, bitCount: Int): Byte {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
         return if (bitCount == 0) value
@@ -11,7 +11,7 @@ interface ByteLeftShift : LeftShift<Byte> {
     }
 }
 
-interface UByteLeftShift : LeftShift<UByte> {
+object UByteLeftShift : LeftShift<UByte> {
     override fun leftShift(value: UByte, bitCount: Int): UByte {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
         return if (bitCount == 0) value
@@ -20,7 +20,7 @@ interface UByteLeftShift : LeftShift<UByte> {
     }
 }
 
-interface ShortLeftShift : LeftShift<Short> {
+object ShortLeftShift : LeftShift<Short> {
     override fun leftShift(value: Short, bitCount: Int): Short {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
         return if (bitCount == 0) value
@@ -29,7 +29,7 @@ interface ShortLeftShift : LeftShift<Short> {
     }
 }
 
-interface UShortLeftShift : LeftShift<UShort> {
+object UShortLeftShift : LeftShift<UShort> {
     override fun leftShift(value: UShort, bitCount: Int): UShort {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
         return if (bitCount == 0) value
@@ -38,7 +38,7 @@ interface UShortLeftShift : LeftShift<UShort> {
     }
 }
 
-interface IntLeftShift : LeftShift<Int> {
+object IntLeftShift : LeftShift<Int> {
     override fun leftShift(value: Int, bitCount: Int): Int {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
         return if (bitCount == 0) value
@@ -47,7 +47,7 @@ interface IntLeftShift : LeftShift<Int> {
     }
 }
 
-interface UIntLeftShift : LeftShift<UInt> {
+object UIntLeftShift : LeftShift<UInt> {
     override fun leftShift(value: UInt, bitCount: Int): UInt {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
         return if (bitCount == 0) value
@@ -56,7 +56,7 @@ interface UIntLeftShift : LeftShift<UInt> {
     }
 }
 
-interface LongLeftShift : LeftShift<Long> {
+object LongLeftShift : LeftShift<Long> {
     override fun leftShift(value: Long, bitCount: Int): Long {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
         return if (bitCount == 0) value
@@ -65,7 +65,7 @@ interface LongLeftShift : LeftShift<Long> {
     }
 }
 
-interface ULongLeftShift : LeftShift<ULong> {
+object ULongLeftShift : LeftShift<ULong> {
     override fun leftShift(value: ULong, bitCount: Int): ULong {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
         return if (bitCount == 0) value
@@ -74,7 +74,7 @@ interface ULongLeftShift : LeftShift<ULong> {
     }
 }
 
-interface ByteArrayLeftShift : LeftShift<ByteArray> {
+object ByteArrayLeftShift : LeftShift<ByteArray> {
     @Suppress("detekt:ReturnCount")
     override fun leftShift(value: ByteArray, bitCount: Int): ByteArray {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
@@ -105,7 +105,7 @@ interface ByteArrayLeftShift : LeftShift<ByteArray> {
 }
 
 @OptIn(ExperimentalUnsignedTypes::class)
-interface UByteArrayLeftShift : LeftShift<UByteArray> {
+object UByteArrayLeftShift : LeftShift<UByteArray> {
     @Suppress("detekt:ReturnCount")
     override fun leftShift(value: UByteArray, bitCount: Int): UByteArray {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
@@ -135,7 +135,7 @@ interface UByteArrayLeftShift : LeftShift<UByteArray> {
     }
 }
 
-interface ShortArrayLeftShift : LeftShift<ShortArray> {
+object ShortArrayLeftShift : LeftShift<ShortArray> {
     @Suppress("detekt:ReturnCount")
     override fun leftShift(value: ShortArray, bitCount: Int): ShortArray {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
@@ -166,7 +166,7 @@ interface ShortArrayLeftShift : LeftShift<ShortArray> {
 }
 
 @OptIn(ExperimentalUnsignedTypes::class)
-interface UShortArrayLeftShift : LeftShift<UShortArray> {
+object UShortArrayLeftShift : LeftShift<UShortArray> {
     @Suppress("detekt:ReturnCount")
     override fun leftShift(value: UShortArray, bitCount: Int): UShortArray {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
@@ -196,7 +196,7 @@ interface UShortArrayLeftShift : LeftShift<UShortArray> {
     }
 }
 
-interface IntArrayLeftShift : LeftShift<IntArray> {
+object IntArrayLeftShift : LeftShift<IntArray> {
     @Suppress("detekt:ReturnCount")
     override fun leftShift(value: IntArray, bitCount: Int): IntArray {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
@@ -227,7 +227,7 @@ interface IntArrayLeftShift : LeftShift<IntArray> {
 }
 
 @OptIn(ExperimentalUnsignedTypes::class)
-interface UIntArrayLeftShift : LeftShift<UIntArray> {
+object UIntArrayLeftShift : LeftShift<UIntArray> {
     @Suppress("detekt:ReturnCount")
     override fun leftShift(value: UIntArray, bitCount: Int): UIntArray {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
@@ -257,7 +257,7 @@ interface UIntArrayLeftShift : LeftShift<UIntArray> {
     }
 }
 
-interface LongArrayLeftShift : LeftShift<LongArray> {
+object LongArrayLeftShift : LeftShift<LongArray> {
     @Suppress("detekt:ReturnCount")
     override fun leftShift(value: LongArray, bitCount: Int): LongArray {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }
@@ -288,7 +288,7 @@ interface LongArrayLeftShift : LeftShift<LongArray> {
 }
 
 @OptIn(ExperimentalUnsignedTypes::class)
-interface ULongArrayLeftShift : LeftShift<ULongArray> {
+object ULongArrayLeftShift : LeftShift<ULongArray> {
     @Suppress("detekt:ReturnCount")
     override fun leftShift(value: ULongArray, bitCount: Int): ULongArray {
         require(bitCount >= 0) { "Negative left shifts are unsupported." }

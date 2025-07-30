@@ -1,175 +1,114 @@
 package com.kelvsyc.internal.kotlin.core.traits
 
+import com.kelvsyc.kotlin.core.traits.ArithmeticRightShift
 import com.kelvsyc.kotlin.core.traits.BitShift
+import com.kelvsyc.kotlin.core.traits.LeftShift
+import com.kelvsyc.kotlin.core.traits.RightShift
 
-interface ByteBitShift : BitShift<Byte>,
+object ByteBitShift : BitShift<Byte>,
     ByteSized,
-    ByteLeftShift,
-    ByteRightShift,
-    ByteArithmeticRightShift {
+    LeftShift<Byte> by ByteLeftShift,
+    RightShift<Byte> by ByteRightShift,
+    ArithmeticRightShift<Byte> by ByteArithmeticRightShift {
     override val sizeBits: Int get() = super<ByteSized>.sizeBits
-    override fun leftShift(value: Byte, bitCount: Int): Byte = super.leftShift(value, bitCount)
-    override fun rightShift(value: Byte, bitCount: Int): Byte = super.rightShift(value, bitCount)
-    override fun arithmeticRightShift(value: Byte, bitCount: Int): Byte = super.arithmeticRightShift(value, bitCount)
 }
 
-interface UByteBitShift : BitShift<UByte>,
+object UByteBitShift : BitShift<UByte>,
     UByteSized,
-    UByteLeftShift,
-    UByteRightShift,
-    UByteArithmeticRightShift {
+    LeftShift<UByte> by UByteLeftShift,
+    RightShift<UByte> by UByteRightShift,
+    ArithmeticRightShift<UByte> by UByteArithmeticRightShift {
     override val sizeBits: Int get() = super<UByteSized>.sizeBits
-    override fun leftShift(value: UByte, bitCount: Int): UByte = super.leftShift(value, bitCount)
-    override fun rightShift(value: UByte, bitCount: Int): UByte = super.rightShift(value, bitCount)
-    override fun arithmeticRightShift(value: UByte, bitCount: Int): UByte = super.arithmeticRightShift(value, bitCount)
 }
 
-interface ShortBitShift : BitShift<Short>,
+object ShortBitShift : BitShift<Short>,
     ShortSized,
-    ShortLeftShift,
-    ShortRightShift,
-    ShortArithmeticRightShift {
+    LeftShift<Short> by ShortLeftShift,
+    RightShift<Short> by ShortRightShift,
+    ArithmeticRightShift<Short> by ShortArithmeticRightShift {
     override val sizeBits: Int get() = super<ShortSized>.sizeBits
-    override fun leftShift(value: Short, bitCount: Int): Short = super.leftShift(value, bitCount)
-    override fun rightShift(value: Short, bitCount: Int): Short = super.rightShift(value, bitCount)
-    override fun arithmeticRightShift(value: Short, bitCount: Int): Short = super.arithmeticRightShift(value, bitCount)
 }
 
-interface UShortBitShift : BitShift<UShort>,
+object UShortBitShift : BitShift<UShort>,
     UShortSized,
-    UShortLeftShift,
-    UShortRightShift,
-    UShortArithmeticRightShift {
+    LeftShift<UShort> by UShortLeftShift,
+    RightShift<UShort> by UShortRightShift,
+    ArithmeticRightShift<UShort> by UShortArithmeticRightShift {
     override val sizeBits: Int get() = super<UShortSized>.sizeBits
-    override fun leftShift(value: UShort, bitCount: Int): UShort = super.leftShift(value, bitCount)
-    override fun rightShift(value: UShort, bitCount: Int): UShort = super.rightShift(value, bitCount)
-    override fun arithmeticRightShift(value: UShort, bitCount: Int): UShort = super.arithmeticRightShift(value, bitCount)
 }
 
-interface IntBitShift : BitShift<Int>,
+object IntBitShift : BitShift<Int>,
     IntSized,
-    IntLeftShift,
-    IntRightShift,
-    IntArithmeticRightShift {
+    LeftShift<Int> by IntLeftShift,
+    RightShift<Int> by IntRightShift,
+    ArithmeticRightShift<Int> by IntArithmeticRightShift {
     override val sizeBits: Int get() = super<IntSized>.sizeBits
-    override fun leftShift(value: Int, bitCount: Int): Int = super.leftShift(value, bitCount)
-    override fun rightShift(value: Int, bitCount: Int): Int = super.rightShift(value, bitCount)
-    override fun arithmeticRightShift(value: Int, bitCount: Int): Int = super.arithmeticRightShift(value, bitCount)
 }
 
-interface UIntBitShift : BitShift<UInt>,
+object UIntBitShift : BitShift<UInt>,
     UIntSized,
-    UIntLeftShift,
-    UIntRightShift,
-    UIntArithmeticRightShift {
+    LeftShift<UInt> by UIntLeftShift,
+    RightShift<UInt> by UIntRightShift,
+    ArithmeticRightShift<UInt> by UIntArithmeticRightShift {
     override val sizeBits: Int get() = super<UIntSized>.sizeBits
-    override fun leftShift(value: UInt, bitCount: Int): UInt = super.leftShift(value, bitCount)
-    override fun rightShift(value: UInt, bitCount: Int): UInt = super.rightShift(value, bitCount)
-    override fun arithmeticRightShift(value: UInt, bitCount: Int): UInt = super.arithmeticRightShift(value, bitCount)
 }
 
-interface LongBitShift : BitShift<Long>,
+object LongBitShift : BitShift<Long>,
     LongSized,
-    LongLeftShift,
-    LongRightShift,
-    LongArithmeticRightShift {
+    LeftShift<Long> by LongLeftShift,
+    RightShift<Long> by LongRightShift,
+    ArithmeticRightShift<Long> by LongArithmeticRightShift {
     override val sizeBits: Int get() = super<LongSized>.sizeBits
-    override fun leftShift(value: Long, bitCount: Int): Long = super.leftShift(value, bitCount)
-    override fun rightShift(value: Long, bitCount: Int): Long = super.rightShift(value, bitCount)
-    override fun arithmeticRightShift(value: Long, bitCount: Int): Long = super.arithmeticRightShift(value, bitCount)
 }
 
-interface ULongBitShift : BitShift<ULong>,
+object ULongBitShift : BitShift<ULong>,
     ULongSized,
-    ULongLeftShift,
-    ULongRightShift,
-    ULongArithmeticRightShift {
+    LeftShift<ULong> by ULongLeftShift,
+    RightShift<ULong> by ULongRightShift,
+    ArithmeticRightShift<ULong> by ULongArithmeticRightShift {
     override val sizeBits: Int get() = super<ULongSized>.sizeBits
-    override fun leftShift(value: ULong, bitCount: Int): ULong = super.leftShift(value, bitCount)
-    override fun rightShift(value: ULong, bitCount: Int): ULong = super.rightShift(value, bitCount)
-    override fun arithmeticRightShift(value: ULong, bitCount: Int): ULong = super.arithmeticRightShift(value, bitCount)
 }
 
-interface ByteArrayBitShift : BitShift<ByteArray>,
-    ByteArrayLeftShift,
-    ByteArrayRightShift,
-    ByteArrayArithmeticRightShift {
-    override fun leftShift(value: ByteArray, bitCount: Int): ByteArray = super.leftShift(value, bitCount)
-    override fun rightShift(value: ByteArray, bitCount: Int): ByteArray = super.rightShift(value, bitCount)
-    override fun arithmeticRightShift(value: ByteArray, bitCount: Int): ByteArray =
-        super.arithmeticRightShift(value, bitCount)
-}
+object ByteArrayBitShift : BitShift<ByteArray>,
+    LeftShift<ByteArray> by ByteArrayLeftShift,
+    RightShift<ByteArray> by ByteArrayRightShift,
+    ArithmeticRightShift<ByteArray> by ByteArrayArithmeticRightShift
 
 @OptIn(ExperimentalUnsignedTypes::class)
-interface UByteArrayBitShift : BitShift<UByteArray>,
-    UByteArrayLeftShift,
-    UByteArrayRightShift,
-    UByteArrayArithmeticRightShift {
-    override fun leftShift(value: UByteArray, bitCount: Int): UByteArray = super.leftShift(value, bitCount)
-    override fun rightShift(value: UByteArray, bitCount: Int): UByteArray = super.rightShift(value, bitCount)
-    override fun arithmeticRightShift(value: UByteArray, bitCount: Int): UByteArray =
-        super.arithmeticRightShift(value, bitCount)
-}
+object UByteArrayBitShift : BitShift<UByteArray>,
+    LeftShift<UByteArray> by UByteArrayLeftShift,
+    RightShift<UByteArray> by UByteArrayRightShift,
+    ArithmeticRightShift<UByteArray> by UByteArrayArithmeticRightShift
 
-interface ShortArrayBitShift : BitShift<ShortArray>,
-    ShortArrayLeftShift,
-    ShortArrayRightShift,
-    ShortArrayArithmeticRightShift {
-    override fun leftShift(value: ShortArray, bitCount: Int): ShortArray = super.leftShift(value, bitCount)
-    override fun rightShift(value: ShortArray, bitCount: Int): ShortArray = super.rightShift(value, bitCount)
-    override fun arithmeticRightShift(value: ShortArray, bitCount: Int): ShortArray =
-        super.arithmeticRightShift(value, bitCount)
-}
+object ShortArrayBitShift : BitShift<ShortArray>,
+    LeftShift<ShortArray> by ShortArrayLeftShift,
+    RightShift<ShortArray> by ShortArrayRightShift,
+    ArithmeticRightShift<ShortArray> by ShortArrayArithmeticRightShift
 
 @OptIn(ExperimentalUnsignedTypes::class)
-interface UShortArrayBitShift : BitShift<UShortArray>,
-    UShortArrayLeftShift,
-    UShortArrayRightShift,
-    UShortArrayArithmeticRightShift {
-    override fun leftShift(value: UShortArray, bitCount: Int): UShortArray = super.leftShift(value, bitCount)
-    override fun rightShift(value: UShortArray, bitCount: Int): UShortArray = super.rightShift(value, bitCount)
-    override fun arithmeticRightShift(value: UShortArray, bitCount: Int): UShortArray =
-        super.arithmeticRightShift(value, bitCount)
-}
+object UShortArrayBitShift : BitShift<UShortArray>,
+    LeftShift<UShortArray> by UShortArrayLeftShift,
+    RightShift<UShortArray> by UShortArrayRightShift,
+    ArithmeticRightShift<UShortArray> by UShortArrayArithmeticRightShift
 
-interface IntArrayBitShift : BitShift<IntArray>,
-    IntArrayLeftShift,
-    IntArrayRightShift,
-    IntArrayArithmeticRightShift {
-    override fun leftShift(value: IntArray, bitCount: Int): IntArray = super.leftShift(value, bitCount)
-    override fun rightShift(value: IntArray, bitCount: Int): IntArray = super.rightShift(value, bitCount)
-    override fun arithmeticRightShift(value: IntArray, bitCount: Int): IntArray =
-        super.arithmeticRightShift(value, bitCount)
-}
+object IntArrayBitShift : BitShift<IntArray>,
+    LeftShift<IntArray> by IntArrayLeftShift,
+    RightShift<IntArray> by IntArrayRightShift,
+    ArithmeticRightShift<IntArray> by IntArrayArithmeticRightShift
 
 @OptIn(ExperimentalUnsignedTypes::class)
-interface UIntArrayBitShift : BitShift<UIntArray>,
-    UIntArrayLeftShift,
-    UIntArrayRightShift,
-    UIntArrayArithmeticRightShift {
-    override fun leftShift(value: UIntArray, bitCount: Int): UIntArray = super.leftShift(value, bitCount)
-    override fun rightShift(value: UIntArray, bitCount: Int): UIntArray = super.rightShift(value, bitCount)
-    override fun arithmeticRightShift(value: UIntArray, bitCount: Int): UIntArray =
-        super.arithmeticRightShift(value, bitCount)
-}
+object UIntArrayBitShift : BitShift<UIntArray>,
+    LeftShift<UIntArray> by UIntArrayLeftShift,
+    RightShift<UIntArray> by UIntArrayRightShift,
+    ArithmeticRightShift<UIntArray> by UIntArrayArithmeticRightShift
 
-interface LongArrayBitShift : BitShift<LongArray>,
-    LongArrayLeftShift,
-    LongArrayRightShift,
-    LongArrayArithmeticRightShift {
-    override fun leftShift(value: LongArray, bitCount: Int): LongArray = super.leftShift(value, bitCount)
-    override fun rightShift(value: LongArray, bitCount: Int): LongArray = super.rightShift(value, bitCount)
-    override fun arithmeticRightShift(value: LongArray, bitCount: Int): LongArray =
-        super.arithmeticRightShift(value, bitCount)
-}
+object LongArrayBitShift : BitShift<LongArray>,
+    LeftShift<LongArray> by LongArrayLeftShift,
+    RightShift<LongArray> by LongArrayRightShift,
+    ArithmeticRightShift<LongArray> by LongArrayArithmeticRightShift
 
 @OptIn(ExperimentalUnsignedTypes::class)
-interface ULongArrayBitShift : BitShift<ULongArray>,
-    ULongArrayLeftShift,
-    ULongArrayRightShift,
-    ULongArrayArithmeticRightShift {
-    override fun leftShift(value: ULongArray, bitCount: Int): ULongArray = super.leftShift(value, bitCount)
-    override fun rightShift(value: ULongArray, bitCount: Int): ULongArray = super.rightShift(value, bitCount)
-    override fun arithmeticRightShift(value: ULongArray, bitCount: Int): ULongArray =
-        super.arithmeticRightShift(value, bitCount)
-}
+object ULongArrayBitShift : BitShift<ULongArray>,
+    LeftShift<ULongArray> by ULongArrayLeftShift,
+    RightShift<ULongArray> by ULongArrayRightShift,
+    ArithmeticRightShift<ULongArray> by ULongArrayArithmeticRightShift

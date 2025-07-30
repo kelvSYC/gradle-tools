@@ -2,7 +2,7 @@ package com.kelvsyc.internal.kotlin.core.traits
 
 import com.kelvsyc.kotlin.core.traits.ArithmeticRightShift
 
-interface ByteArithmeticRightShift : ArithmeticRightShift<Byte> {
+object ByteArithmeticRightShift : ArithmeticRightShift<Byte> {
     override fun arithmeticRightShift(value: Byte, bitCount: Int): Byte {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
         return if (bitCount == 0) value
@@ -11,7 +11,7 @@ interface ByteArithmeticRightShift : ArithmeticRightShift<Byte> {
     }
 }
 
-interface UByteArithmeticRightShift : ArithmeticRightShift<UByte> {
+object UByteArithmeticRightShift : ArithmeticRightShift<UByte> {
     override fun arithmeticRightShift(value: UByte, bitCount: Int): UByte {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
         return if (bitCount == 0) value
@@ -20,7 +20,7 @@ interface UByteArithmeticRightShift : ArithmeticRightShift<UByte> {
     }
 }
 
-interface ShortArithmeticRightShift : ArithmeticRightShift<Short> {
+object ShortArithmeticRightShift : ArithmeticRightShift<Short> {
     override fun arithmeticRightShift(value: Short, bitCount: Int): Short {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
         return if (bitCount == 0) value
@@ -29,7 +29,7 @@ interface ShortArithmeticRightShift : ArithmeticRightShift<Short> {
     }
 }
 
-interface UShortArithmeticRightShift : ArithmeticRightShift<UShort> {
+object UShortArithmeticRightShift : ArithmeticRightShift<UShort> {
     override fun arithmeticRightShift(value: UShort, bitCount: Int): UShort {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
         return if (bitCount == 0) value
@@ -38,7 +38,7 @@ interface UShortArithmeticRightShift : ArithmeticRightShift<UShort> {
     }
 }
 
-interface IntArithmeticRightShift : ArithmeticRightShift<Int> {
+object IntArithmeticRightShift : ArithmeticRightShift<Int> {
     override fun arithmeticRightShift(value: Int, bitCount: Int): Int {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
         return if (bitCount == 0) value
@@ -47,7 +47,7 @@ interface IntArithmeticRightShift : ArithmeticRightShift<Int> {
     }
 }
 
-interface UIntArithmeticRightShift : ArithmeticRightShift<UInt> {
+object UIntArithmeticRightShift : ArithmeticRightShift<UInt> {
     override fun arithmeticRightShift(value: UInt, bitCount: Int): UInt {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
         return if (bitCount == 0) value
@@ -56,7 +56,7 @@ interface UIntArithmeticRightShift : ArithmeticRightShift<UInt> {
     }
 }
 
-interface LongArithmeticRightShift : ArithmeticRightShift<Long> {
+object LongArithmeticRightShift : ArithmeticRightShift<Long> {
     override fun arithmeticRightShift(value: Long, bitCount: Int): Long {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
         return if (bitCount == 0) value
@@ -65,7 +65,7 @@ interface LongArithmeticRightShift : ArithmeticRightShift<Long> {
     }
 }
 
-interface ULongArithmeticRightShift : ArithmeticRightShift<ULong> {
+object ULongArithmeticRightShift : ArithmeticRightShift<ULong> {
     override fun arithmeticRightShift(value: ULong, bitCount: Int): ULong {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
         return if (bitCount == 0) value
@@ -74,7 +74,7 @@ interface ULongArithmeticRightShift : ArithmeticRightShift<ULong> {
     }
 }
 
-interface ByteArrayArithmeticRightShift : ArithmeticRightShift<ByteArray> {
+object ByteArrayArithmeticRightShift : ArithmeticRightShift<ByteArray> {
     @Suppress("detekt:ReturnCount")
     override fun arithmeticRightShift(value: ByteArray, bitCount: Int): ByteArray {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -109,7 +109,7 @@ interface ByteArrayArithmeticRightShift : ArithmeticRightShift<ByteArray> {
 }
 
 @OptIn(ExperimentalUnsignedTypes::class)
-interface UByteArrayArithmeticRightShift : ArithmeticRightShift<UByteArray> {
+object UByteArrayArithmeticRightShift : ArithmeticRightShift<UByteArray> {
     @Suppress("detekt:ReturnCount")
     override fun arithmeticRightShift(value: UByteArray, bitCount: Int): UByteArray {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -143,7 +143,7 @@ interface UByteArrayArithmeticRightShift : ArithmeticRightShift<UByteArray> {
     }
 }
 
-interface ShortArrayArithmeticRightShift : ArithmeticRightShift<ShortArray> {
+object ShortArrayArithmeticRightShift : ArithmeticRightShift<ShortArray> {
     @Suppress("detekt:ReturnCount")
     override fun arithmeticRightShift(value: ShortArray, bitCount: Int): ShortArray {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -178,7 +178,7 @@ interface ShortArrayArithmeticRightShift : ArithmeticRightShift<ShortArray> {
 }
 
 @OptIn(ExperimentalUnsignedTypes::class)
-interface UShortArrayArithmeticRightShift : ArithmeticRightShift<UShortArray> {
+object UShortArrayArithmeticRightShift : ArithmeticRightShift<UShortArray> {
     @Suppress("detekt:ReturnCount")
     override fun arithmeticRightShift(value: UShortArray, bitCount: Int): UShortArray {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -212,7 +212,7 @@ interface UShortArrayArithmeticRightShift : ArithmeticRightShift<UShortArray> {
     }
 }
 
-interface IntArrayArithmeticRightShift : ArithmeticRightShift<IntArray> {
+object IntArrayArithmeticRightShift : ArithmeticRightShift<IntArray> {
     @Suppress("detekt:ReturnCount")
     override fun arithmeticRightShift(value: IntArray, bitCount: Int): IntArray {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -247,7 +247,7 @@ interface IntArrayArithmeticRightShift : ArithmeticRightShift<IntArray> {
 }
 
 @OptIn(ExperimentalUnsignedTypes::class)
-interface UIntArrayArithmeticRightShift : ArithmeticRightShift<UIntArray> {
+object UIntArrayArithmeticRightShift : ArithmeticRightShift<UIntArray> {
     @Suppress("detekt:ReturnCount")
     override fun arithmeticRightShift(value: UIntArray, bitCount: Int): UIntArray {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -281,7 +281,7 @@ interface UIntArrayArithmeticRightShift : ArithmeticRightShift<UIntArray> {
     }
 }
 
-interface LongArrayArithmeticRightShift : ArithmeticRightShift<LongArray> {
+object LongArrayArithmeticRightShift : ArithmeticRightShift<LongArray> {
     @Suppress("detekt:ReturnCount")
     override fun arithmeticRightShift(value: LongArray, bitCount: Int): LongArray {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -316,7 +316,7 @@ interface LongArrayArithmeticRightShift : ArithmeticRightShift<LongArray> {
 }
 
 @OptIn(ExperimentalUnsignedTypes::class)
-interface ULongArrayArithmeticRightShift : ArithmeticRightShift<ULongArray> {
+object ULongArrayArithmeticRightShift : ArithmeticRightShift<ULongArray> {
     @Suppress("detekt:ReturnCount")
     override fun arithmeticRightShift(value: ULongArray, bitCount: Int): ULongArray {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }

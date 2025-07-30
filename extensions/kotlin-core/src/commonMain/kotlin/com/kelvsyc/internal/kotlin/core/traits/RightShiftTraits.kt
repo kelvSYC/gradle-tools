@@ -2,7 +2,7 @@ package com.kelvsyc.internal.kotlin.core.traits
 
 import com.kelvsyc.kotlin.core.traits.RightShift
 
-interface ByteRightShift : RightShift<Byte> {
+object ByteRightShift : RightShift<Byte> {
     override fun rightShift(value: Byte, bitCount: Int): Byte {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
         return if (bitCount == 0) value
@@ -11,7 +11,7 @@ interface ByteRightShift : RightShift<Byte> {
     }
 }
 
-interface UByteRightShift : RightShift<UByte> {
+object UByteRightShift : RightShift<UByte> {
     override fun rightShift(value: UByte, bitCount: Int): UByte {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
         return if (bitCount == 0) value
@@ -20,7 +20,7 @@ interface UByteRightShift : RightShift<UByte> {
     }
 }
 
-interface ShortRightShift : RightShift<Short> {
+object ShortRightShift : RightShift<Short> {
     override fun rightShift(value: Short, bitCount: Int): Short {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
         return if (bitCount == 0) value
@@ -29,7 +29,7 @@ interface ShortRightShift : RightShift<Short> {
     }
 }
 
-interface UShortRightShift : RightShift<UShort> {
+object UShortRightShift : RightShift<UShort> {
     override fun rightShift(value: UShort, bitCount: Int): UShort {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
         return if (bitCount == 0) value
@@ -38,7 +38,7 @@ interface UShortRightShift : RightShift<UShort> {
     }
 }
 
-interface IntRightShift : RightShift<Int> {
+object IntRightShift : RightShift<Int> {
     override fun rightShift(value: Int, bitCount: Int): Int {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
         return if (bitCount == 0) value
@@ -47,7 +47,7 @@ interface IntRightShift : RightShift<Int> {
     }
 }
 
-interface UIntRightShift : RightShift<UInt> {
+object UIntRightShift : RightShift<UInt> {
     override fun rightShift(value: UInt, bitCount: Int): UInt {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
         return if (bitCount == 0) value
@@ -56,7 +56,7 @@ interface UIntRightShift : RightShift<UInt> {
     }
 }
 
-interface LongRightShift : RightShift<Long> {
+object LongRightShift : RightShift<Long> {
     override fun rightShift(value: Long, bitCount: Int): Long {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
         return if (bitCount == 0) value
@@ -65,7 +65,7 @@ interface LongRightShift : RightShift<Long> {
     }
 }
 
-interface ULongRightShift : RightShift<ULong> {
+object ULongRightShift : RightShift<ULong> {
     override fun rightShift(value: ULong, bitCount: Int): ULong {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
         return if (bitCount == 0) value
@@ -74,7 +74,7 @@ interface ULongRightShift : RightShift<ULong> {
     }
 }
 
-interface ByteArrayRightShift : RightShift<ByteArray> {
+object ByteArrayRightShift : RightShift<ByteArray> {
     @Suppress("detekt:ReturnCount")
     override fun rightShift(value: ByteArray, bitCount: Int): ByteArray {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -103,7 +103,7 @@ interface ByteArrayRightShift : RightShift<ByteArray> {
 }
 
 @OptIn(ExperimentalUnsignedTypes::class)
-interface UByteArrayRightShift : RightShift<UByteArray> {
+object UByteArrayRightShift : RightShift<UByteArray> {
     @Suppress("detekt:ReturnCount")
     override fun rightShift(value: UByteArray, bitCount: Int): UByteArray {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -131,7 +131,7 @@ interface UByteArrayRightShift : RightShift<UByteArray> {
     }
 }
 
-interface ShortArrayRightShift : RightShift<ShortArray> {
+object ShortArrayRightShift : RightShift<ShortArray> {
     @Suppress("detekt:ReturnCount")
     override fun rightShift(value: ShortArray, bitCount: Int): ShortArray {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -160,7 +160,7 @@ interface ShortArrayRightShift : RightShift<ShortArray> {
 }
 
 @OptIn(ExperimentalUnsignedTypes::class)
-interface UShortArrayRightShift : RightShift<UShortArray> {
+object UShortArrayRightShift : RightShift<UShortArray> {
     @Suppress("detekt:ReturnCount")
     override fun rightShift(value: UShortArray, bitCount: Int): UShortArray {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -188,7 +188,7 @@ interface UShortArrayRightShift : RightShift<UShortArray> {
     }
 }
 
-interface IntArrayRightShift : RightShift<IntArray> {
+object IntArrayRightShift : RightShift<IntArray> {
     @Suppress("detekt:ReturnCount")
     override fun rightShift(value: IntArray, bitCount: Int): IntArray {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -217,7 +217,7 @@ interface IntArrayRightShift : RightShift<IntArray> {
 }
 
 @OptIn(ExperimentalUnsignedTypes::class)
-interface UIntArrayRightShift : RightShift<UIntArray> {
+object UIntArrayRightShift : RightShift<UIntArray> {
     @Suppress("detekt:ReturnCount")
     override fun rightShift(value: UIntArray, bitCount: Int): UIntArray {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -245,7 +245,7 @@ interface UIntArrayRightShift : RightShift<UIntArray> {
     }
 }
 
-interface LongArrayRightShift : RightShift<LongArray> {
+object LongArrayRightShift : RightShift<LongArray> {
     @Suppress("detekt:ReturnCount")
     override fun rightShift(value: LongArray, bitCount: Int): LongArray {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
@@ -274,7 +274,7 @@ interface LongArrayRightShift : RightShift<LongArray> {
 }
 
 @OptIn(ExperimentalUnsignedTypes::class)
-interface ULongArrayRightShift : RightShift<ULongArray> {
+object ULongArrayRightShift : RightShift<ULongArray> {
     @Suppress("detekt:ReturnCount")
     override fun rightShift(value: ULongArray, bitCount: Int): ULongArray {
         require(bitCount >= 0) { "Negative right shifts are unsupported." }
