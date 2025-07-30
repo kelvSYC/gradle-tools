@@ -18,19 +18,17 @@ object JvmBitStores {
      * Creates a [BitStore] instance for [BigInteger]s of a fixed size.
      */
     fun bigInteger(sized: Sized<BigInteger>): BitStore<BigInteger> = object : BitStore<BigInteger>,
-        BitCollection<BigInteger> by BigIntegerBitCollection(sized.sizeBits),
+        Sized<BigInteger> by sized,
+        BitCollection<BigInteger> by BigIntegerBitCollection(sized),
         BitShift<BigInteger> by BigIntegerBitShift(sized),
-        Bitwise<BigInteger> by BigIntegerBitwise(sized) {
-        override val sizeBits: Int = sized.sizeBits
-    }
+        Bitwise<BigInteger> by BigIntegerBitwise(sized) {}
 
     /**
      * Creates a [BitStore] instance for [BitSet]s of a fixed size.
      */
     fun bitSet(sized: Sized<BitSet>): BitStore<BitSet> = object : BitStore<BitSet>,
-        BitCollection<BitSet> by BitSetBitCollection(sized.sizeBits),
+        Sized<BitSet> by sized,
+        BitCollection<BitSet> by BitSetBitCollection(sized),
         BitShift<BitSet> by BitSetBitShift(sized),
-        Bitwise<BitSet> by BitSetBitwise(sized) {
-        override val sizeBits: Int = sized.sizeBits
-    }
+        Bitwise<BitSet> by BitSetBitwise(sized) {}
 }

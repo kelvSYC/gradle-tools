@@ -1,14 +1,14 @@
 package com.kelvsyc.kotlin.core
 
 import com.kelvsyc.kotlin.core.traits.ArrayLike
+import com.kelvsyc.kotlin.core.traits.ArraySized
 
 @OptIn(ExperimentalUnsignedTypes::class)
-class UByteArrayBitCollection(size: Int) : AbstractArrayBitCollection<UByteArray, UByte>(size) {
+class UByteArrayBitCollection(sized: ArraySized<UByteArray, UByte>) : AbstractArrayBitCollection<UByteArray, UByte>(sized) {
     override val traits: ArrayLike<UByteArray, UByte> = TypeTraits.UByteArray
     override val base: BitCollection<UByte> = TypeTraits.UByte
 
     // These are overridden for efficiency
-    override val sizeBits: Int = size * UByte.SIZE_BITS
     override fun asByteArray(value: UByteArray): ByteArray = value.asByteArray()
     override fun isZero(value: UByteArray): Boolean = value.all { it.toInt() == 0 }
 }

@@ -1,18 +1,19 @@
 package com.kelvsyc.kotlin.core
 
+import com.kelvsyc.kotlin.core.traits.Sized
 import java.util.*
 import kotlin.streams.toList
 
 /**
- * Implementation of [BitCollection] on fixed-size [BitSet] instances.
+ * Implementation of [BitCollection] on a fixed-size bit collection, baced by a [BitSet] instance.
  *
- * @param sizeBits The size of the fixed-size [BitSet].
+ * @param sized Traits object providing size information on the bit collection.
  */
-class BitSetBitCollection(override val sizeBits: Int) : BitCollection<BitSet> {
+class BitSetBitCollection(private val sized: Sized<BitSet>) : BitCollection<BitSet> {
     override fun fromBits(bits: IntRange): BitSet {
-        require(bits.start >= 0 && bits.endInclusive < sizeBits) { "Bit collection contains values out of range" }
+        require(bits.start >= 0 && bits.endInclusive < sized.sizeBits) { "Bit collection contains values out of range" }
 
-        return BitSet(sizeBits).also {
+        return BitSet(sized.sizeBits).also {
             bits.forEach(it::set)
         }
     }
@@ -24,13 +25,13 @@ class BitSetBitCollection(override val sizeBits: Int) : BitCollection<BitSet> {
         }
     }
 
-    override fun asByteArray(value: BitSet): ByteArray = value.toByteArray().copyOf(sizeBits / Byte.SIZE_BITS)
+    override fun asByteArray(value: BitSet): ByteArray = value.toByteArray().copyOf(sized.sizeBits / Byte.SIZE_BITS)
 
     override fun getSetBits(value: BitSet): Set<Int> = value.stream().toList().toSet()
 
     override fun isZero(value: BitSet): Boolean = value.isEmpty
 
-    override fun countLeadingZeroBits(value: BitSet): Int = sizeBits - 1 - value.previousSetBit(sizeBits - 1)
+    override fun countLeadingZeroBits(value: BitSet): Int = sized.sizeBits - 1 - value.previousSetBit(sized.sizeBits - 1)
 
-    override fun countTrailingZeroBits(value: BitSet): Int = value.nextSetBit(0).let { if (it == -1) sizeBits else it }
+    override fun countTrailingZeroBits(value: BitSet): Int = value.nextSetBit(0).let { if (it == -1) sized.sizeBits else it }
 }

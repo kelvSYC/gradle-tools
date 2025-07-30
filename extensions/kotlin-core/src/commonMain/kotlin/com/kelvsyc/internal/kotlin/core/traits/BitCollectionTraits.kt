@@ -3,10 +3,8 @@ package com.kelvsyc.internal.kotlin.core.traits
 import com.kelvsyc.kotlin.core.BitCollection
 
 object ByteBitCollection : BitCollection<Byte> {
-    override val sizeBits: Int by Byte.Companion::SIZE_BITS
-
     override fun fromBits(bits: IntRange): Byte {
-        require(bits.start >= 0 && bits.endInclusive < sizeBits) { "Bit collection contains values out of range" }
+        require(bits.start >= 0 && bits.endInclusive < Byte.SIZE_BITS) { "Bit collection contains values out of range" }
 
         val length = bits.endInclusive - bits.start + 1
         val mask = (1 shl length) - 1
@@ -16,7 +14,7 @@ object ByteBitCollection : BitCollection<Byte> {
     @OptIn(ExperimentalStdlibApi::class)
     override fun asBitSequence(value: Byte): Sequence<Boolean> = sequence {
         var mask = 1
-        for (i in 0 ..< sizeBits) {
+        for (i in 0 ..< Byte.SIZE_BITS) {
             yield(value.toInt() and mask != 0)
             mask = mask shl 1
         }
@@ -27,7 +25,7 @@ object ByteBitCollection : BitCollection<Byte> {
     @OptIn(ExperimentalStdlibApi::class)
     override fun getSetBits(value: Byte): Set<Int> = buildSet {
         var mask = 1
-        for (i in 0 ..< sizeBits) {
+        for (i in 0 ..< Byte.SIZE_BITS) {
             if (value.toInt() and mask != 0) {
                 add(i)
             }
@@ -41,10 +39,8 @@ object ByteBitCollection : BitCollection<Byte> {
 }
 
 object UByteBitCollection : BitCollection<UByte> {
-    override val sizeBits: Int by UByte.Companion::SIZE_BITS
-
     override fun fromBits(bits: IntRange): UByte {
-        require(bits.start >= 0 && bits.endInclusive < sizeBits) { "Bit collection contains values out of range" }
+        require(bits.start >= 0 && bits.endInclusive < UByte.SIZE_BITS) { "Bit collection contains values out of range" }
 
         val length = bits.endInclusive - bits.start + 1
         val mask = (1 shl length) - 1
@@ -54,7 +50,7 @@ object UByteBitCollection : BitCollection<UByte> {
     @OptIn(ExperimentalStdlibApi::class)
     override fun asBitSequence(value: UByte): Sequence<Boolean> = sequence {
         var mask = 1
-        for (i in 0 ..< sizeBits) {
+        for (i in 0 ..< UByte.SIZE_BITS) {
             yield(value.toInt() and mask != 0)
             mask = mask shl 1
         }
@@ -65,7 +61,7 @@ object UByteBitCollection : BitCollection<UByte> {
     @OptIn(ExperimentalStdlibApi::class)
     override fun getSetBits(value: UByte): Set<Int> = buildSet {
         var mask = 1
-        for (i in 0 ..< sizeBits) {
+        for (i in 0 ..< UByte.SIZE_BITS) {
             if (value.toInt() and mask != 0) {
                 add(i)
             }
@@ -79,10 +75,8 @@ object UByteBitCollection : BitCollection<UByte> {
 }
 
 object ShortBitCollection : BitCollection<Short> {
-    override val sizeBits: Int by Short.Companion::SIZE_BITS
-
     override fun fromBits(bits: IntRange): Short {
-        require(bits.start >= 0 && bits.endInclusive < sizeBits) { "Bit collection contains values out of range" }
+        require(bits.start >= 0 && bits.endInclusive < Short.SIZE_BITS) { "Bit collection contains values out of range" }
 
         val length = bits.endInclusive - bits.start + 1
         val mask = (1 shl length) - 1
@@ -92,7 +86,7 @@ object ShortBitCollection : BitCollection<Short> {
     @OptIn(ExperimentalStdlibApi::class)
     override fun asBitSequence(value: Short): Sequence<Boolean> = sequence {
         var mask = 1
-        for (i in 0 ..< sizeBits) {
+        for (i in 0 ..< Short.SIZE_BITS) {
             yield(value.toInt() and mask != 0)
             mask = mask shl 1
         }
@@ -105,7 +99,7 @@ object ShortBitCollection : BitCollection<Short> {
     @OptIn(ExperimentalStdlibApi::class)
     override fun getSetBits(value: Short): Set<Int> = buildSet {
         var mask = 1
-        for (i in 0 ..< sizeBits) {
+        for (i in 0 ..< Short.SIZE_BITS) {
             if (value.toInt() and mask != 0) {
                 add(i)
             }
@@ -119,10 +113,8 @@ object ShortBitCollection : BitCollection<Short> {
 }
 
 object UShortBitCollection : BitCollection<UShort> {
-    override val sizeBits: Int by UShort.Companion::SIZE_BITS
-
     override fun fromBits(bits: IntRange): UShort {
-        require(bits.start >= 0 && bits.endInclusive < sizeBits) { "Bit collection contains values out of range" }
+        require(bits.start >= 0 && bits.endInclusive < UShort.SIZE_BITS) { "Bit collection contains values out of range" }
 
         val length = bits.endInclusive - bits.start + 1
         val mask = (1 shl length) - 1
@@ -132,7 +124,7 @@ object UShortBitCollection : BitCollection<UShort> {
     @OptIn(ExperimentalStdlibApi::class)
     override fun asBitSequence(value: UShort): Sequence<Boolean> = sequence {
         var mask = 1
-        for (i in 0 ..< sizeBits) {
+        for (i in 0 ..< UShort.SIZE_BITS) {
             yield(value.toInt() and mask != 0)
             mask = mask shl 1
         }
@@ -145,7 +137,7 @@ object UShortBitCollection : BitCollection<UShort> {
     @OptIn(ExperimentalStdlibApi::class)
     override fun getSetBits(value: UShort): Set<Int> = buildSet {
         var mask = 1
-        for (i in 0 ..< sizeBits) {
+        for (i in 0 ..< UShort.SIZE_BITS) {
             if (value.toInt() and mask != 0) {
                 add(i)
             }
@@ -159,21 +151,19 @@ object UShortBitCollection : BitCollection<UShort> {
 }
 
 object IntBitCollection : BitCollection<Int> {
-    override val sizeBits: Int by Int.Companion::SIZE_BITS
-
     override fun fromBits(bits: IntRange): Int {
-        require(bits.start >= 0 && bits.endInclusive < sizeBits) { "Bit collection contains values out of range" }
+        require(bits.start >= 0 && bits.endInclusive < Int.SIZE_BITS) { "Bit collection contains values out of range" }
 
         val length = bits.endInclusive - bits.start + 1
         // rhs of shl has a range that excludes sizeBits
-        val mask = if (length == sizeBits) 0.inv() else (1 shl length) - 1
+        val mask = if (length == Int.SIZE_BITS) 0.inv() else (1 shl length) - 1
         return mask shl bits.start
     }
 
     @OptIn(ExperimentalStdlibApi::class)
     override fun asBitSequence(value: Int): Sequence<Boolean> = sequence {
         var mask = 1
-        for (i in 0 ..< sizeBits) {
+        for (i in 0 ..< Int.SIZE_BITS) {
             yield(value and mask != 0)
             mask = mask shl 1
         }
@@ -186,7 +176,7 @@ object IntBitCollection : BitCollection<Int> {
     @OptIn(ExperimentalStdlibApi::class)
     override fun getSetBits(value: Int): Set<Int> = buildSet {
         var mask = 1
-        for (i in 0 ..< sizeBits) {
+        for (i in 0 ..< Int.SIZE_BITS) {
             if (value and mask != 0) {
                 add(i)
             }
@@ -200,20 +190,18 @@ object IntBitCollection : BitCollection<Int> {
 }
 
 object UIntBitCollection : BitCollection<UInt> {
-    override val sizeBits: Int by UInt.Companion::SIZE_BITS
-
     override fun fromBits(bits: IntRange): UInt {
-        require(bits.start >= 0 && bits.endInclusive < sizeBits) { "Bit collection contains values out of range" }
+        require(bits.start >= 0 && bits.endInclusive < UInt.SIZE_BITS) { "Bit collection contains values out of range" }
 
         val length = bits.endInclusive - bits.start + 1
-        val mask = if (length == sizeBits) 0U.inv() else (1U shl length) - 1U
+        val mask = if (length == UInt.SIZE_BITS) 0U.inv() else (1U shl length) - 1U
         return mask shl bits.start
     }
 
     @OptIn(ExperimentalStdlibApi::class)
     override fun asBitSequence(value: UInt): Sequence<Boolean> = sequence {
         var mask = 1U
-        for (i in 0 ..< sizeBits) {
+        for (i in 0 ..< UInt.SIZE_BITS) {
             yield(value and mask != 0U)
             mask = mask shl 1
         }
@@ -226,7 +214,7 @@ object UIntBitCollection : BitCollection<UInt> {
     @OptIn(ExperimentalStdlibApi::class)
     override fun getSetBits(value: UInt): Set<Int> = buildSet {
         var mask = 1U
-        for (i in 0 ..< sizeBits) {
+        for (i in 0 ..< UInt.SIZE_BITS) {
             if (value and mask != 0U) {
                 add(i)
             }
@@ -240,20 +228,18 @@ object UIntBitCollection : BitCollection<UInt> {
 }
 
 object LongBitCollection : BitCollection<Long> {
-    override val sizeBits: Int by Long.Companion::SIZE_BITS
-
     override fun fromBits(bits: IntRange): Long {
-        require(bits.start >= 0 && bits.endInclusive < sizeBits) { "Bit collection contains values out of range" }
+        require(bits.start >= 0 && bits.endInclusive < Long.SIZE_BITS) { "Bit collection contains values out of range" }
 
         val length = bits.endInclusive - bits.start + 1
-        val mask = if (length == sizeBits) 0L.inv() else (1L shl length) - 1L
+        val mask = if (length == Long.SIZE_BITS) 0L.inv() else (1L shl length) - 1L
         return mask shl bits.start
     }
 
     @OptIn(ExperimentalStdlibApi::class)
     override fun asBitSequence(value: Long): Sequence<Boolean> = sequence {
         var mask = 1L
-        for (i in 0 ..< sizeBits) {
+        for (i in 0 ..< Long.SIZE_BITS) {
             yield(value and mask != 0L)
             mask = mask shl 1
         }
@@ -266,7 +252,7 @@ object LongBitCollection : BitCollection<Long> {
     @OptIn(ExperimentalStdlibApi::class)
     override fun getSetBits(value: Long): Set<Int> = buildSet {
         var mask = 1L
-        for (i in 0 ..< sizeBits) {
+        for (i in 0 ..< Long.SIZE_BITS) {
             if (value and mask != 0L) {
                 add(i)
             }
@@ -280,20 +266,18 @@ object LongBitCollection : BitCollection<Long> {
 }
 
 object ULongBitCollection : BitCollection<ULong> {
-    override val sizeBits: Int by ULong.Companion::SIZE_BITS
-
     override fun fromBits(bits: IntRange): ULong {
-        require(bits.start >= 0 && bits.endInclusive < sizeBits) { "Bit collection contains values out of range" }
+        require(bits.start >= 0 && bits.endInclusive < ULong.SIZE_BITS) { "Bit collection contains values out of range" }
 
         val length = bits.endInclusive - bits.start + 1
-        val mask = if (length == sizeBits) 0UL.inv() else (1UL shl length) - 1UL
+        val mask = if (length == Long.SIZE_BITS) 0UL.inv() else (1UL shl length) - 1UL
         return mask shl bits.start
     }
 
     @OptIn(ExperimentalStdlibApi::class)
     override fun asBitSequence(value: ULong): Sequence<Boolean> = sequence {
         var mask = 1UL
-        for (i in 0 ..< sizeBits) {
+        for (i in 0 ..< ULong.SIZE_BITS) {
             yield(value and mask != 0UL)
             mask = mask shl 1
         }
@@ -306,7 +290,7 @@ object ULongBitCollection : BitCollection<ULong> {
     @OptIn(ExperimentalStdlibApi::class)
     override fun getSetBits(value: ULong): Set<Int> = buildSet {
         var mask = 1UL
-        for (i in 0 ..< sizeBits) {
+        for (i in 0 ..< ULong.SIZE_BITS) {
             if (value and mask != 0UL) {
                 add(i)
             }

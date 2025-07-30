@@ -1,26 +1,25 @@
 package com.kelvsyc.kotlin.core
 
 import com.kelvsyc.kotlin.core.traits.ArrayLike
+import com.kelvsyc.kotlin.core.traits.ArraySized
 import kotlin.math.max
 import kotlin.math.min
 
-abstract class AbstractArrayBitCollection<A, E>(private val size: Int) : BitCollection<A> {
+abstract class AbstractArrayBitCollection<A, E>(private val sized: ArraySized<A, E>) : BitCollection<A> {
     abstract val traits: ArrayLike<A, E>
     abstract val base: BitCollection<E>
 
-    override val sizeBits: Int by lazy { size * base.sizeBits }
-
     override fun fromBits(bits: IntRange): A {
-        require(bits.start >= 0 && bits.endInclusive < sizeBits) { "Bit count out of range" }
+        require(bits.start >= 0 && bits.endInclusive < sized.sizeBits) { "Bit count out of range" }
 
-        return traits.create(size) {
-            val startIndex = it * base.sizeBits
-            val endIndex = startIndex + base.sizeBits - 1
+        return traits.create(sized.arraySize) {
+            val startIndex = it * sized.elementSized.sizeBits
+            val endIndex = startIndex + sized.elementSized.sizeBits - 1
             val indexRange = startIndex .. endIndex
             val lower = max(bits.start, startIndex)
             val upper = min(bits.endInclusive, endIndex)
             if (indexRange.contains(lower) && indexRange.contains(upper)) {
-                val intersection =  lower.rem(base.sizeBits) .. upper.rem(base.sizeBits)
+                val intersection =  lower.rem(sized.elementSized.sizeBits) .. upper.rem(sized.elementSized.sizeBits)
                 base.fromBits(intersection)
             } else {
                 // The intersection range is definitely empty
@@ -33,8 +32,8 @@ abstract class AbstractArrayBitCollection<A, E>(private val size: Int) : BitColl
         traits.map(value, base::asBitSequence).asSequence().flatten()
 
     override fun asByteArray(value: A): ByteArray {
-        val sizeBytes = base.sizeBits / Byte.SIZE_BITS
-        val result = ByteArray(size * (base.sizeBits / Byte.SIZE_BITS))
+        val sizeBytes = sized.elementSized.sizeBytes
+        val result = ByteArray(sized.sizeBytes)
         traits.map(value, base::asByteArray).forEachIndexed { index, bytes ->
             // We trust that bytes.size == sizeBytes, but just in case...
             bytes.copyInto(result, index * sizeBytes, 0, sizeBytes)
@@ -44,29 +43,29 @@ abstract class AbstractArrayBitCollection<A, E>(private val size: Int) : BitColl
 
     override fun getSetBits(value: A): Set<Int> = buildSet {
         traits.forEachIndexed(value) { index, e ->
-            addAll(base.getSetBits(e).map { index * base.sizeBits + it })
+            addAll(base.getSetBits(e).map { index * sized.elementSized.sizeBits + it })
         }
     }
 
     override fun isZero(value: A): Boolean = traits.all(value, base::isZero)
 
     override fun countLeadingZeroBits(value: A): Int {
-        val idx = traits.indexOfLast(value) { base.countLeadingZeroBits(it) != base.sizeBits }
+        val idx = traits.indexOfLast(value) { base.countLeadingZeroBits(it) != sized.elementSized.sizeBits }
         return if (idx == -1) {
             // The array is all zeroes
-            traits.getSize(value) * base.sizeBits
+            sized.sizeBits
         } else {
-            (traits.getSize(value) - 1 - idx) * base.sizeBits + base.countLeadingZeroBits(traits.getAt(value, idx))
+            (traits.getSize(value) - 1 - idx) * sized.elementSized.sizeBits + base.countLeadingZeroBits(traits.getAt(value, idx))
         }
     }
 
     override fun countTrailingZeroBits(value: A): Int {
-        val idx = traits.indexOfFirst(value) { base.countTrailingZeroBits(it) != base.sizeBits }
+        val idx = traits.indexOfFirst(value) { base.countTrailingZeroBits(it) != sized.elementSized.sizeBits }
         return if (idx == -1) {
             // The array is all zeroes
-            traits.getSize(value) * base.sizeBits
+            sized.sizeBits
         } else {
-            idx * base.sizeBits + base.countTrailingZeroBits(traits.getAt(value, idx))
+            idx * sized.elementSized.sizeBits + base.countTrailingZeroBits(traits.getAt(value, idx))
         }
     }
 }

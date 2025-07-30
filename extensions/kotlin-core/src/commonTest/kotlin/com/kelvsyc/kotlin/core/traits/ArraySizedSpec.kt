@@ -16,7 +16,7 @@ class ArraySizedSpec : FunSpec() {
             test("Normal") {
                 val sizeArb = Arb.nonNegativeInt()
                 checkAll(sizeArb) {
-                    val traits = arraySized(it, TypeTraits.Int)
+                    val traits = ArraySized.ofObjectArray(it, TypeTraits.Int)
 
                     traits.sizeBits shouldBeEqual Int.SIZE_BITS * it
                     traits.sizeBytes shouldBeEqual Int.SIZE_BYTES * it
@@ -26,7 +26,7 @@ class ArraySizedSpec : FunSpec() {
                 val sizeArb = Arb.negativeInt()
                 checkAll(sizeArb) {
                     shouldThrow<IllegalArgumentException> {
-                        arraySized(it, TypeTraits.Int)
+                        ArraySized.ofObjectArray(it, TypeTraits.Int)
                     }
                 }
             }
@@ -36,7 +36,7 @@ class ArraySizedSpec : FunSpec() {
             test("Normal") {
                 val sizeArb = Arb.nonNegativeInt()
                 checkAll(sizeArb) {
-                    val traits = byteArraySized(it)
+                    val traits = ArraySized.ofByteArray(it)
 
                     traits.sizeBits shouldBeEqual Byte.SIZE_BITS * it
                     traits.sizeBytes shouldBeEqual Byte.SIZE_BYTES * it
@@ -46,7 +46,7 @@ class ArraySizedSpec : FunSpec() {
                 val sizeArb = Arb.negativeInt()
                 checkAll(sizeArb) {
                     shouldThrow<IllegalArgumentException> {
-                        byteArraySized(it)
+                        ArraySized.ofByteArray(it)
                     }
                 }
             }
@@ -56,7 +56,7 @@ class ArraySizedSpec : FunSpec() {
             test("Normal") {
                 val sizeArb = Arb.nonNegativeInt()
                 checkAll(sizeArb) {
-                    val traits = uByteArraySized(it)
+                    val traits = ArraySized.ofUByteArray(it)
 
                     traits.sizeBits shouldBeEqual UByte.SIZE_BITS * it
                     traits.sizeBytes shouldBeEqual UByte.SIZE_BYTES * it
@@ -66,7 +66,7 @@ class ArraySizedSpec : FunSpec() {
                 val sizeArb = Arb.negativeInt()
                 checkAll(sizeArb) {
                     shouldThrow<IllegalArgumentException> {
-                        uByteArraySized(it)
+                        ArraySized.ofUByteArray(it)
                     }
                 }
             }
@@ -76,7 +76,7 @@ class ArraySizedSpec : FunSpec() {
             test("Normal") {
                 val sizeArb = Arb.nonNegativeInt()
                 checkAll(sizeArb) {
-                    val traits = shortArraySized(it)
+                    val traits = ArraySized.ofShortArray(it)
 
                     traits.sizeBits shouldBeEqual Short.SIZE_BITS * it
                     traits.sizeBytes shouldBeEqual Short.SIZE_BYTES * it
@@ -86,7 +86,7 @@ class ArraySizedSpec : FunSpec() {
                 val sizeArb = Arb.negativeInt()
                 checkAll(sizeArb) {
                     shouldThrow<IllegalArgumentException> {
-                        shortArraySized(it)
+                        ArraySized.ofShortArray(it)
                     }
                 }
             }
@@ -96,7 +96,7 @@ class ArraySizedSpec : FunSpec() {
             test("Normal") {
                 val sizeArb = Arb.nonNegativeInt()
                 checkAll(sizeArb) {
-                    val traits = uShortArraySized(it)
+                    val traits = ArraySized.ofUShortArray(it)
 
                     traits.sizeBits shouldBeEqual UShort.SIZE_BITS * it
                     traits.sizeBytes shouldBeEqual UShort.SIZE_BYTES * it
@@ -106,7 +106,7 @@ class ArraySizedSpec : FunSpec() {
                 val sizeArb = Arb.negativeInt()
                 checkAll(sizeArb) {
                     shouldThrow<IllegalArgumentException> {
-                        uShortArraySized(it)
+                        ArraySized.ofUShortArray(it)
                     }
                 }
             }
@@ -116,7 +116,7 @@ class ArraySizedSpec : FunSpec() {
             test("Normal") {
                 val sizeArb = Arb.nonNegativeInt()
                 checkAll(sizeArb) {
-                    val traits = intArraySized(it)
+                    val traits = ArraySized.ofIntArray(it)
 
                     traits.sizeBits shouldBeEqual Int.SIZE_BITS * it
                     traits.sizeBytes shouldBeEqual Int.SIZE_BYTES * it
@@ -126,7 +126,7 @@ class ArraySizedSpec : FunSpec() {
                 val sizeArb = Arb.negativeInt()
                 checkAll(sizeArb) {
                     shouldThrow<IllegalArgumentException> {
-                        intArraySized(it)
+                        ArraySized.ofIntArray(it)
                     }
                 }
             }
@@ -136,7 +136,7 @@ class ArraySizedSpec : FunSpec() {
             test("Normal") {
                 val sizeArb = Arb.nonNegativeInt()
                 checkAll(sizeArb) {
-                    val traits = uIntArraySized(it)
+                    val traits = ArraySized.ofUIntArray(it)
 
                     traits.sizeBits shouldBeEqual UInt.SIZE_BITS * it
                     traits.sizeBytes shouldBeEqual UInt.SIZE_BYTES * it
@@ -146,7 +146,7 @@ class ArraySizedSpec : FunSpec() {
                 val sizeArb = Arb.negativeInt()
                 checkAll(sizeArb) {
                     shouldThrow<IllegalArgumentException> {
-                        uIntArraySized(it)
+                        ArraySized.ofUIntArray(it)
                     }
                 }
             }
@@ -156,7 +156,7 @@ class ArraySizedSpec : FunSpec() {
             test("Normal") {
                 val sizeArb = Arb.nonNegativeInt()
                 checkAll(sizeArb) {
-                    val traits = longArraySized(it)
+                    val traits = ArraySized.ofLongArray(it)
 
                     traits.sizeBits shouldBeEqual Long.SIZE_BITS * it
                     traits.sizeBytes shouldBeEqual Long.SIZE_BYTES * it
@@ -166,7 +166,7 @@ class ArraySizedSpec : FunSpec() {
                 val sizeArb = Arb.negativeInt()
                 checkAll(sizeArb) {
                     shouldThrow<IllegalArgumentException> {
-                        longArraySized(it)
+                        ArraySized.ofLongArray(it)
                     }
                 }
             }
@@ -176,7 +176,7 @@ class ArraySizedSpec : FunSpec() {
             test("Normal") {
                 val sizeArb = Arb.nonNegativeInt()
                 checkAll(sizeArb) {
-                    val traits = uLongArraySized(it)
+                    val traits = ArraySized.ofULongArray(it)
 
                     traits.sizeBits shouldBeEqual ULong.SIZE_BITS * it
                     traits.sizeBytes shouldBeEqual ULong.SIZE_BYTES * it
@@ -186,7 +186,7 @@ class ArraySizedSpec : FunSpec() {
                 val sizeArb = Arb.negativeInt()
                 checkAll(sizeArb) {
                     shouldThrow<IllegalArgumentException> {
-                        uLongArraySized(it)
+                        ArraySized.ofULongArray(it)
                     }
                 }
             }
@@ -196,7 +196,7 @@ class ArraySizedSpec : FunSpec() {
             test("Normal") {
                 val sizeArb = Arb.nonNegativeInt()
                 checkAll(sizeArb) {
-                    val traits = floatArraySized(it)
+                    val traits = ArraySized.ofFloatArray(it)
 
                     traits.sizeBits shouldBeEqual Float.SIZE_BITS * it
                     traits.sizeBytes shouldBeEqual Float.SIZE_BYTES * it
@@ -206,7 +206,7 @@ class ArraySizedSpec : FunSpec() {
                 val sizeArb = Arb.negativeInt()
                 checkAll(sizeArb) {
                     shouldThrow<IllegalArgumentException> {
-                        floatArraySized(it)
+                        ArraySized.ofFloatArray(it)
                     }
                 }
             }
@@ -216,7 +216,7 @@ class ArraySizedSpec : FunSpec() {
             test("Normal") {
                 val sizeArb = Arb.nonNegativeInt()
                 checkAll(sizeArb) {
-                    val traits = doubleArraySized(it)
+                    val traits = ArraySized.ofDoubleArray(it)
 
                     traits.sizeBits shouldBeEqual Double.SIZE_BITS * it
                     traits.sizeBytes shouldBeEqual Double.SIZE_BYTES * it
@@ -226,7 +226,7 @@ class ArraySizedSpec : FunSpec() {
                 val sizeArb = Arb.negativeInt()
                 checkAll(sizeArb) {
                     shouldThrow<IllegalArgumentException> {
-                        doubleArraySized(it)
+                        ArraySized.ofDoubleArray(it)
                     }
                 }
             }
