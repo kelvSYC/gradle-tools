@@ -29,8 +29,6 @@ class BitSetBitCollection(private val sized: Sized<BitSet>) : BitCollection<BitS
 
     override fun getSetBits(value: BitSet): Set<Int> = value.stream().toList().toSet()
 
-    override fun isZero(value: BitSet): Boolean = value.isEmpty
-
     override fun countLeadingZeroBits(value: BitSet): Int = sized.sizeBits - 1 - value.previousSetBit(sized.sizeBits - 1)
 
     override fun countTrailingZeroBits(value: BitSet): Int = value.nextSetBit(0).let { if (it == -1) sized.sizeBits else it }

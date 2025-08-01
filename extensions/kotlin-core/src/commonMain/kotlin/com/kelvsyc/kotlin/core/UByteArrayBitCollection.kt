@@ -10,5 +10,4 @@ class UByteArrayBitCollection(sized: ArraySized<UByteArray, UByte>) : AbstractAr
 
     // These are overridden for efficiency
     override fun asByteArray(value: UByteArray): ByteArray = value.asByteArray()
-    override fun isZero(value: UByteArray): Boolean = value.all { it.toInt() == 0 }
 }

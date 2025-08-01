@@ -59,16 +59,6 @@ class AbstractArrayBitCollectionSpec : FunSpec() {
             }
         }
 
-        test("isZero") {
-            checkAll<Short> {
-                val bytes = TypeTraits.Short.asByteArray(it).toTypedArray()
-
-                val result = ByteArrayBitCollection(Short.SIZE_BYTES).isZero(bytes)
-
-                result shouldBeEqual (it.toInt() == 0)
-            }
-        }
-
         test("countLeadingZeroBits") {
             checkAll<Short> {
                 val bytes = TypeTraits.Short.asByteArray(it).toTypedArray()

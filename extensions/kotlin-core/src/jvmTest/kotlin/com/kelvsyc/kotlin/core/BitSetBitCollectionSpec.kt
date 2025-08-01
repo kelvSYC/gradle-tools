@@ -70,18 +70,6 @@ class BitSetBitCollectionSpec : FunSpec() {
                 rebuilt shouldBeEqual it
             }
         }
-
-        test("isZero") {
-            checkAll<Int> {
-                val valueBytes = TypeTraits.Int.asByteArray(it)
-                val value = BitSet.valueOf(valueBytes)
-
-                val result = traits.isZero(value)
-
-                result shouldBeEqual (it == 0)
-            }
-        }
-
         test("countLeadingZeroBits") {
             checkAll<Int> {
                 val valueBytes = TypeTraits.Int.asByteArray(it)

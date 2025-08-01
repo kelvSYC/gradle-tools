@@ -37,8 +37,6 @@ class BigIntegerBitCollection(private val sized: Sized<BigInteger>) : BitCollect
         }
     }
 
-    override fun isZero(value: BigInteger): Boolean = value == BigInteger.ZERO
-
     override fun countLeadingZeroBits(value: BigInteger): Int {
         // sizeBits - value.bitLength() only works for positive values of BigInteger, due to BigInteger trying to
         // emulate two's complement with a sign-magnitude form internally.

@@ -28,11 +28,6 @@ interface BitCollection<T> {
     fun getSetBits(value: T): Set<Int>
 
     /**
-     * Returns whether or not the value is zero - that is, `true` if no bits are set.
-     */
-    fun isZero(value: T): Boolean
-
-    /**
      * Returns the number of bits, starting with the most significant bit, that are not set, before finding the first
      * set bit.
      *

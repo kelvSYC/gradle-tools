@@ -13,5 +13,4 @@ class ByteArrayBitCollection(sized: ArraySized<ByteArray, Byte>) : AbstractArray
 
     // These are overridden for efficiency
     override fun asByteArray(value: ByteArray): ByteArray = value
-    override fun isZero(value: ByteArray): Boolean = value.all { it.toInt() == 0 }
 }

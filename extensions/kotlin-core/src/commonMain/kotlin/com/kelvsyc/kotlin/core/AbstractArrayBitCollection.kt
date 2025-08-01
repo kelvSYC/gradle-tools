@@ -47,8 +47,6 @@ abstract class AbstractArrayBitCollection<A, E>(private val sized: ArraySized<A,
         }
     }
 
-    override fun isZero(value: A): Boolean = traits.all(value, base::isZero)
-
     override fun countLeadingZeroBits(value: A): Int {
         val idx = traits.indexOfLast(value) { base.countLeadingZeroBits(it) != sized.elementSized.sizeBits }
         return if (idx == -1) {

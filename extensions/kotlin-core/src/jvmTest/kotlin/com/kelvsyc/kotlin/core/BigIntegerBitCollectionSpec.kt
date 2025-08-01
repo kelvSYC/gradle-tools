@@ -68,16 +68,6 @@ class BigIntegerBitCollectionSpec : FunSpec() {
             }
         }
 
-        test("isZero") {
-            checkAll<Int> {
-                val value = it.toBigInteger()
-
-                val result = traits.isZero(value)
-
-                result shouldBeEqual (it == 0)
-            }
-        }
-
         test("countLeadingZeroBits") {
             checkAll<Int> {
                 val value = it.toBigInteger()

@@ -33,7 +33,6 @@ object ByteBitCollection : BitCollection<Byte> {
         }
     }
 
-    override fun isZero(value: Byte): Boolean = value.toInt() == 0
     override fun countLeadingZeroBits(value: Byte): Int = value.countLeadingZeroBits()
     override fun countTrailingZeroBits(value: Byte): Int = value.countTrailingZeroBits()
 }
@@ -69,7 +68,6 @@ object UByteBitCollection : BitCollection<UByte> {
         }
     }
 
-    override fun isZero(value: UByte): Boolean = value.toInt() == 0
     override fun countLeadingZeroBits(value: UByte): Int = value.countLeadingZeroBits()
     override fun countTrailingZeroBits(value: UByte): Int = value.countTrailingZeroBits()
 }
@@ -107,7 +105,6 @@ object ShortBitCollection : BitCollection<Short> {
         }
     }
 
-    override fun isZero(value: Short): Boolean = value.toInt() == 0
     override fun countLeadingZeroBits(value: Short): Int = value.countLeadingZeroBits()
     override fun countTrailingZeroBits(value: Short): Int = value.countTrailingZeroBits()
 }
@@ -145,7 +142,6 @@ object UShortBitCollection : BitCollection<UShort> {
         }
     }
 
-    override fun isZero(value: UShort): Boolean = value.toInt() == 0
     override fun countLeadingZeroBits(value: UShort): Int = value.countLeadingZeroBits()
     override fun countTrailingZeroBits(value: UShort): Int = value.countTrailingZeroBits()
 }
@@ -184,7 +180,6 @@ object IntBitCollection : BitCollection<Int> {
         }
     }
 
-    override fun isZero(value: Int): Boolean = value == 0
     override fun countLeadingZeroBits(value: Int): Int = value.countLeadingZeroBits()
     override fun countTrailingZeroBits(value: Int): Int = value.countTrailingZeroBits()
 }
@@ -222,7 +217,6 @@ object UIntBitCollection : BitCollection<UInt> {
         }
     }
 
-    override fun isZero(value: UInt): Boolean = value == 0U
     override fun countLeadingZeroBits(value: UInt): Int = value.countLeadingZeroBits()
     override fun countTrailingZeroBits(value: UInt): Int = value.countTrailingZeroBits()
 }
@@ -260,7 +254,6 @@ object LongBitCollection : BitCollection<Long> {
         }
     }
 
-    override fun isZero(value: Long): Boolean = value == 0L
     override fun countLeadingZeroBits(value: Long): Int = value.countLeadingZeroBits()
     override fun countTrailingZeroBits(value: Long): Int = value.countTrailingZeroBits()
 }
@@ -298,7 +291,6 @@ object ULongBitCollection : BitCollection<ULong> {
         }
     }
 
-    override fun isZero(value: ULong): Boolean = value == 0UL
     override fun countLeadingZeroBits(value: ULong): Int = value.countLeadingZeroBits()
     override fun countTrailingZeroBits(value: ULong): Int = value.countTrailingZeroBits()
 }
