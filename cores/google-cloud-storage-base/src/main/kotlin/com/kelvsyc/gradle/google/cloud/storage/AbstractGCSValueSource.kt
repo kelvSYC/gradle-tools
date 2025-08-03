@@ -13,7 +13,7 @@ import org.gradle.api.provider.ValueSourceParameters
  * Subclasses should implement the [doObtain] function, transforming a [ByteArray] to an object of the desired type.
  * This class should only be used on blobs for which the entire blob can be kept in memory.
  */
-abstract class AbstractGCSValueSource<T, P : AbstractGCSValueSource.Parameters> : ValueSource<T, P> {
+abstract class AbstractGCSValueSource<T : Any, P : AbstractGCSValueSource.Parameters> : ValueSource<T, P> {
     /**
      * Base parameters interface for [AbstractGCSValueSource]. This contains the data needed to retrieve a blob from
      * GCS.
