@@ -1,4 +1,4 @@
-package com.kelvsyc.kotlin.core
+package com.kelvsyc.kotlin.core.traits
 
 /**
  * Interface denoting that a specific type is a floating-point type.

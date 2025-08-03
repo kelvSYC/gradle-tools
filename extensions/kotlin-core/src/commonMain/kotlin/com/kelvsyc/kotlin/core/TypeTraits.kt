@@ -12,8 +12,10 @@ import com.kelvsyc.internal.kotlin.core.traits.ByteSized
 import com.kelvsyc.internal.kotlin.core.traits.ByteStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.DoubleBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.DoubleSized
+import com.kelvsyc.internal.kotlin.core.traits.DoubleTraits
 import com.kelvsyc.internal.kotlin.core.traits.FloatBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.FloatSized
+import com.kelvsyc.internal.kotlin.core.traits.FloatTraits
 import com.kelvsyc.internal.kotlin.core.traits.IntArrayBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.IntArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.IntBitRotate
@@ -84,13 +86,13 @@ import com.kelvsyc.internal.kotlin.core.traits.UShortIntegralConstants
 import com.kelvsyc.internal.kotlin.core.traits.UShortRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.UShortSized
 import com.kelvsyc.internal.kotlin.core.traits.UShortStickyRightShift
-import com.kelvsyc.kotlin.core.traits.AbstractBinary32Traits
-import com.kelvsyc.kotlin.core.traits.AbstractBinary64Traits
 import com.kelvsyc.kotlin.core.traits.ArrayLike
 import com.kelvsyc.kotlin.core.traits.BitShift
 import com.kelvsyc.kotlin.core.traits.BitStore
 import com.kelvsyc.kotlin.core.traits.BitStoreConstants
 import com.kelvsyc.kotlin.core.traits.BitsBased
+import com.kelvsyc.kotlin.core.traits.FloatingPoint
+import com.kelvsyc.kotlin.core.traits.FloatingPointTraits
 import com.kelvsyc.kotlin.core.traits.IntegralConstants
 import com.kelvsyc.kotlin.core.traits.RoundingRightShift
 import com.kelvsyc.kotlin.core.traits.Sized
@@ -311,20 +313,10 @@ object TypeTraits {
         override fun divide(lhs: KULong, rhs: KULong): KULong = lhs / rhs
     }
 
-    @Suppress("detekt:TooManyFunctions")
-    object Float : AbstractBinary32Traits<KFloat>(FloatSized),
+    object Float : FloatingPointTraits<KFloat> by FloatTraits,
+        Sized<KFloat> by FloatSized,
         BitsBased<KFloat, KInt> by FloatBitsBased,
-        FloatingPoint<KFloat>, Addition<KFloat>, Multiplication<KFloat>, Signed<KFloat> {
-        override val positiveInfinity: KFloat by KFloat.Companion::POSITIVE_INFINITY
-        override val negativeInfinity: KFloat by KFloat.Companion::NEGATIVE_INFINITY
-        override val NaN: KFloat by KFloat.Companion::NaN
-
-        override val zero: KFloat = 0.0f
-        override val one: KFloat = 1.0f
-        override fun isNaN(value: KFloat): Boolean = value.isNaN()
-        override fun isFinite(value: KFloat): Boolean = value.isFinite()
-        override fun isInfinite(value: KFloat): Boolean = value.isInfinite()
-
+        Addition<KFloat>, Multiplication<KFloat>, Signed<KFloat> {
         override fun add(lhs: KFloat, rhs: KFloat): KFloat = lhs + rhs
         override fun subtract(lhs: KFloat, rhs: KFloat): KFloat = lhs - rhs
 
@@ -337,20 +329,10 @@ object TypeTraits {
         override fun absoluteValue(value: KFloat): KFloat = value.absoluteValue
     }
 
-    @Suppress("detekt:TooManyFunctions")
-    object Double : AbstractBinary64Traits<KDouble>(DoubleSized),
+    object Double : FloatingPointTraits<KDouble> by DoubleTraits,
+        Sized<KDouble> by DoubleSized,
         BitsBased<KDouble, KLong> by DoubleBitsBased,
         FloatingPoint<KDouble>, Addition<KDouble>, Multiplication<KDouble>, Signed<KDouble> {
-        override val positiveInfinity: KDouble by KDouble.Companion::POSITIVE_INFINITY
-        override val negativeInfinity: KDouble by KDouble.Companion::NEGATIVE_INFINITY
-        override val NaN: KDouble by KDouble.Companion::NaN
-
-        override val zero: KDouble = 0.0
-        override val one: KDouble = 1.0
-        override fun isNaN(value: KDouble): Boolean = value.isNaN()
-        override fun isFinite(value: KDouble): Boolean = value.isFinite()
-        override fun isInfinite(value: KDouble): Boolean = value.isInfinite()
-
         override fun add(lhs: KDouble, rhs: KDouble): KDouble = lhs + rhs
         override fun subtract(lhs: KDouble, rhs: KDouble): KDouble = lhs - rhs
 

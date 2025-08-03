@@ -1,11 +1,13 @@
 package com.kelvsyc.kotlin.core.traits
 
+import com.kelvsyc.kotlin.core.traits.FloatingPoint
+
 /**
  * Traits relevant to decimal floating-point types.
  *
  * @param T The floating-point type
  */
-interface DecimalFloatingPointTraits<T> {
+interface DecimalFloatingPointTraits<T> : FloatingPoint<T> {
     /**
      * The number of bits in the continuation field of the decimal floating-point value.
      */
@@ -53,11 +55,6 @@ interface DecimalFloatingPointTraits<T> {
      * value.
      */
     val integralExponentRange: IntRange
-
-    /**
-     * The value representing the normalized representation of a (positive) zero value.
-     */
-    val zero: T
 
     /**
      * The value representing the canonical representation of a positive infinite value.

@@ -1,7 +1,10 @@
 package com.kelvsyc.kotlin.core
 
+import com.kelvsyc.internal.kotlin.core.traits.Binary16Sized
 import com.kelvsyc.kotlin.core.traits.AbstractBinary16Traits
 import com.kelvsyc.kotlin.core.traits.BitsBased
+import com.kelvsyc.kotlin.core.traits.FloatingPointTraits
+import com.kelvsyc.kotlin.core.traits.Sized
 
 /**
  * Value representing a 16-bit `binary16` floating-point value.
@@ -39,21 +42,24 @@ value class Float16(val bits: Short): Comparable<Float16> {
         private val wrappedRem = converter.wrap(Float::rem)
     }
 
-    @Suppress("detekt:TooManyFunctions")
-    object Traits : AbstractBinary16Traits<Float16>(),
-        BitsBased<Float16, Short>,
-        FloatingPoint<Float16>, Addition<Float16>, Multiplication<Float16>, Signed<Float16> {
-        override val converter = Converter.of(Float16::bits, ::Float16)
-
+    private object TraitsInternal : AbstractBinary16Traits<Float16>() {
+        override val zero: Float16 = Float16(0)
+        override val one: Float16 = Float16(0x3C00)
         override val positiveInfinity: Float16 = Float16(0x7C00)
         override val negativeInfinity: Float16 = Float16(0xFC00.toShort())
         override val NaN: Float16 = Float16(0xFCE0.toShort())
 
-        override val zero: Float16 = Float16(0)
-        override val one: Float16 = Float16(0x3C00)
         override fun isNaN(value: Float16): Boolean = Float16Bits.ofValue(value).isNaN
         override fun isFinite(value: Float16): Boolean = Float16Bits.ofValue(value).isFinite
         override fun isInfinite(value: Float16): Boolean = Float16Bits.ofValue(value).isInfinite
+    }
+
+    @Suppress("detekt:TooManyFunctions")
+    object Traits : FloatingPointTraits<Float16> by TraitsInternal,
+        Sized<Float16> by Binary16Sized(),
+        BitsBased<Float16, Short>,
+        Addition<Float16>, Multiplication<Float16>, Signed<Float16> {
+        override val converter = Converter.of(Float16::bits, ::Float16)
 
         override fun add(lhs: Float16, rhs: Float16): Float16 = lhs + rhs
         override fun subtract(lhs: Float16, rhs: Float16): Float16 = lhs - rhs

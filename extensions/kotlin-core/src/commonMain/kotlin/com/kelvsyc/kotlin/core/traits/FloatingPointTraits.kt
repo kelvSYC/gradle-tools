@@ -1,11 +1,13 @@
 package com.kelvsyc.kotlin.core.traits
 
+import com.kelvsyc.kotlin.core.traits.FloatingPoint
+
 /**
  * Traits relevant to binary floating-point types.
  *
  * @param T The floating-point type
  */
-interface FloatingPointTraits<T> {
+interface FloatingPointTraits<T> : FloatingPoint<T> {
     /**
      * The number of bits in the mantissa portion of the significand of the binary floating-point value.
      */
@@ -42,11 +44,6 @@ interface FloatingPointTraits<T> {
      * integral value.
      */
     val integralExponentRange: IntRange
-
-    /**
-     * The value representing (positive) zero.
-     */
-    val zero: T
 
     /**
      * The value representing a positive infinity.
