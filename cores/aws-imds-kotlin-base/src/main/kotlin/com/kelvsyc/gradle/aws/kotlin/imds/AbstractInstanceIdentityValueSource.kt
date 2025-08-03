@@ -14,7 +14,7 @@ import org.gradle.api.provider.ValueSourceParameters
  *
  * Subclasses should implement the [doObtain] function, transforming a string to an object of the desired type.
  */
-abstract class AbstractInstanceIdentityValueSource<T, P : AbstractInstanceIdentityValueSource.Parameters> : ValueSource<T, P> {
+abstract class AbstractInstanceIdentityValueSource<T : Any, P : AbstractInstanceIdentityValueSource.Parameters> : ValueSource<T, P> {
     companion object {
         const val DOCUMENT_REQUEST_PATH = "/latest/dynamic/instance-identity/document"
     }

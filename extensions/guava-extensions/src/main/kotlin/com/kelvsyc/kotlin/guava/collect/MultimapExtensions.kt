@@ -19,14 +19,14 @@ fun <K : Any, V : Any> buildMultimap(action: ImmutableMultimap.Builder<K, V>.() 
  *
  * @see ImmutableMultimap.of
  */
-fun <K, V> emptyMultimap(): Multimap<K, V> = ImmutableMultimap.of()
+fun <K : Any, V : Any> emptyMultimap(): Multimap<K, V> = ImmutableMultimap.of()
 
 /**
  * Returns an empty [Multimap].
  *
  * @see ImmutableMultimap.of
  */
-fun <K, V> multimapOf(): Multimap<K, V> = ImmutableMultimap.of()
+fun <K : Any, V : Any> multimapOf(): Multimap<K, V> = ImmutableMultimap.of()
 
 /**
  * Returns a new read-only [Multimap] containing a single entry.

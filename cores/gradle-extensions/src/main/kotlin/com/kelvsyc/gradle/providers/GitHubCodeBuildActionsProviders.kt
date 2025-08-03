@@ -25,6 +25,6 @@ abstract class GitHubCodeBuildActionsProviders @Inject constructor(providers: Pr
     val webhookWorkflowName = providers.environmentVariable("CODEBUILD_WEBHOOK_WORKFLOW_NAME")
 
     val runnerWithBuildspec = providers.environmentVariable("CODEBUILD_RUNNER_WITH_BUILDSPEC")
-        .mapKt { it.toBooleanStrictOrNull() }
+        .map { it.toBooleanStrictOrNull() }
         .orElse(false)
 }

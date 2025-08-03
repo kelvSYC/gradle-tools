@@ -15,7 +15,7 @@ import java.io.InputStream
  * Subclasses should implement the [doObtain] function, transforming an [InputStream] object to an object of the
  * desired type.
  */
-abstract class AbstractArtifactValueSource<T, P : AbstractArtifactValueSource.Parameters> : ValueSource<T, P> {
+abstract class AbstractArtifactValueSource<T : Any, P : AbstractArtifactValueSource.Parameters> : ValueSource<T, P> {
     /**
      * Base parameters interface for [AbstractArtifactValueSource]. This contains the data needed to retrieve an object from
      * Artifactory.

@@ -16,7 +16,7 @@ abstract class GitHubActionsProviders @Inject constructor(layout: ProjectLayout,
      * Provides `true` if Gradle is running in CI.
      */
     val ci = providers.environmentVariable("CI")
-        .mapKt(String::toBooleanStrictOrNull)
+        .map(String::toBooleanStrictOrNull)
         .orElse(false)
 
     /**
@@ -35,7 +35,7 @@ abstract class GitHubActionsProviders @Inject constructor(layout: ProjectLayout,
      * Provides `true` when GitHub Actions is running a workflow.
      */
     val actions = providers.environmentVariable("GITHUB_ACTIONS")
-        .mapKt(String::toBooleanStrictOrNull)
+        .map(String::toBooleanStrictOrNull)
         .orElse(false)
 
     val actor = providers.environmentVariable("GITHUB_ACTOR")
@@ -99,7 +99,7 @@ abstract class GitHubActionsProviders @Inject constructor(layout: ProjectLayout,
     val refName = providers.environmentVariable("GITHUB_REF_NAME")
 
     val refProtected = providers.environmentVariable("GITHUB_REF_PROTECTED")
-        .mapKt(String::toBooleanStrictOrNull)
+        .map(String::toBooleanStrictOrNull)
 
     val refType = providers.environmentVariable("GITHUB_REF_TYPE")
 
@@ -112,16 +112,16 @@ abstract class GitHubActionsProviders @Inject constructor(layout: ProjectLayout,
     val repositoryOwnerId = providers.environmentVariable("GITHUB_REPOSITORY_OWNER_ID")
 
     val retentionDays = providers.environmentVariable("GITHUB_RETENTION_DAYS")
-        .mapKt(String::toIntOrNull)
+        .map(String::toIntOrNull)
 
     val runAttempt = providers.environmentVariable("GITHUB_RUN_ATTEMPT")
-        .mapKt(String::toIntOrNull)
+        .map(String::toIntOrNull)
 
     val runId = providers.environmentVariable("GITHUB_RUN_ID")
-        .mapKt(String::toIntOrNull)
+        .map(String::toIntOrNull)
 
     val runNumber = providers.environmentVariable("GITHUB_RUN_NUMBER")
-        .mapKt(String::toIntOrNull)
+        .map(String::toIntOrNull)
 
     val serverUrl = providers.environmentVariable("GITHUB_SERVER_URL")
 

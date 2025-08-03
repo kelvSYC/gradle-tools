@@ -1,6 +1,5 @@
 package com.kelvsyc.gradle.clients
 
-import com.kelvsyc.gradle.providers.mapKt
 import org.gradle.api.provider.Provider
 import javax.inject.Inject
 import kotlin.reflect.KClass
@@ -20,7 +19,7 @@ abstract class ClientsBaseExtension @Inject constructor(val service: Provider<Cl
      * @param clientType        The type of the underlying client
      */
     fun <C : Any, T : ServiceClientInfo<C>> getClient(name: String, clientInfoType: Class<T>, clientType: Class<C>) =
-        service.mapKt { it.getClient(name, clientInfoType, clientType) }
+        service.map { it.getClient(name, clientInfoType, clientType) }
 
     /**
      * Retrieves a [Provider] for the registered client with the specified name.
@@ -33,7 +32,7 @@ abstract class ClientsBaseExtension @Inject constructor(val service: Provider<Cl
      * @param clientType        The type of the underlying client
      */
     fun <C : Any, T : ServiceClientInfo<C>> getClient(name: String, clientInfoType: KClass<T>, clientType: KClass<C>) =
-        service.mapKt { it.getClient(name, clientInfoType, clientType) }
+        service.map { it.getClient(name, clientInfoType, clientType) }
 
     /**
      * Retrieves a [Provider] for the registered client with the specified name.

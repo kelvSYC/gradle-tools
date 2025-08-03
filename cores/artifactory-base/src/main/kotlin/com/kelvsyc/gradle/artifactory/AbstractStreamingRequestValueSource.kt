@@ -16,7 +16,7 @@ import org.jfrog.artifactory.client.ArtifactoryStreamingResponse
  * Subclasses should implement the [doObtain] function, transforming an [ArtifactoryStreamingResponse] object to an
  * object of the desired type.
  */
-abstract class AbstractStreamingRequestValueSource<T, P : AbstractStreamingRequestValueSource.Parameters>
+abstract class AbstractStreamingRequestValueSource<T : Any, P : AbstractStreamingRequestValueSource.Parameters>
     : ValueSource<T, P> {
     /**
      * Base parameters interface for [AbstractStreamingRequestValueSource]. This contains the data needed to retrieve

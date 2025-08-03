@@ -14,19 +14,19 @@ class UnsignedConvertersSpec : FunSpec() {
     init {
         test("int") {
             checkAll<UnsignedInteger>(Arb.int().map(UnsignedInteger::fromIntBits)) {
-                UnsignedIntegerConverter.convert(it) shouldBeEqual it.asUInt
+                UnsignedIntegerConverter.convert(it)?.shouldBeEqual(it.asUInt)
             }
             checkAll<UInt> {
-                UnsignedIntegerConverter.reverse().convert(it) shouldBeEqual it.asGuavaUnsignedInteger
+                UnsignedIntegerConverter.reverse().convert(it)?.shouldBeEqual(it.asGuavaUnsignedInteger)
             }
         }
 
         test("long") {
             checkAll<UnsignedLong>(Arb.long().map(UnsignedLong::fromLongBits)) {
-                UnsignedLongConverter.convert(it) shouldBeEqual it.asULong
+                UnsignedLongConverter.convert(it)?.shouldBeEqual(it.asULong)
             }
             checkAll<ULong> {
-                UnsignedLongConverter.reverse().convert(it) shouldBeEqual it.asGuavaUnsignedLong
+                UnsignedLongConverter.reverse().convert(it)?.shouldBeEqual(it.asGuavaUnsignedLong)
             }
         }
     }

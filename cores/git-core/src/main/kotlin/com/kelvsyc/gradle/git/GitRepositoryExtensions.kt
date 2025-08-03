@@ -1,6 +1,5 @@
 package com.kelvsyc.gradle.git
 
-import com.kelvsyc.gradle.providers.mapKt
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.gradle.api.file.Directory
 import org.gradle.api.provider.Provider
@@ -32,4 +31,4 @@ val Directory.asRepository
  * The directory is treated as the work tree directory of the Git repository.
  */
 val Provider<Directory>.asRepository
-    get() = mapKt { it.asRepository }
+    get() = map { it.asRepository }
