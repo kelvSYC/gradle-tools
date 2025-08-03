@@ -1,5 +1,7 @@
 package com.kelvsyc.kotlin.core
 
+import com.kelvsyc.kotlin.core.fp.BinaryFloatingPoint
+
 /**
  * Interface representing down the bit representation of a floating-point value.
  *
@@ -38,6 +40,15 @@ interface FloatingPointBits<T, B> {
      * the smallest unbiased exponent or one larger than the largest unbiased exponent.
      */
     val exponent: Int
+
+    /**
+     * Retrieves the unbiased exponent value.
+     *
+     * This value is obtained from subtracting the integral exponent bias from [biasedExponent]. As such, the two biased
+     * exponents with special meaning (0 and the largest value) will be represented by values that are one smaller than
+     * the smallest unbiased integral exponent or one larger than the largest unbiased integral exponent.
+     */
+    val integralExponent: Int
 
     /**
      * Retrieves the significand of the floating-point value.
@@ -115,4 +126,15 @@ interface FloatingPointBits<T, B> {
      * Converts this bit representation to an instance of the floating-point type.
      */
     fun toFloatingPoint(): T
+
+    /**
+     * Converts this bit representation to an instance of [BinaryFloatingPoint].
+     */
+    fun toBinaryFloatingPoint(): BinaryFloatingPoint<B> = if (isInfinite) {
+        BinaryFloatingPoint.Infinity(signBit)
+    } else if (isNaN) {
+        BinaryFloatingPoint.NaN(mantissa)
+    } else {
+        BinaryFloatingPoint.Finite(signBit, integralExponent, significand)
+    }
 }

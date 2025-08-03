@@ -17,7 +17,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse
  * desired type.
  * This class should only be used on S3 objects for which the entire object can be kept in memory.
  */
-abstract class AbstractS3ValueSource<T, P : AbstractS3ValueSource.Parameters> : ValueSource<T, P> {
+abstract class AbstractS3ValueSource<T : Any, P : AbstractS3ValueSource.Parameters> : ValueSource<T, P> {
     /**
      * Base parameters interface for [AbstractS3ValueSource]. This contains the data needed to retrieve an object from
      * AWS.

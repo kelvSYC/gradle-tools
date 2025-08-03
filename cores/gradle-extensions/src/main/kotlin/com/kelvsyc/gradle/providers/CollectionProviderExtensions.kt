@@ -8,13 +8,13 @@ import java.util.*
  *
  * The returned provider has no value if this provider has no value, or if the mapping has no value for this key.
  *
- * Syntactic shorthand for [mapKt]` { it[key] }`.
+ * Syntactic shorthand for [Provider.map]` { it[key] }`.
  *
  * This function extends the semantics of [MapProperty.getting()][org.gradle.api.provider.MapProperty.getting] to
  * generic providers of maps, and thus will never be used on objects with a declared type of
  * [MapProperty][org.gradle.api.provider.MapProperty].
  */
-fun <K : Any, V : Any> Provider<Map<K, V>>.getting(key: K) = mapKt { it[key] }
+fun <K : Any, V : Any> Provider<Map<K, V>>.getting(key: K) = map { it[key] }
 
 /**
  * Returns a provider resolving to the value of the specified key.

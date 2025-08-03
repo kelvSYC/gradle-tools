@@ -20,7 +20,7 @@ internal fun <T : Any, P : ValueSourceParameters> ProviderFactory.ofKt(
  *
  * The returned [Provider] is absent if `null` is supplied.
  */
-fun <T> ProviderFactory.ofNullable(value: T?): Provider<T> = provider { value }
+fun <T : Any> ProviderFactory.ofNullable(value: T?): Provider<T> = provider { value }
 
 /**
  * Returns a [Provider] whose value is always absent.

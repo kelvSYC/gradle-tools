@@ -3,7 +3,7 @@ package com.kelvsyc.kotlin.core
 /**
  * Bit representation of a `binary16` floating-point value (ie. a [Float16]).
  */
-class Float16Bits private constructor(bits: Short) : AbstractBinary16Bits<Float16>(bits) {
+class Float16Bits private constructor(bits: Short) : AbstractBinary16Bits<Float16>(bits, Float16.Traits) {
     companion object {
         val converter = Converter.of(Float16::bits, ::Float16)
 

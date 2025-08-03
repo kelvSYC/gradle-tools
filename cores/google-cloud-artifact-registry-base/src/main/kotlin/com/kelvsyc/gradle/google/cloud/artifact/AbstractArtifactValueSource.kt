@@ -19,7 +19,7 @@ import java.io.PipedOutputStream
  *
  * Subclasses should implement the [doObtain] function, transforming an [InputStream] to an object of the desired type.
  */
-abstract class AbstractArtifactValueSource<T, P : AbstractArtifactValueSource.Parameters> : ValueSource<T, P> {
+abstract class AbstractArtifactValueSource<T : Any, P : AbstractArtifactValueSource.Parameters> : ValueSource<T, P> {
     interface Parameters : ValueSourceParameters {
         val service: Property<ClientsBaseService>
         val clientName: Property<String>

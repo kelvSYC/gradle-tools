@@ -10,7 +10,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 
-abstract class AbstractS3ValueSource<T, P : AbstractS3ValueSource.Parameters> : ValueSource<T, P> {
+abstract class AbstractS3ValueSource<T : Any, P : AbstractS3ValueSource.Parameters> : ValueSource<T, P> {
     interface Parameters : ValueSourceParameters {
         val service: Property<ClientsBaseService>
         val clientName: Property<String>

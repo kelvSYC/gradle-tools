@@ -39,7 +39,7 @@ abstract class AbstractBatchDownloadFromS3 @Inject constructor(
     /**
      * Information about an artifact to be retrieved from S3.
      */
-    abstract class Artifact(private val name: String) : Named {
+    abstract class Artifact @Inject constructor(private val name: String) : Named {
         override fun getName() = name
 
         abstract val bucket: Property<String>

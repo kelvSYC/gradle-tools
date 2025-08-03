@@ -6,9 +6,9 @@ import io.kotest.property.checkAll
 
 class FloatBitsSpec : FunSpec() {
     companion object {
-        const val SIGNIFICAND_MASK = (1 shl (FloatBits.PRECISION - 1)) - 1
-        const val EXPONENT_MASK = (1 shl FloatBits.EXPONENT_WIDTH) - 1
-        val SIGN_MASK = 1U shl (FloatBits.SIZE_BITS - 1)
+        val SIGNIFICAND_MASK = (1 shl TypeTraits.Float.mantissaWidth) - 1
+        val EXPONENT_MASK = (1 shl TypeTraits.Float.exponentWidth) - 1
+        val SIGN_MASK = 1U shl (TypeTraits.Float.sizeBits - 1)
     }
 
     init {
@@ -33,7 +33,7 @@ class FloatBitsSpec : FunSpec() {
                 val bits = FloatBits(it)
 
                 bits.mantissa shouldBeEqual (it.toBits() and SIGNIFICAND_MASK)
-                bits.biasedExponent shouldBeEqual ((it.toBits() ushr (FloatBits.PRECISION - 1)) and EXPONENT_MASK)
+                bits.biasedExponent shouldBeEqual ((it.toBits() ushr (TypeTraits.Float.precision - 1)) and EXPONENT_MASK)
                 bits.signBit shouldBeEqual ((it.toBits().toUInt() and SIGN_MASK) != 0U)
             }
         }

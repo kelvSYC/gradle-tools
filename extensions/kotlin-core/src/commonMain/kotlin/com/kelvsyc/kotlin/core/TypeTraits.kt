@@ -1,20 +1,119 @@
 package com.kelvsyc.kotlin.core
 
-import kotlin.experimental.and
-import kotlin.experimental.inv
-import kotlin.experimental.or
-import kotlin.experimental.xor
+import com.kelvsyc.internal.kotlin.core.traits.ByteArrayBitRotate
+import com.kelvsyc.internal.kotlin.core.traits.ByteArrayBitShift
+import com.kelvsyc.internal.kotlin.core.traits.ByteBitRotate
+import com.kelvsyc.internal.kotlin.core.traits.ByteBitStore
+import com.kelvsyc.internal.kotlin.core.traits.ByteBitStoreConstants
+import com.kelvsyc.internal.kotlin.core.traits.ByteBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.ByteIntegralConstants
+import com.kelvsyc.internal.kotlin.core.traits.ByteRoundingRightShift
+import com.kelvsyc.internal.kotlin.core.traits.ByteSized
+import com.kelvsyc.internal.kotlin.core.traits.ByteStickyRightShift
+import com.kelvsyc.internal.kotlin.core.traits.DoubleBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.DoubleSized
+import com.kelvsyc.internal.kotlin.core.traits.FloatBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.FloatSized
+import com.kelvsyc.internal.kotlin.core.traits.IntArrayBitRotate
+import com.kelvsyc.internal.kotlin.core.traits.IntArrayBitShift
+import com.kelvsyc.internal.kotlin.core.traits.IntBitRotate
+import com.kelvsyc.internal.kotlin.core.traits.IntBitStore
+import com.kelvsyc.internal.kotlin.core.traits.IntBitStoreConstants
+import com.kelvsyc.internal.kotlin.core.traits.IntBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.IntIntegralConstants
+import com.kelvsyc.internal.kotlin.core.traits.IntRoundingRightShift
+import com.kelvsyc.internal.kotlin.core.traits.IntSized
+import com.kelvsyc.internal.kotlin.core.traits.IntStickyRightShift
+import com.kelvsyc.internal.kotlin.core.traits.LongArrayBitRotate
+import com.kelvsyc.internal.kotlin.core.traits.LongArrayBitShift
+import com.kelvsyc.internal.kotlin.core.traits.LongBitRotate
+import com.kelvsyc.internal.kotlin.core.traits.LongBitStore
+import com.kelvsyc.internal.kotlin.core.traits.LongBitStoreConstants
+import com.kelvsyc.internal.kotlin.core.traits.LongBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.LongIntegralConstants
+import com.kelvsyc.internal.kotlin.core.traits.LongRoundingRightShift
+import com.kelvsyc.internal.kotlin.core.traits.LongSized
+import com.kelvsyc.internal.kotlin.core.traits.LongStickyRightShift
+import com.kelvsyc.internal.kotlin.core.traits.ShortArrayBitRotate
+import com.kelvsyc.internal.kotlin.core.traits.ShortArrayBitShift
+import com.kelvsyc.internal.kotlin.core.traits.ShortBitRotate
+import com.kelvsyc.internal.kotlin.core.traits.ShortBitStore
+import com.kelvsyc.internal.kotlin.core.traits.ShortBitStoreConstants
+import com.kelvsyc.internal.kotlin.core.traits.ShortBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.ShortIntegralConstants
+import com.kelvsyc.internal.kotlin.core.traits.ShortRoundingRightShift
+import com.kelvsyc.internal.kotlin.core.traits.ShortSized
+import com.kelvsyc.internal.kotlin.core.traits.ShortStickyRightShift
+import com.kelvsyc.internal.kotlin.core.traits.UByteArrayBitRotate
+import com.kelvsyc.internal.kotlin.core.traits.UByteArrayBitShift
+import com.kelvsyc.internal.kotlin.core.traits.UByteBitRotate
+import com.kelvsyc.internal.kotlin.core.traits.UByteBitStore
+import com.kelvsyc.internal.kotlin.core.traits.UByteBitStoreConstants
+import com.kelvsyc.internal.kotlin.core.traits.UByteBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.UByteIntegralConstants
+import com.kelvsyc.internal.kotlin.core.traits.UByteRoundingRightShift
+import com.kelvsyc.internal.kotlin.core.traits.UByteSized
+import com.kelvsyc.internal.kotlin.core.traits.UByteStickyRightShift
+import com.kelvsyc.internal.kotlin.core.traits.UIntArrayBitRotate
+import com.kelvsyc.internal.kotlin.core.traits.UIntArrayBitShift
+import com.kelvsyc.internal.kotlin.core.traits.UIntBitRotate
+import com.kelvsyc.internal.kotlin.core.traits.UIntBitStore
+import com.kelvsyc.internal.kotlin.core.traits.UIntBitStoreConstants
+import com.kelvsyc.internal.kotlin.core.traits.UIntBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.UIntIntegralConstants
+import com.kelvsyc.internal.kotlin.core.traits.UIntRoundingRightShift
+import com.kelvsyc.internal.kotlin.core.traits.UIntSized
+import com.kelvsyc.internal.kotlin.core.traits.UIntStickyRightShift
+import com.kelvsyc.internal.kotlin.core.traits.ULongArrayBitRotate
+import com.kelvsyc.internal.kotlin.core.traits.ULongArrayBitShift
+import com.kelvsyc.internal.kotlin.core.traits.ULongBitRotate
+import com.kelvsyc.internal.kotlin.core.traits.ULongBitStore
+import com.kelvsyc.internal.kotlin.core.traits.ULongBitStoreConstants
+import com.kelvsyc.internal.kotlin.core.traits.ULongBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.ULongIntegralConstants
+import com.kelvsyc.internal.kotlin.core.traits.ULongRoundingRightShift
+import com.kelvsyc.internal.kotlin.core.traits.ULongSized
+import com.kelvsyc.internal.kotlin.core.traits.ULongStickyRightShift
+import com.kelvsyc.internal.kotlin.core.traits.UShortArrayBitRotate
+import com.kelvsyc.internal.kotlin.core.traits.UShortArrayBitShift
+import com.kelvsyc.internal.kotlin.core.traits.UShortBitRotate
+import com.kelvsyc.internal.kotlin.core.traits.UShortBitStore
+import com.kelvsyc.internal.kotlin.core.traits.UShortBitStoreConstants
+import com.kelvsyc.internal.kotlin.core.traits.UShortBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.UShortIntegralConstants
+import com.kelvsyc.internal.kotlin.core.traits.UShortRoundingRightShift
+import com.kelvsyc.internal.kotlin.core.traits.UShortSized
+import com.kelvsyc.internal.kotlin.core.traits.UShortStickyRightShift
+import com.kelvsyc.kotlin.core.traits.AbstractBinary32Traits
+import com.kelvsyc.kotlin.core.traits.AbstractBinary64Traits
+import com.kelvsyc.kotlin.core.traits.ArrayLike
+import com.kelvsyc.kotlin.core.traits.BitShift
+import com.kelvsyc.kotlin.core.traits.BitStore
+import com.kelvsyc.kotlin.core.traits.BitStoreConstants
+import com.kelvsyc.kotlin.core.traits.BitsBased
+import com.kelvsyc.kotlin.core.traits.IntegralConstants
+import com.kelvsyc.kotlin.core.traits.RoundingRightShift
+import com.kelvsyc.kotlin.core.traits.Sized
+import com.kelvsyc.kotlin.core.traits.StickyRightShift
 import kotlin.math.absoluteValue
 import kotlin.Byte as KByte
+import kotlin.ByteArray as KByteArray
 import kotlin.Double as KDouble
 import kotlin.Float as KFloat
 import kotlin.Int as KInt
+import kotlin.IntArray as KIntArray
 import kotlin.Long as KLong
+import kotlin.LongArray as KLongArray
 import kotlin.Short as KShort
+import kotlin.ShortArray as KShortArray
 import kotlin.UByte as KUByte
+import kotlin.UByteArray as KUByteArray
 import kotlin.UInt as KUInt
+import kotlin.UIntArray as KUIntArray
 import kotlin.ULong as KULong
+import kotlin.ULongArray as KULongArray
 import kotlin.UShort as KUShort
+import kotlin.UShortArray as KUShortArray
 
 /**
  * Object holder for type traits for common Kotlin types.
@@ -24,48 +123,22 @@ object TypeTraits {
      * Traits object for the [Byte][KByte] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object Byte : BitCollection<KByte>,
-        Addition<KByte>, Multiplication<KByte>, Bitwise<KByte>, BitShift<KByte>, BitRotate<KByte>, Signed<KByte> {
-        @OptIn(ExperimentalStdlibApi::class)
-        override fun asBitSequence(value: KByte): Sequence<Boolean> = sequence {
-            var mask = 1
-            for (i in 0 ..< KByte.SIZE_BITS) {
-                yield(value.toInt() and mask != 0)
-                mask = mask shl 1
-            }
-        }
-
-        @OptIn(ExperimentalStdlibApi::class)
-        override fun getSetBits(value: KByte): Set<KInt> = buildSet {
-            var mask = 1
-            for (i in 0 ..< KByte.SIZE_BITS) {
-                if (value.toInt() and mask != 0) {
-                    add(i)
-                }
-                mask = mask shl 1
-            }
-        }
-
-        override fun countLeadingZeroBits(value: KByte): KInt = value.countLeadingZeroBits()
-        override fun countTrailingZeroBits(value: KByte): KInt = value.countTrailingZeroBits()
-
+    object Byte :
+        Sized<KByte> by ByteSized,
+        IntegralConstants<KByte> by ByteIntegralConstants,
+        BitStoreConstants<KByte> by ByteBitStoreConstants,
+        BitsBased<KByte, KByte> by ByteBitsBased,
+        BitStore<KByte> by ByteBitStore,
+        StickyRightShift<KByte> by ByteStickyRightShift,
+        RoundingRightShift<KByte> by ByteRoundingRightShift,
+        Addition<KByte>, Multiplication<KByte>,
+        ByteBitRotate,
+        Signed<KByte> {
         override fun add(lhs: KByte, rhs: KByte): KByte = (lhs + rhs).toByte()
         override fun subtract(lhs: KByte, rhs: KByte): KByte = (lhs - rhs).toByte()
 
         override fun multiply(lhs: KByte, rhs: KByte): KByte = (lhs * rhs).toByte()
         override fun divide(lhs: KByte, rhs: KByte): KByte = (lhs / rhs).toByte()
-
-        override fun and(lhs: KByte, rhs: KByte): KByte = lhs and rhs
-        override fun or(lhs: KByte, rhs: KByte): KByte = lhs or rhs
-        override fun xor(lhs: KByte, rhs: KByte): KByte = lhs xor rhs
-        override fun inv(value: KByte): KByte = value.inv()
-
-        override fun leftShift(value: KByte, bitCount: KInt): KByte = (value.toInt() shl bitCount).toByte()
-        override fun rightShift(value: KByte, bitCount: KInt): KByte = (value.toUByte().toInt() ushr bitCount).toByte()
-        override fun arithmeticRightShift(value: KByte, bitCount: KInt): KByte = (value.toInt() shr bitCount).toByte()
-
-        override fun rotateLeft(value: KByte, bitCount: KInt): KByte = value.rotateLeft(bitCount)
-        override fun rotateRight(value: KByte, bitCount: KInt): KByte = value.rotateRight(bitCount)
 
         override fun isPositive(value: KByte): Boolean = value > 0
         override fun isNegative(value: KByte): Boolean = value < 0
@@ -77,96 +150,43 @@ object TypeTraits {
      * Traits object for the [UByte][KUByte] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object UByte : BitCollection<KUByte>,
-        Addition<KUByte>, Multiplication<KUByte>, Bitwise<KUByte>, BitShift<KUByte>, BitRotate<KUByte> {
-        @OptIn(ExperimentalStdlibApi::class)
-        override fun asBitSequence(value: KUByte): Sequence<Boolean> = sequence {
-            var mask = 1
-            for (i in 0 ..< KUByte.SIZE_BITS) {
-                yield(value.toInt() and mask != 0)
-                mask = mask shl 1
-            }
-        }
-
-        @OptIn(ExperimentalStdlibApi::class)
-        override fun getSetBits(value: KUByte): Set<KInt> = buildSet {
-            var mask = 1
-            for (i in 0 ..< KUByte.SIZE_BITS) {
-                if (value.toInt() and mask != 0) {
-                    add(i)
-                }
-                mask = mask shl 1
-            }
-        }
-
-        override fun countLeadingZeroBits(value: KUByte): KInt = value.countLeadingZeroBits()
-        override fun countTrailingZeroBits(value: KUByte): KInt = value.countTrailingZeroBits()
-
+    object UByte :
+        Sized<KUByte> by UByteSized,
+        IntegralConstants<KUByte> by UByteIntegralConstants,
+        BitStoreConstants<KUByte> by UByteBitStoreConstants,
+        BitsBased<KUByte, KByte> by UByteBitsBased,
+        BitStore<KUByte> by UByteBitStore,
+        StickyRightShift<KUByte> by UByteStickyRightShift,
+        RoundingRightShift<KUByte> by UByteRoundingRightShift,
+        Addition<KUByte>, Multiplication<KUByte>,
+        UByteBitRotate {
         override fun add(lhs: KUByte, rhs: KUByte): KUByte = (lhs + rhs).toUByte()
         override fun subtract(lhs: KUByte, rhs: KUByte): KUByte = (lhs - rhs).toUByte()
 
         override fun multiply(lhs: KUByte, rhs: KUByte): KUByte = (lhs * rhs).toUByte()
         override fun divide(lhs: KUByte, rhs: KUByte): KUByte = (lhs / rhs).toUByte()
-
-        override fun and(lhs: KUByte, rhs: KUByte): KUByte = lhs and rhs
-        override fun or(lhs: KUByte, rhs: KUByte): KUByte = lhs or rhs
-        override fun xor(lhs: KUByte, rhs: KUByte): KUByte = lhs xor rhs
-        override fun inv(value: KUByte): KUByte = value.inv()
-
-        override fun leftShift(value: KUByte, bitCount: KInt): KUByte = (value.toInt() shl bitCount).toUByte()
-        override fun rightShift(value: KUByte, bitCount: KInt): KUByte = (value.toInt() ushr bitCount).toUByte()
-        override fun arithmeticRightShift(value: KUByte, bitCount: KInt): KUByte = (value.toByte().toInt() shr bitCount).toUByte()
-
-        override fun rotateLeft(value: KUByte, bitCount: KInt): KUByte = value.rotateLeft(bitCount)
-        override fun rotateRight(value: KUByte, bitCount: KInt): KUByte = value.rotateRight(bitCount)
     }
 
     /**
      * Traits object for the [Short][KShort] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object Short : BitCollection<KShort>,
-        Addition<KShort>, Multiplication<KShort>, Bitwise<KShort>, BitShift<KShort>, BitRotate<KShort>, Signed<KShort> {
-        @OptIn(ExperimentalStdlibApi::class)
-        override fun asBitSequence(value: KShort): Sequence<Boolean> = sequence {
-            var mask = 1
-            for (i in 0 ..< KShort.SIZE_BITS) {
-                yield(value.toInt() and mask != 0)
-                mask = mask shl 1
-            }
-        }
-
-        @OptIn(ExperimentalStdlibApi::class)
-        override fun getSetBits(value: KShort): Set<KInt> = buildSet {
-            var mask = 1
-            for (i in 0 ..< KShort.SIZE_BITS) {
-                if (value.toInt() and mask != 0) {
-                    add(i)
-                }
-                mask = mask shl 1
-            }
-        }
-
-        override fun countLeadingZeroBits(value: KShort): KInt = value.countLeadingZeroBits()
-        override fun countTrailingZeroBits(value: KShort): KInt = value.countTrailingZeroBits()
-
+    object Short :
+        Sized<KShort> by ShortSized,
+        IntegralConstants<KShort> by ShortIntegralConstants,
+        BitStoreConstants<KShort> by ShortBitStoreConstants,
+        BitsBased<KShort, KShort> by ShortBitsBased,
+        BitStore<KShort> by ShortBitStore,
+        StickyRightShift<KShort> by ShortStickyRightShift,
+        RoundingRightShift<KShort> by ShortRoundingRightShift,
+        Addition<KShort>, Multiplication<KShort>,
+        ShortBitRotate,
+        Signed<KShort> {
         override fun add(lhs: KShort, rhs: KShort): KShort = (lhs + rhs).toShort()
         override fun subtract(lhs: KShort, rhs: KShort): KShort = (lhs - rhs).toShort()
 
         override fun multiply(lhs: KShort, rhs: KShort): KShort = (lhs * rhs).toShort()
         override fun divide(lhs: KShort, rhs: KShort): KShort = (lhs / rhs).toShort()
-
-        override fun and(lhs: KShort, rhs: KShort): KShort = lhs and rhs
-        override fun or(lhs: KShort, rhs: KShort): KShort = lhs or rhs
-        override fun xor(lhs: KShort, rhs: KShort): KShort = lhs xor rhs
-        override fun inv(value: KShort): KShort = value.inv()
-
-        override fun leftShift(value: KShort, bitCount: KInt): KShort = (value.toInt() shl bitCount).toShort()
-        override fun rightShift(value: KShort, bitCount: KInt): KShort = (value.toUShort().toInt() ushr bitCount).toShort()
-        override fun arithmeticRightShift(value: KShort, bitCount: KInt): KShort = (value.toInt() shr bitCount).toShort()
-
-        override fun rotateLeft(value: KShort, bitCount: KInt): KShort = value.rotateLeft(bitCount)
-        override fun rotateRight(value: KShort, bitCount: KInt): KShort = value.rotateRight(bitCount)
 
         override fun isPositive(value: KShort): Boolean = value > 0
         override fun isNegative(value: KShort): Boolean = value < 0
@@ -178,96 +198,43 @@ object TypeTraits {
      * Traits object for the [UShort][KUShort] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object UShort : BitCollection<KUShort>,
-        Addition<KUShort>, Multiplication<KUShort>, Bitwise<KUShort>, BitShift<KUShort>, BitRotate<KUShort> {
-        @OptIn(ExperimentalStdlibApi::class)
-        override fun asBitSequence(value: KUShort): Sequence<Boolean> = sequence {
-            var mask = 1
-            for (i in 0 ..< KUShort.SIZE_BITS) {
-                yield(value.toInt() and mask != 0)
-                mask = mask shl 1
-            }
-        }
-
-        @OptIn(ExperimentalStdlibApi::class)
-        override fun getSetBits(value: KUShort): Set<KInt> = buildSet {
-            var mask = 1
-            for (i in 0 ..< KUShort.SIZE_BITS) {
-                if (value.toInt() and mask != 0) {
-                    add(i)
-                }
-                mask = mask shl 1
-            }
-        }
-
-        override fun countLeadingZeroBits(value: KUShort): KInt = value.countLeadingZeroBits()
-        override fun countTrailingZeroBits(value: KUShort): KInt = value.countTrailingZeroBits()
-
+    object UShort :
+        Sized<KUShort> by UShortSized,
+        IntegralConstants<KUShort> by UShortIntegralConstants,
+        BitStoreConstants<KUShort> by UShortBitStoreConstants,
+        BitsBased<KUShort, KShort> by UShortBitsBased,
+        BitStore<KUShort> by UShortBitStore,
+        StickyRightShift<KUShort> by UShortStickyRightShift,
+        RoundingRightShift<KUShort> by UShortRoundingRightShift,
+        Addition<KUShort>, Multiplication<KUShort>,
+        UShortBitRotate {
         override fun add(lhs: KUShort, rhs: KUShort): KUShort = (lhs + rhs).toUShort()
         override fun subtract(lhs: KUShort, rhs: KUShort): KUShort = (lhs - rhs).toUShort()
 
         override fun multiply(lhs: KUShort, rhs: KUShort): KUShort = (lhs * rhs).toUShort()
         override fun divide(lhs: KUShort, rhs: KUShort): KUShort = (lhs / rhs).toUShort()
-
-        override fun and(lhs: KUShort, rhs: KUShort): KUShort = lhs and rhs
-        override fun or(lhs: KUShort, rhs: KUShort): KUShort = lhs or rhs
-        override fun xor(lhs: KUShort, rhs: KUShort): KUShort = lhs xor rhs
-        override fun inv(value: KUShort): KUShort = value.inv()
-
-        override fun leftShift(value: KUShort, bitCount: KInt): KUShort = (value.toInt() shl bitCount).toUShort()
-        override fun rightShift(value: KUShort, bitCount: KInt): KUShort = (value.toInt() ushr bitCount).toUShort()
-        override fun arithmeticRightShift(value: KUShort, bitCount: KInt): KUShort = (value.toShort().toInt() shr bitCount).toUShort()
-
-        override fun rotateLeft(value: KUShort, bitCount: KInt): KUShort = value.rotateLeft(bitCount)
-        override fun rotateRight(value: KUShort, bitCount: KInt): KUShort = value.rotateRight(bitCount)
     }
 
     /**
      * Traits object for the [Int][KInt] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object Int : BitCollection<KInt>,
-        Addition<KInt>, Multiplication<KInt>, Bitwise<KInt>, BitShift<KInt>, BitRotate<KInt>, Signed<KInt> {
-        @OptIn(ExperimentalStdlibApi::class)
-        override fun asBitSequence(value: KInt): Sequence<Boolean> = sequence {
-            var mask = 1
-            for (i in 0 ..< KInt.SIZE_BITS) {
-                yield(value and mask != 0)
-                mask = mask shl 1
-            }
-        }
-
-        @OptIn(ExperimentalStdlibApi::class)
-        override fun getSetBits(value: KInt): Set<KInt> = buildSet {
-            var mask = 1
-            for (i in 0 ..< KInt.SIZE_BITS) {
-                if (value and mask != 0) {
-                    add(i)
-                }
-                mask = mask shl 1
-            }
-        }
-
-        override fun countLeadingZeroBits(value: KInt): KInt = value.countLeadingZeroBits()
-        override fun countTrailingZeroBits(value: KInt): KInt = value.countTrailingZeroBits()
-
+    object Int :
+        Sized<KInt> by IntSized,
+        IntegralConstants<KInt> by IntIntegralConstants,
+        BitStoreConstants<KInt> by IntBitStoreConstants,
+        BitsBased<KInt, KInt> by IntBitsBased,
+        BitStore<KInt> by IntBitStore,
+        StickyRightShift<KInt> by IntStickyRightShift,
+        RoundingRightShift<KInt> by IntRoundingRightShift,
+        Addition<KInt>, Multiplication<KInt>,
+        IntBitRotate,
+        Signed<KInt> {
         override fun add(lhs: KInt, rhs: KInt): KInt = lhs + rhs
         override fun subtract(lhs: KInt, rhs: KInt): KInt = lhs - rhs
 
         override fun multiply(lhs: KInt, rhs: KInt): KInt = lhs * rhs
         override fun divide(lhs: KInt, rhs: KInt): KInt = lhs / rhs
-
-        override fun and(lhs: KInt, rhs: KInt): KInt = lhs and rhs
-        override fun or(lhs: KInt, rhs: KInt): KInt = lhs or rhs
-        override fun xor(lhs: KInt, rhs: KInt): KInt = lhs xor rhs
-        override fun inv(value: KInt): KInt = value.inv()
-
-        override fun leftShift(value: KInt, bitCount: KInt): KInt = value shl bitCount
-        override fun rightShift(value: KInt, bitCount: KInt): KInt = value ushr bitCount
-        override fun arithmeticRightShift(value: KInt, bitCount: KInt): KInt = value shr bitCount
-
-        override fun rotateLeft(value: KInt, bitCount: KInt): KInt = value.rotateLeft(bitCount)
-        override fun rotateRight(value: KInt, bitCount: KInt): KInt = value.rotateRight(bitCount)
 
         override fun isPositive(value: KInt): Boolean = value > 0
         override fun isNegative(value: KInt): Boolean = value < 0
@@ -279,96 +246,43 @@ object TypeTraits {
      * Traits object for the [UInt][KUInt] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object UInt : BitCollection<KUInt>,
-        Addition<KUInt>, Multiplication<KUInt>, Bitwise<KUInt>, BitShift<KUInt>, BitRotate<KUInt> {
-        @OptIn(ExperimentalStdlibApi::class)
-        override fun asBitSequence(value: KUInt): Sequence<Boolean> = sequence {
-            var mask = 1U
-            for (i in 0 ..< KUInt.SIZE_BITS) {
-                yield(value and mask != 0U)
-                mask = mask shl 1
-            }
-        }
-
-        @OptIn(ExperimentalStdlibApi::class)
-        override fun getSetBits(value: KUInt): Set<KInt> = buildSet {
-            var mask = 1U
-            for (i in 0 ..< KUInt.SIZE_BITS) {
-                if (value and mask != 0U) {
-                    add(i)
-                }
-                mask = mask shl 1
-            }
-        }
-
-        override fun countLeadingZeroBits(value: KUInt): KInt = value.countLeadingZeroBits()
-        override fun countTrailingZeroBits(value: KUInt): KInt = value.countTrailingZeroBits()
-
+    object UInt :
+        Sized<KUInt> by UIntSized,
+        IntegralConstants<KUInt> by UIntIntegralConstants,
+        BitStoreConstants<KUInt> by UIntBitStoreConstants,
+        BitsBased<KUInt, KInt> by UIntBitsBased,
+        BitStore<KUInt> by UIntBitStore,
+        StickyRightShift<KUInt> by UIntStickyRightShift,
+        RoundingRightShift<KUInt> by UIntRoundingRightShift,
+        Addition<KUInt>, Multiplication<KUInt>,
+        UIntBitRotate {
         override fun add(lhs: KUInt, rhs: KUInt): KUInt = lhs + rhs
         override fun subtract(lhs: KUInt, rhs: KUInt): KUInt = lhs - rhs
 
         override fun multiply(lhs: KUInt, rhs: KUInt): KUInt = lhs * rhs
         override fun divide(lhs: KUInt, rhs: KUInt): KUInt = lhs / rhs
-
-        override fun and(lhs: KUInt, rhs: KUInt): KUInt = lhs and rhs
-        override fun or(lhs: KUInt, rhs: KUInt): KUInt = lhs or rhs
-        override fun xor(lhs: KUInt, rhs: KUInt): KUInt = lhs xor rhs
-        override fun inv(value: KUInt): KUInt = value.inv()
-
-        override fun leftShift(value: KUInt, bitCount: KInt): KUInt = value shl bitCount
-        override fun rightShift(value: KUInt, bitCount: KInt): KUInt = value shr bitCount
-        override fun arithmeticRightShift(value: KUInt, bitCount: KInt): KUInt = (value.toInt() shr bitCount).toUInt()
-
-        override fun rotateLeft(value: KUInt, bitCount: KInt): KUInt = value.rotateLeft(bitCount)
-        override fun rotateRight(value: KUInt, bitCount: KInt): KUInt = value.rotateRight(bitCount)
     }
 
     /**
      * Traits object for the [Long][KLong] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object Long : BitCollection<KLong>,
-        Addition<KLong>, Multiplication<KLong>, Bitwise<KLong>, BitShift<KLong>, BitRotate<KLong>, Signed<KLong> {
-        @OptIn(ExperimentalStdlibApi::class)
-        override fun asBitSequence(value: KLong): Sequence<Boolean> = sequence {
-            var mask = 1L
-            for (i in 0 ..< KLong.SIZE_BITS) {
-                yield(value and mask != 0L)
-                mask = mask shl 1
-            }
-        }
-
-        @OptIn(ExperimentalStdlibApi::class)
-        override fun getSetBits(value: KLong): Set<KInt> = buildSet {
-            var mask = 1L
-            for (i in 0 ..< KLong.SIZE_BITS) {
-                if (value and mask != 0L) {
-                    add(i)
-                }
-                mask = mask shl 1
-            }
-        }
-
-        override fun countLeadingZeroBits(value: KLong): KInt = value.countLeadingZeroBits()
-        override fun countTrailingZeroBits(value: KLong): KInt = value.countTrailingZeroBits()
-
+    object Long :
+        Sized<KLong> by LongSized,
+        IntegralConstants<KLong> by LongIntegralConstants,
+        BitStoreConstants<KLong> by LongBitStoreConstants,
+        BitsBased<KLong, KLong> by LongBitsBased,
+        BitStore<KLong> by LongBitStore,
+        StickyRightShift<KLong> by LongStickyRightShift,
+        RoundingRightShift<KLong> by LongRoundingRightShift,
+        Addition<KLong>, Multiplication<KLong>,
+        LongBitRotate,
+        Signed<KLong> {
         override fun add(lhs: KLong, rhs: KLong): KLong = lhs + rhs
         override fun subtract(lhs: KLong, rhs: KLong): KLong = lhs - rhs
 
         override fun multiply(lhs: KLong, rhs: KLong): KLong = lhs * rhs
         override fun divide(lhs: KLong, rhs: KLong): KLong = lhs / rhs
-
-        override fun and(lhs: KLong, rhs: KLong): KLong = lhs and rhs
-        override fun or(lhs: KLong, rhs: KLong): KLong = lhs or rhs
-        override fun xor(lhs: KLong, rhs: KLong): KLong = lhs xor rhs
-        override fun inv(value: KLong): KLong = value.inv()
-
-        override fun leftShift(value: KLong, bitCount: KInt): KLong = value shl bitCount
-        override fun rightShift(value: KLong, bitCount: KInt): KLong = value ushr bitCount
-        override fun arithmeticRightShift(value: KLong, bitCount: KInt): KLong = value shr bitCount
-
-        override fun rotateLeft(value: KLong, bitCount: KInt): KLong = value.rotateLeft(bitCount)
-        override fun rotateRight(value: KLong, bitCount: KInt): KLong = value.rotateRight(bitCount)
 
         override fun isPositive(value: KLong): Boolean = value > 0
         override fun isNegative(value: KLong): Boolean = value < 0
@@ -380,52 +294,31 @@ object TypeTraits {
      * Traits object for the [ULong][KULong] type.
      */
     @Suppress("detekt:TooManyFunctions")
-    object ULong : BitCollection<KULong>,
-        Addition<KULong>, Multiplication<KULong>, Bitwise<KULong>, BitShift<KULong>, BitRotate<KULong> {
-        @OptIn(ExperimentalStdlibApi::class)
-        override fun asBitSequence(value: KULong): Sequence<Boolean> = sequence {
-            var mask = 1UL
-            for (i in 0 ..< KULong.SIZE_BITS) {
-                yield(value and mask != 0UL)
-                mask = mask shl 1
-            }
-        }
-
-        @OptIn(ExperimentalStdlibApi::class)
-        override fun getSetBits(value: KULong): Set<KInt> = buildSet {
-            var mask = 1UL
-            for (i in 0 ..< KULong.SIZE_BITS) {
-                if (value and mask != 0UL) {
-                    add(i)
-                }
-                mask = mask shl 1
-            }
-        }
-
-        override fun countLeadingZeroBits(value: KULong): KInt = value.countLeadingZeroBits()
-        override fun countTrailingZeroBits(value: KULong): KInt = value.countTrailingZeroBits()
-
+    object ULong :
+        Sized<KULong> by ULongSized,
+        IntegralConstants<KULong> by ULongIntegralConstants,
+        BitStoreConstants<KULong> by ULongBitStoreConstants,
+        BitsBased<KULong, KLong> by ULongBitsBased,
+        BitStore<KULong> by ULongBitStore,
+        StickyRightShift<KULong> by ULongStickyRightShift,
+        RoundingRightShift<KULong> by ULongRoundingRightShift,
+        Addition<KULong>, Multiplication<KULong>,
+        ULongBitRotate {
         override fun add(lhs: KULong, rhs: KULong): KULong = lhs + rhs
         override fun subtract(lhs: KULong, rhs: KULong): KULong = lhs - rhs
 
         override fun multiply(lhs: KULong, rhs: KULong): KULong = lhs * rhs
         override fun divide(lhs: KULong, rhs: KULong): KULong = lhs / rhs
-
-        override fun and(lhs: KULong, rhs: KULong): KULong = lhs and rhs
-        override fun or(lhs: KULong, rhs: KULong): KULong = lhs or rhs
-        override fun xor(lhs: KULong, rhs: KULong): KULong = lhs xor rhs
-        override fun inv(value: KULong): KULong = value.inv()
-
-        override fun leftShift(value: KULong, bitCount: KInt): KULong = value shl bitCount
-        override fun rightShift(value: KULong, bitCount: KInt): KULong = value shr bitCount
-        override fun arithmeticRightShift(value: KULong, bitCount: KInt): KULong = (value.toLong() shr bitCount).toULong()
-
-        override fun rotateLeft(value: KULong, bitCount: KInt): KULong = value.rotateLeft(bitCount)
-        override fun rotateRight(value: KULong, bitCount: KInt): KULong = value.rotateRight(bitCount)
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object Float: FloatingPoint<KFloat>, Addition<KFloat>, Multiplication<KFloat>, Signed<KFloat> {
+    object Float : AbstractBinary32Traits<KFloat>(FloatSized),
+        BitsBased<KFloat, KInt> by FloatBitsBased,
+        FloatingPoint<KFloat>, Addition<KFloat>, Multiplication<KFloat>, Signed<KFloat> {
+        override val positiveInfinity: KFloat by KFloat.Companion::POSITIVE_INFINITY
+        override val negativeInfinity: KFloat by KFloat.Companion::NEGATIVE_INFINITY
+        override val NaN: KFloat by KFloat.Companion::NaN
+
         override val zero: KFloat = 0.0f
         override val one: KFloat = 1.0f
         override fun isNaN(value: KFloat): Boolean = value.isNaN()
@@ -445,7 +338,13 @@ object TypeTraits {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object Double: FloatingPoint<KDouble>, Addition<KDouble>, Multiplication<KDouble>, Signed<KDouble> {
+    object Double : AbstractBinary64Traits<KDouble>(DoubleSized),
+        BitsBased<KDouble, KLong> by DoubleBitsBased,
+        FloatingPoint<KDouble>, Addition<KDouble>, Multiplication<KDouble>, Signed<KDouble> {
+        override val positiveInfinity: KDouble by KDouble.Companion::POSITIVE_INFINITY
+        override val negativeInfinity: KDouble by KDouble.Companion::NEGATIVE_INFINITY
+        override val NaN: KDouble by KDouble.Companion::NaN
+
         override val zero: KDouble = 0.0
         override val one: KDouble = 1.0
         override fun isNaN(value: KDouble): Boolean = value.isNaN()
@@ -462,5 +361,185 @@ object TypeTraits {
         override fun isNegative(value: KDouble): Boolean = value < 0
         override fun negate(value: KDouble): KDouble = -value
         override fun absoluteValue(value: KDouble): KDouble = value.absoluteValue
+    }
+
+    @Suppress("detekt:TooManyFunctions")
+    object ByteArray : ArrayLike<KByteArray, KByte>, BitShift<KByteArray> by ByteArrayBitShift, ByteArrayBitRotate {
+        override fun create(size: KInt, init: (KInt) -> KByte): KByteArray = KByteArray(size, init)
+        override fun getAt(array: KByteArray, index: KInt): KByte = array[index]
+        override fun getSize(array: KByteArray): KInt = array.size
+
+        override fun any(array: KByteArray, predicate: (KByte) -> Boolean): Boolean = array.any(predicate)
+        override fun all(array: KByteArray, predicate: (KByte) -> Boolean): Boolean = array.all(predicate)
+        override fun none(array: KByteArray, predicate: (KByte) -> Boolean): Boolean = array.none(predicate)
+
+        override fun <R> map(array: KByteArray, transform: (KByte) -> R): List<R> = array.map(transform)
+        override fun <R> mapIndexed(array: KByteArray, transform: (KInt, KByte) -> R): List<R> = array.mapIndexed(transform)
+        override fun <R> flatMap(array: KByteArray, transform: (KByte) -> Iterable<R>): List<R> = array.flatMap(transform)
+        override fun <R> flatMapIndexed(array: KByteArray, transform: (KInt, KByte) -> Iterable<R>): List<R> = array.flatMapIndexed(transform)
+
+        override fun forEach(array: KByteArray, action: (KByte) -> Unit) = array.forEach(action)
+        override fun forEachIndexed(array: KByteArray, action: (KInt, KByte) -> Unit) = array.forEachIndexed(action)
+
+        override fun indexOfFirst(array: KByteArray, predicate: (KByte) -> Boolean): KInt = array.indexOfFirst(predicate)
+        override fun indexOfLast(array: KByteArray, predicate: (KByte) -> Boolean): KInt = array.indexOfLast(predicate)
+    }
+
+    @Suppress("detekt:TooManyFunctions")
+    @OptIn(ExperimentalUnsignedTypes::class)
+    object UByteArray : ArrayLike<KUByteArray, KUByte>, BitShift<KUByteArray> by UByteArrayBitShift, UByteArrayBitRotate {
+        override fun create(size: KInt, init: (KInt) -> KUByte): KUByteArray = KUByteArray(size, init)
+        override fun getAt(array: KUByteArray, index: KInt): KUByte = array[index]
+        override fun getSize(array: KUByteArray): KInt = array.size
+
+        override fun any(array: KUByteArray, predicate: (KUByte) -> Boolean): Boolean = array.any(predicate)
+        override fun all(array: KUByteArray, predicate: (KUByte) -> Boolean): Boolean = array.all(predicate)
+        override fun none(array: KUByteArray, predicate: (KUByte) -> Boolean): Boolean = array.none(predicate)
+
+        override fun <R> map(array: KUByteArray, transform: (KUByte) -> R): List<R> = array.map(transform)
+        override fun <R> mapIndexed(array: KUByteArray, transform: (KInt, KUByte) -> R): List<R> = array.mapIndexed(transform)
+        override fun <R> flatMap(array: KUByteArray, transform: (KUByte) -> Iterable<R>): List<R> = array.flatMap(transform)
+        override fun <R> flatMapIndexed(array: KUByteArray, transform: (KInt, KUByte) -> Iterable<R>): List<R> = array.flatMapIndexed(transform)
+
+        override fun forEach(array: KUByteArray, action: (KUByte) -> Unit) = array.forEach(action)
+        override fun forEachIndexed(array: KUByteArray, action: (KInt, KUByte) -> Unit) = array.forEachIndexed(action)
+
+        override fun indexOfFirst(array: KUByteArray, predicate: (KUByte) -> Boolean): KInt = array.indexOfFirst(predicate)
+        override fun indexOfLast(array: KUByteArray, predicate: (KUByte) -> Boolean): KInt = array.indexOfLast(predicate)
+    }
+
+    @Suppress("detekt:TooManyFunctions")
+    object ShortArray : ArrayLike<KShortArray, KShort>, BitShift<KShortArray> by ShortArrayBitShift, ShortArrayBitRotate {
+        override fun create(size: KInt, init: (KInt) -> KShort): KShortArray = KShortArray(size, init)
+        override fun getAt(array: KShortArray, index: KInt): KShort = array[index]
+        override fun getSize(array: KShortArray): KInt = array.size
+
+        override fun any(array: KShortArray, predicate: (KShort) -> Boolean): Boolean = array.any(predicate)
+        override fun all(array: KShortArray, predicate: (KShort) -> Boolean): Boolean = array.all(predicate)
+        override fun none(array: KShortArray, predicate: (KShort) -> Boolean): Boolean = array.none(predicate)
+
+        override fun <R> map(array: KShortArray, transform: (KShort) -> R): List<R> = array.map(transform)
+        override fun <R> mapIndexed(array: KShortArray, transform: (KInt, KShort) -> R): List<R> = array.mapIndexed(transform)
+        override fun <R> flatMap(array: KShortArray, transform: (KShort) -> Iterable<R>): List<R> = array.flatMap(transform)
+        override fun <R> flatMapIndexed(array: KShortArray, transform: (KInt, KShort) -> Iterable<R>): List<R> = array.flatMapIndexed(transform)
+
+        override fun forEach(array: KShortArray, action: (KShort) -> Unit) = array.forEach(action)
+        override fun forEachIndexed(array: KShortArray, action: (KInt, KShort) -> Unit) = array.forEachIndexed(action)
+
+        override fun indexOfFirst(array: KShortArray, predicate: (KShort) -> Boolean): KInt = array.indexOfFirst(predicate)
+        override fun indexOfLast(array: KShortArray, predicate: (KShort) -> Boolean): KInt = array.indexOfLast(predicate)
+    }
+
+    @Suppress("detekt:TooManyFunctions")
+    @OptIn(ExperimentalUnsignedTypes::class)
+    object UShortArray : ArrayLike<KUShortArray, KUShort>, BitShift<KUShortArray> by UShortArrayBitShift, UShortArrayBitRotate {
+        override fun create(size: KInt, init: (KInt) -> KUShort): KUShortArray = KUShortArray(size, init)
+        override fun getAt(array: KUShortArray, index: KInt): KUShort = array[index]
+        override fun getSize(array: KUShortArray): KInt = array.size
+
+        override fun any(array: KUShortArray, predicate: (KUShort) -> Boolean): Boolean = array.any(predicate)
+        override fun all(array: KUShortArray, predicate: (KUShort) -> Boolean): Boolean = array.all(predicate)
+        override fun none(array: KUShortArray, predicate: (KUShort) -> Boolean): Boolean = array.none(predicate)
+
+        override fun <R> map(array: KUShortArray, transform: (KUShort) -> R): List<R> = array.map(transform)
+        override fun <R> mapIndexed(array: KUShortArray, transform: (KInt, KUShort) -> R): List<R> = array.mapIndexed(transform)
+        override fun <R> flatMap(array: KUShortArray, transform: (KUShort) -> Iterable<R>): List<R> = array.flatMap(transform)
+        override fun <R> flatMapIndexed(array: KUShortArray, transform: (KInt, KUShort) -> Iterable<R>): List<R> = array.flatMapIndexed(transform)
+
+        override fun forEach(array: KUShortArray, action: (KUShort) -> Unit) = array.forEach(action)
+        override fun forEachIndexed(array: KUShortArray, action: (KInt, KUShort) -> Unit) = array.forEachIndexed(action)
+
+        override fun indexOfFirst(array: KUShortArray, predicate: (KUShort) -> Boolean): KInt = array.indexOfFirst(predicate)
+        override fun indexOfLast(array: KUShortArray, predicate: (KUShort) -> Boolean): KInt = array.indexOfLast(predicate)
+    }
+
+    @Suppress("detekt:TooManyFunctions")
+    object IntArray : ArrayLike<KIntArray, KInt>, BitShift<KIntArray> by IntArrayBitShift, IntArrayBitRotate {
+        override fun create(size: KInt, init: (KInt) -> KInt): KIntArray = KIntArray(size, init)
+        override fun getAt(array: KIntArray, index: KInt): KInt = array[index]
+        override fun getSize(array: KIntArray): KInt = array.size
+
+        override fun any(array: KIntArray, predicate: (KInt) -> Boolean): Boolean = array.any(predicate)
+        override fun all(array: KIntArray, predicate: (KInt) -> Boolean): Boolean = array.all(predicate)
+        override fun none(array: KIntArray, predicate: (KInt) -> Boolean): Boolean = array.none(predicate)
+
+        override fun <R> map(array: KIntArray, transform: (KInt) -> R): List<R> = array.map(transform)
+        override fun <R> mapIndexed(array: KIntArray, transform: (KInt, KInt) -> R): List<R> = array.mapIndexed(transform)
+        override fun <R> flatMap(array: KIntArray, transform: (KInt) -> Iterable<R>): List<R> = array.flatMap(transform)
+        override fun <R> flatMapIndexed(array: KIntArray, transform: (KInt, KInt) -> Iterable<R>): List<R> = array.flatMapIndexed(transform)
+
+        override fun forEach(array: KIntArray, action: (KInt) -> Unit) = array.forEach(action)
+        override fun forEachIndexed(array: KIntArray, action: (KInt, KInt) -> Unit) = array.forEachIndexed(action)
+
+        override fun indexOfFirst(array: KIntArray, predicate: (KInt) -> Boolean): KInt = array.indexOfFirst(predicate)
+        override fun indexOfLast(array: KIntArray, predicate: (KInt) -> Boolean): KInt = array.indexOfLast(predicate)
+    }
+
+    @Suppress("detekt:TooManyFunctions")
+    @OptIn(ExperimentalUnsignedTypes::class)
+    object UIntArray : ArrayLike<KUIntArray, KUInt>, BitShift<KUIntArray> by UIntArrayBitShift, UIntArrayBitRotate {
+        override fun create(size: KInt, init: (KInt) -> KUInt): KUIntArray = KUIntArray(size, init)
+        override fun getAt(array: KUIntArray, index: KInt): KUInt = array[index]
+        override fun getSize(array: KUIntArray): KInt = array.size
+
+        override fun any(array: KUIntArray, predicate: (KUInt) -> Boolean): Boolean = array.any(predicate)
+        override fun all(array: KUIntArray, predicate: (KUInt) -> Boolean): Boolean = array.all(predicate)
+        override fun none(array: KUIntArray, predicate: (KUInt) -> Boolean): Boolean = array.none(predicate)
+
+        override fun <R> map(array: KUIntArray, transform: (KUInt) -> R): List<R> = array.map(transform)
+        override fun <R> mapIndexed(array: KUIntArray, transform: (KInt, KUInt) -> R): List<R> = array.mapIndexed(transform)
+        override fun <R> flatMap(array: KUIntArray, transform: (KUInt) -> Iterable<R>): List<R> = array.flatMap(transform)
+        override fun <R> flatMapIndexed(array: KUIntArray, transform: (KInt, KUInt) -> Iterable<R>): List<R> = array.flatMapIndexed(transform)
+
+        override fun forEach(array: KUIntArray, action: (KUInt) -> Unit) = array.forEach(action)
+        override fun forEachIndexed(array: KUIntArray, action: (KInt, KUInt) -> Unit) = array.forEachIndexed(action)
+
+        override fun indexOfFirst(array: KUIntArray, predicate: (KUInt) -> Boolean): KInt = array.indexOfFirst(predicate)
+        override fun indexOfLast(array: KUIntArray, predicate: (KUInt) -> Boolean): KInt = array.indexOfLast(predicate)
+    }
+
+    @Suppress("detekt:TooManyFunctions")
+    object LongArray : ArrayLike<KLongArray, KLong>, BitShift<KLongArray> by LongArrayBitShift, LongArrayBitRotate {
+        override fun create(size: KInt, init: (KInt) -> KLong): KLongArray = KLongArray(size, init)
+        override fun getAt(array: KLongArray, index: KInt): KLong = array[index]
+        override fun getSize(array: KLongArray): KInt = array.size
+
+        override fun any(array: KLongArray, predicate: (KLong) -> Boolean): Boolean = array.any(predicate)
+        override fun all(array: KLongArray, predicate: (KLong) -> Boolean): Boolean = array.all(predicate)
+        override fun none(array: KLongArray, predicate: (KLong) -> Boolean): Boolean = array.none(predicate)
+
+        override fun <R> map(array: KLongArray, transform: (KLong) -> R): List<R> = array.map(transform)
+        override fun <R> mapIndexed(array: KLongArray, transform: (KInt, KLong) -> R): List<R> = array.mapIndexed(transform)
+        override fun <R> flatMap(array: KLongArray, transform: (KLong) -> Iterable<R>): List<R> = array.flatMap(transform)
+        override fun <R> flatMapIndexed(array: KLongArray, transform: (KInt, KLong) -> Iterable<R>): List<R> = array.flatMapIndexed(transform)
+
+        override fun forEach(array: KLongArray, action: (KLong) -> Unit) = array.forEach(action)
+        override fun forEachIndexed(array: KLongArray, action: (KInt, KLong) -> Unit) = array.forEachIndexed(action)
+
+        override fun indexOfFirst(array: KLongArray, predicate: (KLong) -> Boolean): KInt = array.indexOfFirst(predicate)
+        override fun indexOfLast(array: KLongArray, predicate: (KLong) -> Boolean): KInt = array.indexOfLast(predicate)
+    }
+
+    @Suppress("detekt:TooManyFunctions")
+    @OptIn(ExperimentalUnsignedTypes::class)
+    object ULongArray : ArrayLike<KULongArray, KULong>, BitShift<KULongArray> by ULongArrayBitShift, ULongArrayBitRotate {
+        override fun create(size: KInt, init: (KInt) -> KULong): KULongArray = KULongArray(size, init)
+        override fun getAt(array: KULongArray, index: KInt): KULong = array[index]
+        override fun getSize(array: KULongArray): KInt = array.size
+
+        override fun any(array: KULongArray, predicate: (KULong) -> Boolean): Boolean = array.any(predicate)
+        override fun all(array: KULongArray, predicate: (KULong) -> Boolean): Boolean = array.all(predicate)
+        override fun none(array: KULongArray, predicate: (KULong) -> Boolean): Boolean = array.none(predicate)
+
+        override fun <R> map(array: KULongArray, transform: (KULong) -> R): List<R> = array.map(transform)
+        override fun <R> mapIndexed(array: KULongArray, transform: (KInt, KULong) -> R): List<R> = array.mapIndexed(transform)
+        override fun <R> flatMap(array: KULongArray, transform: (KULong) -> Iterable<R>): List<R> = array.flatMap(transform)
+        override fun <R> flatMapIndexed(array: KULongArray, transform: (KInt, KULong) -> Iterable<R>): List<R> = array.flatMapIndexed(transform)
+
+        override fun forEach(array: KULongArray, action: (KULong) -> Unit) = array.forEach(action)
+        override fun forEachIndexed(array: KULongArray, action: (KInt, KULong) -> Unit) = array.forEachIndexed(action)
+
+        override fun indexOfFirst(array: KULongArray, predicate: (KULong) -> Boolean): KInt = array.indexOfFirst(predicate)
+        override fun indexOfLast(array: KULongArray, predicate: (KULong) -> Boolean): KInt = array.indexOfLast(predicate)
     }
 }

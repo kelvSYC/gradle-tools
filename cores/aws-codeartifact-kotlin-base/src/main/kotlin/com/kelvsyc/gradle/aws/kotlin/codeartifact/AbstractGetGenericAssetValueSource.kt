@@ -18,7 +18,7 @@ import org.gradle.api.provider.ValueSourceParameters
  * Subclasses should implement the [doObtain] function, transforming the supplied parameters to an object of the
  * desired type.
  */
-abstract class AbstractGetGenericAssetValueSource<T, P : AbstractGetGenericAssetValueSource.Parameters> : ValueSource<T, P> {
+abstract class AbstractGetGenericAssetValueSource<T : Any, P : AbstractGetGenericAssetValueSource.Parameters> : ValueSource<T, P> {
     /**
      * Base parameters interface for [AbstractGetGenericAssetValueSource]. This contains the data needed to retrieve an
      * asset from a CodeArtifact generic info.

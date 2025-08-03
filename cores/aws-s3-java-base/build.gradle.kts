@@ -26,4 +26,5 @@ dependencies {
     implementation(libs.aws.auth.java)
     implementation(libs.aws.core.java)
     implementation(libs.aws.regions.java)
+    implementation(libs.mockk)
 }

@@ -18,7 +18,7 @@ import software.amazon.awssdk.services.codeartifact.model.PackageFormat
  * Subclasses should implement the [doObtain] function, transforming the supplied parameters to an object of the
  * desired type.
  */
-abstract class AbstractGetGenericAssetValueSource<T, P : AbstractGetGenericAssetValueSource.Parameters> :
+abstract class AbstractGetGenericAssetValueSource<T : Any, P : AbstractGetGenericAssetValueSource.Parameters> :
     ValueSource<T, P> {
     /**
      * Base parameters interface for [AbstractGetGenericAssetValueSource]. This contains the data needed to retrieve an

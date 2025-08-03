@@ -14,7 +14,7 @@ import software.amazon.awssdk.imds.Ec2MetadataClient
  * Subclasses should implement the [doObtain] function, transforming a [Document] object to an object of the desired
  * type.
  */
-abstract class AbstractInstanceIdentityValueSource<T, P : AbstractInstanceIdentityValueSource.Parameters> :
+abstract class AbstractInstanceIdentityValueSource<T : Any, P : AbstractInstanceIdentityValueSource.Parameters> :
     ValueSource<T, P> {
     companion object {
         const val DOCUMENT_REQUEST_PATH = "/latest/dynamic/instance-identity/document"
