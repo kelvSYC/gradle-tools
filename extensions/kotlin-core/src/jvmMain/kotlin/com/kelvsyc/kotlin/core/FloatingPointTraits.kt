@@ -1,5 +1,6 @@
 package com.kelvsyc.kotlin.core
 
+import com.kelvsyc.kotlin.core.traits.FusedMultiplyAdd
 import kotlin.Double as KDouble
 import kotlin.Float as KFloat
 

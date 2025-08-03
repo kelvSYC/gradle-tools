@@ -2,7 +2,7 @@ package com.kelvsyc.kotlin.core.fp
 
 import com.kelvsyc.kotlin.core.Addition
 import com.kelvsyc.kotlin.core.FloatingPoint
-import com.kelvsyc.kotlin.core.FusedMultiplyAdd
+import com.kelvsyc.kotlin.core.traits.FusedMultiplyAdd
 import com.kelvsyc.kotlin.core.Multiplication
 import com.kelvsyc.kotlin.core.Signed
 

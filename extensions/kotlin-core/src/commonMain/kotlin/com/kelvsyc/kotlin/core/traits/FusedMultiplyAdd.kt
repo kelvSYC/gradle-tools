@@ -1,4 +1,4 @@
-package com.kelvsyc.kotlin.core
+package com.kelvsyc.kotlin.core.traits
 
 /**
  * Interface denoting that a floating-point type supports the "fused multiply add" operation. The "fused multiply add"
