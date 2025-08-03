@@ -2,6 +2,7 @@ package com.kelvsyc.kotlin.core
 
 import com.kelvsyc.kotlin.core.traits.BigIntegerBitShift
 import com.kelvsyc.kotlin.core.traits.BigIntegerBitwise
+import com.kelvsyc.kotlin.core.traits.BitCollection
 import com.kelvsyc.kotlin.core.traits.BitSetBitShift
 import com.kelvsyc.kotlin.core.traits.BitSetBitwise
 import com.kelvsyc.kotlin.core.traits.BitShift

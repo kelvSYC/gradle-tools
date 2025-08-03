@@ -1,6 +1,6 @@
 package com.kelvsyc.internal.kotlin.core.traits
 
-import com.kelvsyc.kotlin.core.BitCollection
+import com.kelvsyc.kotlin.core.traits.BitCollection
 
 object ByteBitCollection : BitCollection<Byte> {
     override fun fromBits(bits: IntRange): Byte {

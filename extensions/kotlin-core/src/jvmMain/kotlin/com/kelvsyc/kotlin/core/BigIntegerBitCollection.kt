@@ -1,10 +1,11 @@
 package com.kelvsyc.kotlin.core
 
+import com.kelvsyc.kotlin.core.traits.BitCollection
 import com.kelvsyc.kotlin.core.traits.Sized
 import java.math.BigInteger
 
 /**
- * Implementation of [BitCollection] on a fixed-size bit collection, backed by a [BigInteger] instance.
+ * Implementation of [com.kelvsyc.kotlin.core.traits.BitCollection] on a fixed-size bit collection, backed by a [BigInteger] instance.
  *
  * @param sized Traits object providing size information on the bit collection.
  */

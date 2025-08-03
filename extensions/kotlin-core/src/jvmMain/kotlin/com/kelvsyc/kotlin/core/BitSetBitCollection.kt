@@ -1,11 +1,12 @@
 package com.kelvsyc.kotlin.core
 
+import com.kelvsyc.kotlin.core.traits.BitCollection
 import com.kelvsyc.kotlin.core.traits.Sized
 import java.util.*
 import kotlin.streams.toList
 
 /**
- * Implementation of [BitCollection] on a fixed-size bit collection, baced by a [BitSet] instance.
+ * Implementation of [com.kelvsyc.kotlin.core.traits.BitCollection] on a fixed-size bit collection, baced by a [BitSet] instance.
  *
  * @param sized Traits object providing size information on the bit collection.
  */

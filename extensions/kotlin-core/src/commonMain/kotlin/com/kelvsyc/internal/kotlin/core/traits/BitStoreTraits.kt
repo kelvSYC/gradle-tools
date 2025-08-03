@@ -1,6 +1,6 @@
 package com.kelvsyc.internal.kotlin.core.traits
 
-import com.kelvsyc.kotlin.core.BitCollection
+import com.kelvsyc.kotlin.core.traits.BitCollection
 import com.kelvsyc.kotlin.core.traits.Bitwise
 import com.kelvsyc.kotlin.core.traits.BitShift
 import com.kelvsyc.kotlin.core.traits.BitStore

@@ -1,4 +1,4 @@
-package com.kelvsyc.kotlin.core
+package com.kelvsyc.kotlin.core.traits
 
 /**
  * Interface representing operations on a type with respect to it being a collection of bits.
