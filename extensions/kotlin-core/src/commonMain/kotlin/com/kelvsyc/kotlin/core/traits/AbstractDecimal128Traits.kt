@@ -7,9 +7,9 @@ import com.kelvsyc.internal.kotlin.core.traits.AbstractDecimalFloatingPointTrait
  *
  * @param T The floating-point type.
  */
-abstract class AbstractDecimal128Traits<T>(sized: Sized<T>) :
+abstract class AbstractDecimal128Traits<T>(sized: Sized<T>) : AbstractDecimalFloatingPointTraits<T>(sized),
     Sized<T> by sized,
-    AbstractDecimalFloatingPointTraits<T>(sized) {
+    Decimal128Traits<T> {
     companion object {
         private const val CONTINUATION_WIDTH = 100
     }

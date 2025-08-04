@@ -18,13 +18,11 @@ class DoubleFloat16 private constructor(
         override fun create(high: Float16, low: Float16): DoubleFloat16 = DoubleFloat16(high, low)
     }
 
-    object Addition: AbstractDoubleFloatingPointAddition<Float16, DoubleFloat16>() {
+    object Addition: AbstractDoubleFloatingPointAddition<Float16, DoubleFloat16>(Signed) {
         override val base
             get() = Float16.Traits
         override val traits
             get() = Float16.Traits
-        override val signed
-            get() = Signed
         override val comparator
             get() = Float16.comparator
 

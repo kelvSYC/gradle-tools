@@ -1,6 +1,6 @@
 package com.kelvsyc.kotlin.core
 
-import com.kelvsyc.kotlin.core.traits.AbstractDecimal32Traits
+import com.kelvsyc.kotlin.core.traits.Decimal32Traits
 
 /**
  * Partial implementation of the bit representation of a `decimal32` floating-point value.
@@ -9,7 +9,7 @@ import com.kelvsyc.kotlin.core.traits.AbstractDecimal32Traits
  */
 abstract class AbstractDecimal32Bits<T>(
     protected val bits: Int,
-    protected val traits: AbstractDecimal32Traits<T>
+    protected val traits: Decimal32Traits<T>
 ) : DecimalFloatingPointBits<T, Int> {
     protected enum class Discriminator {
         LOW, HIGH, INFINITE, NAN

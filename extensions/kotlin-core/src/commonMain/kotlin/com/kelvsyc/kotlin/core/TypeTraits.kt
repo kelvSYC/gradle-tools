@@ -15,12 +15,10 @@ import com.kelvsyc.internal.kotlin.core.traits.ByteStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.DoubleAddition
 import com.kelvsyc.internal.kotlin.core.traits.DoubleBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.DoubleSigned
-import com.kelvsyc.internal.kotlin.core.traits.DoubleSized
 import com.kelvsyc.internal.kotlin.core.traits.DoubleTraits
 import com.kelvsyc.internal.kotlin.core.traits.FloatAddition
 import com.kelvsyc.internal.kotlin.core.traits.FloatBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.FloatSigned
-import com.kelvsyc.internal.kotlin.core.traits.FloatSized
 import com.kelvsyc.internal.kotlin.core.traits.FloatTraits
 import com.kelvsyc.internal.kotlin.core.traits.IntAddition
 import com.kelvsyc.internal.kotlin.core.traits.IntArrayBitRotate
@@ -104,11 +102,12 @@ import com.kelvsyc.internal.kotlin.core.traits.UShortSized
 import com.kelvsyc.internal.kotlin.core.traits.UShortStickyRightShift
 import com.kelvsyc.kotlin.core.traits.Addition
 import com.kelvsyc.kotlin.core.traits.ArrayLike
+import com.kelvsyc.kotlin.core.traits.Binary32Traits
+import com.kelvsyc.kotlin.core.traits.Binary64Traits
 import com.kelvsyc.kotlin.core.traits.BitShift
 import com.kelvsyc.kotlin.core.traits.BitStore
 import com.kelvsyc.kotlin.core.traits.BitStoreConstants
 import com.kelvsyc.kotlin.core.traits.BitsBased
-import com.kelvsyc.kotlin.core.traits.FloatingPointTraits
 import com.kelvsyc.kotlin.core.traits.IntegralConstants
 import com.kelvsyc.kotlin.core.traits.RoundingRightShift
 import com.kelvsyc.kotlin.core.traits.Signed
@@ -293,8 +292,7 @@ object TypeTraits {
         override fun divide(lhs: KULong, rhs: KULong): KULong = lhs / rhs
     }
 
-    object Float : FloatingPointTraits<KFloat> by FloatTraits,
-        Sized<KFloat> by FloatSized,
+    object Float : Binary32Traits<KFloat> by FloatTraits,
         BitsBased<KFloat, KInt> by FloatBitsBased,
         Addition<KFloat> by FloatAddition,
         Multiplication<KFloat>,
@@ -303,8 +301,7 @@ object TypeTraits {
         override fun divide(lhs: KFloat, rhs: KFloat): KFloat = lhs / rhs
     }
 
-    object Double : FloatingPointTraits<KDouble> by DoubleTraits,
-        Sized<KDouble> by DoubleSized,
+    object Double : Binary64Traits<KDouble> by DoubleTraits,
         BitsBased<KDouble, KLong> by DoubleBitsBased,
         Addition<KDouble> by DoubleAddition,
         Multiplication<KDouble>,

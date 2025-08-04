@@ -1,6 +1,6 @@
 package com.kelvsyc.kotlin.core
 
-import com.kelvsyc.kotlin.core.traits.AbstractDecimal64Traits
+import com.kelvsyc.kotlin.core.traits.Decimal64Traits
 
 /**
  * Partial implementation of the bit representation of a `decimal64` floating-point value.
@@ -9,7 +9,7 @@ import com.kelvsyc.kotlin.core.traits.AbstractDecimal64Traits
  */
 abstract class AbstractDecimal64Bits<T>(
     protected val bits: Long,
-    protected val traits: AbstractDecimal64Traits<T>
+    protected val traits: Decimal64Traits<T>
 ) : DecimalFloatingPointBits<T, Long> {
     protected enum class Discriminator {
         LOW, HIGH, INFINITE, NAN

@@ -8,9 +8,9 @@ import com.kelvsyc.internal.kotlin.core.traits.Binary16Sized
  *
  * @param T The floating-point type.
  */
-abstract class AbstractBinary16Traits<T>(sized: Sized<T> = Binary16Sized()) :
+abstract class AbstractBinary16Traits<T>(sized: Sized<T> = Binary16Sized()) : AbstractFloatingPointTraits<T>(sized),
     Sized<T> by sized,
-    AbstractFloatingPointTraits<T>(sized) {
+    Binary16Traits<T> {
     companion object {
         private const val MANTISSA_WIDTH = 10
     }

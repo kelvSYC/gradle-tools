@@ -1,8 +1,8 @@
 package com.kelvsyc.kotlin.core.fp
 
 import com.kelvsyc.kotlin.core.DoubleBits
-import com.kelvsyc.kotlin.core.traits.FloatingPoint
 import com.kelvsyc.kotlin.core.TypeTraits
+import com.kelvsyc.kotlin.core.traits.FloatingPoint
 import kotlin.math.absoluteValue
 import com.kelvsyc.kotlin.core.traits.Signed as BaseSigned
 
@@ -33,13 +33,11 @@ class DoubleDouble private constructor(
             DoubleDouble(value.high.absoluteValue, value.low.absoluteValue)
     }
 
-    object Addition : AbstractDoubleFloatingPointAddition<Double, DoubleDouble>() {
+    object Addition : AbstractDoubleFloatingPointAddition<Double, DoubleDouble>(Signed) {
         override val base
             get() = TypeTraits.Double
         override val traits: FloatingPoint<Double>
             get() = TypeTraits.Double
-        override val signed
-            get() = Signed
         override val comparator
             get() = naturalOrder<Double>()
 

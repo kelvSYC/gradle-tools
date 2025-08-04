@@ -1,7 +1,5 @@
 package com.kelvsyc.kotlin.core.traits
 
-import com.kelvsyc.kotlin.core.traits.FloatingPoint
-
 /**
  * Traits relevant to binary floating-point types.
  *

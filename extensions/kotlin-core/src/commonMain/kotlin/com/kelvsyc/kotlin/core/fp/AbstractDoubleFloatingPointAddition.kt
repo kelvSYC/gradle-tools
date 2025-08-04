@@ -1,8 +1,9 @@
 package com.kelvsyc.kotlin.core.fp
 
+import com.kelvsyc.kotlin.core.makePeeking
+import com.kelvsyc.kotlin.core.traits.AbstractSignedAddition
 import com.kelvsyc.kotlin.core.traits.Addition
 import com.kelvsyc.kotlin.core.traits.FloatingPoint
-import com.kelvsyc.kotlin.core.makePeeking
 
 /**
  * Implementation of addition and subtraction operations for doubled floating-point types.
@@ -11,7 +12,9 @@ import com.kelvsyc.kotlin.core.makePeeking
  * @param F The underlying floating-point type
  */
 @Suppress("detekt:TooManyFunctions")
-abstract class AbstractDoubleFloatingPointAddition<F, D : DoubleFloatingPoint<F>> : Addition<D> {
+abstract class AbstractDoubleFloatingPointAddition<F, D : DoubleFloatingPoint<F>>(
+    protected val signed: DoubleFloatingPoint.Signed<F, D>
+) : AbstractSignedAddition<D>(signed) {
     /**
      * Object providing the addition and subtraction operations on the underlying floating-point type.
      */
@@ -26,11 +29,6 @@ abstract class AbstractDoubleFloatingPointAddition<F, D : DoubleFloatingPoint<F>
      * Object comparing two instances of the underlying floating-point type.
      */
     protected abstract val comparator: Comparator<F>
-
-    /**
-     * Object providing signed operations on the doubled floating-point type.
-     */
-    protected abstract val signed: DoubleFloatingPoint.Signed<F, D>
 
     protected abstract fun create(high: F, low: F): D
 
@@ -256,5 +254,4 @@ abstract class AbstractDoubleFloatingPointAddition<F, D : DoubleFloatingPoint<F>
     }
 
     override fun add(lhs: D, rhs: D): D = twoSum(lhs, rhs)
-    override fun subtract(lhs: D, rhs: D): D = twoSum(lhs, signed.negate(rhs))
 }

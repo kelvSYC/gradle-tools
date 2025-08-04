@@ -1,6 +1,6 @@
 package com.kelvsyc.kotlin.core
 
-import com.kelvsyc.kotlin.core.traits.AbstractDecimal32Traits
+import com.kelvsyc.kotlin.core.traits.Decimal32Traits
 
 /**
  * Partial implementation of the bit representation of a `decimal32` floating-point value, where the [significand] is
@@ -11,7 +11,7 @@ import com.kelvsyc.kotlin.core.traits.AbstractDecimal32Traits
  *
  * @param T the floating-point type
  */
-abstract class AbstractDPD32Bits<T>(bits: Int, traits: AbstractDecimal32Traits<T>) : AbstractDecimal32Bits<T>(bits, traits) {
+abstract class AbstractDPD32Bits<T>(bits: Int, traits: Decimal32Traits<T>) : AbstractDecimal32Bits<T>(bits, traits) {
     override val biasedExponent: Int? by lazy {
         // In DPD, the combination field is subdivided into the top five bits and the bottom 6 bits
         // The top five bits contain 3 bits of the significand for low values and 1 bit for high values

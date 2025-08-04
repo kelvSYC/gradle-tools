@@ -8,9 +8,9 @@ import com.kelvsyc.internal.kotlin.core.traits.Binary32Sized
  *
  * @param T The floating-point type.
  */
-abstract class AbstractBinary32Traits<T>(sized: Sized<T> = Binary32Sized()) :
+abstract class AbstractBinary32Traits<T>(sized: Sized<T> = Binary32Sized()) : AbstractFloatingPointTraits<T>(sized),
     Sized<T> by sized,
-    AbstractFloatingPointTraits<T>(sized) {
+    Binary32Traits<T> {
     companion object {
         private const val MANTISSA_WIDTH = 23
     }

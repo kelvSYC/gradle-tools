@@ -1,6 +1,6 @@
 package com.kelvsyc.kotlin.core
 
-import com.kelvsyc.kotlin.core.traits.AbstractDecimal32Traits
+import com.kelvsyc.kotlin.core.traits.Decimal32Traits
 
 /**
  * Partial implementation of the bit representation of a `decimal32` floating-point value, where the [significand] is
@@ -12,7 +12,7 @@ import com.kelvsyc.kotlin.core.traits.AbstractDecimal32Traits
  *
  * @param T the floating-point type
  */
-abstract class AbstractBID32Bits<T>(bits: Int, traits: AbstractDecimal32Traits<T>) : AbstractDecimal32Bits<T>(bits, traits) {
+abstract class AbstractBID32Bits<T>(bits: Int, traits: Decimal32Traits<T>) : AbstractDecimal32Bits<T>(bits, traits) {
     private val lowExponent by bitfield(this::bits, traits.sizeBits - traits.exponentBits - 1, traits.exponentBits)
     private val highExponent by bitfield(this::bits, traits.sizeBits - traits.exponentBits - 3, traits.exponentBits)
 

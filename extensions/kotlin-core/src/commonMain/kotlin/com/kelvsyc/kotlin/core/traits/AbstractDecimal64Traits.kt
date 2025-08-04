@@ -8,9 +8,9 @@ import com.kelvsyc.internal.kotlin.core.traits.Decimal64Sized
  *
  * @param T The floating-point type.
  */
-abstract class AbstractDecimal64Traits<T>(sized: Sized<T> = Decimal64Sized()) :
+abstract class AbstractDecimal64Traits<T>(sized: Sized<T> = Decimal64Sized()) : AbstractDecimalFloatingPointTraits<T>(sized),
     Sized<T> by sized,
-    AbstractDecimalFloatingPointTraits<T>(sized) {
+    Decimal64Traits<T> {
     companion object {
         private const val CONTINUATION_WIDTH = 50
     }

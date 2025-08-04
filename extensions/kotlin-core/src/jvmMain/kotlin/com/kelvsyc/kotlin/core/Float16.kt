@@ -1,12 +1,10 @@
 package com.kelvsyc.kotlin.core
 
-import com.kelvsyc.internal.kotlin.core.traits.Binary16Sized
 import com.kelvsyc.kotlin.core.traits.AbstractBinary16Traits
 import com.kelvsyc.kotlin.core.traits.Addition
+import com.kelvsyc.kotlin.core.traits.Binary16Traits
 import com.kelvsyc.kotlin.core.traits.BitsBased
-import com.kelvsyc.kotlin.core.traits.FloatingPointTraits
 import com.kelvsyc.kotlin.core.traits.Signed
-import com.kelvsyc.kotlin.core.traits.Sized
 
 /**
  * Value representing a 16-bit `binary16` floating-point value.
@@ -33,7 +31,7 @@ value class Float16(val bits: Short): Comparable<Float16> {
         /**
          * Constant representing `0.0`.
          */
-        val zero = Traits.zero
+        val zero by lazy { Traits.zero }
 
         private val wrappedUnaryPlus = converter.wrap(Float::unaryPlus)
         private val wrappedUnaryMinus = converter.wrap(Float::unaryMinus)
@@ -62,8 +60,7 @@ value class Float16(val bits: Short): Comparable<Float16> {
     }
 
     @Suppress("detekt:TooManyFunctions")
-    object Traits : FloatingPointTraits<Float16> by TraitsInternal,
-        Sized<Float16> by Binary16Sized(),
+    object Traits : Binary16Traits<Float16> by TraitsInternal,
         BitsBased<Float16, Short>,
         Addition<Float16> by AdditionInternal,
         Multiplication<Float16>, Signed<Float16> {
