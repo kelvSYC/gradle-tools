@@ -4,6 +4,7 @@ import com.kelvsyc.kotlin.core.traits.AbstractBinary16Traits
 import com.kelvsyc.kotlin.core.traits.Addition
 import com.kelvsyc.kotlin.core.traits.Binary16Traits
 import com.kelvsyc.kotlin.core.traits.BitsBased
+import com.kelvsyc.kotlin.core.traits.Division
 import com.kelvsyc.kotlin.core.traits.Signed
 
 /**
@@ -59,15 +60,20 @@ value class Float16(val bits: Short): Comparable<Float16> {
         override fun subtract(lhs: Float16, rhs: Float16): Float16 = lhs - rhs
     }
 
+    private object DivisionInternal : Division<Float16> {
+        override fun divide(lhs: Float16, rhs: Float16): Float16 = lhs / rhs
+    }
+
     @Suppress("detekt:TooManyFunctions")
     object Traits : Binary16Traits<Float16> by TraitsInternal,
         BitsBased<Float16, Short>,
         Addition<Float16> by AdditionInternal,
-        Multiplication<Float16>, Signed<Float16> {
+        Multiplication<Float16>,
+        Division<Float16> by DivisionInternal,
+        Signed<Float16> {
         override val converter = Converter.of(Float16::bits, ::Float16)
 
         override fun multiply(lhs: Float16, rhs: Float16): Float16 = lhs * rhs
-        override fun divide(lhs: Float16, rhs: Float16): Float16 = lhs / rhs
 
         override fun isPositive(value: Float16): Boolean = value > zero
         override fun isNegative(value: Float16): Boolean = value < zero
