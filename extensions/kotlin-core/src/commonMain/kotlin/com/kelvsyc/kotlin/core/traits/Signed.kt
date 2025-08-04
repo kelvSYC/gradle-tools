@@ -1,4 +1,4 @@
-package com.kelvsyc.kotlin.core
+package com.kelvsyc.kotlin.core.traits
 
 /**
  * Interface denoting that the value type is a signed value type.

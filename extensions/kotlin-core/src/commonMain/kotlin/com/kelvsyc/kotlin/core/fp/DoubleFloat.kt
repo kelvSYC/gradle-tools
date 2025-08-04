@@ -4,7 +4,7 @@ import com.kelvsyc.kotlin.core.FloatBits
 import com.kelvsyc.kotlin.core.traits.FloatingPoint
 import com.kelvsyc.kotlin.core.TypeTraits
 import kotlin.math.absoluteValue
-import com.kelvsyc.kotlin.core.Signed as BaseSigned
+import com.kelvsyc.kotlin.core.traits.Signed as BaseSigned
 
 /**
  * `DoubleFloat` is a "double word" number, extending [Float] by using a second non-overlapping [Float] to extend

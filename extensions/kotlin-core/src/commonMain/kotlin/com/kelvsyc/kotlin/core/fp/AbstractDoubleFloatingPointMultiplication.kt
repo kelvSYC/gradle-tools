@@ -4,7 +4,7 @@ import com.kelvsyc.kotlin.core.Addition
 import com.kelvsyc.kotlin.core.traits.FloatingPoint
 import com.kelvsyc.kotlin.core.traits.FusedMultiplyAdd
 import com.kelvsyc.kotlin.core.Multiplication
-import com.kelvsyc.kotlin.core.Signed
+import com.kelvsyc.kotlin.core.traits.Signed
 
 /**
  * Implementation of multiplication and division operations for doubled floating-point types.

@@ -1,6 +1,6 @@
 package com.kelvsyc.kotlin.core.fp
 
-import com.kelvsyc.kotlin.core.Signed as BaseSigned
+import com.kelvsyc.kotlin.core.traits.Signed as BaseSigned
 
 /**
  * A `DoubleFloatingPoint` is a number that can be expressed as the sum of two floating-point numbers of an established

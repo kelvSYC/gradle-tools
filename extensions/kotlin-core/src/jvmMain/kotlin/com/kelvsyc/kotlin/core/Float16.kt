@@ -4,6 +4,7 @@ import com.kelvsyc.internal.kotlin.core.traits.Binary16Sized
 import com.kelvsyc.kotlin.core.traits.AbstractBinary16Traits
 import com.kelvsyc.kotlin.core.traits.BitsBased
 import com.kelvsyc.kotlin.core.traits.FloatingPointTraits
+import com.kelvsyc.kotlin.core.traits.Signed
 import com.kelvsyc.kotlin.core.traits.Sized
 
 /**

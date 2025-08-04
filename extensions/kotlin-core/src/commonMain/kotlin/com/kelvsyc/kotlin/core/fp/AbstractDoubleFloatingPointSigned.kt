@@ -1,6 +1,6 @@
 package com.kelvsyc.kotlin.core.fp
 
-import com.kelvsyc.kotlin.core.Signed
+import com.kelvsyc.kotlin.core.traits.Signed
 
 /**
  * Implementation of [Signed] for [DoubleFloatingPoint], derived from the implementation of [Signed] used for the

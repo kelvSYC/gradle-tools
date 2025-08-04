@@ -8,12 +8,15 @@ import com.kelvsyc.internal.kotlin.core.traits.ByteBitStoreConstants
 import com.kelvsyc.internal.kotlin.core.traits.ByteBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.ByteIntegralConstants
 import com.kelvsyc.internal.kotlin.core.traits.ByteRoundingRightShift
+import com.kelvsyc.internal.kotlin.core.traits.ByteSigned
 import com.kelvsyc.internal.kotlin.core.traits.ByteSized
 import com.kelvsyc.internal.kotlin.core.traits.ByteStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.DoubleBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.DoubleSigned
 import com.kelvsyc.internal.kotlin.core.traits.DoubleSized
 import com.kelvsyc.internal.kotlin.core.traits.DoubleTraits
 import com.kelvsyc.internal.kotlin.core.traits.FloatBitsBased
+import com.kelvsyc.internal.kotlin.core.traits.FloatSigned
 import com.kelvsyc.internal.kotlin.core.traits.FloatSized
 import com.kelvsyc.internal.kotlin.core.traits.FloatTraits
 import com.kelvsyc.internal.kotlin.core.traits.IntArrayBitRotate
@@ -24,6 +27,7 @@ import com.kelvsyc.internal.kotlin.core.traits.IntBitStoreConstants
 import com.kelvsyc.internal.kotlin.core.traits.IntBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.IntIntegralConstants
 import com.kelvsyc.internal.kotlin.core.traits.IntRoundingRightShift
+import com.kelvsyc.internal.kotlin.core.traits.IntSigned
 import com.kelvsyc.internal.kotlin.core.traits.IntSized
 import com.kelvsyc.internal.kotlin.core.traits.IntStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.LongArrayBitRotate
@@ -34,6 +38,7 @@ import com.kelvsyc.internal.kotlin.core.traits.LongBitStoreConstants
 import com.kelvsyc.internal.kotlin.core.traits.LongBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.LongIntegralConstants
 import com.kelvsyc.internal.kotlin.core.traits.LongRoundingRightShift
+import com.kelvsyc.internal.kotlin.core.traits.LongSigned
 import com.kelvsyc.internal.kotlin.core.traits.LongSized
 import com.kelvsyc.internal.kotlin.core.traits.LongStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.ShortArrayBitRotate
@@ -44,6 +49,7 @@ import com.kelvsyc.internal.kotlin.core.traits.ShortBitStoreConstants
 import com.kelvsyc.internal.kotlin.core.traits.ShortBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.ShortIntegralConstants
 import com.kelvsyc.internal.kotlin.core.traits.ShortRoundingRightShift
+import com.kelvsyc.internal.kotlin.core.traits.ShortSigned
 import com.kelvsyc.internal.kotlin.core.traits.ShortSized
 import com.kelvsyc.internal.kotlin.core.traits.ShortStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.UByteArrayBitRotate
@@ -91,13 +97,12 @@ import com.kelvsyc.kotlin.core.traits.BitShift
 import com.kelvsyc.kotlin.core.traits.BitStore
 import com.kelvsyc.kotlin.core.traits.BitStoreConstants
 import com.kelvsyc.kotlin.core.traits.BitsBased
-import com.kelvsyc.kotlin.core.traits.FloatingPoint
 import com.kelvsyc.kotlin.core.traits.FloatingPointTraits
 import com.kelvsyc.kotlin.core.traits.IntegralConstants
 import com.kelvsyc.kotlin.core.traits.RoundingRightShift
+import com.kelvsyc.kotlin.core.traits.Signed
 import com.kelvsyc.kotlin.core.traits.Sized
 import com.kelvsyc.kotlin.core.traits.StickyRightShift
-import kotlin.math.absoluteValue
 import kotlin.Byte as KByte
 import kotlin.ByteArray as KByteArray
 import kotlin.Double as KDouble
@@ -135,17 +140,12 @@ object TypeTraits {
         RoundingRightShift<KByte> by ByteRoundingRightShift,
         Addition<KByte>, Multiplication<KByte>,
         ByteBitRotate,
-        Signed<KByte> {
+        Signed<KByte> by ByteSigned {
         override fun add(lhs: KByte, rhs: KByte): KByte = (lhs + rhs).toByte()
         override fun subtract(lhs: KByte, rhs: KByte): KByte = (lhs - rhs).toByte()
 
         override fun multiply(lhs: KByte, rhs: KByte): KByte = (lhs * rhs).toByte()
         override fun divide(lhs: KByte, rhs: KByte): KByte = (lhs / rhs).toByte()
-
-        override fun isPositive(value: KByte): Boolean = value > 0
-        override fun isNegative(value: KByte): Boolean = value < 0
-        override fun negate(value: KByte): KByte = (-value).toByte()
-        override fun absoluteValue(value: KByte): KByte = value.toInt().absoluteValue.toByte()
     }
 
     /**
@@ -183,17 +183,12 @@ object TypeTraits {
         RoundingRightShift<KShort> by ShortRoundingRightShift,
         Addition<KShort>, Multiplication<KShort>,
         ShortBitRotate,
-        Signed<KShort> {
+        Signed<KShort> by ShortSigned {
         override fun add(lhs: KShort, rhs: KShort): KShort = (lhs + rhs).toShort()
         override fun subtract(lhs: KShort, rhs: KShort): KShort = (lhs - rhs).toShort()
 
         override fun multiply(lhs: KShort, rhs: KShort): KShort = (lhs * rhs).toShort()
         override fun divide(lhs: KShort, rhs: KShort): KShort = (lhs / rhs).toShort()
-
-        override fun isPositive(value: KShort): Boolean = value > 0
-        override fun isNegative(value: KShort): Boolean = value < 0
-        override fun negate(value: KShort): KShort = (-value).toShort()
-        override fun absoluteValue(value: KShort): KShort = value.toInt().absoluteValue.toShort()
     }
 
     /**
@@ -231,17 +226,12 @@ object TypeTraits {
         RoundingRightShift<KInt> by IntRoundingRightShift,
         Addition<KInt>, Multiplication<KInt>,
         IntBitRotate,
-        Signed<KInt> {
+        Signed<KInt> by IntSigned {
         override fun add(lhs: KInt, rhs: KInt): KInt = lhs + rhs
         override fun subtract(lhs: KInt, rhs: KInt): KInt = lhs - rhs
 
         override fun multiply(lhs: KInt, rhs: KInt): KInt = lhs * rhs
         override fun divide(lhs: KInt, rhs: KInt): KInt = lhs / rhs
-
-        override fun isPositive(value: KInt): Boolean = value > 0
-        override fun isNegative(value: KInt): Boolean = value < 0
-        override fun negate(value: KInt): KInt = -value
-        override fun absoluteValue(value: KInt): KInt = value.absoluteValue
     }
 
     /**
@@ -279,17 +269,12 @@ object TypeTraits {
         RoundingRightShift<KLong> by LongRoundingRightShift,
         Addition<KLong>, Multiplication<KLong>,
         LongBitRotate,
-        Signed<KLong> {
+        Signed<KLong> by LongSigned {
         override fun add(lhs: KLong, rhs: KLong): KLong = lhs + rhs
         override fun subtract(lhs: KLong, rhs: KLong): KLong = lhs - rhs
 
         override fun multiply(lhs: KLong, rhs: KLong): KLong = lhs * rhs
         override fun divide(lhs: KLong, rhs: KLong): KLong = lhs / rhs
-
-        override fun isPositive(value: KLong): Boolean = value > 0
-        override fun isNegative(value: KLong): Boolean = value < 0
-        override fun negate(value: KLong): KLong = -value
-        override fun absoluteValue(value: KLong): KLong = value.absoluteValue
     }
 
     /**
@@ -316,33 +301,25 @@ object TypeTraits {
     object Float : FloatingPointTraits<KFloat> by FloatTraits,
         Sized<KFloat> by FloatSized,
         BitsBased<KFloat, KInt> by FloatBitsBased,
-        Addition<KFloat>, Multiplication<KFloat>, Signed<KFloat> {
+        Addition<KFloat>, Multiplication<KFloat>,
+        Signed<KFloat> by FloatSigned {
         override fun add(lhs: KFloat, rhs: KFloat): KFloat = lhs + rhs
         override fun subtract(lhs: KFloat, rhs: KFloat): KFloat = lhs - rhs
 
         override fun multiply(lhs: KFloat, rhs: KFloat): KFloat = lhs * rhs
         override fun divide(lhs: KFloat, rhs: KFloat): KFloat = lhs / rhs
-
-        override fun isPositive(value: KFloat): Boolean = value > 0
-        override fun isNegative(value: KFloat): Boolean = value < 0
-        override fun negate(value: KFloat): KFloat = -value
-        override fun absoluteValue(value: KFloat): KFloat = value.absoluteValue
     }
 
     object Double : FloatingPointTraits<KDouble> by DoubleTraits,
         Sized<KDouble> by DoubleSized,
         BitsBased<KDouble, KLong> by DoubleBitsBased,
-        FloatingPoint<KDouble>, Addition<KDouble>, Multiplication<KDouble>, Signed<KDouble> {
+        Addition<KDouble>, Multiplication<KDouble>,
+        Signed<KDouble> by DoubleSigned {
         override fun add(lhs: KDouble, rhs: KDouble): KDouble = lhs + rhs
         override fun subtract(lhs: KDouble, rhs: KDouble): KDouble = lhs - rhs
 
         override fun multiply(lhs: KDouble, rhs: KDouble): KDouble = lhs * rhs
         override fun divide(lhs: KDouble, rhs: KDouble): KDouble = lhs / rhs
-
-        override fun isPositive(value: KDouble): Boolean = value > 0
-        override fun isNegative(value: KDouble): Boolean = value < 0
-        override fun negate(value: KDouble): KDouble = -value
-        override fun absoluteValue(value: KDouble): KDouble = value.absoluteValue
     }
 
     @Suppress("detekt:TooManyFunctions")
