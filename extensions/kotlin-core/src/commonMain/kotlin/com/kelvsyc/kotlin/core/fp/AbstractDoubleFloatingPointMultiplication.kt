@@ -1,6 +1,6 @@
 package com.kelvsyc.kotlin.core.fp
 
-import com.kelvsyc.kotlin.core.Multiplication
+import com.kelvsyc.kotlin.core.traits.Multiplication
 import com.kelvsyc.kotlin.core.traits.Addition
 import com.kelvsyc.kotlin.core.traits.Division
 import com.kelvsyc.kotlin.core.traits.FloatingPoint

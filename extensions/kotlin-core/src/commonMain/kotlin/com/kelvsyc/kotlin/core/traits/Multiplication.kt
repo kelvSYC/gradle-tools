@@ -1,4 +1,4 @@
-package com.kelvsyc.kotlin.core
+package com.kelvsyc.kotlin.core.traits
 
 /**
  * Interface representing the multiplication operations on a type.
