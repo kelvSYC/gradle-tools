@@ -2,6 +2,7 @@ package com.kelvsyc.kotlin.core
 
 import com.kelvsyc.internal.kotlin.core.traits.Binary16Sized
 import com.kelvsyc.kotlin.core.traits.AbstractBinary16Traits
+import com.kelvsyc.kotlin.core.traits.Addition
 import com.kelvsyc.kotlin.core.traits.BitsBased
 import com.kelvsyc.kotlin.core.traits.FloatingPointTraits
 import com.kelvsyc.kotlin.core.traits.Signed
@@ -55,15 +56,18 @@ value class Float16(val bits: Short): Comparable<Float16> {
         override fun isInfinite(value: Float16): Boolean = Float16Bits.ofValue(value).isInfinite
     }
 
+    private object AdditionInternal : Addition<Float16> {
+        override fun add(lhs: Float16, rhs: Float16): Float16 = lhs + rhs
+        override fun subtract(lhs: Float16, rhs: Float16): Float16 = lhs - rhs
+    }
+
     @Suppress("detekt:TooManyFunctions")
     object Traits : FloatingPointTraits<Float16> by TraitsInternal,
         Sized<Float16> by Binary16Sized(),
         BitsBased<Float16, Short>,
-        Addition<Float16>, Multiplication<Float16>, Signed<Float16> {
+        Addition<Float16> by AdditionInternal,
+        Multiplication<Float16>, Signed<Float16> {
         override val converter = Converter.of(Float16::bits, ::Float16)
-
-        override fun add(lhs: Float16, rhs: Float16): Float16 = lhs + rhs
-        override fun subtract(lhs: Float16, rhs: Float16): Float16 = lhs - rhs
 
         override fun multiply(lhs: Float16, rhs: Float16): Float16 = lhs * rhs
         override fun divide(lhs: Float16, rhs: Float16): Float16 = lhs / rhs

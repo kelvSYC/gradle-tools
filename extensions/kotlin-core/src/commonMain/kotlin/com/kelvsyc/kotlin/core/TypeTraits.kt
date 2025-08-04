@@ -1,5 +1,6 @@
 package com.kelvsyc.kotlin.core
 
+import com.kelvsyc.internal.kotlin.core.traits.ByteAddition
 import com.kelvsyc.internal.kotlin.core.traits.ByteArrayBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.ByteArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.ByteBitRotate
@@ -11,14 +12,17 @@ import com.kelvsyc.internal.kotlin.core.traits.ByteRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.ByteSigned
 import com.kelvsyc.internal.kotlin.core.traits.ByteSized
 import com.kelvsyc.internal.kotlin.core.traits.ByteStickyRightShift
+import com.kelvsyc.internal.kotlin.core.traits.DoubleAddition
 import com.kelvsyc.internal.kotlin.core.traits.DoubleBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.DoubleSigned
 import com.kelvsyc.internal.kotlin.core.traits.DoubleSized
 import com.kelvsyc.internal.kotlin.core.traits.DoubleTraits
+import com.kelvsyc.internal.kotlin.core.traits.FloatAddition
 import com.kelvsyc.internal.kotlin.core.traits.FloatBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.FloatSigned
 import com.kelvsyc.internal.kotlin.core.traits.FloatSized
 import com.kelvsyc.internal.kotlin.core.traits.FloatTraits
+import com.kelvsyc.internal.kotlin.core.traits.IntAddition
 import com.kelvsyc.internal.kotlin.core.traits.IntArrayBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.IntArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.IntBitRotate
@@ -30,6 +34,7 @@ import com.kelvsyc.internal.kotlin.core.traits.IntRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.IntSigned
 import com.kelvsyc.internal.kotlin.core.traits.IntSized
 import com.kelvsyc.internal.kotlin.core.traits.IntStickyRightShift
+import com.kelvsyc.internal.kotlin.core.traits.LongAddition
 import com.kelvsyc.internal.kotlin.core.traits.LongArrayBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.LongArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.LongBitRotate
@@ -41,6 +46,7 @@ import com.kelvsyc.internal.kotlin.core.traits.LongRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.LongSigned
 import com.kelvsyc.internal.kotlin.core.traits.LongSized
 import com.kelvsyc.internal.kotlin.core.traits.LongStickyRightShift
+import com.kelvsyc.internal.kotlin.core.traits.ShortAddition
 import com.kelvsyc.internal.kotlin.core.traits.ShortArrayBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.ShortArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.ShortBitRotate
@@ -52,6 +58,7 @@ import com.kelvsyc.internal.kotlin.core.traits.ShortRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.ShortSigned
 import com.kelvsyc.internal.kotlin.core.traits.ShortSized
 import com.kelvsyc.internal.kotlin.core.traits.ShortStickyRightShift
+import com.kelvsyc.internal.kotlin.core.traits.UByteAddition
 import com.kelvsyc.internal.kotlin.core.traits.UByteArrayBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.UByteArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.UByteBitRotate
@@ -62,6 +69,7 @@ import com.kelvsyc.internal.kotlin.core.traits.UByteIntegralConstants
 import com.kelvsyc.internal.kotlin.core.traits.UByteRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.UByteSized
 import com.kelvsyc.internal.kotlin.core.traits.UByteStickyRightShift
+import com.kelvsyc.internal.kotlin.core.traits.UIntAddition
 import com.kelvsyc.internal.kotlin.core.traits.UIntArrayBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.UIntArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.UIntBitRotate
@@ -72,6 +80,7 @@ import com.kelvsyc.internal.kotlin.core.traits.UIntIntegralConstants
 import com.kelvsyc.internal.kotlin.core.traits.UIntRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.UIntSized
 import com.kelvsyc.internal.kotlin.core.traits.UIntStickyRightShift
+import com.kelvsyc.internal.kotlin.core.traits.ULongAddition
 import com.kelvsyc.internal.kotlin.core.traits.ULongArrayBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.ULongArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.ULongBitRotate
@@ -82,6 +91,7 @@ import com.kelvsyc.internal.kotlin.core.traits.ULongIntegralConstants
 import com.kelvsyc.internal.kotlin.core.traits.ULongRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.ULongSized
 import com.kelvsyc.internal.kotlin.core.traits.ULongStickyRightShift
+import com.kelvsyc.internal.kotlin.core.traits.UShortAddition
 import com.kelvsyc.internal.kotlin.core.traits.UShortArrayBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.UShortArrayBitShift
 import com.kelvsyc.internal.kotlin.core.traits.UShortBitRotate
@@ -92,6 +102,7 @@ import com.kelvsyc.internal.kotlin.core.traits.UShortIntegralConstants
 import com.kelvsyc.internal.kotlin.core.traits.UShortRoundingRightShift
 import com.kelvsyc.internal.kotlin.core.traits.UShortSized
 import com.kelvsyc.internal.kotlin.core.traits.UShortStickyRightShift
+import com.kelvsyc.kotlin.core.traits.Addition
 import com.kelvsyc.kotlin.core.traits.ArrayLike
 import com.kelvsyc.kotlin.core.traits.BitShift
 import com.kelvsyc.kotlin.core.traits.BitStore
@@ -138,12 +149,10 @@ object TypeTraits {
         BitStore<KByte> by ByteBitStore,
         StickyRightShift<KByte> by ByteStickyRightShift,
         RoundingRightShift<KByte> by ByteRoundingRightShift,
-        Addition<KByte>, Multiplication<KByte>,
+        Addition<KByte> by ByteAddition,
+        Multiplication<KByte>,
         ByteBitRotate,
         Signed<KByte> by ByteSigned {
-        override fun add(lhs: KByte, rhs: KByte): KByte = (lhs + rhs).toByte()
-        override fun subtract(lhs: KByte, rhs: KByte): KByte = (lhs - rhs).toByte()
-
         override fun multiply(lhs: KByte, rhs: KByte): KByte = (lhs * rhs).toByte()
         override fun divide(lhs: KByte, rhs: KByte): KByte = (lhs / rhs).toByte()
     }
@@ -160,11 +169,9 @@ object TypeTraits {
         BitStore<KUByte> by UByteBitStore,
         StickyRightShift<KUByte> by UByteStickyRightShift,
         RoundingRightShift<KUByte> by UByteRoundingRightShift,
-        Addition<KUByte>, Multiplication<KUByte>,
+        Addition<KUByte> by UByteAddition,
+        Multiplication<KUByte>,
         UByteBitRotate {
-        override fun add(lhs: KUByte, rhs: KUByte): KUByte = (lhs + rhs).toUByte()
-        override fun subtract(lhs: KUByte, rhs: KUByte): KUByte = (lhs - rhs).toUByte()
-
         override fun multiply(lhs: KUByte, rhs: KUByte): KUByte = (lhs * rhs).toUByte()
         override fun divide(lhs: KUByte, rhs: KUByte): KUByte = (lhs / rhs).toUByte()
     }
@@ -181,12 +188,10 @@ object TypeTraits {
         BitStore<KShort> by ShortBitStore,
         StickyRightShift<KShort> by ShortStickyRightShift,
         RoundingRightShift<KShort> by ShortRoundingRightShift,
-        Addition<KShort>, Multiplication<KShort>,
+        Addition<KShort> by ShortAddition,
+        Multiplication<KShort>,
         ShortBitRotate,
         Signed<KShort> by ShortSigned {
-        override fun add(lhs: KShort, rhs: KShort): KShort = (lhs + rhs).toShort()
-        override fun subtract(lhs: KShort, rhs: KShort): KShort = (lhs - rhs).toShort()
-
         override fun multiply(lhs: KShort, rhs: KShort): KShort = (lhs * rhs).toShort()
         override fun divide(lhs: KShort, rhs: KShort): KShort = (lhs / rhs).toShort()
     }
@@ -203,11 +208,9 @@ object TypeTraits {
         BitStore<KUShort> by UShortBitStore,
         StickyRightShift<KUShort> by UShortStickyRightShift,
         RoundingRightShift<KUShort> by UShortRoundingRightShift,
-        Addition<KUShort>, Multiplication<KUShort>,
+        Addition<KUShort> by UShortAddition,
+        Multiplication<KUShort>,
         UShortBitRotate {
-        override fun add(lhs: KUShort, rhs: KUShort): KUShort = (lhs + rhs).toUShort()
-        override fun subtract(lhs: KUShort, rhs: KUShort): KUShort = (lhs - rhs).toUShort()
-
         override fun multiply(lhs: KUShort, rhs: KUShort): KUShort = (lhs * rhs).toUShort()
         override fun divide(lhs: KUShort, rhs: KUShort): KUShort = (lhs / rhs).toUShort()
     }
@@ -224,12 +227,10 @@ object TypeTraits {
         BitStore<KInt> by IntBitStore,
         StickyRightShift<KInt> by IntStickyRightShift,
         RoundingRightShift<KInt> by IntRoundingRightShift,
-        Addition<KInt>, Multiplication<KInt>,
+        Addition<KInt> by IntAddition,
+        Multiplication<KInt>,
         IntBitRotate,
         Signed<KInt> by IntSigned {
-        override fun add(lhs: KInt, rhs: KInt): KInt = lhs + rhs
-        override fun subtract(lhs: KInt, rhs: KInt): KInt = lhs - rhs
-
         override fun multiply(lhs: KInt, rhs: KInt): KInt = lhs * rhs
         override fun divide(lhs: KInt, rhs: KInt): KInt = lhs / rhs
     }
@@ -246,11 +247,9 @@ object TypeTraits {
         BitStore<KUInt> by UIntBitStore,
         StickyRightShift<KUInt> by UIntStickyRightShift,
         RoundingRightShift<KUInt> by UIntRoundingRightShift,
-        Addition<KUInt>, Multiplication<KUInt>,
+        Addition<KUInt> by UIntAddition,
+        Multiplication<KUInt>,
         UIntBitRotate {
-        override fun add(lhs: KUInt, rhs: KUInt): KUInt = lhs + rhs
-        override fun subtract(lhs: KUInt, rhs: KUInt): KUInt = lhs - rhs
-
         override fun multiply(lhs: KUInt, rhs: KUInt): KUInt = lhs * rhs
         override fun divide(lhs: KUInt, rhs: KUInt): KUInt = lhs / rhs
     }
@@ -267,12 +266,10 @@ object TypeTraits {
         BitStore<KLong> by LongBitStore,
         StickyRightShift<KLong> by LongStickyRightShift,
         RoundingRightShift<KLong> by LongRoundingRightShift,
-        Addition<KLong>, Multiplication<KLong>,
+        Addition<KLong> by LongAddition,
+        Multiplication<KLong>,
         LongBitRotate,
         Signed<KLong> by LongSigned {
-        override fun add(lhs: KLong, rhs: KLong): KLong = lhs + rhs
-        override fun subtract(lhs: KLong, rhs: KLong): KLong = lhs - rhs
-
         override fun multiply(lhs: KLong, rhs: KLong): KLong = lhs * rhs
         override fun divide(lhs: KLong, rhs: KLong): KLong = lhs / rhs
     }
@@ -289,11 +286,9 @@ object TypeTraits {
         BitStore<KULong> by ULongBitStore,
         StickyRightShift<KULong> by ULongStickyRightShift,
         RoundingRightShift<KULong> by ULongRoundingRightShift,
-        Addition<KULong>, Multiplication<KULong>,
+        Addition<KULong> by ULongAddition,
+        Multiplication<KULong>,
         ULongBitRotate {
-        override fun add(lhs: KULong, rhs: KULong): KULong = lhs + rhs
-        override fun subtract(lhs: KULong, rhs: KULong): KULong = lhs - rhs
-
         override fun multiply(lhs: KULong, rhs: KULong): KULong = lhs * rhs
         override fun divide(lhs: KULong, rhs: KULong): KULong = lhs / rhs
     }
@@ -301,11 +296,9 @@ object TypeTraits {
     object Float : FloatingPointTraits<KFloat> by FloatTraits,
         Sized<KFloat> by FloatSized,
         BitsBased<KFloat, KInt> by FloatBitsBased,
-        Addition<KFloat>, Multiplication<KFloat>,
+        Addition<KFloat> by FloatAddition,
+        Multiplication<KFloat>,
         Signed<KFloat> by FloatSigned {
-        override fun add(lhs: KFloat, rhs: KFloat): KFloat = lhs + rhs
-        override fun subtract(lhs: KFloat, rhs: KFloat): KFloat = lhs - rhs
-
         override fun multiply(lhs: KFloat, rhs: KFloat): KFloat = lhs * rhs
         override fun divide(lhs: KFloat, rhs: KFloat): KFloat = lhs / rhs
     }
@@ -313,11 +306,9 @@ object TypeTraits {
     object Double : FloatingPointTraits<KDouble> by DoubleTraits,
         Sized<KDouble> by DoubleSized,
         BitsBased<KDouble, KLong> by DoubleBitsBased,
-        Addition<KDouble>, Multiplication<KDouble>,
+        Addition<KDouble> by DoubleAddition,
+        Multiplication<KDouble>,
         Signed<KDouble> by DoubleSigned {
-        override fun add(lhs: KDouble, rhs: KDouble): KDouble = lhs + rhs
-        override fun subtract(lhs: KDouble, rhs: KDouble): KDouble = lhs - rhs
-
         override fun multiply(lhs: KDouble, rhs: KDouble): KDouble = lhs * rhs
         override fun divide(lhs: KDouble, rhs: KDouble): KDouble = lhs / rhs
     }
