@@ -2,6 +2,8 @@ package com.kelvsyc.kotlin.core.fp
 
 import com.kelvsyc.kotlin.core.FloatBits
 import com.kelvsyc.kotlin.core.TypeTraits
+import com.kelvsyc.kotlin.core.fp.traits.DoubleFloatingPointDivision
+import com.kelvsyc.kotlin.core.fp.traits.DoubleFloatingPointLongDivision
 import kotlin.math.absoluteValue
 import com.kelvsyc.kotlin.core.traits.Signed as BaseSigned
 
@@ -39,7 +41,7 @@ class DoubleFloat private constructor(
         override fun create(high: Float, low: Float): DoubleFloat = DoubleFloat(high, low)
     }
 
-    object Multiplication : AbstractDoubleFloatingPointMultiplication<Float, DoubleFloat>(TypeTraits.Float, TypeTraits.Float, TypeTraits.Float) {
+    object Multiplication : AbstractDoubleFloatingPointMultiplication<Float, DoubleFloat>(TypeTraits.Float, TypeTraits.Float) {
         override val addition
             get() = Addition
 
@@ -48,6 +50,15 @@ class DoubleFloat private constructor(
         // 2^ceil(Float.PRECISION/2) + 1 = 2^12 + 1
         override val splitPoint: Float = FloatBits(0x45800800).toFloatingPoint()
     }
+
+    object Division : DoubleFloatingPointDivision<Float, DoubleFloat> by DoubleFloatingPointLongDivision(
+        baseTraits = TypeTraits.Float,
+        baseSigned = TypeTraits.Float,
+        baseArithmetic = TypeTraits.Float,
+        addition = Addition,
+        multiplication = Multiplication
+    )
+    // TODO Find a way to support FMA on JVM
 
     override fun toFloatingPoint(): Float = high + low
 
@@ -58,6 +69,6 @@ class DoubleFloat private constructor(
     operator fun minus(rhs: DoubleFloat) = Addition.twoSum(this, -rhs)
     operator fun times(rhs: Float): DoubleFloat = Multiplication.twoProduct(this, rhs)
     operator fun times(rhs: DoubleFloat) = Multiplication.twoProduct(this, rhs)
-    operator fun div(rhs: Float): DoubleFloat = Multiplication.twoDivide(this, rhs)
-    operator fun div(rhs: DoubleFloat): DoubleFloat = Multiplication.twoDivide(this, rhs)
+    operator fun div(rhs: Float): DoubleFloat = Division.divide(this, rhs)
+    operator fun div(rhs: DoubleFloat): DoubleFloat = Division.divide(this, rhs)
 }

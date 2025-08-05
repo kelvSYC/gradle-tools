@@ -19,4 +19,4 @@ operator fun Float.times(rhs: DoubleFloat): DoubleFloat = DoubleFloat.Multiplica
  * Divides this value by the supplied value.
  */
 operator fun Float.div(rhs: DoubleFloat): DoubleFloat =
-    DoubleFloat.Multiplication.twoDivide(DoubleFloat.of(this), rhs)
+    DoubleFloat.Division.divide(DoubleFloat.of(this), rhs)

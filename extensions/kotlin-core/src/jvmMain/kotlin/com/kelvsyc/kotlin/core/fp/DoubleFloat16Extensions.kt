@@ -21,4 +21,4 @@ operator fun Float16.times(rhs: DoubleFloat16): DoubleFloat16 = DoubleFloat16.Mu
  * Divides this value by the supplied value.
  */
 operator fun Float16.div(rhs: DoubleFloat16): DoubleFloat16 =
-    DoubleFloat16.Multiplication.twoDivide(DoubleFloat16.of(this), rhs)
+    DoubleFloat16.Division.divide(DoubleFloat16.of(this), rhs)

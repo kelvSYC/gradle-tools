@@ -2,6 +2,8 @@ package com.kelvsyc.kotlin.core.fp
 
 import com.kelvsyc.kotlin.core.DoubleBits
 import com.kelvsyc.kotlin.core.TypeTraits
+import com.kelvsyc.kotlin.core.fp.traits.DoubleFloatingPointDivision
+import com.kelvsyc.kotlin.core.fp.traits.DoubleFloatingPointLongDivision
 import kotlin.math.absoluteValue
 import com.kelvsyc.kotlin.core.traits.Signed as BaseSigned
 
@@ -39,7 +41,7 @@ class DoubleDouble private constructor(
         override fun create(high: Double, low: Double) = DoubleDouble(high, low)
     }
 
-    object Multiplication: AbstractDoubleFloatingPointMultiplication<Double, DoubleDouble>(TypeTraits.Double, TypeTraits.Double, TypeTraits.Double) {
+    object Multiplication : AbstractDoubleFloatingPointMultiplication<Double, DoubleDouble>(TypeTraits.Double, TypeTraits.Double) {
         override val addition
             get() = Addition
 
@@ -48,6 +50,15 @@ class DoubleDouble private constructor(
         // 2^ceil(Double.PRECISION/2) + 1 == 2^27 + 1
         override val splitPoint: Double = DoubleBits(0x41A0000002000000).toFloatingPoint()
     }
+
+    object Division : DoubleFloatingPointDivision<Double, DoubleDouble> by DoubleFloatingPointLongDivision(
+        baseTraits = TypeTraits.Double,
+        baseSigned = TypeTraits.Double,
+        baseArithmetic = TypeTraits.Double,
+        addition = Addition,
+        multiplication = Multiplication
+    )
+    // TODO Find a way to support FMA on JVM
 
     override fun toFloatingPoint(): Double = high + low
 
@@ -58,6 +69,6 @@ class DoubleDouble private constructor(
     operator fun minus(rhs: DoubleDouble): DoubleDouble = Addition.twoSum(this, -rhs)
     operator fun times(rhs: Double): DoubleDouble = Multiplication.twoProduct(this, rhs)
     operator fun times(rhs: DoubleDouble): DoubleDouble = Multiplication.twoProduct(this, rhs)
-    operator fun div(rhs: Double): DoubleDouble = Multiplication.twoDivide(this, rhs)
-    operator fun div(rhs: DoubleDouble): DoubleDouble = Multiplication.twoDivide(this, rhs)
+    operator fun div(rhs: Double): DoubleDouble = Division.divide(this, rhs)
+    operator fun div(rhs: DoubleDouble): DoubleDouble = Division.divide(this, rhs)
 }

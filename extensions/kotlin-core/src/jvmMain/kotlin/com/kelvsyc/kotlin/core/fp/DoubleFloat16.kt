@@ -2,6 +2,8 @@ package com.kelvsyc.kotlin.core.fp
 
 import com.kelvsyc.kotlin.core.Float16
 import com.kelvsyc.kotlin.core.Float16Bits
+import com.kelvsyc.kotlin.core.fp.traits.DoubleFloatingPointDivision
+import com.kelvsyc.kotlin.core.fp.traits.DoubleFloatingPointLongDivision
 
 /**
  * `DoubleFloat16` is a "double word" number, extending [Float16] by using a second non-overlapping [Float16] to extend
@@ -25,7 +27,7 @@ class DoubleFloat16 private constructor(
         override fun create(high: Float16, low: Float16): DoubleFloat16 = DoubleFloat16(high, low)
     }
 
-    object Multiplication : AbstractDoubleFloatingPointMultiplication<Float16, DoubleFloat16>(Float16.Traits, Float16.Traits, Float16.Traits) {
+    object Multiplication : AbstractDoubleFloatingPointMultiplication<Float16, DoubleFloat16>(Float16.Traits, Float16.Traits) {
         override val addition
             get() = Addition
 
@@ -34,6 +36,15 @@ class DoubleFloat16 private constructor(
         // 2^ceil(AbstractBinary16Bits.PRECISION/2) + 1 == 2^6 + 1
         override val splitPoint: Float16 = Float16Bits.ofBits(0x5410).toFloatingPoint()
     }
+
+    object Division : DoubleFloatingPointDivision<Float16, DoubleFloat16> by DoubleFloatingPointLongDivision(
+        baseTraits = Float16.Traits,
+        baseSigned = Float16.Traits,
+        baseArithmetic = Float16.Traits,
+        addition = Addition,
+        multiplication = Multiplication
+    )
+    // TODO fma using BigDecimalFusedMultiplyAdd
 
     override fun toFloatingPoint(): Float16 = high + low
 
@@ -44,6 +55,6 @@ class DoubleFloat16 private constructor(
     operator fun minus(rhs: DoubleFloat16): DoubleFloat16 = Addition.twoSum(this, -rhs)
     operator fun times(rhs: Float16): DoubleFloat16 = Multiplication.twoProduct(this, rhs)
     operator fun times(rhs: DoubleFloat16): DoubleFloat16 = Multiplication.twoProduct(this, rhs)
-    operator fun div(rhs: Float16): DoubleFloat16 = Multiplication.twoProduct(this, rhs)
-    operator fun div(rhs: DoubleFloat16) = Multiplication.twoProduct(this, rhs)
+    operator fun div(rhs: Float16): DoubleFloat16 = Division.divide(this, rhs)
+    operator fun div(rhs: DoubleFloat16) = Division.divide(this, rhs)
 }

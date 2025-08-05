@@ -1,7 +1,5 @@
 package com.kelvsyc.kotlin.core.fp
 
-import com.kelvsyc.kotlin.core.traits.Division
-import com.kelvsyc.kotlin.core.traits.FloatingPoint
 import com.kelvsyc.kotlin.core.traits.FloatingPointArithmetic
 import com.kelvsyc.kotlin.core.traits.FusedMultiplyAdd
 import com.kelvsyc.kotlin.core.traits.Multiplication
@@ -15,10 +13,9 @@ import com.kelvsyc.kotlin.core.traits.Signed
  */
 @Suppress("detekt:TooManyFunctions")
 abstract class AbstractDoubleFloatingPointMultiplication<F, D : DoubleFloatingPoint<F>>(
-    protected val baseTraits: FloatingPoint<F>,
     protected val baseArithmetic: FloatingPointArithmetic<F>,
     protected val baseSigned: Signed<F>
-) : Multiplication<D>, Division<D> {
+) : Multiplication<D> {
     /**
      * Object providing a fused multiply add operation on the underlying floating-point type.
      *
@@ -172,52 +169,5 @@ abstract class AbstractDoubleFloatingPointMultiplication<F, D : DoubleFloatingPo
         return addition.fastTwoSum(c.high, c3)
     }
 
-    /**
-     * Divides a doubled value by a scalar value.
-     *
-     * The relative error from exact should be, if `u = 0.5 * ulp(1)^2`, at most `3u^2`.
-     */
-    fun twoDivide(a: D, b: F): D {
-        // Division can't ever be exact, and so we are implementing a naive long division algorithm here.
-        val c = baseArithmetic.divide(a.high, b)
-        val p = twoProduct(c, b)
-        val dh = baseArithmetic.subtract(a.high, p.high)
-        val dt = baseArithmetic.subtract(dh, p.low)
-        val d = baseArithmetic.add(dt, a.low)
-        val t = baseArithmetic.divide(d, b)
-        return addition.fastTwoSum(c, t)
-    }
-
-    /**
-     * Divides a doubled value by another doubled value.
-     *
-     * The relative error from exact should be, if `u = 0.5 * ulp(1)^2`, at most `9.8u^2` if FMA is available, and
-     * at most `15u^2 + 56u^3` if FMA is not available. Do note that if FMA is available, this function will use a
-     * slower but more accurate algorithm to obtain the smaller error bound.
-     */
-    fun twoDivide(a: D, b: D): D {
-        // Division can't ever be exact, and so we are implementing a naive long division algorithm here.
-        if (fma != null) {
-            // With FMA, we have a more accurate operation, but uses double the number operations
-            val th = baseArithmetic.divide(baseTraits.one, b.high)
-            val rh = baseArithmetic.subtract(baseTraits.one, baseArithmetic.multiply(b.high, th))
-            val rl = baseSigned.negate(baseArithmetic.multiply(b.low, th))
-            val e = addition.fastTwoSum(rh, rl)
-            val d = twoProduct(e, th)
-            val m = addition.twoSum(d, th)
-            return twoProduct(a, m)
-        } else {
-            // Without FMA, we have an operation that is less accurate, but is faster
-            val c = baseArithmetic.divide(a.high, b.high)
-            val p = twoProduct(b, c)
-            val dh = baseArithmetic.subtract(a.high, p.high)
-            val dt = baseArithmetic.subtract(a.low, p.low)
-            val d = baseArithmetic.add(dh, dt)
-            val t = baseArithmetic.divide(d, b.high)
-            return addition.fastTwoSum(c, t)
-        }
-    }
-
     override fun multiply(lhs: D, rhs: D): D = twoProduct(lhs, rhs)
-    override fun divide(lhs: D, rhs: D): D = twoDivide(lhs, rhs)
 }

@@ -19,4 +19,4 @@ operator fun Double.times(rhs: DoubleDouble): DoubleDouble = DoubleDouble.Multip
  * Divides this value by the supplied value.
  */
 operator fun Double.div(rhs: DoubleDouble): DoubleDouble =
-    DoubleDouble.Multiplication.twoDivide(DoubleDouble.of(this), rhs)
+    DoubleDouble.Division.divide(DoubleDouble.of(this), rhs)
