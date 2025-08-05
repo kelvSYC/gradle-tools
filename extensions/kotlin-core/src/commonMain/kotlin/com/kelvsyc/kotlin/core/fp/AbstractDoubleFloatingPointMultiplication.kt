@@ -15,15 +15,10 @@ import com.kelvsyc.kotlin.core.traits.Signed
  */
 @Suppress("detekt:TooManyFunctions")
 abstract class AbstractDoubleFloatingPointMultiplication<F, D : DoubleFloatingPoint<F>>(
-    protected val baseArithmetic: FloatingPointArithmetic<F>
+    protected val baseTraits: FloatingPoint<F>,
+    protected val baseArithmetic: FloatingPointArithmetic<F>,
+    protected val baseSigned: Signed<F>
 ) : Multiplication<D>, Division<D> {
-    /**
-     * Object providing basic trait information about the underlying floating-point type.
-     */
-    protected abstract val traits: FloatingPoint<F>
-
-    protected abstract val signed: Signed<F>
-
     /**
      * Object providing a fused multiply add operation on the underlying floating-point type.
      *
@@ -67,7 +62,7 @@ abstract class AbstractDoubleFloatingPointMultiplication<F, D : DoubleFloatingPo
         if (fma != null) {
             // If FMA is available, then we can get the necessary prevision pretty easily
             val s = baseArithmetic.multiply(a, b)
-            val e = fma!!.fma(a, b, signed.negate(s))
+            val e = fma!!.fma(a, b, baseSigned.negate(s))
             return create(s, e)
         } else {
             // This is the algorithm used when FMA is not available.
@@ -204,9 +199,9 @@ abstract class AbstractDoubleFloatingPointMultiplication<F, D : DoubleFloatingPo
         // Division can't ever be exact, and so we are implementing a naive long division algorithm here.
         if (fma != null) {
             // With FMA, we have a more accurate operation, but uses double the number operations
-            val th = baseArithmetic.divide(traits.one, b.high)
-            val rh = baseArithmetic.subtract(traits.one, baseArithmetic.multiply(b.high, th))
-            val rl = signed.negate(baseArithmetic.multiply(b.low, th))
+            val th = baseArithmetic.divide(baseTraits.one, b.high)
+            val rh = baseArithmetic.subtract(baseTraits.one, baseArithmetic.multiply(b.high, th))
+            val rl = baseSigned.negate(baseArithmetic.multiply(b.low, th))
             val e = addition.fastTwoSum(rh, rl)
             val d = twoProduct(e, th)
             val m = addition.twoSum(d, th)

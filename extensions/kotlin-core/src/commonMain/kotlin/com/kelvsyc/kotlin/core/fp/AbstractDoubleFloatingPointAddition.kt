@@ -13,15 +13,10 @@ import com.kelvsyc.kotlin.core.traits.FloatingPoint
  */
 @Suppress("detekt:TooManyFunctions")
 abstract class AbstractDoubleFloatingPointAddition<F, D : DoubleFloatingPoint<F>>(
+    protected val baseTraits: FloatingPoint<F>,
     protected val baseAddition: Addition<F>,
     protected val signed: DoubleFloatingPoint.Signed<F, D>
 ) : AbstractSignedAddition<D>(signed) {
-
-    /**
-     * Object providing basic trait information about the underlying floating-point type.
-     */
-    protected abstract val traits: FloatingPoint<F>
-
     /**
      * Object comparing two instances of the underlying floating-point type.
      */
@@ -42,9 +37,9 @@ abstract class AbstractDoubleFloatingPointAddition<F, D : DoubleFloatingPoint<F>
     fun fastTwoSum(a: F, b: F): D {
         // TODO Handle one or both inputs NaN
         val s = baseAddition.add(a, b)
-        if (traits.isInfinite(s)) {
+        if (baseTraits.isInfinite(s)) {
             // If the base sum is infinite, we should go no further
-            return create(s, traits.zero)
+            return create(s, baseTraits.zero)
         }
         val bVirt = baseAddition.subtract(s, a)
         val e = baseAddition.subtract(b, bVirt)
@@ -62,13 +57,13 @@ abstract class AbstractDoubleFloatingPointAddition<F, D : DoubleFloatingPoint<F>
     fun twoSum(a: F, b: F): D {
         // TODO Handle one or both inputs NaN
         val s = baseAddition.add(a, b)
-        if (traits.isInfinite(s)) {
+        if (baseTraits.isInfinite(s)) {
             // If the base sum is infinite, we should go no further
-            return create(s, traits.zero)
+            return create(s, baseTraits.zero)
         }
         val (aVirt, bVirt) = baseAddition.subtract(s, a).let {
             // FIXME Sometimes it is an infinity - have to figure out why
-            if (traits.isInfinite(it)) {
+            if (baseTraits.isInfinite(it)) {
                 baseAddition.subtract(s, b).let { it to baseAddition.subtract(s, it) }
             } else {
                 baseAddition.subtract(s, it) to it
