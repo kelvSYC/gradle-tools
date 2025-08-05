@@ -1,7 +1,7 @@
 package com.kelvsyc.internal.kotlin.core.traits
 
 import com.kelvsyc.kotlin.core.ceilDiv
-import com.kelvsyc.kotlin.core.traits.Division
+import com.kelvsyc.kotlin.core.traits.FloatingPointDivision
 import com.kelvsyc.kotlin.core.traits.IntegerDivision
 
 object ByteDivision : IntegerDivision<Byte> {
@@ -76,10 +76,16 @@ object ULongDivision : IntegerDivision<ULong> {
     override fun mod(lhs: ULong, rhs: ULong): ULong = lhs.mod(rhs)
 }
 
-object FloatDivision : Division<Float> {
+object FloatDivision : FloatingPointDivision<Float> {
     override fun divide(lhs: Float, rhs: Float): Float = lhs / rhs
+
+    override fun rem(lhs: Float, rhs: Float): Float = lhs.rem(rhs)
+    override fun mod(lhs: Float, rhs: Float): Float = lhs.mod(rhs)
 }
 
-object DoubleDivision : Division<Double> {
+object DoubleDivision : FloatingPointDivision<Double> {
     override fun divide(lhs: Double, rhs: Double): Double = lhs / rhs
+
+    override fun rem(lhs: Double, rhs: Double): Double = lhs.rem(rhs)
+    override fun mod(lhs: Double, rhs: Double): Double = lhs.mod(rhs)
 }

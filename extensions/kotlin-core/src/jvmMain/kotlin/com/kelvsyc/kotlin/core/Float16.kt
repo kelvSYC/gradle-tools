@@ -4,7 +4,8 @@ import com.kelvsyc.kotlin.core.traits.AbstractBinary16Traits
 import com.kelvsyc.kotlin.core.traits.Addition
 import com.kelvsyc.kotlin.core.traits.Binary16Traits
 import com.kelvsyc.kotlin.core.traits.BitsBased
-import com.kelvsyc.kotlin.core.traits.Division
+import com.kelvsyc.kotlin.core.traits.FloatingPointArithmetic
+import com.kelvsyc.kotlin.core.traits.FloatingPointDivision
 import com.kelvsyc.kotlin.core.traits.Multiplication
 import com.kelvsyc.kotlin.core.traits.Signed
 
@@ -42,6 +43,7 @@ value class Float16(val bits: Short): Comparable<Float16> {
         private val wrappedTimes = converter.wrap(Float::times)
         private val wrappedDiv = converter.wrap(Float::div)
         private val wrappedRem = converter.wrap(Float::rem)
+        private val wrappedMod = converter.wrap(Float::mod)
     }
 
     private object TraitsInternal : AbstractBinary16Traits<Float16>() {
@@ -65,16 +67,22 @@ value class Float16(val bits: Short): Comparable<Float16> {
         override fun multiply(lhs: Float16, rhs: Float16): Float16 = lhs * rhs
     }
 
-    private object DivisionInternal : Division<Float16> {
+    private object DivisionInternal : FloatingPointDivision<Float16> {
         override fun divide(lhs: Float16, rhs: Float16): Float16 = lhs / rhs
+
+        override fun rem(lhs: Float16, rhs: Float16): Float16 = lhs.rem(rhs)
+        override fun mod(lhs: Float16, rhs: Float16): Float16 = lhs.mod(rhs)
     }
+
+    private object Arithmetic : FloatingPointArithmetic<Float16>,
+        Addition<Float16> by AdditionInternal,
+        Multiplication<Float16> by MultiplicationInternal,
+        FloatingPointDivision<Float16> by DivisionInternal
 
     @Suppress("detekt:TooManyFunctions")
     object Traits : Binary16Traits<Float16> by TraitsInternal,
         BitsBased<Float16, Short>,
-        Addition<Float16> by AdditionInternal,
-        Multiplication<Float16> by MultiplicationInternal,
-        Division<Float16> by DivisionInternal,
+        FloatingPointArithmetic<Float16> by Arithmetic,
         Signed<Float16> {
         override val converter = Converter.of(Float16::bits, ::Float16)
 
@@ -108,6 +116,8 @@ value class Float16(val bits: Short): Comparable<Float16> {
     operator fun times(rhs: Float16): Float16 = Float16(wrappedTimes(bits, rhs.bits))
     operator fun div(rhs: Float16): Float16 = Float16(wrappedDiv(bits, rhs.bits))
     operator fun rem(rhs: Float16): Float16 = Float16(wrappedRem(bits, rhs.bits))
+
+    fun mod(rhs: Float16): Float16 = Float16(wrappedMod(bits, rhs.bits))
 
     override fun compareTo(other: Float16): Int = comparator.compare(this, other)
 }
