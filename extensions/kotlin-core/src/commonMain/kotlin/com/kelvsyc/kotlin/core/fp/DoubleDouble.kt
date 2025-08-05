@@ -42,10 +42,8 @@ class DoubleDouble private constructor(
         override fun create(high: Double, low: Double) = DoubleDouble(high, low)
     }
 
-    object Multiplication: AbstractDoubleFloatingPointMultiplication<Double, DoubleDouble>(TypeTraits.Double, TypeTraits.Double) {
+    object Multiplication: AbstractDoubleFloatingPointMultiplication<Double, DoubleDouble>(TypeTraits.Double) {
         override val traits
-            get() = TypeTraits.Double
-        override val baseMultiplication
             get() = TypeTraits.Double
         override val signed
             get() = TypeTraits.Double

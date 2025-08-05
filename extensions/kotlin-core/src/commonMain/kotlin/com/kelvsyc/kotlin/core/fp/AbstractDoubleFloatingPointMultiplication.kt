@@ -1,8 +1,8 @@
 package com.kelvsyc.kotlin.core.fp
 
-import com.kelvsyc.kotlin.core.traits.Addition
 import com.kelvsyc.kotlin.core.traits.Division
 import com.kelvsyc.kotlin.core.traits.FloatingPoint
+import com.kelvsyc.kotlin.core.traits.FloatingPointArithmetic
 import com.kelvsyc.kotlin.core.traits.FusedMultiplyAdd
 import com.kelvsyc.kotlin.core.traits.Multiplication
 import com.kelvsyc.kotlin.core.traits.Signed
@@ -15,15 +15,13 @@ import com.kelvsyc.kotlin.core.traits.Signed
  */
 @Suppress("detekt:TooManyFunctions")
 abstract class AbstractDoubleFloatingPointMultiplication<F, D : DoubleFloatingPoint<F>>(
-    protected val baseAddition: Addition<F>,
-    protected val baseDivision: Division<F>,
+    protected val baseArithmetic: FloatingPointArithmetic<F>
 ) : Multiplication<D>, Division<D> {
     /**
      * Object providing basic trait information about the underlying floating-point type.
      */
     protected abstract val traits: FloatingPoint<F>
 
-    protected abstract val baseMultiplication: Multiplication<F>
     protected abstract val signed: Signed<F>
 
     /**
@@ -52,10 +50,10 @@ abstract class AbstractDoubleFloatingPointMultiplication<F, D : DoubleFloatingPo
         // This split algorithm can actually be more generic, given that the split point can be anywhere from
         // s = (sizeBits / 2) to (sizeBits - 1), but we only need it to be ceil(sizeBits/2) in practice
         // The split point is defined as 2^s + 1
-        val c = baseMultiplication.multiply(splitPoint, value)
-        val big = baseAddition.subtract(c, value)
-        val high = baseAddition.subtract(c, big)
-        val low = baseAddition.subtract(value, high)
+        val c = baseArithmetic.multiply(splitPoint, value)
+        val big = baseArithmetic.subtract(c, value)
+        val high = baseArithmetic.subtract(c, big)
+        val low = baseArithmetic.subtract(value, high)
         return high to low
     }
 
@@ -68,18 +66,18 @@ abstract class AbstractDoubleFloatingPointMultiplication<F, D : DoubleFloatingPo
     fun twoProduct(a: F, b: F): D {
         if (fma != null) {
             // If FMA is available, then we can get the necessary prevision pretty easily
-            val s = baseMultiplication.multiply(a, b)
+            val s = baseArithmetic.multiply(a, b)
             val e = fma!!.fma(a, b, signed.negate(s))
             return create(s, e)
         } else {
             // This is the algorithm used when FMA is not available.
-            val s = baseMultiplication.multiply(a, b)
+            val s = baseArithmetic.multiply(a, b)
             val (aHigh, aLow) = split(a)
             val (bHigh, bLow) = split(b)
-            val err1 = baseAddition.subtract(s, baseMultiplication.multiply(aHigh, bHigh))
-            val err2 = baseAddition.subtract(err1, baseMultiplication.multiply(aLow, bHigh))
-            val err3 = baseAddition.subtract(err2, baseMultiplication.multiply(aHigh, bLow))
-            val e = baseAddition.subtract(baseMultiplication.multiply(aLow, bLow), err3)
+            val err1 = baseArithmetic.subtract(s, baseArithmetic.multiply(aHigh, bHigh))
+            val err2 = baseArithmetic.subtract(err1, baseArithmetic.multiply(aLow, bHigh))
+            val err3 = baseArithmetic.subtract(err2, baseArithmetic.multiply(aHigh, bLow))
+            val e = baseArithmetic.subtract(baseArithmetic.multiply(aLow, bLow), err3)
             return create(s, e)
         }
     }
@@ -149,9 +147,9 @@ abstract class AbstractDoubleFloatingPointMultiplication<F, D : DoubleFloatingPo
             // This method is slightly faster than unrolling scaleExpansion(listOf(a.low, a.high), b)
             // There's another algorithm that has one last fast2Sum() call but is less accurate.
             val c = twoProduct(a.high, b)
-            val c2 = baseMultiplication.multiply(a.low, b)
+            val c2 = baseArithmetic.multiply(a.low, b)
             val t = addition.fastTwoSum(c.high, c2)
-            val t2 = baseAddition.add(t.low, c.low)
+            val t2 = baseArithmetic.add(t.low, c.low)
             return addition.fastTwoSum(t.high, t2)
         }
     }
@@ -166,16 +164,16 @@ abstract class AbstractDoubleFloatingPointMultiplication<F, D : DoubleFloatingPo
         val c = twoProduct(a.high, b.high)
         val c2 = if (fma != null) {
             // The version with FMA is more accurate in part because we do integrate a.low * b.low in our computation.
-            val t0 = baseMultiplication.multiply(a.low, b.low)
+            val t0 = baseArithmetic.multiply(a.low, b.low)
             val t1 = fma!!.fma(a.high, b.low, t0)
             fma!!.fma(a.low, b.high, t1)
         } else {
             // This multiplication effectively drops a.low * b.low to provide a reasonable approximation.
-            val t1 = baseMultiplication.multiply(a.high, b.low)
-            val t2 = baseMultiplication.multiply(a.low, b.high)
-            baseAddition.add(t1, t2)
+            val t1 = baseArithmetic.multiply(a.high, b.low)
+            val t2 = baseArithmetic.multiply(a.low, b.high)
+            baseArithmetic.add(t1, t2)
         }
-        val c3 = baseAddition.add(c.low, c2)
+        val c3 = baseArithmetic.add(c.low, c2)
         return addition.fastTwoSum(c.high, c3)
     }
 
@@ -186,12 +184,12 @@ abstract class AbstractDoubleFloatingPointMultiplication<F, D : DoubleFloatingPo
      */
     fun twoDivide(a: D, b: F): D {
         // Division can't ever be exact, and so we are implementing a naive long division algorithm here.
-        val c = baseDivision.divide(a.high, b)
+        val c = baseArithmetic.divide(a.high, b)
         val p = twoProduct(c, b)
-        val dh = baseAddition.subtract(a.high, p.high)
-        val dt = baseAddition.subtract(dh, p.low)
-        val d = baseAddition.add(dt, a.low)
-        val t = baseDivision.divide(d, b)
+        val dh = baseArithmetic.subtract(a.high, p.high)
+        val dt = baseArithmetic.subtract(dh, p.low)
+        val d = baseArithmetic.add(dt, a.low)
+        val t = baseArithmetic.divide(d, b)
         return addition.fastTwoSum(c, t)
     }
 
@@ -206,21 +204,21 @@ abstract class AbstractDoubleFloatingPointMultiplication<F, D : DoubleFloatingPo
         // Division can't ever be exact, and so we are implementing a naive long division algorithm here.
         if (fma != null) {
             // With FMA, we have a more accurate operation, but uses double the number operations
-            val th = baseDivision.divide(traits.one, b.high)
-            val rh = baseAddition.subtract(traits.one, baseMultiplication.multiply(b.high, th))
-            val rl = signed.negate(baseMultiplication.multiply(b.low, th))
+            val th = baseArithmetic.divide(traits.one, b.high)
+            val rh = baseArithmetic.subtract(traits.one, baseArithmetic.multiply(b.high, th))
+            val rl = signed.negate(baseArithmetic.multiply(b.low, th))
             val e = addition.fastTwoSum(rh, rl)
             val d = twoProduct(e, th)
             val m = addition.twoSum(d, th)
             return twoProduct(a, m)
         } else {
             // Without FMA, we have an operation that is less accurate, but is faster
-            val c = baseDivision.divide(a.high, b.high)
+            val c = baseArithmetic.divide(a.high, b.high)
             val p = twoProduct(b, c)
-            val dh = baseAddition.subtract(a.high, p.high)
-            val dt = baseAddition.subtract(a.low, p.low)
-            val d = baseAddition.add(dh, dt)
-            val t = baseDivision.divide(d, b.high)
+            val dh = baseArithmetic.subtract(a.high, p.high)
+            val dt = baseArithmetic.subtract(a.low, p.low)
+            val d = baseArithmetic.add(dh, dt)
+            val t = baseArithmetic.divide(d, b.high)
             return addition.fastTwoSum(c, t)
         }
     }

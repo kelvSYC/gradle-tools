@@ -42,10 +42,8 @@ class DoubleFloat private constructor(
         override fun create(high: Float, low: Float): DoubleFloat = DoubleFloat(high, low)
     }
 
-    object Multiplication : AbstractDoubleFloatingPointMultiplication<Float, DoubleFloat>(TypeTraits.Float, TypeTraits.Float) {
+    object Multiplication : AbstractDoubleFloatingPointMultiplication<Float, DoubleFloat>(TypeTraits.Float) {
         override val traits
-            get() = TypeTraits.Float
-        override val baseMultiplication
             get() = TypeTraits.Float
         override val signed
             get() = TypeTraits.Float
