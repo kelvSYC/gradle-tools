@@ -8,7 +8,9 @@ import com.kelvsyc.internal.kotlin.core.traits.Binary16Sized
  *
  * @param T The floating-point type.
  */
-abstract class AbstractBinary16Traits<T>(sized: Sized<T> = Binary16Sized()) : AbstractFloatingPointTraits<T>(sized),
+abstract class AbstractBinary16Traits<T>(signed: Signed<T>, sized: Sized<T> = Binary16Sized()) :
+    AbstractFloatingPointTraits<T>(sized),
+    Signed<T> by signed,
     Sized<T> by sized,
     Binary16Traits<T> {
     companion object {

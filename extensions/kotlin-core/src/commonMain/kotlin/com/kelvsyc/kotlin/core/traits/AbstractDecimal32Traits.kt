@@ -8,7 +8,9 @@ import com.kelvsyc.internal.kotlin.core.traits.Decimal32Sized
  *
  * @param T The floating-point type.
  */
-abstract class AbstractDecimal32Traits<T>(sized: Sized<T> = Decimal32Sized()) : AbstractDecimalFloatingPointTraits<T>(sized),
+abstract class AbstractDecimal32Traits<T>(signed: Signed<T>, sized: Sized<T> = Decimal32Sized()) :
+    AbstractDecimalFloatingPointTraits<T>(sized),
+    Signed<T> by signed,
     Sized<T> by sized,
     Decimal32Traits<T> {
     companion object {

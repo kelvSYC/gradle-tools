@@ -153,7 +153,7 @@ abstract class AbstractDoubleFloatingPointAddition<F, D : DoubleFloatingPoint<F>
             while (ait.hasNext() && bit.hasNext()) {
                 // Add the smaller of the two by magnitude
                 val cmp = comparator.compare(
-                    signed.base.absoluteValue(ait.peek()), signed.base.absoluteValue(bit.peek())
+                    baseTraits.absoluteValue(ait.peek()), baseTraits.absoluteValue(bit.peek())
                 )
                 if (cmp > 0) {
                     add(bit.next())

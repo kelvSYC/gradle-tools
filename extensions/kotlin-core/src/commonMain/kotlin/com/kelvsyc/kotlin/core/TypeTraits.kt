@@ -14,11 +14,9 @@ import com.kelvsyc.internal.kotlin.core.traits.ByteSized
 import com.kelvsyc.internal.kotlin.core.traits.ByteStickyRightShift
 import com.kelvsyc.internal.kotlin.core.traits.DoubleBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.DoubleFloatingPointArithmetic
-import com.kelvsyc.internal.kotlin.core.traits.DoubleSigned
 import com.kelvsyc.internal.kotlin.core.traits.DoubleTraits
 import com.kelvsyc.internal.kotlin.core.traits.FloatBitsBased
 import com.kelvsyc.internal.kotlin.core.traits.FloatFloatingPointArithmetic
-import com.kelvsyc.internal.kotlin.core.traits.FloatSigned
 import com.kelvsyc.internal.kotlin.core.traits.FloatTraits
 import com.kelvsyc.internal.kotlin.core.traits.IntArrayBitRotate
 import com.kelvsyc.internal.kotlin.core.traits.IntArrayBitShift
@@ -258,16 +256,14 @@ object TypeTraits {
      */
     object Float : Binary32Traits<KFloat> by FloatTraits,
         BitsBased<KFloat, KInt> by FloatBitsBased,
-        FloatingPointArithmetic<KFloat> by FloatFloatingPointArithmetic,
-        Signed<KFloat> by FloatSigned
+        FloatingPointArithmetic<KFloat> by FloatFloatingPointArithmetic
 
     /**
      * Traits object for the [Double][KDouble] type.
      */
     object Double : Binary64Traits<KDouble> by DoubleTraits,
         BitsBased<KDouble, KLong> by DoubleBitsBased,
-        FloatingPointArithmetic<KDouble> by DoubleFloatingPointArithmetic,
-        Signed<KDouble> by DoubleSigned
+        FloatingPointArithmetic<KDouble> by DoubleFloatingPointArithmetic
 
     @Suppress("detekt:TooManyFunctions")
     object ByteArray : ArrayLike<KByteArray, KByte>, BitShift<KByteArray> by ByteArrayBitShift, ByteArrayBitRotate {

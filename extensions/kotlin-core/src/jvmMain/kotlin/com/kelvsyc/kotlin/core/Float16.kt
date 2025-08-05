@@ -46,7 +46,14 @@ value class Float16(val bits: Short): Comparable<Float16> {
         private val wrappedMod = converter.wrap(Float::mod)
     }
 
-    private object TraitsInternal : AbstractBinary16Traits<Float16>() {
+    private object SignedInternal : Signed<Float16> {
+        override fun isPositive(value: Float16): Boolean = value > Traits.zero
+        override fun isNegative(value: Float16): Boolean = value < Traits.zero
+        override fun negate(value: Float16): Float16 = -value
+        override fun absoluteValue(value: Float16): Float16 = if (isPositive(value)) value else -value
+    }
+
+    private object TraitsInternal : AbstractBinary16Traits<Float16>(SignedInternal) {
         override val zero: Float16 = Float16(0)
         override val one: Float16 = Float16(0x3C00)
         override val positiveInfinity: Float16 = Float16(0x7C00)
@@ -82,14 +89,8 @@ value class Float16(val bits: Short): Comparable<Float16> {
     @Suppress("detekt:TooManyFunctions")
     object Traits : Binary16Traits<Float16> by TraitsInternal,
         BitsBased<Float16, Short>,
-        FloatingPointArithmetic<Float16> by Arithmetic,
-        Signed<Float16> {
+        FloatingPointArithmetic<Float16> by Arithmetic{
         override val converter = Converter.of(Float16::bits, ::Float16)
-
-        override fun isPositive(value: Float16): Boolean = value > zero
-        override fun isNegative(value: Float16): Boolean = value < zero
-        override fun negate(value: Float16): Float16 = -value
-        override fun absoluteValue(value: Float16): Float16 = if (isPositive(value)) value else -value
     }
 
     /**

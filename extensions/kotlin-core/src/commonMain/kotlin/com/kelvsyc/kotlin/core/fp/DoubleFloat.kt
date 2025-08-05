@@ -53,7 +53,6 @@ class DoubleFloat private constructor(
 
     object Division : DoubleFloatingPointDivision<Float, DoubleFloat> by DoubleFloatingPointLongDivision(
         baseTraits = TypeTraits.Float,
-        baseSigned = TypeTraits.Float,
         baseArithmetic = TypeTraits.Float,
         addition = Addition,
         multiplication = Multiplication

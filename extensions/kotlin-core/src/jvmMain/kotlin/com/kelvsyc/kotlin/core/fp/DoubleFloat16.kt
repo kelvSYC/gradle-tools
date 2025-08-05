@@ -39,7 +39,6 @@ class DoubleFloat16 private constructor(
 
     object Division : DoubleFloatingPointDivision<Float16, DoubleFloat16> by DoubleFloatingPointLongDivision(
         baseTraits = Float16.Traits,
-        baseSigned = Float16.Traits,
         baseArithmetic = Float16.Traits,
         addition = Addition,
         multiplication = Multiplication

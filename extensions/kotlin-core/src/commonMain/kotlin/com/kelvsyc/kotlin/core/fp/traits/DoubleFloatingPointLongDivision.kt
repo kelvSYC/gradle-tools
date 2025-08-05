@@ -6,7 +6,6 @@ import com.kelvsyc.kotlin.core.fp.DoubleFloatingPoint
 import com.kelvsyc.kotlin.core.traits.FloatingPoint
 import com.kelvsyc.kotlin.core.traits.FloatingPointArithmetic
 import com.kelvsyc.kotlin.core.traits.FusedMultiplyAdd
-import com.kelvsyc.kotlin.core.traits.Signed
 
 /**
  * Implementation of [DoubleFloatingPointDivision] based on a naive long division algorithm.
@@ -16,7 +15,6 @@ import com.kelvsyc.kotlin.core.traits.Signed
  */
 class DoubleFloatingPointLongDivision<F, D : DoubleFloatingPoint<F>>(
     private val baseTraits: FloatingPoint<F>,
-    private val baseSigned: Signed<F>,
     private val baseArithmetic: FloatingPointArithmetic<F>,
     private val addition: AbstractDoubleFloatingPointAddition<F, D>, // TODO Replace with interface
     private val multiplication: AbstractDoubleFloatingPointMultiplication<F, D>, // TODO Replace with interface
@@ -49,7 +47,7 @@ class DoubleFloatingPointLongDivision<F, D : DoubleFloatingPoint<F>>(
             // With FMA, we have a more accurate operation, but uses double the number operations
             val th = baseArithmetic.divide(baseTraits.one, rhs.high)
             val rh = baseArithmetic.subtract(baseTraits.one, baseArithmetic.multiply(rhs.high, th))
-            val rl = baseSigned.negate(baseArithmetic.multiply(rhs.low, th))
+            val rl = baseTraits.negate(baseArithmetic.multiply(rhs.low, th))
             val e = addition.fastTwoSum(rh, rl)
             val d = multiplication.twoProduct(e, th)
             val m = addition.twoSum(d, th)

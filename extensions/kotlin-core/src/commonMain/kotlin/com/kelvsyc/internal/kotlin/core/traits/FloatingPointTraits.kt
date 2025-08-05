@@ -3,7 +3,7 @@ package com.kelvsyc.internal.kotlin.core.traits
 import com.kelvsyc.kotlin.core.traits.AbstractBinary32Traits
 import com.kelvsyc.kotlin.core.traits.AbstractBinary64Traits
 
-object FloatTraits : AbstractBinary32Traits<Float>(FloatSized) {
+object FloatTraits : AbstractBinary32Traits<Float>(FloatSigned, FloatSized) {
     override val zero: Float = 0.0f
     override val one: Float = 1.0f
     override val positiveInfinity: Float = Float.POSITIVE_INFINITY
@@ -15,7 +15,7 @@ object FloatTraits : AbstractBinary32Traits<Float>(FloatSized) {
     override fun isInfinite(value: Float): Boolean = value.isInfinite()
 }
 
-object DoubleTraits : AbstractBinary64Traits<Double>(DoubleSized) {
+object DoubleTraits : AbstractBinary64Traits<Double>(DoubleSigned, DoubleSized) {
     override val zero: Double = 0.0
     override val one: Double = 1.0
     override val positiveInfinity: Double = Double.POSITIVE_INFINITY

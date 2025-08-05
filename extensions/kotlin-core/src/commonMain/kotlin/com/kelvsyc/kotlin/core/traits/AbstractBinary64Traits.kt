@@ -8,7 +8,9 @@ import com.kelvsyc.internal.kotlin.core.traits.Binary64Sized
  *
  * @param T The floating-point type.
  */
-abstract class AbstractBinary64Traits<T>(sized: Sized<T> = Binary64Sized()) : AbstractFloatingPointTraits<T>(sized),
+abstract class AbstractBinary64Traits<T>(signed: Signed<T>, sized: Sized<T> = Binary64Sized()) :
+    AbstractFloatingPointTraits<T>(sized),
+    Signed<T> by signed,
     Sized<T> by sized,
     Binary64Traits<T> {
     companion object {

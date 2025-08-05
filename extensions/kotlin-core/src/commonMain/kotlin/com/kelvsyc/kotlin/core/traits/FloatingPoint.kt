@@ -3,7 +3,7 @@ package com.kelvsyc.kotlin.core.traits
 /**
  * Interface denoting that a specific type is a floating-point type.
  */
-interface FloatingPoint<T> {
+interface FloatingPoint<T> : Signed<T> {
     val zero: T
 
     val one: T

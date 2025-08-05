@@ -1,13 +1,16 @@
 package com.kelvsyc.kotlin.core.traits
 
 import com.kelvsyc.internal.kotlin.core.traits.AbstractDecimalFloatingPointTraits
+import com.kelvsyc.internal.kotlin.core.traits.Decimal128Sized
 
 /**
  * Base implementation of a traits object for a `decimal128` floating-point type.
  *
  * @param T The floating-point type.
  */
-abstract class AbstractDecimal128Traits<T>(sized: Sized<T>) : AbstractDecimalFloatingPointTraits<T>(sized),
+abstract class AbstractDecimal128Traits<T>(signed: Signed<T>, sized: Sized<T> = Decimal128Sized()) :
+    AbstractDecimalFloatingPointTraits<T>(sized),
+    Signed<T> by signed,
     Sized<T> by sized,
     Decimal128Traits<T> {
     companion object {
