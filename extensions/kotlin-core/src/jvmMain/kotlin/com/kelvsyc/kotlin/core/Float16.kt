@@ -85,7 +85,7 @@ value class Float16(val bits: Short): Comparable<Float16> {
     }
 
     /**
-     * Creates a new `WideningHalf` from an actual [Float].
+     * Creates a new `Float16` from an actual [Float].
      *
      * Note that this is considered a narrowing operation, and thus the created value is the closest value to the given
      * value given the nearest even rounding mode.

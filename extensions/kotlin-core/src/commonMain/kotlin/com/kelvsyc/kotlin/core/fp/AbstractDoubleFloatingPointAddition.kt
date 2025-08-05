@@ -13,12 +13,9 @@ import com.kelvsyc.kotlin.core.traits.FloatingPoint
  */
 @Suppress("detekt:TooManyFunctions")
 abstract class AbstractDoubleFloatingPointAddition<F, D : DoubleFloatingPoint<F>>(
+    protected val baseAddition: Addition<F>,
     protected val signed: DoubleFloatingPoint.Signed<F, D>
 ) : AbstractSignedAddition<D>(signed) {
-    /**
-     * Object providing the addition and subtraction operations on the underlying floating-point type.
-     */
-    protected abstract val base: Addition<F>
 
     /**
      * Object providing basic trait information about the underlying floating-point type.
@@ -44,13 +41,13 @@ abstract class AbstractDoubleFloatingPointAddition<F, D : DoubleFloatingPoint<F>
      */
     fun fastTwoSum(a: F, b: F): D {
         // TODO Handle one or both inputs NaN
-        val s = base.add(a, b)
+        val s = baseAddition.add(a, b)
         if (traits.isInfinite(s)) {
             // If the base sum is infinite, we should go no further
             return create(s, traits.zero)
         }
-        val bVirt = base.subtract(s, a)
-        val e = base.subtract(b, bVirt)
+        val bVirt = baseAddition.subtract(s, a)
+        val e = baseAddition.subtract(b, bVirt)
         return create(s, e)
     }
 
@@ -64,22 +61,22 @@ abstract class AbstractDoubleFloatingPointAddition<F, D : DoubleFloatingPoint<F>
      */
     fun twoSum(a: F, b: F): D {
         // TODO Handle one or both inputs NaN
-        val s = base.add(a, b)
+        val s = baseAddition.add(a, b)
         if (traits.isInfinite(s)) {
             // If the base sum is infinite, we should go no further
             return create(s, traits.zero)
         }
-        val (aVirt, bVirt) = base.subtract(s, a).let {
+        val (aVirt, bVirt) = baseAddition.subtract(s, a).let {
             // FIXME Sometimes it is an infinity - have to figure out why
             if (traits.isInfinite(it)) {
-                base.subtract(s, b).let { it to base.subtract(s, it) }
+                baseAddition.subtract(s, b).let { it to baseAddition.subtract(s, it) }
             } else {
-                base.subtract(s, it) to it
+                baseAddition.subtract(s, it) to it
             }
         }
-        val aRound = base.subtract(a, aVirt)
-        val bRound = base.subtract(b, bVirt)
-        val e = base.add(aRound, bRound)
+        val aRound = baseAddition.subtract(a, aVirt)
+        val bRound = baseAddition.subtract(b, bVirt)
+        val e = baseAddition.add(aRound, bRound)
         return create(s, e)
     }
 
@@ -203,7 +200,7 @@ abstract class AbstractDoubleFloatingPointAddition<F, D : DoubleFloatingPoint<F>
         // This addition introduces error due to dropping that last element
         val t0 = fastTwoSum(s1.low, s0.low)
         val t1 = fastTwoSum(s1.high, t0.high)
-        return fastTwoSum(t1.high, base.add(t1.low, t0.low))
+        return fastTwoSum(t1.high, baseAddition.add(t1.low, t0.low))
     }
 
     /**
@@ -225,7 +222,7 @@ abstract class AbstractDoubleFloatingPointAddition<F, D : DoubleFloatingPoint<F>
         val t1 = fastTwoSum(t0.low, s0.low)
         val t2 = fastTwoSum(t0.high, t1.high)
         val t3 = fastTwoSum(s2.high, t2.high)
-        return fastTwoSum(t3.high, base.add(base.add(t1.low, t2.low), t3.low))
+        return fastTwoSum(t3.high, baseAddition.add(baseAddition.add(t1.low, t2.low), t3.low))
     }
 
     /**

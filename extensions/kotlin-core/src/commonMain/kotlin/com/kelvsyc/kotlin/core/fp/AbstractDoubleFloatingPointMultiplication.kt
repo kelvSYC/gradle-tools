@@ -1,10 +1,10 @@
 package com.kelvsyc.kotlin.core.fp
 
-import com.kelvsyc.kotlin.core.traits.Multiplication
 import com.kelvsyc.kotlin.core.traits.Addition
 import com.kelvsyc.kotlin.core.traits.Division
 import com.kelvsyc.kotlin.core.traits.FloatingPoint
 import com.kelvsyc.kotlin.core.traits.FusedMultiplyAdd
+import com.kelvsyc.kotlin.core.traits.Multiplication
 import com.kelvsyc.kotlin.core.traits.Signed
 
 /**
@@ -15,6 +15,7 @@ import com.kelvsyc.kotlin.core.traits.Signed
  */
 @Suppress("detekt:TooManyFunctions")
 abstract class AbstractDoubleFloatingPointMultiplication<F, D : DoubleFloatingPoint<F>>(
+    protected val baseAddition: Addition<F>,
     protected val baseDivision: Division<F>,
 ) : Multiplication<D>, Division<D> {
     /**
@@ -22,7 +23,6 @@ abstract class AbstractDoubleFloatingPointMultiplication<F, D : DoubleFloatingPo
      */
     protected abstract val traits: FloatingPoint<F>
 
-    protected abstract val baseAddition: Addition<F>
     protected abstract val baseMultiplication: Multiplication<F>
     protected abstract val signed: Signed<F>
 

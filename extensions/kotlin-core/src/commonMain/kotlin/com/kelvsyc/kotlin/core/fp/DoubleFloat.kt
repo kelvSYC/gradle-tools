@@ -33,9 +33,7 @@ class DoubleFloat private constructor(
             DoubleFloat(value.high.absoluteValue, value.low.absoluteValue)
     }
 
-    object Addition : AbstractDoubleFloatingPointAddition<Float, DoubleFloat>(Signed) {
-        override val base
-            get() = TypeTraits.Float
+    object Addition : AbstractDoubleFloatingPointAddition<Float, DoubleFloat>(TypeTraits.Float, Signed) {
         override val traits: FloatingPoint<Float>
             get() = TypeTraits.Float
         override val comparator
@@ -44,10 +42,8 @@ class DoubleFloat private constructor(
         override fun create(high: Float, low: Float): DoubleFloat = DoubleFloat(high, low)
     }
 
-    object Multiplication : AbstractDoubleFloatingPointMultiplication<Float, DoubleFloat>(TypeTraits.Float) {
+    object Multiplication : AbstractDoubleFloatingPointMultiplication<Float, DoubleFloat>(TypeTraits.Float, TypeTraits.Float) {
         override val traits
-            get() = TypeTraits.Float
-        override val baseAddition
             get() = TypeTraits.Float
         override val baseMultiplication
             get() = TypeTraits.Float
