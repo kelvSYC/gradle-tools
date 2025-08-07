@@ -10,15 +10,10 @@ import com.kelvsyc.kotlin.core.traits.Binary16Traits
 abstract class AbstractBinary16Bits<T>(
     bits: Short,
     override val traits: Binary16Traits<T>
-) : AbstractFloatingPointBits<T, Short>(bits, traits) {
+) : AbstractFloatingPointBits<T, Short>(bits, traits, TypeTraits.Short) {
     override val signBit by flag(this::bits, traits.sizeBits - 1)
     override val biasedExponent by bitfield(this::bits, traits.mantissaWidth, traits.exponentWidth, TypeTraits.Short, Short::toInt)
     override val mantissa by bitfield(this::bits, 0, traits.mantissaWidth)
-
-    override val isZero by lazy { biasedExponent == 0 && mantissa.toInt() == 0 }
-    override val isSubnormal by lazy { biasedExponent == 0 && mantissa.toInt() != 0 }
-    override val isInfinite by lazy { biasedExponent == (1 shl traits.exponentWidth) - 1 && mantissa.toInt() == 0 }
-    override val isNaN by lazy { biasedExponent == (1 shl traits.exponentWidth) - 1 && mantissa.toInt() != 0 }
 
     override val significand by lazy {
         if (isNormal) {

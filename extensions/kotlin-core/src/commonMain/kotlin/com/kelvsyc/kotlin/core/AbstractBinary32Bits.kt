@@ -10,15 +10,10 @@ import com.kelvsyc.kotlin.core.traits.Binary32Traits
 abstract class AbstractBinary32Bits<T>(
     bits: Int,
     override val traits: Binary32Traits<T>
-) : AbstractFloatingPointBits<T, Int>(bits, traits) {
+) : AbstractFloatingPointBits<T, Int>(bits, traits, TypeTraits.Int) {
     override val signBit by flag(this::bits, traits.sizeBits - 1)
     override val biasedExponent by bitfield(this::bits, traits.mantissaWidth, traits.exponentWidth)
     override val mantissa by bitfield(this::bits, 0, traits.mantissaWidth)
-
-    override val isZero by lazy { biasedExponent == 0 && mantissa == 0 }
-    override val isSubnormal by lazy { biasedExponent == 0 && mantissa != 0 }
-    override val isInfinite by lazy { biasedExponent == (1 shl traits.exponentWidth) - 1 && mantissa == 0 }
-    override val isNaN by lazy { biasedExponent == (1 shl traits.exponentWidth) - 1 && mantissa != 0 }
 
     override val significand by lazy {
         if (isNormal) {
