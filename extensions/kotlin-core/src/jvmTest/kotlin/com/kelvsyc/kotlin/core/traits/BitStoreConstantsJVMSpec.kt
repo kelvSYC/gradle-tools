@@ -15,7 +15,7 @@ import java.util.*
 class BitStoreConstantsJVMSpec : FunSpec() {
     init {
         context("BigInteger") {
-            val sized = object : Sized<BigInteger> {
+            val sized = object : Sized {
                 override val sizeBits: Int = Int.SIZE_BITS
             }
             val traits = BigIntegerBitStoreConstants(sized)
@@ -32,7 +32,7 @@ class BitStoreConstantsJVMSpec : FunSpec() {
         }
 
         context("BitSet") {
-            val sized = object : Sized<BitSet> {
+            val sized = object : Sized {
                 override val sizeBits: Int = Int.SIZE_BITS
             }
             val traits = BitSetBitStoreConstants(sized)

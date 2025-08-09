@@ -11,7 +11,7 @@ import kotlin.streams.asSequence
  *
  * @param sized Traits object providing size information on the bit collection.
  */
-class BitSetBitRotate(private val sized: Sized<BitSet>) : BitRotate<BitSet> {
+class BitSetBitRotate(private val sized: Sized) : BitRotate<BitSet> {
     override fun rotateLeft(value: BitSet, bitCount: Int): BitSet {
         val setBits = value.stream().asSequence()
 

@@ -8,5 +8,5 @@ import java.math.BigInteger
  *
  * @param sized Traits object providing size information on the bit collection.
  */
-class BigIntegerBitRotate(sized: Sized<BigInteger>) :
+class BigIntegerBitRotate(sized: Sized) :
     BitRotate<BigInteger> by SyntheticBitRotate<BigInteger>(sized,BigIntegerBitShift(sized), BigIntegerBitwise(sized))

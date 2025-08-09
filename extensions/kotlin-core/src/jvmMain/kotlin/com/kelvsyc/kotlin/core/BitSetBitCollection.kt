@@ -10,7 +10,7 @@ import kotlin.streams.toList
  *
  * @param sized Traits object providing size information on the bit collection.
  */
-class BitSetBitCollection(private val sized: Sized<BitSet>) : BitCollection<BitSet> {
+class BitSetBitCollection(private val sized: Sized) : BitCollection<BitSet> {
     override fun fromBits(bits: IntRange): BitSet {
         require(bits.start >= 0 && bits.endInclusive < sized.sizeBits) { "Bit collection contains values out of range" }
 

@@ -11,7 +11,7 @@ import java.util.*
  *
  * @param sized Traits object providing size information on the bit collection.
  */
-class BitSetArithmeticRightShift(private val sized: Sized<BitSet>) : ArithmeticRightShift<BitSet> {
+class BitSetArithmeticRightShift(private val sized: Sized) : ArithmeticRightShift<BitSet> {
     @OptIn(ExperimentalStdlibApi::class)
     override fun arithmeticRightShift(value: BitSet, bitCount: Int): BitSet = BitSet(sized.sizeBits).also {
         val signed = value[sized.sizeBits - 1]

@@ -15,7 +15,7 @@ import kotlin.math.min
  * implementation of last resort.
  */
 class BinaryGCD<T>(
-    private val sized: Sized<T>,
+    private val sized: Sized,
     private val constants: IntegralConstants<T>,
     private val arithmetic: IntegerArithmetic<T>,
     private val bitStore: BitStore<T>,

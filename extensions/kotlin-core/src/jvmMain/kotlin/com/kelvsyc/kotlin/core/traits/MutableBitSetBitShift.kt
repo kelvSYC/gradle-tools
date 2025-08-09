@@ -10,7 +10,7 @@ import java.util.*
  *
  * @param sized Traits object providing size information on the bit collection.
  */
-class MutableBitSetBitShift(private val sized: Sized<BitSet>) : BitShift<BitSet>,
+class MutableBitSetBitShift(private val sized: Sized) : BitShift<BitSet>,
     LeftShift<BitSet> by MutableBitSetLeftShift(sized),
     RightShift<BitSet> by MutableBitSetRightShift(sized),
     ArithmeticRightShift<BitSet> by MutableBitSetArithmeticRightShift(sized)

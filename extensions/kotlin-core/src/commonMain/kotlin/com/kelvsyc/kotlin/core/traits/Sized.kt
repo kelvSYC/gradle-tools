@@ -3,7 +3,7 @@ package com.kelvsyc.kotlin.core.traits
 /**
  * Traits denoting that a type has a fixed size in terms of number of bits.
  */
-interface Sized<T> {
+interface Sized {
     /**
      * The number of bits the type takes up.
      */

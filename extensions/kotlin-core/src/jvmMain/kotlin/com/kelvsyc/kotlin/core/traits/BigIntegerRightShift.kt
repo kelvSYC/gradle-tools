@@ -7,7 +7,7 @@ import java.math.BigInteger
  *
  * @param sized Traits object providing size information on the bit collection.
  */
-class BigIntegerRightShift(private val sized: Sized<BigInteger>) : RightShift<BigInteger> {
+class BigIntegerRightShift(private val sized: Sized) : RightShift<BigInteger> {
     private val mask by lazy {
         // masking is required in case the converter returns a large negative integer.
         (BigInteger.ONE shl sized.sizeBits) - BigInteger.ONE

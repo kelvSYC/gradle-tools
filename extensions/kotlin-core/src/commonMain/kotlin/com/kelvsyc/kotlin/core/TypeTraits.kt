@@ -139,7 +139,7 @@ object TypeTraits {
      * Traits object for the [Byte][KByte] type.
      */
     object Byte :
-        Sized<KByte> by ByteSized,
+        Sized by ByteSized,
         IntegralConstants<KByte> by ByteIntegralConstants,
         BitStoreConstants<KByte> by ByteBitStoreConstants,
         BitsBased<KByte, KByte> by ByteBitsBased,
@@ -154,7 +154,7 @@ object TypeTraits {
      * Traits object for the [UByte][KUByte] type.
      */
     object UByte :
-        Sized<KUByte> by UByteSized,
+        Sized by UByteSized,
         IntegralConstants<KUByte> by UByteIntegralConstants,
         BitStoreConstants<KUByte> by UByteBitStoreConstants,
         BitsBased<KUByte, KByte> by UByteBitsBased,
@@ -168,7 +168,7 @@ object TypeTraits {
      * Traits object for the [Short][KShort] type.
      */
     object Short :
-        Sized<KShort> by ShortSized,
+        Sized by ShortSized,
         IntegralConstants<KShort> by ShortIntegralConstants,
         BitStoreConstants<KShort> by ShortBitStoreConstants,
         BitsBased<KShort, KShort> by ShortBitsBased,
@@ -183,7 +183,7 @@ object TypeTraits {
      * Traits object for the [UShort][KUShort] type.
      */
     object UShort :
-        Sized<KUShort> by UShortSized,
+        Sized by UShortSized,
         IntegralConstants<KUShort> by UShortIntegralConstants,
         BitStoreConstants<KUShort> by UShortBitStoreConstants,
         BitsBased<KUShort, KShort> by UShortBitsBased,
@@ -197,7 +197,7 @@ object TypeTraits {
      * Traits object for the [Int][KInt] type.
      */
     object Int :
-        Sized<KInt> by IntSized,
+        Sized by IntSized,
         IntegralConstants<KInt> by IntIntegralConstants,
         BitStoreConstants<KInt> by IntBitStoreConstants,
         BitsBased<KInt, KInt> by IntBitsBased,
@@ -212,7 +212,7 @@ object TypeTraits {
      * Traits object for the [UInt][KUInt] type.
      */
     object UInt :
-        Sized<KUInt> by UIntSized,
+        Sized by UIntSized,
         IntegralConstants<KUInt> by UIntIntegralConstants,
         BitStoreConstants<KUInt> by UIntBitStoreConstants,
         BitsBased<KUInt, KInt> by UIntBitsBased,
@@ -226,7 +226,7 @@ object TypeTraits {
      * Traits object for the [Long][KLong] type.
      */
     object Long :
-        Sized<KLong> by LongSized,
+        Sized by LongSized,
         IntegralConstants<KLong> by LongIntegralConstants,
         BitStoreConstants<KLong> by LongBitStoreConstants,
         BitsBased<KLong, KLong> by LongBitsBased,
@@ -241,7 +241,7 @@ object TypeTraits {
      * Traits object for the [ULong][KULong] type.
      */
     object ULong :
-        Sized<KULong> by ULongSized,
+        Sized by ULongSized,
         IntegralConstants<KULong> by ULongIntegralConstants,
         BitStoreConstants<KULong> by ULongBitStoreConstants,
         BitsBased<KULong, KLong> by ULongBitsBased,

@@ -7,7 +7,7 @@ import java.math.BigInteger
 
 class BigIntegerBitwiseSpec : FunSpec() {
     init {
-        val sized = object : Sized<BigInteger> {
+        val sized = object : Sized {
             override val sizeBits: Int = Int.SIZE_BITS
         }
         val traits = BigIntegerBitwise(sized)

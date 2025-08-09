@@ -19,8 +19,8 @@ object JvmBitStores {
     /**
      * Creates a [BitStore] instance for [BigInteger]s of a fixed size.
      */
-    fun bigInteger(sized: Sized<BigInteger>): BitStore<BigInteger> = object : BitStore<BigInteger>,
-        Sized<BigInteger> by sized,
+    fun bigInteger(sized: Sized): BitStore<BigInteger> = object : BitStore<BigInteger>,
+        Sized by sized,
         BitCollection<BigInteger> by BigIntegerBitCollection(sized),
         BitShift<BigInteger> by BigIntegerBitShift(sized),
         Bitwise<BigInteger> by BigIntegerBitwise(sized) {}
@@ -28,8 +28,8 @@ object JvmBitStores {
     /**
      * Creates a [BitStore] instance for [BitSet]s of a fixed size.
      */
-    fun bitSet(sized: Sized<BitSet>): BitStore<BitSet> = object : BitStore<BitSet>,
-        Sized<BitSet> by sized,
+    fun bitSet(sized: Sized): BitStore<BitSet> = object : BitStore<BitSet>,
+        Sized by sized,
         BitCollection<BitSet> by BitSetBitCollection(sized),
         BitShift<BitSet> by BitSetBitShift(sized),
         Bitwise<BitSet> by BitSetBitwise(sized) {}

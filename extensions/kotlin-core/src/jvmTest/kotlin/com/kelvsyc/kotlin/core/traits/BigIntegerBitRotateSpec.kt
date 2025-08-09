@@ -10,7 +10,7 @@ import java.math.BigInteger
 @OptIn(ExperimentalStdlibApi::class)
 class BigIntegerBitRotateSpec : FunSpec() {
     init {
-        val sized = object : Sized<BigInteger> {
+        val sized = object : Sized {
             override val sizeBits: Int = Int.SIZE_BITS
         }
         val traits = BigIntegerBitRotate(sized)

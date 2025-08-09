@@ -12,7 +12,7 @@ import java.util.*
  *
  * @param sized Traits object providing size information on the bit collection.
  */
-class BitSetBitwise(private val sized: Sized<BitSet>) : Bitwise<BitSet> {
+class BitSetBitwise(private val sized: Sized) : Bitwise<BitSet> {
     override fun and(lhs: BitSet, rhs: BitSet): BitSet = BitSet(sized.sizeBits).also {
         it.or(lhs)
         it.and(rhs)

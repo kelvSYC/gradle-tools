@@ -9,7 +9,7 @@ import io.kotest.property.checkAll
 class SyntheticBitRotateSpec : FunSpec() {
     init {
         test("rotateLeft") {
-            val sized = object : Sized<IntArray> {
+            val sized = object : Sized {
                 override val sizeBits: Int
                     get() = Long.SIZE_BITS
             }
@@ -29,7 +29,7 @@ class SyntheticBitRotateSpec : FunSpec() {
         }
         
         test("rotateRight") {
-            val sized = object : Sized<IntArray> {
+            val sized = object : Sized {
                 override val sizeBits: Int
                     get() = Long.SIZE_BITS
             }

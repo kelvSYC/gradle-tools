@@ -13,7 +13,7 @@ import java.util.*
 class LeftShiftJVMSpec : FunSpec() {
     init {
         context("BigInteger") {
-            val sized = object : Sized<BigInteger> {
+            val sized = object : Sized {
                 override val sizeBits: Int = Int.SIZE_BITS
             }
             val traits = BigIntegerBitShift(sized)
@@ -27,7 +27,7 @@ class LeftShiftJVMSpec : FunSpec() {
         }
 
         context("BitSet") {
-            val sized = object : Sized<BitSet> {
+            val sized = object : Sized {
                 override val sizeBits: Int = Int.SIZE_BITS
             }
             val traits = BitSetBitShift(sized)

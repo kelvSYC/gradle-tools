@@ -10,7 +10,7 @@ import java.util.*
  *
  * @param sized Traits object providing size information on the bit collection.
  */
-class BitSetLeftShift(private val sized: Sized<BitSet>) : LeftShift<BitSet> {
+class BitSetLeftShift(private val sized: Sized) : LeftShift<BitSet> {
     @OptIn(ExperimentalStdlibApi::class)
     override fun leftShift(value: BitSet, bitCount: Int): BitSet = BitSet(sized.sizeBits).also {
         for (i in bitCount ..< sized.sizeBits) {

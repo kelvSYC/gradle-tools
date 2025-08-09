@@ -11,7 +11,7 @@ import java.util.*
  *
  * @param sized Traits object providing size information on the bit collection.
  */
-class MutableBitSetBitwise(private val sized: Sized<BitSet>) : Bitwise<BitSet> {
+class MutableBitSetBitwise(private val sized: Sized) : Bitwise<BitSet> {
     override fun and(lhs: BitSet, rhs: BitSet): BitSet = lhs.also { it.and(rhs) }
     override fun or(lhs: BitSet, rhs: BitSet): BitSet = lhs.also { it.or(rhs) }
     override fun xor(lhs: BitSet, rhs: BitSet): BitSet = lhs.also { it.xor(rhs) }

@@ -11,7 +11,7 @@ import java.util.*
 @OptIn(ExperimentalStdlibApi::class)
 class MutableBitSetBitRotateSpec : FunSpec() {
     init {
-        val sized = object : Sized<BitSet> {
+        val sized = object : Sized {
             override val sizeBits: Int = Int.SIZE_BITS
         }
         val traits = MutableBitSetBitRotate(sized)

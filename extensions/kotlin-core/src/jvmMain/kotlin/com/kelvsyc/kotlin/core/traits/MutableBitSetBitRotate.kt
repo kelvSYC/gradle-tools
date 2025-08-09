@@ -12,7 +12,7 @@ import kotlin.math.absoluteValue
  *
  * @param sized Traits object providing size information on the bit collection.
  */
-class MutableBitSetBitRotate(private val sized: Sized<BitSet>) : BitRotate<BitSet> {
+class MutableBitSetBitRotate(private val sized: Sized) : BitRotate<BitSet> {
     @OptIn(ExperimentalStdlibApi::class)
     override fun rotateLeft(value: BitSet, bitCount: Int): BitSet = value.also { result ->
         val n = bitCount % sized.sizeBits

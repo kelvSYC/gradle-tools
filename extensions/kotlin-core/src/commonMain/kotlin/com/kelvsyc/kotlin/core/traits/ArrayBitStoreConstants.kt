@@ -15,13 +15,13 @@ import com.kelvsyc.kotlin.core.TypeTraits
  * @param E The element type
  */
 class ArrayBitStoreConstants<A, E>(
-    private val sized: Sized<A>,
+    private val sized: Sized,
     private val arrayTraits: ArrayLike<A, E>,
     private val elementTraits: BitStoreConstants<E>
 ) : BitStoreConstants<A> {
     companion object {
-        inline fun <reified E> ofObjectArray(size: Int, elementSized: Sized<E>, elementTraits: BitStoreConstants<E>): BitStoreConstants<Array<E>> =
-            ArrayBitStoreConstants(ArraySized.ofObjectArray(size, elementSized), arrayLike(), elementTraits)
+        inline fun <reified E> ofObjectArray(size: Int, elementSized: Sized, elementTraits: BitStoreConstants<E>): BitStoreConstants<Array<E>> =
+            ArrayBitStoreConstants(ArraySized.ofObjectArray<E>(size, elementSized), arrayLike(), elementTraits)
 
         /**
          * Returns a [BitStoreConstants] object for a fixed-size [ByteArray].

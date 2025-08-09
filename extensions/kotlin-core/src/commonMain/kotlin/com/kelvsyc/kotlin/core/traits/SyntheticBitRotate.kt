@@ -12,7 +12,7 @@ package com.kelvsyc.kotlin.core.traits
  * @param T The type for which bit rotate operations are to be defined
  */
 class SyntheticBitRotate<T>(
-    private val sized: Sized<T>,
+    private val sized: Sized,
     private val baseShift: BitShift<T>,
     private val baseBitwise: Bitwise<T>
 ) : BitRotate<T> {

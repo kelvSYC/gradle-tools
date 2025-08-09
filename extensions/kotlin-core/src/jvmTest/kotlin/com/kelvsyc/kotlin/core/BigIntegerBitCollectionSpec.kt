@@ -6,12 +6,11 @@ import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.intRange
 import io.kotest.property.checkAll
-import java.math.BigInteger
 
 @OptIn(ExperimentalStdlibApi::class)
 class BigIntegerBitCollectionSpec : FunSpec() {
     init {
-        val sized = object : Sized<BigInteger> {
+        val sized = object : Sized {
             override val sizeBits: Int = Int.SIZE_BITS
         }
         val traits = BigIntegerBitCollection(sized)

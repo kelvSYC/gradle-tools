@@ -5,7 +5,7 @@ import java.util.*
 /**
  * Implementation of [BitStoreConstants] for a fixed-size bit collection, backed by a [BitSet].
  */
-class BitSetBitStoreConstants(private val sized: Sized<BitSet>) : BitStoreConstants<BitSet> {
+class BitSetBitStoreConstants(private val sized: Sized) : BitStoreConstants<BitSet> {
     override val allClear: BitSet = BitSet(sized.sizeBits)
     override val allSet: BitSet by lazy {
         BitSet(sized.sizeBits).also {

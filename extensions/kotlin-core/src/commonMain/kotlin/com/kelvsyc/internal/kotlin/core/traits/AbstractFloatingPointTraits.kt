@@ -3,7 +3,7 @@ package com.kelvsyc.internal.kotlin.core.traits
 import com.kelvsyc.kotlin.core.traits.FloatingPointTraits
 import com.kelvsyc.kotlin.core.traits.Sized
 
-abstract class AbstractFloatingPointTraits<T>(sized: Sized<T>) : FloatingPointTraits<T> {
+abstract class AbstractFloatingPointTraits<T>(sized: Sized) : FloatingPointTraits<T> {
     override val exponentWidth: Int by lazy { sized.sizeBits - mantissaWidth - 1 }
     override val precision: Int by lazy { mantissaWidth + 1 }
     override val exponentBias: Int by lazy { (1 shl exponentWidth - 1) - 1 }

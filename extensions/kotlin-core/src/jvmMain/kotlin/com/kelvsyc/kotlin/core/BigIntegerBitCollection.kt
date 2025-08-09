@@ -9,7 +9,7 @@ import java.math.BigInteger
  *
  * @param sized Traits object providing size information on the bit collection.
  */
-class BigIntegerBitCollection(private val sized: Sized<BigInteger>) : BitCollection<BigInteger> {
+class BigIntegerBitCollection(private val sized: Sized) : BitCollection<BigInteger> {
     override fun fromBits(bits: IntRange): BigInteger {
         require(bits.start >= 0 && bits.endInclusive < sized.sizeBits) { "Bit collection contains values out of range" }
 

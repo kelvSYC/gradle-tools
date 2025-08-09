@@ -29,7 +29,7 @@ open class ArrayBitCollection<A, E>(
          * Returns a [BitCollection] object for a fixed-size object array of element type for which a well-defined
          * [BitCollection] definition exists.
          */
-        inline fun <reified E> ofObjectArray(size: Int, elementSized: Sized<E>, elementTraits: BitCollection<E>): BitCollection<Array<E>> =
+        inline fun <reified E> ofObjectArray(size: Int, elementSized: Sized, elementTraits: BitCollection<E>): BitCollection<Array<E>> =
             ArrayBitCollection(ArraySized.ofObjectArray(size, elementSized), arrayLike(), elementTraits)
 
         /**

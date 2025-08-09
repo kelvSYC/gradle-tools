@@ -8,10 +8,10 @@ import com.kelvsyc.internal.kotlin.core.traits.Decimal32Sized
  *
  * @param T The floating-point type.
  */
-abstract class AbstractDecimal32Traits<T>(signed: Signed<T>, sized: Sized<T> = Decimal32Sized()) :
+abstract class AbstractDecimal32Traits<T>(signed: Signed<T>, sized: Sized = Decimal32Sized()) :
     AbstractDecimalFloatingPointTraits<T>(sized),
     Signed<T> by signed,
-    Sized<T> by sized,
+    Sized by sized,
     Decimal32Traits<T> {
     companion object {
         private const val CONTINUATION_WIDTH = 20
