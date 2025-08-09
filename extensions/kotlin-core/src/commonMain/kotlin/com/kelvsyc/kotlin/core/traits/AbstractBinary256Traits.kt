@@ -8,17 +8,13 @@ import com.kelvsyc.internal.kotlin.core.traits.Binary256Sized
  *
  * @param T The floating-point type.
  */
-abstract class AbstractBinary256Traits<T>(signed: Signed<T>, sized: Sized = Binary256Sized()) :
-    AbstractFloatingPointTraits<T>(sized),
+abstract class AbstractBinary256Traits<T>(signed: Signed<T>) :
+    AbstractFloatingPointTraits<T>(Binary256Sized),
     Signed<T> by signed,
-    Sized by sized,
+    Sized by Binary256Sized,
     Binary256Traits<T> {
     companion object {
         private const val MANTISSA_WIDTH = 236
-    }
-
-    init {
-        require(sized.sizeBits == Binary256Sized.SIZE_BITS) { "Incorrect size specified for a binary256 type." }
     }
 
     override val mantissaWidth: Int get() = MANTISSA_WIDTH

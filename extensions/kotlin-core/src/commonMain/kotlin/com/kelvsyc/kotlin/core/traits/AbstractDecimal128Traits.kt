@@ -8,10 +8,10 @@ import com.kelvsyc.internal.kotlin.core.traits.Decimal128Sized
  *
  * @param T The floating-point type.
  */
-abstract class AbstractDecimal128Traits<T>(signed: Signed<T>, sized: Sized = Decimal128Sized()) :
-    AbstractDecimalFloatingPointTraits<T>(sized),
+abstract class AbstractDecimal128Traits<T>(signed: Signed<T>) :
+    AbstractDecimalFloatingPointTraits<T>(Decimal128Sized),
     Signed<T> by signed,
-    Sized by sized,
+    Sized by Decimal128Sized,
     Decimal128Traits<T> {
     companion object {
         private const val CONTINUATION_WIDTH = 100

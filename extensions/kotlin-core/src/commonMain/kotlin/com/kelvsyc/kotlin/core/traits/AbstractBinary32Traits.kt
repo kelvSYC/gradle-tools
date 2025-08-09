@@ -8,17 +8,13 @@ import com.kelvsyc.internal.kotlin.core.traits.Binary32Sized
  *
  * @param T The floating-point type.
  */
-abstract class AbstractBinary32Traits<T>(signed: Signed<T>, sized: Sized = Binary32Sized()) :
-    AbstractFloatingPointTraits<T>(sized),
+abstract class AbstractBinary32Traits<T>(signed: Signed<T>) :
+    AbstractFloatingPointTraits<T>(Binary32Sized),
     Signed<T> by signed,
-    Sized by sized,
+    Sized by Binary32Sized,
     Binary32Traits<T> {
     companion object {
         private const val MANTISSA_WIDTH = 23
-    }
-
-    init {
-        require(sized.sizeBits == Binary32Sized.SIZE_BITS) { "Incorrect size specified for a binary32 type." }
     }
 
     override val mantissaWidth: Int get() = MANTISSA_WIDTH

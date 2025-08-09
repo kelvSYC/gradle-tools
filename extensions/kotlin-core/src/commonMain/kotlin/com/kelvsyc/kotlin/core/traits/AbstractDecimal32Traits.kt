@@ -8,17 +8,13 @@ import com.kelvsyc.internal.kotlin.core.traits.Decimal32Sized
  *
  * @param T The floating-point type.
  */
-abstract class AbstractDecimal32Traits<T>(signed: Signed<T>, sized: Sized = Decimal32Sized()) :
-    AbstractDecimalFloatingPointTraits<T>(sized),
+abstract class AbstractDecimal32Traits<T>(signed: Signed<T>) :
+    AbstractDecimalFloatingPointTraits<T>(Decimal32Sized),
     Signed<T> by signed,
-    Sized by sized,
+    Sized by Decimal32Sized,
     Decimal32Traits<T> {
     companion object {
         private const val CONTINUATION_WIDTH = 20
-    }
-
-    init {
-        require(sized.sizeBits == Decimal32Sized.SIZE_BITS) { "Incorrect size specified for a decimal32 type." }
     }
 
     override val continuationWidth: Int get() = CONTINUATION_WIDTH
