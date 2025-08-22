@@ -10,7 +10,7 @@ commons-numbers-bom = "org.apache.commons:commons-numbers-bom:1.2"
 google-cloud-libraries-bom = "com.google.cloud:libraries-bom:26.66.0"
 kotlin-gradle-plugins-bom = { module = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom", version.ref = "kotlin" }
 kotlinx-coroutines-bom = "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.2"
-kotest-bom = "io.kotest:kotest-bom:5.9.1"
+kotest-bom = "io.kotest:kotest-bom:6.0.0"
 
 # Internal
 dependency-analysis-plugin = "com.autonomousapps:dependency-analysis-gradle-plugin:3.0.0"
