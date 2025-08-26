@@ -5,7 +5,7 @@ kotlin = "2.2.0"
 [libraries]
 # BOMs
 aws-java-sdk-bom = "software.amazon.awssdk:bom:2.32.25"
-aws-kotlin-sdk-bom = "aws.sdk.kotlin:bom:1.5.23"
+aws-kotlin-sdk-bom = "aws.sdk.kotlin:bom:1.5.24"
 commons-numbers-bom = "org.apache.commons:commons-numbers-bom:1.2"
 google-cloud-libraries-bom = "com.google.cloud:libraries-bom:26.66.0"
 kotlin-gradle-plugins-bom = { module = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom", version.ref = "kotlin" }
