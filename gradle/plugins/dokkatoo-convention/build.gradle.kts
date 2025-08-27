@@ -11,4 +11,8 @@ kotlin {
 dependencies {
     implementation(platform("com.kelvsyc.internal:platform"))
     implementation(libs.dokkatoo.plugin)
+
+    constraints {
+        api(platform(libs.jackson.bom))
+    }
 }
