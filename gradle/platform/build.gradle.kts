@@ -20,5 +20,6 @@ dependencies {
     api(platform(libs.kotlinx.coroutines.bom))
     constraints {
         api(libs.commons.lang)
+        api(libs.woodstox)
     }
 }
