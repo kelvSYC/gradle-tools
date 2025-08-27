@@ -9,5 +9,6 @@ kotlin {
 }
 
 dependencies {
+    implementation(platform("com.kelvsyc.internal:platform"))
     implementation(libs.reckon.plugin)
 }
