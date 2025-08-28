@@ -13,6 +13,7 @@ dependencies {
     implementation(libs.dokkatoo.plugin)
 
     constraints {
-        api(platform(libs.jackson.bom))
+        implementation(platform(libs.jackson.bom))
+        implementation(libs.woodstox)
     }
 }
