@@ -60,8 +60,6 @@ guava = "com.google.guava:guava:33.4.8-jre"
 jgit = "org.eclipse.jgit:org.eclipse.jgit:7.3.0.202506031305-r"
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core" } # version from BOM 'kotest-bom'
 kotest-assertions-shared = { module = "io.kotest:kotest-assertions-shared" } # version from BOM 'kotest-bom'
-kotest-framework-api = { module = "io.kotest:kotest-framework-api" } # version from BOM 'kotest-bom'
-kotest-framework-datatest = { module = "io.kotest:kotest-framework-datatest" } # version from BOM 'kotest-bom'
 kotest-framework-engine = { module = "io.kotest:kotest-framework-engine" } # version from BOM 'kotest-bom'
 kotest-property = { module = "io.kotest:kotest-property" } # version from BOM 'kotest-bom'
 kotest-runner = { module = "io.kotest:kotest-runner-junit5" } # version from BOM 'kotest-bom'

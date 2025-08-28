@@ -33,7 +33,6 @@ kotlin {
     sourceSets.commonTest.dependencies {
         libs.findLibrary("kotest-assertions-core").getOrNull()?.let { implementation(it) }
         libs.findLibrary("kotest-assertions-shared").getOrNull()?.let { implementation(it) }
-        libs.findLibrary("kotest-framework-api").getOrNull()?.let { implementation(it) }
         libs.findLibrary("kotest-framework-engine").getOrNull()?.let { implementation(it) }
         libs.findLibrary("kotest-runner").getOrNull()?.let { implementation(it) }
     }
