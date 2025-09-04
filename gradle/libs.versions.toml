@@ -11,7 +11,7 @@ google-cloud-libraries-bom = "com.google.cloud:libraries-bom:26.67.0"
 jackson-bom = "com.fasterxml.jackson:jackson-bom:2.20.0"
 kotlin-gradle-plugins-bom = { module = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom", version.ref = "kotlin" }
 kotlinx-coroutines-bom = "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.2"
-kotest-bom = "io.kotest:kotest-bom:6.0.1"
+kotest-bom = "io.kotest:kotest-bom:6.0.2"
 
 # Internal
 dependency-analysis-plugin = "com.autonomousapps:dependency-analysis-gradle-plugin:3.0.1"
