@@ -1,6 +1,6 @@
 [versions]
 dokkatoo = "2.4.0"
-kotlin = "2.2.0"
+kotlin = "2.2.20"
 
 [libraries]
 # BOMs
