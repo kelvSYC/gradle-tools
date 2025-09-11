@@ -6,7 +6,7 @@ pluginManagement {
 }
 
 plugins {
-    id("org.ajoberstar.reckon.settings") version "1.0.0"
+    id("org.ajoberstar.reckon.settings") version "1.0.1"
 }
 
 dependencyResolutionManagement {
