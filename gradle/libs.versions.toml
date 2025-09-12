@@ -14,7 +14,7 @@ kotlinx-coroutines-bom = "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.2"
 kotest-bom = "io.kotest:kotest-bom:6.0.3"
 
 # Internal
-dependency-analysis-plugin = "com.autonomousapps:dependency-analysis-gradle-plugin:3.0.1"
+dependency-analysis-plugin = "com.autonomousapps:dependency-analysis-gradle-plugin:3.0.2"
 detekt-plugin = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8"
 dokkatoo-plugin = { module = "dev.adamko.dokkatoo:dokkatoo-plugin", version.ref = "dokkatoo" }
 gradlex-dependency-conflict-resolution-plugin = "org.gradlex:jvm-dependency-conflict-resolution:2.1.2"
