@@ -56,7 +56,7 @@ commons-numbers-core = { module = "org.apache.commons:commons-numbers-core" } # 
 commons-numbers-fraction = { module = "org.apache.commons:commons-numbers-fraction" } # version from BOM 'commons-numbers-bom'
 google-cloud-artifact-registry = { module = "com.google.cloud:google-cloud-artifact-registry" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-storage = { module = "com.google.cloud:google-cloud-storage" } # version from BOM 'google-cloud-libraries-bom'
-guava = "com.google.guava:guava:33.4.8-jre"
+guava = "com.google.guava:guava:33.5.0-jre"
 jgit = "org.eclipse.jgit:org.eclipse.jgit:7.3.0.202506031305-r"
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core" } # version from BOM 'kotest-bom'
 kotest-assertions-shared = { module = "io.kotest:kotest-assertions-shared" } # version from BOM 'kotest-bom'
