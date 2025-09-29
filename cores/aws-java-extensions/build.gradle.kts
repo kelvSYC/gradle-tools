@@ -1,4 +1,5 @@
 plugins {
+    id("com.kelvsyc.internal.dokka")
     id("com.kelvsyc.internal.dokkatoo")
     id("com.kelvsyc.internal.jacoco")
     id("com.kelvsyc.internal.kotlin-gradle-library")
