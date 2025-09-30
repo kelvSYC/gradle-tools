@@ -5,7 +5,7 @@ kotlin = "2.2.0"
 [libraries]
 # BOMs
 aws-java-sdk-bom = "software.amazon.awssdk:bom:2.34.1"
-aws-kotlin-sdk-bom = "aws.sdk.kotlin:bom:1.5.46"
+aws-kotlin-sdk-bom = "aws.sdk.kotlin:bom:1.5.50"
 commons-numbers-bom = "org.apache.commons:commons-numbers-bom:1.2"
 google-cloud-libraries-bom = "com.google.cloud:libraries-bom:26.68.0"
 jackson-bom = "com.fasterxml.jackson:jackson-bom:2.20.0"
