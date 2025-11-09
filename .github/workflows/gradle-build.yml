@@ -38,19 +38,19 @@ jobs:
         run: ./gradlew --info --stacktrace :build
       - name: Upload Aggregate Test Report
         id: upload-aggregate-test
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-aggregate
           path: aggregation/testing/build/reports/tests/test/aggregated-results
       - name: Upload Aggregate KDoc
         id: upload-aggregate-kdoc
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: kdoc-aggregate
           path: aggregation/dokkatoo/build/dokka/html
       - name: Upload Aggregate JaCoCo Code Coverage Report
         id: upload-aggregate-jacoco
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: jacoco-aggregate
           path: aggregation/jacoco/build/reports/jacoco/testCodeCoverageReport
@@ -63,7 +63,7 @@ jobs:
 
     steps:
       - name: Download Aggregate JaCoCo Code Coverage Artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           artifact-ids: ${{needs.job1.outputs.aggregate-jacoco-id}}
       - name: Report JaCoCo

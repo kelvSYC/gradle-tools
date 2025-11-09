@@ -4,8 +4,8 @@ kotlin = "2.2.21"
 
 [libraries]
 # BOMs
-aws-java-sdk-bom = "software.amazon.awssdk:bom:2.35.6"
-aws-kotlin-sdk-bom = "aws.sdk.kotlin:bom:1.5.61"
+aws-java-sdk-bom = "software.amazon.awssdk:bom:2.37.3"
+aws-kotlin-sdk-bom = "aws.sdk.kotlin:bom:1.5.71"
 commons-numbers-bom = "org.apache.commons:commons-numbers-bom:1.2"
 google-cloud-libraries-bom = "com.google.cloud:libraries-bom:26.68.0"
 jackson-bom = "com.fasterxml.jackson:jackson-bom:2.20.0"
@@ -14,7 +14,7 @@ kotlinx-coroutines-bom = "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.2"
 kotest-bom = "io.kotest:kotest-bom:6.0.4"
 
 # Internal
-dependency-analysis-plugin = "com.autonomousapps:dependency-analysis-gradle-plugin:3.2.0"
+dependency-analysis-plugin = "com.autonomousapps:dependency-analysis-gradle-plugin:3.4.1"
 detekt-plugin = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8"
 dokkatoo-plugin = { module = "dev.adamko.dokkatoo:dokkatoo-plugin", version.ref = "dokkatoo" }
 gradlex-dependency-conflict-resolution-plugin = "org.gradlex:jvm-dependency-conflict-resolution:2.1.2"
@@ -50,7 +50,7 @@ aws-sqs-java = { module = "software.amazon.awssdk:sqs" } # version from BOM 'aws
 aws-sqs-kotlin = { module = "aws.sdk.kotlin:sqs" } # version from BOM 'aws-kotlin-sdk-bom'
 caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.2"
 commons-io = "commons-io:commons-io:2.20.0"
-commons-lang = "org.apache.commons:commons-lang3:3.18.0"
+commons-lang = "org.apache.commons:commons-lang3:3.19.0"
 commons-numbers-complex = { module = "org.apache.commons:commons-numbers-complex" } # version from BOM 'commons-numbers-bom'
 commons-numbers-core = { module = "org.apache.commons:commons-numbers-core" } # version from BOM 'commons-numbers-bom'
 commons-numbers-fraction = { module = "org.apache.commons:commons-numbers-fraction" } # version from BOM 'commons-numbers-bom'
@@ -64,7 +64,7 @@ kotest-framework-engine = { module = "io.kotest:kotest-framework-engine" } # ver
 kotest-property = { module = "io.kotest:kotest-property" } # version from BOM 'kotest-bom'
 kotest-runner = { module = "io.kotest:kotest-runner-junit5" } # version from BOM 'kotest-bom'
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" } # version from BOM 'kotlinx-coroutines-bom'
-mockk = "io.mockk:mockk:1.14.5"
+mockk = "io.mockk:mockk:1.14.6"
 woodstox = "com.fasterxml.woodstox:woodstox-core:7.1.1"
 
 [plugins]
