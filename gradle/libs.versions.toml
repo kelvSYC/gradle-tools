@@ -7,7 +7,7 @@ kotlin = "2.2.21"
 aws-java-sdk-bom = "software.amazon.awssdk:bom:2.38.5"
 aws-kotlin-sdk-bom = "aws.sdk.kotlin:bom:1.5.71"
 commons-numbers-bom = "org.apache.commons:commons-numbers-bom:1.2"
-google-cloud-libraries-bom = "com.google.cloud:libraries-bom:26.68.0"
+google-cloud-libraries-bom = "com.google.cloud:libraries-bom:26.71.0"
 jackson-bom = "com.fasterxml.jackson:jackson-bom:2.20.1"
 kotlin-gradle-plugins-bom = { module = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom", version.ref = "kotlin" }
 kotlinx-coroutines-bom = "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.2"
