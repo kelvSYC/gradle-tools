@@ -36,7 +36,7 @@ aws-imds-java = { module = "software.amazon.awssdk:imds" } # version from BOM 'a
 aws-s3-java = { module = "software.amazon.awssdk:s3" } # version from BOM 'aws-java-sdk-bom'
 aws-s3-kotlin = { module = "aws.sdk.kotlin:s3" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-s3-transfer-manager-java = { module = "software.amazon.awssdk:s3-transfer-manager" } # version from BOM 'aws-java-sdk-bom'
-aws-secrets-manager-caching-java = "com.amazonaws.secretsmanager:aws-secretsmanager-caching-java:2.0.0"
+aws-secrets-manager-caching-java = "com.amazonaws.secretsmanager:aws-secretsmanager-caching-java:2.1.0"
 aws-secrets-manager-java = { module = "software.amazon.awssdk:secretsmanager" } # version from BOM 'aws-java-sdk-bom'
 aws-secrets-manager-kotlin = { module = "aws.sdk.kotlin:secretsmanager" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-ses-java = { module = "software.amazon.awssdk:ses" } # version from BOM 'aws-java-sdk-bom'
