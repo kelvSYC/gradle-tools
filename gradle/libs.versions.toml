@@ -69,5 +69,5 @@ woodstox = "com.fasterxml.woodstox:woodstox-core:7.1.1"
 
 [plugins]
 dokkatoo-html = { id = "dev.adamko.dokkatoo-html", version.ref = "dokkatoo" }
-gradle-testkit-jacoco = "io.github.gmazzo.gradle.testkit.jacoco:1.0.4"
+gradle-testkit-jacoco = "io.github.gmazzo.gradle.testkit.jacoco:1.0.5"
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
