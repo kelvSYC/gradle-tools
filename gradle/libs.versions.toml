@@ -20,7 +20,7 @@ dokkatoo-plugin = { module = "dev.adamko.dokkatoo:dokkatoo-plugin", version.ref 
 gradlex-dependency-conflict-resolution-plugin = "org.gradlex:jvm-dependency-conflict-resolution:2.1.2"
 gradlex-reproducible-builds-plugin = "org.gradlex:reproducible-builds:1.0"
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin" } # version from BOM 'kotlin-gradle-plugins-bom'
-reckon-plugin = "org.ajoberstar.reckon:reckon-gradle:1.0.0"
+reckon-plugin = "org.ajoberstar.reckon:reckon-gradle:1.0.1"
 
 # API Dependencies
 artifactory-client-api = "org.jfrog.artifactory.client:artifactory-java-client-api:2.21.1"
