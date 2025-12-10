@@ -64,7 +64,7 @@ kotest-framework-engine = { module = "io.kotest:kotest-framework-engine" } # ver
 kotest-property = { module = "io.kotest:kotest-property" } # version from BOM 'kotest-bom'
 kotest-runner = { module = "io.kotest:kotest-runner-junit5" } # version from BOM 'kotest-bom'
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" } # version from BOM 'kotlinx-coroutines-bom'
-mockk = "io.mockk:mockk:1.14.6"
+mockk = "io.mockk:mockk:1.14.7"
 woodstox = "com.fasterxml.woodstox:woodstox-core:7.1.1"
 
 [plugins]
