@@ -63,7 +63,7 @@ jobs:
 
     steps:
       - name: Download Aggregate JaCoCo Code Coverage Artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           artifact-ids: ${{needs.job1.outputs.aggregate-jacoco-id}}
       - name: Report JaCoCo
