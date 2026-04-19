@@ -26,7 +26,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
-          java-version: '21'
+          java-version: '25'
           distribution: 'zulu'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
@@ -65,7 +65,7 @@ jobs:
       - name: Download Aggregate JaCoCo Code Coverage Artifact
         uses: actions/download-artifact@v8
         with:
-          artifact-ids: ${{needs.job1.outputs.aggregate-jacoco-id}}
+          artifact-ids: ${{needs.build.outputs.aggregate-jacoco-id}}
       - name: Report JaCoCo
         uses: madrapps/jacoco-report@v1.7.2
         with:
