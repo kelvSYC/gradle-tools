@@ -1,14 +1,14 @@
+import org.jetbrains.dokka.gradle.DokkaExtension
+
 plugins {
     id("com.kelvsyc.internal.dokka")
-    id("com.kelvsyc.internal.dokkatoo")
     id("com.kelvsyc.internal.jacoco")
     id("com.kelvsyc.internal.kotlin-gradle-library")
     id("com.kelvsyc.internal.github-publishing")
 }
 
-dokkatoo {
+configure<DokkaExtension> {
     moduleName.set("AWS Kotlin Gradle Extensions")
-    modulePath.set(project.name)
 }
 
 dependencies {

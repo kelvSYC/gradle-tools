@@ -37,6 +37,7 @@ configure<DokkaExtension> {
 }
 
 pluginManager.withPlugin("java") {
+    apply(plugin = "org.jetbrains.dokka-javadoc")
     configure<DokkaExtension> {
         dokkaSourceSets.configureEach {
             // Set the JDK version as the default toolchain used
@@ -44,4 +45,14 @@ pluginManager.withPlugin("java") {
             jdkVersion.convention(21) // In case toolchain settings are not set
         }
     }
+    configure<JavaPluginExtension> {
+        withJavadocJar()
+    }
+    tasks.named<Jar>("javadocJar") {
+        from(tasks.named("dokkaGeneratePublicationJavadoc"))
+    }
+}
+
+tasks.named("assemble") {
+    dependsOn(tasks.named("dokkaGeneratePublicationHtml"))
 }

@@ -37,14 +37,14 @@ tasks.register("clean") {
     components.forEach {
         dependsOn(gradle.includedBuild(it).task(":$name"))
     }
-    dependsOn(gradle.includedBuild("aggregation").task(":platform:$name"))
+    dependsOn(gradle.includedBuild("aggregation").task(":bom:$name"))
 }
 
 tasks.register("assemble") {
     components.forEach {
         dependsOn(gradle.includedBuild(it).task(":$name"))
     }
-    dependsOn(gradle.includedBuild("aggregation").task(":dokkatoo:$name"))
+    dependsOn(gradle.includedBuild("aggregation").task(":dokka:$name"))
     dependsOn(gradle.includedBuild("aggregation").task(":jacoco:$name"))
 }
 
@@ -53,9 +53,9 @@ tasks.register("build") {
         dependsOn(gradle.includedBuild(it).task(":$name"))
     }
     dependsOn(gradle.includedBuild("aggregation").task(":catalog:generateCatalogAsToml"))
-    dependsOn(gradle.includedBuild("aggregation").task(":dokkatoo:$name"))
+    dependsOn(gradle.includedBuild("aggregation").task(":dokka:$name"))
     dependsOn(gradle.includedBuild("aggregation").task(":jacoco:testCodeCoverageReport"))
-    dependsOn(gradle.includedBuild("aggregation").task(":platform:$name"))
+    dependsOn(gradle.includedBuild("aggregation").task(":bom:$name"))
     dependsOn(gradle.includedBuild("aggregation").task(":testing:testAggregateTestReport"))
 }
 
@@ -64,11 +64,11 @@ tasks.register("publish") {
         dependsOn(gradle.includedBuild(it).task(":$name"))
     }
     dependsOn(gradle.includedBuild("aggregation").task(":catalog:$name"))
-    dependsOn(gradle.includedBuild("aggregation").task(":platform:$name"))
+    dependsOn(gradle.includedBuild("aggregation").task(":bom:$name"))
 }
 
-tasks.register("dokkatooGenerate") {
-    dependsOn(gradle.includedBuild("aggregation").task(":dokkatoo:dokkatooGenerate"))
+tasks.register("dokkaGenerate") {
+    dependsOn(gradle.includedBuild("aggregation").task(":dokka:dokkaGeneratePublicationHtml"))
 }
 
 tasks.register("test") {

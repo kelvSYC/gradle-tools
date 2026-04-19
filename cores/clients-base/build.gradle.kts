@@ -1,15 +1,15 @@
+import org.jetbrains.dokka.gradle.DokkaExtension
+
 plugins {
     id("com.kelvsyc.internal.dokka")
-    id("com.kelvsyc.internal.dokkatoo")
     id("com.kelvsyc.internal.jacoco")
     id("com.kelvsyc.internal.kotlin-plugin")
     id("com.kelvsyc.internal.github-publishing")
     alias(libs.plugins.gradle.testkit.jacoco)
 }
 
-dokkatoo {
+configure<DokkaExtension> {
     moduleName.set("Clients Base")
-    modulePath.set(project.name)
 }
 
 gradlePlugin {
