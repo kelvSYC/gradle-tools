@@ -48,6 +48,10 @@ detekt {
     config.from(file("../../gradle/detekt.yml"))
 }
 
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    jvmTarget = "22"
+}
+
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
