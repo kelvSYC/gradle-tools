@@ -38,6 +38,10 @@ detekt {
     config.from(file("../../gradle/detekt.yml"))
 }
 
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    jvmTarget = "22"
+}
+
 val libs = versionCatalogs.named("libs")
 
 dependencies {

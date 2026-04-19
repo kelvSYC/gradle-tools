@@ -16,7 +16,7 @@ kotest-bom = "io.kotest:kotest-bom:6.0.7"
 
 # Internal
 dependency-analysis-plugin = "com.autonomousapps:dependency-analysis-gradle-plugin:3.5.1"
-detekt-plugin = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:2.0.0-alpha.2"
+detekt-plugin = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8"
 dokka-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka"}
 dokkatoo-plugin = { module = "dev.adamko.dokkatoo:dokkatoo-plugin", version.ref = "dokkatoo" }
 gradlex-dependency-conflict-resolution-plugin = "org.gradlex:jvm-dependency-conflict-resolution:2.1.2"
