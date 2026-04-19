@@ -41,7 +41,7 @@ pluginManager.withPlugin("java") {
     configure<DokkaExtension> {
         dokkaSourceSets.configureEach {
             jdkVersion.convention(
-                project.the<JavaPluginExtension>().toolchain.languageVersion.map { it.asInt() }.orElse(21)
+                project.the<JavaPluginExtension>().toolchain.languageVersion.map { it.asInt() }.orElse(25)
             )
         }
     }
