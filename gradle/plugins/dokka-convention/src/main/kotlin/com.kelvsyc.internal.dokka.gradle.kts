@@ -40,9 +40,9 @@ pluginManager.withPlugin("java") {
     apply(plugin = "org.jetbrains.dokka-javadoc")
     configure<DokkaExtension> {
         dokkaSourceSets.configureEach {
-            // Set the JDK version as the default toolchain used
-            jdkVersion.set(the<JavaPluginExtension>().toolchain.languageVersion.map { it.asInt() })
-            jdkVersion.convention(21) // In case toolchain settings are not set
+            jdkVersion.convention(
+                project.the<JavaPluginExtension>().toolchain.languageVersion.map { it.asInt() }.orElse(21)
+            )
         }
     }
     configure<JavaPluginExtension> {
