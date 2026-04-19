@@ -17,7 +17,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up JDK
+      - name: Set up JDK 21 (for Detekt)
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'zulu'
+      - name: Set up JDK 25
         uses: actions/setup-java@v5
         with:
           java-version: '25'
