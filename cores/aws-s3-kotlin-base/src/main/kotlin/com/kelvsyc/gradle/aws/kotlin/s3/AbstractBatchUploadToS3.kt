@@ -13,7 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.fold
@@ -92,7 +92,7 @@ abstract class AbstractBatchUploadToS3 @Inject constructor(private val objects: 
     @OptIn(ExperimentalCoroutinesApi::class)
     @TaskAction
     fun run() {
-        runBlocking {
+        val results = runBlocking {
             requests.getOrElse(emptyList()).asFlow()
                 .flowOn(Dispatchers.IO)
                 .onStart {
@@ -101,7 +101,7 @@ abstract class AbstractBatchUploadToS3 @Inject constructor(private val objects: 
                 .onEach {
                     logger.lifecycle("Upload {} to {} from {}", it.name, "${it.request.bucket}/${it.request.key}", it.inputFile.asAbsolutePath.get())
                 }
-                .flatMapLatest {
+                .flatMapMerge {
                     val name = it.name
                     flow {
                         val response = client.get().putObject(it.request)
@@ -118,7 +118,7 @@ abstract class AbstractBatchUploadToS3 @Inject constructor(private val objects: 
                             "Attempt $attempt of $totalRetries to upload $name to ${it.request.bucket}/${it.request.key} from ${it.inputFile.asAbsolutePath.get()} has failed"
                         }
                         attempt < totalRetries
-                    }.catch {  cause ->
+                    }.catch { cause ->
                         // All non-retriable errors and all errors from exhaustion of retries will be caught here
                         logger.warn(cause) {
                             "Uploading $name to ${it.request.bucket}/${it.request.key} from ${it.inputFile.asAbsolutePath.get()} has failed"
@@ -130,6 +130,11 @@ abstract class AbstractBatchUploadToS3 @Inject constructor(private val objects: 
                     map[result.first] = result.second
                     map
                 }
+        }
+
+        val failures = results.filterValues { it.isFailure }
+        if (failures.isNotEmpty()) {
+            throw RuntimeException("${failures.size} artifact(s) failed to upload: ${failures.keys.joinToString()}")
         }
     }
 }
