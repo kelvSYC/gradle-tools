@@ -17,7 +17,6 @@ dependencyResolutionManagement {
 }
 
 include("dokka-convention")
-include("dokkatoo-convention")
 include("jacoco-convention")
 include("kotlin-convention")
 include("publishing-convention")

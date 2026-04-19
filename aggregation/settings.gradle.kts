@@ -3,6 +3,10 @@ import org.ajoberstar.reckon.gradle.ReckonExtension
 
 pluginManagement {
     includeBuild("../gradle/plugins")
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
 }
 
 plugins {
@@ -29,9 +33,9 @@ configure<ReckonExtension> {
 }
 
 include("catalog")
-include("dokkatoo")
+include("dokka")
 include("jacoco")
-include("platform")
+include("bom")
 include("testing")
 
 // Builds to be aggregated

@@ -47,7 +47,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: kdoc-aggregate
-          path: aggregation/dokkatoo/build/dokka/html
+          path: aggregation/dokka/build/dokka/html
       - name: Upload Aggregate JaCoCo Code Coverage Report
         id: upload-aggregate-jacoco
         uses: actions/upload-artifact@v6

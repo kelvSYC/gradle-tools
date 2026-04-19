@@ -1,6 +1,7 @@
+import org.jetbrains.dokka.gradle.DokkaExtension
+
 plugins {
     id("com.kelvsyc.internal.dokka")
-    id("com.kelvsyc.internal.dokkatoo")
     id("com.kelvsyc.internal.github-publishing")
     id("com.kelvsyc.internal.kotlin-multiplatform-jacoco")
     id("com.kelvsyc.internal.kotlin-multiplatform-jvm-library")
@@ -8,9 +9,8 @@ plugins {
 
 group = "com.kelvsyc.kotlin"
 
-dokkatoo {
+configure<DokkaExtension> {
     moduleName.set("Kotlin Core")
-    modulePath.set(project.name)
 }
 
 kotlin {

@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.dokkatoo.html)
+    id("com.kelvsyc.internal.dokka")
 }
 
 group = "com.kelvsyc.gradle"
@@ -11,24 +11,20 @@ val extensionComponents = gradle.includedBuilds.filter {
     it.projectDir.parentFile.name == "extensions"
 }
 
-dokkatoo {
+dokka {
     moduleName.set("kelvSYC Gradle Tools")
 }
 
 dependencies {
     cores.forEach {
-        dokkatoo("$group:${it.name}") // from included build $it.name
+        dokka("$group:${it.name}") // from included build ${it.name}
     }
     extensionComponents.forEach {
         if (it.name == "kotlin-core") {
             // FIXME Placeholder due to kotlin-core using a different group ID
-            dokkatoo("com.kelvsyc.kotlin:kotlin-core")
+            dokka("com.kelvsyc.kotlin:kotlin-core")
         } else {
-            dokkatoo("$group:${it.name}") // from included build $it.name
+            dokka("$group:${it.name}") // from included build ${it.name}
         }
     }
-}
-
-tasks.assemble {
-    dependsOn(tasks.dokkatooGeneratePublicationHtml)
 }
