@@ -1,12 +1,12 @@
 [versions]
-dokka = "2.0.0"
+dokka = "2.2.0"
 dokkatoo = "2.4.0"
 kotlin = "2.3.0"
 
 [libraries]
 # BOMs
-aws-java-sdk-bom = "software.amazon.awssdk:bom:2.40.2"
-aws-kotlin-sdk-bom = "aws.sdk.kotlin:bom:1.5.89"
+aws-java-sdk-bom = "software.amazon.awssdk:bom:2.42.36"
+aws-kotlin-sdk-bom = "aws.sdk.kotlin:bom:1.6.59"
 commons-numbers-bom = "org.apache.commons:commons-numbers-bom:1.2"
 google-cloud-libraries-bom = "com.google.cloud:libraries-bom:26.72.0"
 jackson-bom = "com.fasterxml.jackson:jackson-bom:2.20.1"
