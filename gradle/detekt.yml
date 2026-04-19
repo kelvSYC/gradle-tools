@@ -54,8 +54,6 @@ comments:
   active: true
   AbsentOrWrongFileLicense:
     active: false
-    licenseTemplateFile: 'license.template'
-    licenseTemplateIsRegex: false
   CommentOverPrivateFunction:
     active: false
   CommentOverPrivateProperty:
@@ -198,7 +196,7 @@ coroutines:
   SuspendFunWithFlowReturnType:
     active: true
 
-empty-blocks:
+emptyblocks:
   active: true
   EmptyCatchBlock:
     active: true
@@ -398,7 +396,7 @@ performance:
   UnnecessaryTemporaryInstantiation:
     active: true
 
-potential-bugs:
+potentialbugs:
   active: true
   AvoidReferentialEquality:
     active: true
@@ -583,8 +581,6 @@ style:
     allowedPatterns: ''
   ForbiddenImport:
     active: false
-    imports: []
-    forbiddenPatterns: ''
   ForbiddenMethodCall:
     active: false
     methods:
@@ -708,8 +704,6 @@ style:
     allowNonStandardGrouping: false
   UnnecessaryAbstractClass:
     active: true
-  UnnecessaryAnnotationUseSiteTarget:
-    active: false
   UnnecessaryApply:
     active: true
   UnnecessaryBackticks:
