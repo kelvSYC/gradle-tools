@@ -1,5 +1,4 @@
-import org.ajoberstar.reckon.core.Scope
-import org.ajoberstar.reckon.gradle.ReckonExtension
+import com.javiersc.semver.settings.gradle.plugin.SemverSettingsExtension
 
 // Settings plugin to be applied to all builds located in the cores directory
 pluginManagement {
@@ -7,7 +6,7 @@ pluginManagement {
 }
 
 plugins {
-    id("org.ajoberstar.reckon.settings")
+    id("com.javiersc.semver")
 }
 
 dependencyResolutionManagement {
@@ -22,9 +21,7 @@ dependencyResolutionManagement {
     }
 }
 
-configure<ReckonExtension> {
-    setDefaultInferredScope(Scope.PATCH)
-    stages("beta", "rc", "final")
-    setScopeCalc(calcScopeFromProp().or(calcScopeFromCommitMessages()))
-    setStageCalc(calcStageFromProp())
+configure<SemverSettingsExtension> {
+    isEnabled.set(true)
+    gitDir.set(layout.settingsDirectory.dir("../../.git"))
 }

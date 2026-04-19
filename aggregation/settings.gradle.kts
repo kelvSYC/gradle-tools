@@ -1,6 +1,3 @@
-import org.ajoberstar.reckon.core.Scope
-import org.ajoberstar.reckon.gradle.ReckonExtension
-
 pluginManagement {
     includeBuild("../gradle/plugins")
     repositories {
@@ -10,7 +7,7 @@ pluginManagement {
 }
 
 plugins {
-    id("org.ajoberstar.reckon.settings") version "1.0.0"
+    id("com.javiersc.semver") version "0.9.0"
 }
 
 dependencyResolutionManagement {
@@ -25,11 +22,9 @@ dependencyResolutionManagement {
     }
 }
 
-configure<ReckonExtension> {
-    setDefaultInferredScope(Scope.PATCH)
-    stages("beta", "rc", "final")
-    setScopeCalc(calcScopeFromProp().or(calcScopeFromCommitMessages()))
-    setStageCalc(calcStageFromProp())
+semver {
+    isEnabled.set(true)
+    gitDir.set(layout.settingsDirectory.dir("../.git"))
 }
 
 include("catalog")
