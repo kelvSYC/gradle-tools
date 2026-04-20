@@ -87,7 +87,11 @@ Tests use [Kotest](https://kotest.io/) with JUnit Platform. Gradle plugin tests 
 
 ### Detekt
 
-Detekt 1.23.x is used for linting. Because the project targets JVM 25 but Detekt 1.23.x only supports `--jvm-target` up to 22, and because Detekt auto-wires its `jdkHome` (passed as `--jdk-home`) from the Java toolchain configured by the Kotlin plugin (JDK 25), all four convention plugins that apply Detekt explicitly override both:
+Detekt 1.23.x is used for linting. There are two interacting constraints:
+
+1. **Daemon JVM**: `gradle/gradle-daemon-jvm.properties` pins the Gradle daemon to JDK 21 (`toolchainVersion=21`). Detekt runs in-process on the daemon, and Detekt 1.23.x's bundled Kotlin compiler calls `JavaVersion.current()` to parse the running JVM version — it cannot parse "25.0.2" and throws `IllegalArgumentException`. **Do not change `toolchainVersion` to 25.** Kotlin compilation uses JDK 25 via the project toolchain (a forked process), so the daemon does not need to run on JDK 25.
+
+2. **`--jvm-target` and `--jdk-home`**: Detekt auto-wires both from the `JavaPluginExtension` toolchain (which Kotlin sets to JDK 25). Detekt 1.23.x does NOT have a `javaLauncher` property — it has `jdkHome: DirectoryProperty` and `jvmTarget`. All four convention plugins override both:
 ```kotlin
 tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
     jvmTarget = "22"
@@ -96,6 +100,7 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
     }.map { it.metadata.installationPath })
 }
 ```
-**Important:** Detekt 1.23.x does NOT have a `javaLauncher` property — use `jdkHome` to override the JDK used for type resolution. Do not remove either override: `jvmTarget` prevents the `--jvm-target 25` auto-convention, and `jdkHome` prevents `--jdk-home` from pointing at JDK 25 (which Detekt 1.23.x cannot analyse).
+
+Config is at `gradle/detekt.yml`.
 
 Config is at `gradle/detekt.yml`.
