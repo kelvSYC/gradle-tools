@@ -62,4 +62,6 @@ dependencies {
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
+    // mockk uses ByteBuddy dynamic agent loading; JVM 21+ warns and JVM 25 may deny it by default
+    jvmArgs("-XX:+EnableDynamicAgentLoading")
 }

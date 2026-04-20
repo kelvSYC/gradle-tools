@@ -57,6 +57,8 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
+    // mockk uses ByteBuddy dynamic agent loading; JVM 21+ warns and JVM 25 may deny it by default
+    jvmArgs("-XX:+EnableDynamicAgentLoading")
 }
 
 // The Kotlin Multiplatform Plugin doesn't integrate with the Test Report Aggregation Plugin

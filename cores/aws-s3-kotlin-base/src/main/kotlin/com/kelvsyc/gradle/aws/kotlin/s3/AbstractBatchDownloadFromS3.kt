@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
@@ -142,7 +143,7 @@ abstract class AbstractBatchDownloadFromS3 @Inject constructor(private val objec
 
         val failures = results.filterValues { it.isFailure }
         if (failures.isNotEmpty()) {
-            throw RuntimeException("${failures.size} artifact(s) failed to download: ${failures.keys.joinToString()}")
+            throw GradleException("${failures.size} artifact(s) failed to download: ${failures.keys.joinToString()}")
         }
     }
 }
