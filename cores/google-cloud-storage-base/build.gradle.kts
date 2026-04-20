@@ -22,4 +22,6 @@ dependencies {
     api("com.kelvsyc.gradle:clients-base")
 
     api(libs.google.cloud.storage)
+
+    testImplementation(libs.mockk)
 }
