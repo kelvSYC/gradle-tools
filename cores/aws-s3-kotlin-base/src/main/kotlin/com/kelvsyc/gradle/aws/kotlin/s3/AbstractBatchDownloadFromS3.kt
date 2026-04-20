@@ -34,9 +34,11 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 import org.gradle.kotlin.dsl.newInstance
 import javax.inject.Inject
 
+@DisableCachingByDefault(because = "Downloading from an external service is not cacheable")
 abstract class AbstractBatchDownloadFromS3 @Inject constructor(private val objects: ObjectFactory) : DefaultTask() {
     interface Artifact {
         @get:Input

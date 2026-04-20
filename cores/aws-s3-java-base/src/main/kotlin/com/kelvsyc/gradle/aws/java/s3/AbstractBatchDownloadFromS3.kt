@@ -11,6 +11,7 @@ import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFiles
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 import org.gradle.kotlin.dsl.newInstance
 import software.amazon.awssdk.services.s3.model.GetObjectRequest
 import software.amazon.awssdk.transfer.s3.S3TransferManager
@@ -26,6 +27,7 @@ import javax.inject.Inject
  *
  * All artifacts will be downloaded concurrently. This task fails if any artifact fails to be retrieved.
  */
+@DisableCachingByDefault(because = "Downloading from an external service is not cacheable")
 abstract class AbstractBatchDownloadFromS3 @Inject constructor(
     private val objects: ObjectFactory,
     private val providers: ProviderFactory

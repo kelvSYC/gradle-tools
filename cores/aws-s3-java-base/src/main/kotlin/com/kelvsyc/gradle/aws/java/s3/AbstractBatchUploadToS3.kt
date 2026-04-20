@@ -10,6 +10,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 import org.gradle.kotlin.dsl.newInstance
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import software.amazon.awssdk.transfer.s3.S3TransferManager
@@ -25,6 +26,7 @@ import javax.inject.Inject
  *
  * All artifacts will be uploaded concurrently. This task fails if any artifact fails to be uploaded.
  */
+@DisableCachingByDefault(because = "Uploading to an external service is not cacheable")
 abstract class AbstractBatchUploadToS3 @Inject constructor(
     private val objects: ObjectFactory,
     private val providers: ProviderFactory

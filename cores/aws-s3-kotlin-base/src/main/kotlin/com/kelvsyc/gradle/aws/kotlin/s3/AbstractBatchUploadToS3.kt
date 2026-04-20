@@ -34,10 +34,14 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 import org.gradle.kotlin.dsl.newInstance
 import javax.inject.Inject
 
+@DisableCachingByDefault(because = "Uploading to an external service is not cacheable")
 abstract class AbstractBatchUploadToS3 @Inject constructor(private val objects: ObjectFactory) : DefaultTask() {
     interface Artifact {
         @get:Input
@@ -47,6 +51,7 @@ abstract class AbstractBatchUploadToS3 @Inject constructor(private val objects: 
         val key: Property<String>
 
         @get:InputFile
+        @get:PathSensitive(PathSensitivity.NONE)
         val inputFile: RegularFileProperty
     }
 
