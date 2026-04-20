@@ -40,6 +40,9 @@ detekt {
 
 tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
     jvmTarget = "22"
+    jdkHome.set(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }.map { it.metadata.installationPath })
 }
 
 val libs = versionCatalogs.named("libs")

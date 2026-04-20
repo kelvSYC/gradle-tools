@@ -87,10 +87,15 @@ Tests use [Kotest](https://kotest.io/) with JUnit Platform. Gradle plugin tests 
 
 ### Detekt
 
-Detekt 1.23.x is used for linting. Because the project targets JVM 25 but Detekt 1.23.x only supports `--jvm-target` up to 22, all four convention plugins that apply Detekt explicitly set:
+Detekt 1.23.x is used for linting. Because the project targets JVM 25 but Detekt 1.23.x only supports `--jvm-target` up to 22, and because Detekt auto-wires its `jdkHome` (passed as `--jdk-home`) from the Java toolchain configured by the Kotlin plugin (JDK 25), all four convention plugins that apply Detekt explicitly override both:
 ```kotlin
 tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
     jvmTarget = "22"
+    jdkHome.set(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }.map { it.metadata.installationPath })
 }
 ```
+**Important:** Detekt 1.23.x does NOT have a `javaLauncher` property — use `jdkHome` to override the JDK used for type resolution. Do not remove either override: `jvmTarget` prevents the `--jvm-target 25` auto-convention, and `jdkHome` prevents `--jdk-home` from pointing at JDK 25 (which Detekt 1.23.x cannot analyse).
+
 Config is at `gradle/detekt.yml`.
