@@ -17,10 +17,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up JDK
+      - name: Set up JDK 25 (Kotlin compilation toolchain)
         uses: actions/setup-java@v5
         with:
           java-version: '25'
+          distribution: 'zulu'
+      - name: Set up JDK 21 (Gradle/Detekt runtime)
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
           distribution: 'zulu'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6

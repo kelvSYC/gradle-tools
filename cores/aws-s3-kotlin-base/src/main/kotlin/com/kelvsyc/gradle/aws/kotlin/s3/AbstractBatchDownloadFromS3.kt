@@ -12,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.fold
@@ -96,8 +96,7 @@ abstract class AbstractBatchDownloadFromS3 @Inject constructor(private val objec
     @OptIn(ExperimentalCoroutinesApi::class)
     @TaskAction
     fun run() {
-        // Block returns Map<String, Result<GetObjectResponse> if additional logging is needed
-        runBlocking {
+        val results = runBlocking {
             requests.getOrElse(emptyList()).asFlow()
                 .flowOn(Dispatchers.IO)
                 .onStart {
@@ -106,9 +105,7 @@ abstract class AbstractBatchDownloadFromS3 @Inject constructor(private val objec
                 .onEach {
                     logger.lifecycle("Downloading {} from {} to {}", it.name, "${it.request.bucket}/${it.request.key}", it.output.asAbsolutePath.get())
                 }
-                .flatMapLatest {
-                    // Because we need to have the name preserved, we use flatMapLatest with a flow that emits only one
-                    // value, and all of the logic is found within
+                .flatMapMerge {
                     val name = it.name
                     flow {
                         val response = client.get().getObject(it.request) { response ->
@@ -141,6 +138,11 @@ abstract class AbstractBatchDownloadFromS3 @Inject constructor(private val objec
                     map[result.first] = result.second
                     map
                 }
+        }
+
+        val failures = results.filterValues { it.isFailure }
+        if (failures.isNotEmpty()) {
+            throw RuntimeException("${failures.size} artifact(s) failed to download: ${failures.keys.joinToString()}")
         }
     }
 }
