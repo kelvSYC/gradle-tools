@@ -89,7 +89,9 @@ Tests use [Kotest](https://kotest.io/) with JUnit Platform. Gradle plugin tests 
 
 Detekt 1.23.x is used for linting. There are two interacting constraints:
 
-1. **Daemon JVM**: `gradle/gradle-daemon-jvm.properties` pins the Gradle daemon to JDK 21 (`toolchainVersion=21`). Detekt runs in-process on the daemon, and Detekt 1.23.x's bundled Kotlin compiler calls `JavaVersion.current()` to parse the running JVM version — it cannot parse "25.0.2" and throws `IllegalArgumentException`. **Do not change `toolchainVersion` to 25.** Kotlin compilation uses JDK 25 via the project toolchain (a forked process), so the daemon does not need to run on JDK 25.
+1. **Daemon JVM**: `gradle/gradle-daemon-jvm.properties` pins the Gradle daemon to JDK 21 (`toolchainVersion=21`). Detekt runs in-process on the daemon, and Detekt 1.23.x's bundled Kotlin compiler calls `JavaVersion.current()` to parse the running JVM version — it cannot parse "25.0.2" and throws `IllegalArgumentException`. **Do not change `toolchainVersion` to 25.**
+
+   The internal build infrastructure (`gradle/settings`, `gradle/plugins/*`) all use `jvmToolchain(21)` so their class files load correctly into the JDK 21 daemon. Published component builds (`cores/`, `extensions/`) still compile with JDK 25 via toolchain (a forked process), so only their output artifacts target JVM 25.
 
 2. **`--jvm-target` and `--jdk-home`**: Detekt auto-wires both from the `JavaPluginExtension` toolchain (which Kotlin sets to JDK 25). Detekt 1.23.x does NOT have a `javaLauncher` property — it has `jdkHome: DirectoryProperty` and `jvmTarget`. All four convention plugins override both:
 ```kotlin

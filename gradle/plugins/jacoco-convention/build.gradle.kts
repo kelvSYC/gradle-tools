@@ -5,7 +5,7 @@ plugins {
 group = "com.kelvsyc.internal"
 
 kotlin {
-    jvmToolchain(25)
+    jvmToolchain(21)
 }
 
 dependencies {
