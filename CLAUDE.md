@@ -105,4 +105,21 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
 
 Config is at `gradle/detekt.yml`.
 
-Config is at `gradle/detekt.yml`.
+### Test JVM compatibility (mockk / ByteBuddy)
+
+Tests run on JDK 25 via toolchain (forked process). mockk uses ByteBuddy for mocking. Three JVM args are required in all four convention plugins:
+
+```kotlin
+tasks.withType<Test>().configureEach {
+    jvmArgs("-XX:+EnableDynamicAgentLoading")   // allow ByteBuddy to self-attach on JVM 21+
+    jvmArgs("-Dnet.bytebuddy.experimental=true") // ByteBuddy 1.15.x only officially supports up to Java 24
+    jvmArgumentProviders.add(CommandLineArgumentProvider {
+        // Pre-attach the agent at startup — dynamic self-attachment is unreliable on JVM 25
+        classpath.find { "byte-buddy-agent" in it.name }
+            ?.let { listOf("-javaagent:$it") }
+            ?: emptyList()
+    })
+}
+```
+
+The `javaagent` provider is a no-op for components that don't have mockk on their test classpath.
