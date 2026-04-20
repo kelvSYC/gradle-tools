@@ -6,8 +6,10 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.services.ServiceReference
 import org.gradle.api.tasks.Internal
+import org.gradle.work.DisableCachingByDefault
 import javax.inject.Inject
 
+@DisableCachingByDefault(because = "Downloading from an external service is not cacheable")
 abstract class BatchDownloadFromS3 @Inject constructor(objects: ObjectFactory) : AbstractBatchDownloadFromS3(objects) {
     @get:ServiceReference(ClientsBasePlugin.SERVICE_NAME)
     abstract val service: Property<ClientsBaseService>

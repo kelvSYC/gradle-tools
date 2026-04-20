@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
@@ -33,9 +34,11 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 import org.gradle.kotlin.dsl.newInstance
 import javax.inject.Inject
 
+@DisableCachingByDefault(because = "Downloading from an external service is not cacheable")
 abstract class AbstractBatchDownloadFromS3 @Inject constructor(private val objects: ObjectFactory) : DefaultTask() {
     interface Artifact {
         @get:Input
@@ -142,7 +145,7 @@ abstract class AbstractBatchDownloadFromS3 @Inject constructor(private val objec
 
         val failures = results.filterValues { it.isFailure }
         if (failures.isNotEmpty()) {
-            throw RuntimeException("${failures.size} artifact(s) failed to download: ${failures.keys.joinToString()}")
+            throw GradleException("${failures.size} artifact(s) failed to download: ${failures.keys.joinToString()}")
         }
     }
 }

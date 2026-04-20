@@ -7,11 +7,13 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.services.ServiceReference
 import org.gradle.api.tasks.Internal
+import org.gradle.work.DisableCachingByDefault
 import javax.inject.Inject
 
 /**
  * Specialization of [AbstractBatchDownloadFromGCS] integrating it with the clients-base core.
  */
+@DisableCachingByDefault(because = "Downloading from an external service is not cacheable")
 abstract class BatchDownloadFromGCS @Inject constructor(
     objects: ObjectFactory,
     providers: ProviderFactory

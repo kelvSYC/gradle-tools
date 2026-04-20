@@ -12,6 +12,7 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 import org.gradle.kotlin.dsl.submit
 import org.gradle.workers.WorkerExecutor
 import java.io.File
@@ -24,6 +25,7 @@ import javax.inject.Inject
  * This task is functionally similar to [GetGitRemoteArchive], except that the resulting archive is extracted to the
  * [outputDirectory]. Like [GetGitRemoteArchive], this task is implemented using [GitRemoteArchiveAction].
  */
+@DisableCachingByDefault(because = "Downloading from a remote git repository is not cacheable")
 abstract class GitExport @Inject constructor(
     private val workers: WorkerExecutor,
     private val ar: ArchiveOperations,

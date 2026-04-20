@@ -7,8 +7,10 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.services.ServiceReference
 import org.gradle.api.tasks.Internal
+import org.gradle.work.DisableCachingByDefault
 import javax.inject.Inject
 
+@DisableCachingByDefault(because = "Uploading to an external service is not cacheable")
 abstract class BatchUploadToS3 @Inject constructor(
     objects: ObjectFactory,
     providers: ProviderFactory
