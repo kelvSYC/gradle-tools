@@ -61,4 +61,10 @@ tasks.withType<Test>().configureEach {
     useJUnitPlatform()
     // mockk uses ByteBuddy dynamic agent loading; JVM 21+ warns and JVM 25 may deny it by default
     jvmArgs("-XX:+EnableDynamicAgentLoading")
+    // Pre-attach the ByteBuddy agent at JVM startup — dynamic self-attachment is unreliable on JVM 25
+    jvmArgumentProviders.add(CommandLineArgumentProvider {
+        classpath.find { "byte-buddy-agent" in it.name }
+            ?.let { listOf("-javaagent:$it") }
+            ?: emptyList()
+    })
 }

@@ -15,6 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      checks: write
+      pull-requests: write
     outputs:
       aggregate-jacoco-id: ${{ steps.upload-aggregate-jacoco.outputs.artifact-id }}
       aggregate-kdoc-id: ${{ steps.upload-aggregate-kdoc.outputs.artifact-id }}
@@ -43,6 +45,13 @@ jobs:
           build-scan-terms-of-use-agree: "yes"
       - name: Build
         run: ./gradlew --info --stacktrace :build
+      - name: Publish Test Results
+        uses: mikepenz/action-junit-report@v4
+        if: always()
+        with:
+          report_paths: '**/build/test-results/**/TEST-*.xml'
+          check_name: Test Results
+          fail_on_failure: false
       - name: Upload Aggregate Test Report
         id: upload-aggregate-test
         uses: actions/upload-artifact@v7
