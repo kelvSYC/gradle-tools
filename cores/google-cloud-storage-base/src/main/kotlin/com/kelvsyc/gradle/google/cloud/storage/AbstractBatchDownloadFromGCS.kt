@@ -19,10 +19,11 @@ import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFiles
 import org.gradle.api.tasks.TaskAction
-import org.gradle.work.DisableCachingByDefault
 import org.gradle.kotlin.dsl.newInstance
+import org.gradle.work.DisableCachingByDefault
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import kotlin.properties.Delegates
 
 /**
  * This task retrieves a number of artifacts from GCS. Each artifact consists of a bucket and blob name, as well as a
@@ -77,30 +78,46 @@ abstract class AbstractBatchDownloadFromGCS @Inject constructor(
 
     private class Callback(
         private val artifactName: String,
-        private val outputFile: RegularFile
+        private val outputFile: RegularFile,
+        private val completion: CountDownLatch
     ) : BatchResult.Callback<Blob, StorageException> {
         companion object {
             private val logger = Logging.getLogger(Callback::class.java)
         }
 
-        var successful by Delegates.notNull<Boolean>()
+        @Volatile
+        private var result: Boolean? = null
+
+        @Volatile
         var error: StorageException? = null
+            private set
+
+        val successful: Boolean
+            get() = result == true
 
         override fun success(blob: Blob?) {
-            if (blob != null) {
-                blob.downloadTo(outputFile.asFile.toPath())
-                logger.lifecycle("Written artifact '{}' to {}", artifactName, outputFile.asFile.absolutePath)
-                successful = true
-            } else {
-                logger.lifecycle("Failed to retrieve artifact {} from GCS; blob not found", artifactName)
-                successful = false
+            try {
+                if (blob != null) {
+                    blob.downloadTo(outputFile.asFile.toPath())
+                    logger.lifecycle("Written artifact '{}' to {}", artifactName, outputFile.asFile.absolutePath)
+                    result = true
+                } else {
+                    logger.lifecycle("Failed to retrieve artifact {} from GCS; blob not found", artifactName)
+                    result = false
+                }
+            } finally {
+                completion.countDown()
             }
         }
 
         override fun error(e: StorageException) {
-            logger.lifecycle("Failed to retrieve artiface '$artifactName' from GCS", e)
-            successful = false
-            error = e
+            try {
+                logger.lifecycle("Failed to retrieve artifact '$artifactName' from GCS", e)
+                result = false
+                error = e
+            } finally {
+                completion.countDown()
+            }
         }
     }
 
@@ -115,7 +132,10 @@ abstract class AbstractBatchDownloadFromGCS @Inject constructor(
 
     @Suppress("LeakingThis")
     private val batch = artifacts.map {
-        val data = it.mapValues { it.value.blobId.get() to Callback(it.key, it.value.outputFile.get()) }
+        val completion = CountDownLatch(it.size)
+        val data = it.mapValues { entry ->
+            entry.value.blobId.get() to Callback(entry.key, entry.value.outputFile.get(), completion)
+        }
 
         val batch = client.get().batch().apply {
             data.forEach {
@@ -123,14 +143,20 @@ abstract class AbstractBatchDownloadFromGCS @Inject constructor(
                 get(blob).notify(callback)
             }
         }
+
         val callbacks = data.mapValues { it.value.second }
-        batch to callbacks
+        Triple(batch, callbacks, completion)
     }
 
     @TaskAction
     fun run() {
-        val (request, callbacks) = batch.get()
+        val (request, callbacks, completion) = batch.get()
+
         request.submit()
+
+        if (!completion.await(1, TimeUnit.MINUTES)) {
+            throw GradleException("Timed out waiting for GCS batch callbacks to complete")
+        }
 
         val failed = callbacks.filter { !it.value.successful }
         if (failed.isNotEmpty()) {
