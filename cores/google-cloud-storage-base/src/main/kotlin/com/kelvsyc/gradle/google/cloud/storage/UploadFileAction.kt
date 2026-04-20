@@ -15,6 +15,10 @@ import java.nio.ByteBuffer
  * Gradle [WorkAction] for uploading a file to Google Cloud Storage.
  */
 abstract class UploadFileAction : WorkAction<UploadFileAction.Parameters> {
+    companion object {
+        const val BUFFER_SIZE = 1024 * 1024
+    }
+
     interface Parameters : WorkParameters {
         val service: Property<ClientsBaseService>
         val clientName: Property<String>
@@ -33,7 +37,7 @@ abstract class UploadFileAction : WorkAction<UploadFileAction.Parameters> {
 
         parameters.inputFile.get().asFile.inputStream().use { inputStream ->
             client.get().writer(blobInfo).use { writer ->
-                val buffer = ByteArray(1024 * 1024)
+                val buffer = ByteArray(BUFFER_SIZE)
                 var bytesRead: Int
                 while (inputStream.read(buffer).also { bytesRead = it } != -1) {
                     writer.write(ByteBuffer.wrap(buffer, 0, bytesRead))
