@@ -117,22 +117,22 @@ jobs:
         with:
           java-version: '21'
           distribution: 'zulu'
-- name: Setup Gradle
-         uses: gradle/actions/setup-gradle@v6
-         with:
-           build-scan-publish: true
-           build-scan-terms-of-use-url: "https://gradle.com/help/legal-terms-of-use"
-           build-scan-terms-of-use-agree: "yes"
-       - name: Create initial tag for semver
-         run: |
-           if ! git rev-parse v0.1.0 >/dev/null 2>&1; then
-             git tag v0.1.0
-             git push origin v0.1.0
-           fi
-       - name: Publish Snapshot
-         run: ./gradlew --info --stacktrace "-Psemver.stage=snapshot" "-Psemver.scope=patch" ":publish"
-         env:
-           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          build-scan-publish: true
+          build-scan-terms-of-use-url: "https://gradle.com/help/legal-terms-of-use"
+          build-scan-terms-of-use-agree: "yes"
+      - name: Create initial tag for semver
+        run: |
+          if ! git rev-parse v0.1.0 >/dev/null 2>&1; then
+            git tag v0.1.0
+            git push origin v0.1.0
+          fi
+      - name: Publish Snapshot
+        run: ./gradlew --info --stacktrace "-Psemver.stage=snapshot" "-Psemver.scope=patch" ":publish"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   pages:
     runs-on: ubuntu-latest
