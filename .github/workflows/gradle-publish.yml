@@ -36,4 +36,5 @@ jobs:
       - name: Publish
         run: ./gradlew --info --stacktrace :publish
         env:
+          GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
