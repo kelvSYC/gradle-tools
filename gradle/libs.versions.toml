@@ -25,8 +25,8 @@ kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin" } # versi
 semver-plugin = "com.javiersc.semver:semver-gradle-plugin:0.9.0"
 
 # API Dependencies
-artifactory-client-api = "org.jfrog.artifactory.client:artifactory-java-client-api:2.21.1"
-artifactory-client-impl = "org.jfrog.artifactory.client:artifactory-java-client-services:2.21.1"
+artifactory-client-api = "org.jfrog.artifactory.client:artifactory-java-client-api:2.21.2"
+artifactory-client-impl = "org.jfrog.artifactory.client:artifactory-java-client-services:2.21.2"
 aws-auth-java = { module = "software.amazon.awssdk:auth" } # version from BOM 'aws-java-sdk-bom'
 aws-config-kotlin = { module = "aws.sdk.kotlin:aws-config" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-core-java = { module = "software.amazon.awssdk:aws-core" } # version from BOM 'aws-java-sdk-bom'
