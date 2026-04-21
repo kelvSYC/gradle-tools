@@ -45,7 +45,7 @@ jobs:
           build-scan-terms-of-use-url: "https://gradle.com/help/legal-terms-of-use"
           build-scan-terms-of-use-agree: "yes"
       - name: Build
-        run: ./gradlew --info --stacktrace :build
+        run: ./gradlew :build
       - name: Publish Test Results
         uses: mikepenz/action-junit-report@v6
         if: always()
@@ -130,7 +130,14 @@ jobs:
             git push origin v0.1.0
           fi
       - name: Publish Snapshot
-        run: ./gradlew --info --stacktrace "-Psemver.stage=snapshot" "-Psemver.scope=patch" ":publish"
+        run: |
+          SHA=$(echo ${{ github.sha }} | cut -c1-7)
+          for pkg in $(gh api "maven/kelvSYC/gradle-tools" --silent 2>/dev/null | jq -r '.[].name' 2>/dev/null); do
+            for VER in $(gh api "maven/kelvSYC/gradle-tools/$pkg/versions" --silent 2>/dev/null | jq -r ".[] | select(endswith(\"+$SHA\"))" 2>/dev/null); do
+              gh api -X DELETE "maven/kelvSYC/gradle-tools/$pkg/versions/$VER" --silent || true
+            done
+          done
+          ./gradlew "-Psemver.stage=snapshot" "-Psemver.scope=patch" ":publish"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
