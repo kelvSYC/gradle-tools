@@ -123,8 +123,8 @@ jobs:
           build-scan-publish: true
           build-scan-terms-of-use-url: "https://gradle.com/help/legal-terms-of-use"
           build-scan-terms-of-use-agree: "yes"
-      - name: Publish
-        run: ./gradlew --info --stacktrace :publish
+      - name: Publish Snapshot
+        run: ./gradlew --info --stacktrace "-Psemver.stage=snapshot" "-Psemver.scope=patch" ":publish"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

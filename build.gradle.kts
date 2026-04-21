@@ -60,6 +60,9 @@ tasks.register("build") {
 }
 
 tasks.register("publish") {
+    group = "publishing"
+    description = "Publish all components"
+
     components.forEach {
         dependsOn(gradle.includedBuild(it).task(":$name"))
     }
