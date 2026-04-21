@@ -1,6 +1,5 @@
 import com.javiersc.semver.settings.gradle.plugin.SemverSettingsExtension
 
-// Settings plugin to be applied to all builds located in the cores directory
 pluginManagement {
     includeBuild("../../gradle/plugins")
 }
