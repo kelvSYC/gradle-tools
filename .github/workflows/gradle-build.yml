@@ -138,8 +138,11 @@ jobs:
           done
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set snapshot version properties
+        run: |
+          find . -name "gradle.properties" -not -path "*/build/*" -exec sh -c 'echo "semver.stage=snapshot" >> "$1" && echo "semver.scope=patch" >> "$1" && echo "semver.checkClean=false" >> "$1"' _ {} \;
       - name: Publish Snapshot
-        run: ./gradlew "-Psemver.stage=snapshot" "-Psemver.scope=patch" ":publish"
+        run: ./gradlew ":publish"
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
