@@ -57,7 +57,7 @@ dependencies {
     libs.findLibrary("kotest-runner").getOrNull()?.let { testImplementation(it) }
 }
 
-tasks.named<GenerateModuleMetadata>("generateMetadataFileForPluginMavenPublication") {
+tasks.withType<GenerateModuleMetadata>().configureEach {
     suppressedValidationErrors.add("dependencies-without-versions")
 }
 
