@@ -22,22 +22,22 @@ class ShellProviderExtensionsSpec : FunSpec() {
 
     init {
         context("which - exec spec configuration") {
-            test("uses 'command' as the executable") {
+            test("uses 'which' as the executable") {
                 val execSpec = mockk<ExecSpec>(relaxed = true)
                 val providers = mockProviderFactory(execSpec)
 
                 providers.which("git")
 
-                verify { execSpec.executable("command") }
+                verify { execSpec.executable("which") }
             }
 
-            test("passes '-v' and the command name as args") {
+            test("passes the command name as args") {
                 val execSpec = mockk<ExecSpec>(relaxed = true)
                 val providers = mockProviderFactory(execSpec)
 
                 providers.which("git")
 
-                verify { execSpec.args(listOf("-v", "git")) }
+                verify { execSpec.args(listOf("git")) }
             }
 
             test("passes the correct command name when looking up a different command") {
@@ -46,7 +46,7 @@ class ShellProviderExtensionsSpec : FunSpec() {
 
                 providers.which("gh")
 
-                verify { execSpec.args(listOf("-v", "gh")) }
+                verify { execSpec.args(listOf("gh")) }
             }
         }
     }
