@@ -29,4 +29,5 @@ dependencies {
     implementation(libs.aws.smithy.credentials)
     implementation(libs.aws.smithy.runtime.core)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.mockk)
 }
