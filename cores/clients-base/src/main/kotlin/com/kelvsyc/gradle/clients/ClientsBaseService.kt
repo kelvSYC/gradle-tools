@@ -13,6 +13,18 @@ import kotlin.reflect.safeCast
 
 /**
  * Gradle build service providing a centralized repository of service clients.
+ *
+ * ## Thread Safety
+ *
+ * As a [org.gradle.api.services.BuildService], instances of this class are shared across all tasks in a build and may
+ * be accessed concurrently during task execution.
+ *
+ * Registration of client bindings ([registerBinding]) and client instances ([registerIfAbsent]) **must** be performed
+ * during the configuration phase only. Gradle's configuration phase is single-threaded, so no concurrency guarantees
+ * are made for these methods. Calling them during task execution (i.e. from a task action) is unsupported and may
+ * result in undefined behaviour.
+ *
+ * Client retrieval via [getClient] is safe to call concurrently during task execution.
  */
 @Suppress("detekt:TooManyFunctions")
 abstract class ClientsBaseService : BuildService<BuildServiceParameters.None>, AutoCloseable {
@@ -102,7 +114,7 @@ abstract class ClientsBaseService : BuildService<BuildServiceParameters.None>, A
             name.takeIf { infos.names.contains(it) }?.let {
                 @Suppress("UNCHECKED_CAST")
                 val info = infos.named(it).get() as ServiceClientInfoInternal<C>
-                clients.getOrPut(it) {
+                clients.computeIfAbsent(it) {
                     info.createClient()
                 }
             }
@@ -130,7 +142,7 @@ abstract class ClientsBaseService : BuildService<BuildServiceParameters.None>, A
             name.takeIf { infos.names.contains(it) }?.let {
                 @Suppress("UNCHECKED_CAST")
                 val info = infos.named(it).get() as ServiceClientInfoInternal<C>
-                clients.getOrPut(it) {
+                clients.computeIfAbsent(it) {
                     info.createClient()
                 }
             }
