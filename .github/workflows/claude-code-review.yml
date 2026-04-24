@@ -3,12 +3,17 @@ name: Claude Code Review
 on:
   pull_request:
     types: [opened, synchronize, ready_for_review, reopened]
-    # Optional: Only run on specific file changes
-    # paths:
-    #   - "src/**/*.ts"
-    #   - "src/**/*.tsx"
-    #   - "src/**/*.js"
-    #   - "src/**/*.jsx"
+    paths:
+      - '**.kt'
+      - '**.gradle.kts'
+      - '**.gradle'
+      - '**.properties'
+      - '**.toml'
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - '.github/**'
+      - 'gradle/wrapper/**'
 
 jobs:
   claude-review:
@@ -38,4 +43,3 @@ jobs:
           prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}'
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
-
