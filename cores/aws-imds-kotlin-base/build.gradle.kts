@@ -22,4 +22,6 @@ dependencies {
     api("com.kelvsyc.gradle:clients-base")
 
     api(libs.aws.config.kotlin)
+
+    testImplementation(libs.mockk)
 }
