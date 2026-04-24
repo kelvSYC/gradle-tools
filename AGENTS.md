@@ -1,47 +1,67 @@
 # AGENTS.md
 
-Critical gotchas for OpenCode agents working in this Gradle composite build.
+Critical gotchas and quick reference for automated agents (OpenCode, etc.) working in this Gradle composite build. For comprehensive architecture and details, see `CLAUDE.md`.
+
+## Requirements for All Agents
+
+- **Tests and detekt must pass.** All code changes must pass `./gradlew :test` and `./gradlew :detekt` before completing a task. Breaking either check is not acceptable.
+- **Be concise.** Avoid unnecessary explanation or narrative.
+- **No unsolicited explanations.** Only explain what you're doing if explicitly asked.
 
 ## Build Commands
 
-- Root: `./gradlew :build` (aggregate), `./gradlew :test` (aggregate)
-- Single component: `cd cores/foo-bar && ../gradlew :build` (not from root)
+Root commands (aggregate across all components):
+```bash
+./gradlew :build          # Full build + tests + coverage
+./gradlew :test           # Tests only
+./gradlew :detekt         # Lint only
+./gradlew :publish        # Publish to GitHub Packages
+```
 
-## Detekt + JDK 25 = FAILS
+Single component (from inside component directory):
+```bash
+cd cores/artifactory-base
+./gradlew :build
+./gradlew :detekt
+```
 
-The Gradle daemon runs on JDK 21 (via `gradle/gradle-daemon-jvm.properties`). **Do not change this to 25**. Detekt 1.23.x's bundled Kotlin compiler cannot parse JVM version "25.x" and throws `IllegalArgumentException`.
+## Critical Gotchas
 
-Workaround already in place: convention plugins override `jvmTarget = "22"` and `jdkHome` to JDK 21 for Detekt tasks.
+### Detekt + JDK 25 = FAILS ⚠️
 
-## Test JVM Args (ByteBuddy / mockk)
+The Gradle daemon is pinned to JDK 21 (`gradle/gradle-daemon-jvm.properties`). **Do not change to 25.**
 
-Tests run on JDK 25 but mockk uses ByteBuddy which requires these JVM args:
+Detekt 1.23.x's bundled Kotlin compiler cannot parse JVM version "25.x" and throws `IllegalArgumentException`. Workaround is already in place in convention plugins (`jvmTarget = "22"` and `jdkHome` overrides) — don't remove them.
+
+### Test JVM Args (ByteBuddy / mockk) ⚠️
+
+Tests run on JDK 25 but mockk/ByteBuddy requires these JVM args (already wired in convention plugins):
 ```
 -XX:+EnableDynamicAgentLoading
 -Dnet.bytebuddy.experimental=true
+-javaagent:[byte-buddy-agent jar path]
 ```
-Plus pre-attach the byte-buddy-agent at startup. These are already wired in convention plugins — don't remove them.
 
-## Publishing
+Do not remove these from convention plugins.
 
-Requires `GITHUB_ACTOR` and `GITHUB_TOKEN` env vars. Without these, `./gradlew :publish` fails silently or with obscure errors.
+### Publishing Requires Env Vars ⚠️
 
-## Component Settings Pattern
+`./gradlew :publish` requires `GITHUB_ACTOR` and `GITHUB_TOKEN`. Without them, it fails silently or with obscure errors.
 
-Every component has its own `settings.gradle.kts` that includes:
+### Component Settings Pattern ⚠️
+
+Every component's `settings.gradle.kts` includes:
 ```kotlin
 pluginManagement { includeBuild("../../gradle/settings") }
 plugins { id("com.kelvsyc.internal") }
+includeBuild("../clients-base")  // if needed
 ```
-Don't modify these — they wire up the composite build correctly.
 
-## Entry Points
+Do not modify these — they wire up the composite build correctly.
 
-- Core plugins: `cores/*/src/main/kotlin/`
-- Extensions: `extensions/*/src/main/kotlin/`
-- Tests mirror `src/main` structure under `src/test/`
+## Quick Navigation
 
-## References
-
-- Full build docs: `CLAUDE.md`
-- Detekt config: `gradle/detekt.yml`
+- **Architecture & detailed build hierarchy**: See `CLAUDE.md`
+- **Linting config**: `gradle/detekt.yml`
+- **Source code structure**: `cores/*/src/main/kotlin/`, `extensions/*/src/main/kotlin/`
+- **Tests**: Mirror `src/main` structure under `src/test/`

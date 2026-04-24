@@ -1,6 +1,14 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Comprehensive reference for building, testing, and publishing in this Gradle composite build. This document provides architectural context and detailed guidance for all agents (human and automated).
+
+**Quick reference for automated agents:** See `AGENTS.md` for critical gotchas and a condensed build commands guide.
+
+## Style & Expectations
+
+- **Be concise.** Avoid unnecessary elaboration or summaries. Show the work, not the narrative.
+- **Explanations only when prompted.** Don't explain what you're doing or why unless asked.
+- **Tests and detekt must pass.** All code changes must pass `./gradlew :test` and `./gradlew :detekt` before being considered complete. Never commit or propose code that breaks either check.
 
 ## Build Commands
 
@@ -47,7 +55,7 @@ The root `settings.gradle.kts` composes three layers of included builds:
      - `com.kelvsyc.internal.kotlin-multiplatform-jvm-library` — Kotlin Multiplatform (JVM target)
      - `com.kelvsyc.internal.github-publishing` — Publishes to GitHub Packages
      - `com.kelvsyc.internal.jacoco` / `kotlin-multiplatform-jacoco` — JaCoCo wiring
-     - `com.kelvsyc.internal.dokka` / `dokkatoo` — Dokka/Dokkatoo wiring
+     - `com.kelvsyc.internal.dokka` — Dokka wiring
 
 2. **`cores/`** — Published Gradle plugins (group `com.kelvsyc.gradle`). Each is an independent included build with its own `settings.gradle.kts` that applies `com.kelvsyc.internal` and declares inter-core dependencies. Plugin types:
    - `*-extensions` — Gradle API utility libraries (not plugins per se)
