@@ -25,6 +25,8 @@ cd cores/artifactory-base
 ./gradlew :detekt         # Lint only this component
 ```
 
+All builds must pass a detekt check. When adding or modifying Kotlin source files, run `./gradlew :detekt` (or `:detekt` within the component directory) and fix any reported issues before considering the build complete.
+
 Publishing requires `GITHUB_ACTOR` and `GITHUB_TOKEN` environment variables.
 
 ## Architecture
