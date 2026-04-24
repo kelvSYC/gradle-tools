@@ -70,6 +70,57 @@ tasks.register("queryArtifactory") {
 }
 ```
 
+## Tasks
+
+### Downloading Artifacts
+
+Use `BatchDownloadFromArtifactory` to download files from Artifactory during the execution phase. All artifacts
+are downloaded concurrently via `DownloadArtifactAction`:
+
+```kotlin
+tasks.register<BatchDownloadFromArtifactory>("downloadReports") {
+    clientName.set("myArtifactory")
+
+    registerArtifact("report") {
+        repository.set("generic-local")
+        path.set("reports/build-report.zip")
+        outputFile.set(layout.buildDirectory.file("reports/build-report.zip"))
+    }
+}
+```
+
+> **Note:** These tasks are intended for use with non-Maven, non-Ivy Artifactory repositories (e.g. generic
+> repositories). For Maven or Ivy repositories, use Gradle's built-in dependency resolution instead.
+
+Extend `AbstractBatchDownloadFromArtifactory` to create a reusable subclass with the `@ServiceReference`
+already wired, or to add custom behaviour common to all download tasks in your build.
+
+The `outputFiles` property exposes the download destinations as a `MapProperty`, allowing the outputs of this
+task to be wired as inputs to downstream tasks.
+
+### Uploading Artifacts
+
+Use `BatchUploadToArtifactory` to upload files to Artifactory during the execution phase. All artifacts
+are uploaded concurrently via `UploadArtifactAction`:
+
+```kotlin
+tasks.register<BatchUploadToArtifactory>("uploadReports") {
+    clientName.set("myArtifactory")
+
+    registerArtifact("report") {
+        repository.set("generic-local")
+        path.set("reports/build-report.zip")
+        inputFile.set(layout.buildDirectory.file("reports/build-report.zip"))
+    }
+}
+```
+
+> **Note:** These tasks are intended for use with non-Maven, non-Ivy Artifactory repositories (e.g. generic
+> repositories). For Maven or Ivy repositories, use Gradle's built-in `maven-publish` plugin instead.
+
+Extend `AbstractBatchUploadToArtifactory` to create a reusable subclass with the `@ServiceReference`
+already wired, or to add custom behaviour common to all upload tasks in your build.
+
 ## Building Custom Integrations
 
 ### Value Sources for Reading Artifacts into Memory
@@ -174,6 +225,63 @@ Parameters (declared in `AbstractArtifactValueSource.Parameters`):
 | `clientName` | `Property<String>` | The registered client name |
 | `repository` | `Property<String>` | The Artifactory repository key |
 | `path` | `Property<String>` | The path to the artifact within the repository |
+
+### `AbstractBatchDownloadFromArtifactory`
+
+Base class for tasks that download multiple artifacts from Artifactory concurrently using `DownloadArtifactAction`.
+Subclasses can add custom behaviour or provide the `@ServiceReference` for `service`. Use
+`registerArtifact(name, action)` to declare each artifact to download.
+
+Task properties:
+
+| Property | Type | Description |
+|---|---|---|
+| `service` | `Property<ClientsBaseService>` | The shared build service (abstract — subclasses supply this) |
+| `clientName` | `Property<String>` | The registered client name |
+
+Each artifact configures:
+
+| Property | Type | Description |
+|---|---|---|
+| `repository` | `Property<String>` | The Artifactory repository key |
+| `path` | `Property<String>` | The path to the artifact within the repository |
+| `outputFile` | `RegularFileProperty` | Local destination file |
+
+### `BatchDownloadFromArtifactory`
+
+Concrete subclass of `AbstractBatchDownloadFromArtifactory` that wires `service` via
+`@ServiceReference(ClientsBasePlugin.SERVICE_NAME)`. Set `clientName` to the registered client name.
+
+### `AbstractBatchUploadToArtifactory`
+
+Base class for tasks that upload multiple artifacts to Artifactory concurrently using `UploadArtifactAction`.
+Subclasses can add custom behaviour or provide the `@ServiceReference` for `service`. Use
+`registerArtifact(name, action)` to declare each artifact to upload.
+
+Task properties:
+
+| Property | Type | Description |
+|---|---|---|
+| `service` | `Property<ClientsBaseService>` | The shared build service (abstract — subclasses supply this) |
+| `clientName` | `Property<String>` | The registered client name |
+
+Each artifact configures:
+
+| Property | Type | Description |
+|---|---|---|
+| `repository` | `Property<String>` | The Artifactory repository key |
+| `path` | `Property<String>` | The destination path within the repository |
+| `inputFile` | `RegularFileProperty` | Local source file |
+
+### `BatchUploadToArtifactory`
+
+Concrete subclass of `AbstractBatchUploadToArtifactory` that wires `service` via
+`@ServiceReference(ClientsBasePlugin.SERVICE_NAME)`. Set `clientName` to the registered client name.
+
+### `DownloadArtifactAction` / `UploadArtifactAction`
+
+`WorkAction` implementations used internally by the batch tasks. Can also be submitted directly to a
+`WorkerExecutor` for custom single-artifact workflows.
 
 ### `AbstractStreamingRequestValueSource<T, P>`
 

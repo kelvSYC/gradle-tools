@@ -8,7 +8,10 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.gradle.work.DisableCachingByDefault
 import org.gradle.kotlin.dsl.newInstance
@@ -80,6 +83,11 @@ abstract class AbstractBatchUploadToS3 @Inject constructor(
             objects.newInstance<Artifact>(name).also { configureAction.execute(it) }
         })
     }
+
+    @Suppress("LeakingThis")
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.NONE)
+    val inputFiles = artifacts.map { it.mapValues { it.value.inputFile.get() } }
 
     @Suppress("LeakingThis")
     private val requests = artifacts.map {

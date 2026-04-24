@@ -1,4 +1,4 @@
-package com.kelvsyc.gradle.google.cloud.storage
+package com.kelvsyc.gradle.artifactory
 
 import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.Action
@@ -20,41 +20,54 @@ import org.gradle.workers.WorkerExecutor
 import javax.inject.Inject
 
 /**
- * This task uploads a number of artifacts to GCS. Each artifact consists of a bucket and blob name, as well as a
- * source file. All artifacts must be supplied with a name for easy references.
+ * This task uploads a number of artifacts to Artifactory. Each artifact consists of a repository key and path,
+ * as well as a source file. All artifacts must be supplied with a name for easy reference.
  *
  * Specify artifacts to upload using [registerArtifact].
  *
- * All artifacts will be uploaded using [UploadFileAction]. This task fails if any artifact fails to be uploaded.
+ * All artifacts are uploaded concurrently via [UploadArtifactAction].
+ *
+ * **Note:** This task is intended for use with non-Maven, non-Ivy Artifactory repositories (e.g. generic
+ * repositories). For Maven or Ivy repositories, prefer Gradle's built-in publishing mechanisms (e.g.
+ * `maven-publish`) instead.
  */
 @DisableCachingByDefault(because = "Uploading to an external service is not cacheable")
-abstract class AbstractBatchUploadToGCS @Inject constructor(
+abstract class AbstractBatchUploadToArtifactory @Inject constructor(
     private val objects: ObjectFactory,
     private val providers: ProviderFactory,
     private val workerExecutor: WorkerExecutor
 ) : DefaultTask() {
     /**
-     * The [ClientsBaseService] used to obtain the GCS client.
+     * The [ClientsBaseService] used to obtain the Artifactory client.
      */
     @get:Internal
     abstract val service: Property<ClientsBaseService>
 
     /**
-     * Registered name of a [StorageClientInfo].
+     * Registered name of an [ArtifactoryClientInfo].
      */
     @get:Internal
     abstract val clientName: Property<String>
 
     /**
-     * Information about an artifact to be uploaded to GCS.
+     * Information about an artifact to be uploaded to Artifactory.
      */
     abstract class Artifact @Inject constructor(private val name: String) : Named {
         override fun getName() = name
 
-        abstract val bucket: Property<String>
+        /**
+         * The Artifactory repository key.
+         */
+        abstract val repository: Property<String>
 
-        abstract val blobName: Property<String>
+        /**
+         * The path within the repository to which the artifact will be uploaded.
+         */
+        abstract val path: Property<String>
 
+        /**
+         * The local file to upload.
+         */
         abstract val inputFile: RegularFileProperty
     }
 
@@ -84,11 +97,11 @@ abstract class AbstractBatchUploadToGCS @Inject constructor(
     fun run() {
         val queue = workerExecutor.noIsolation()
         artifacts.get().forEach { (_, artifact) ->
-            queue.submit(UploadFileAction::class.java) {
-                service.set(this@AbstractBatchUploadToGCS.service)
-                clientName.set(this@AbstractBatchUploadToGCS.clientName)
-                bucket.set(artifact.bucket)
-                blobName.set(artifact.blobName)
+            queue.submit(UploadArtifactAction::class.java) {
+                service.set(this@AbstractBatchUploadToArtifactory.service)
+                clientName.set(this@AbstractBatchUploadToArtifactory.clientName)
+                repository.set(artifact.repository)
+                path.set(artifact.path)
                 inputFile.set(artifact.inputFile)
             }
         }
