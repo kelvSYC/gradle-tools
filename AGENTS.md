@@ -25,6 +25,20 @@ cd cores/artifactory-base
 ./gradlew :detekt
 ```
 
+## Detekt Formatting Rules (avoid failures before validation)
+
+Config is at `gradle/detekt.yml`. Rules most likely to trip up generated code:
+
+- **`NewLineAtEndOfFile`** — every `.kt` file must end with a newline character.
+- **`TooGenericExceptionCaught`** — do not catch `Exception`, `RuntimeException`, `Error`, `Throwable`, `NullPointerException`, `IndexOutOfBoundsException`, or `IllegalMonitorStateException`. Catch the specific exception type thrown by the API.
+- **`TooGenericExceptionThrown`** — do not throw `Exception`, `RuntimeException`, `Error`, or `Throwable`.
+- **`WildcardImport`** — no wildcard imports (only `java.util.*` is allowed).
+- **`SwallowedException`** — caught exceptions must be used (e.g. passed to a logger); silent catch blocks are forbidden.
+- **`ForbiddenComment`** — do not write `TODO:`, `FIXME:`, or `STOPSHIP:` markers.
+- **`MagicNumber`** — no unexplained numeric literals in non-test, non-`.kts` source; extract to named constants.
+- **`ReturnCount`** — max 2 `return` statements per function.
+- **`UnusedPrivateMember` / `UnusedPrivateProperty` / `UnusedPrivateClass`** — remove unused private declarations.
+
 ## Critical Gotchas
 
 ### Detekt + JDK 25 = FAILS ⚠️
