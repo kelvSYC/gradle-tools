@@ -26,14 +26,18 @@ abstract class GetRepositoryEndpointValueSource : ValueSource<String, GetReposit
         val repository: Property<String>
 
         /**
-         * The endpoint type. Defaults to [EndpointType.Ipv4].
+         * The endpoint type as a string value. Defaults to [EndpointType.Ipv4].
+         *
+         * @see [EndpointType.value]
          */
-        val endpointType: Property<EndpointType>
+        val endpointType: Property<String>
 
         /**
-         * The repository's package format. Defaults to [PackageFormat.Generic]
+         * The repository's package format as a string value. Defaults to [PackageFormat.Generic].
+         *
+         * @see [PackageFormat.value]
          */
-        val format: Property<PackageFormat>
+        val format: Property<String>
     }
 
     private val client: Provider<CodeartifactClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
@@ -44,8 +48,8 @@ abstract class GetRepositoryEndpointValueSource : ValueSource<String, GetReposit
             domainOwner = parameters.domainOwner.get()
             repository = parameters.repository.get()
 
-            endpointType = parameters.endpointType.getOrElse(EndpointType.Ipv4)
-            format = parameters.format.getOrElse(PackageFormat.Generic)
+            endpointType = parameters.endpointType.map { EndpointType.fromValue(it) }.getOrElse(EndpointType.Ipv4)
+            format = parameters.format.map { PackageFormat.fromValue(it) }.getOrElse(PackageFormat.Generic)
         }
 
         return runBlocking {
