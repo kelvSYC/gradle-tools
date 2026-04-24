@@ -29,7 +29,7 @@ Single component (included build form, from repository root):
 
 Config is at `gradle/detekt.yml`. Rules most likely to trip up generated code:
 
-- **`NewLineAtEndOfFile`** — every `.kt` file must end with a newline character. **This is the single most common cause of detekt failures on generated files.** Every `.kt` file you write or edit must have `\n` as its final byte. Verify before finishing.
+- **`NewLineAtEndOfFile`** — every `.kt` file must end with a newline character. **This is the single most common cause of detekt failures on generated files.** See the mandatory procedure below.
 - **`TooGenericExceptionCaught`** — do not catch `Exception`, `RuntimeException`, `Error`, `Throwable`, `NullPointerException`, `IndexOutOfBoundsException`, or `IllegalMonitorStateException`. Catch the specific exception type thrown by the API.
 - **`TooGenericExceptionThrown`** — do not throw `Exception`, `RuntimeException`, `Error`, or `Throwable`.
 - **`WildcardImport`** — no wildcard imports (only `java.util.*` is allowed).
@@ -39,11 +39,27 @@ Config is at `gradle/detekt.yml`. Rules most likely to trip up generated code:
 - **`ReturnCount`** — max 2 `return` statements per function.
 - **`UnusedPrivateMember` / `UnusedPrivateProperty` / `UnusedPrivateClass`** — remove unused private declarations.
 
+### Trailing newline: mandatory procedure ⚠️
+
+**File-writing tools strip trailing newlines.** A content string ending with `\n` does NOT produce a file ending with `\n`. You must fix this immediately after every Write call on a `.kt` file — not at the end of the task, not as a checklist step, but as the very next action:
+
+```bash
+echo "" >> path/to/File.kt
+```
+
+If you write multiple `.kt` files in one step, append a newline to each one before moving on:
+
+```bash
+echo "" >> File1.kt && echo "" >> File2.kt && echo "" >> File3.kt
+```
+
+Verify with `tail -c1 <file> | xxd` — output must be `0a`. Detekt will fail the build if even one file is missing the final newline.
+
 ### Pre-completion checklist for Kotlin file changes
 
 Before declaring any task done, run through this list for every `.kt` file you created or modified:
 
-1. **Trailing newline** — file ends with `\n`. Check with: `tail -c1 <file> | xxd` — output should be `0a`. Fix with: `echo "" >> <file>`.
+1. **Trailing newline** — `tail -c1 <file> | xxd` outputs `0a`. Fix with `echo "" >> <file>`.
 2. **No wildcard imports** — no `import foo.bar.*` (except `java.util.*`).
 3. **No magic numbers** in non-test, non-`.kts` source.
 4. **No generic exception types** caught or thrown.
