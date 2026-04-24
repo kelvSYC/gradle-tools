@@ -1,71 +1,151 @@
-# kelvSYC Gradle Tools - AWS S3 Java Base
+# AWS S3 Java Base
 
-This plugin contains Gradle tools that can be used to integrate with Amazon Simple Storage Service (S3), using the
-AWS SDK for Java.
+A Gradle plugin providing managed AWS S3 client integration using the AWS SDK for Java.
 
-## Usage
-AWS S3 Java Base extends the Clients Base by adding support for Amazon S3 clients.
+## Applying the Plugin
 
 ```kotlin
 plugins {
-    id("com.kevlsyc.gradle.aws-s3-java-base")
+    id("com.kelvsyc.gradle.aws-s3-java-base")
 }
 ```
 
-## Components
-AWS S3 Java Base provides three types of client infos:
+## Client Types
 
-* `S3ClientInfo`, corresponding to the synchronous `S3Client` type
-* `S3AsyncClientInfo`, corresponding to the asynchronous `S3AsyncClient` type
-* `S3TransferManagerClientInfo`, corresponding to the `S3TransferManager` client type
+Three client info types are registered:
 
-To register a client:
+| Client info type | Client type | Use case |
+|---|---|---|
+| `S3ClientInfo` | `S3Client` | Synchronous S3 operations |
+| `S3AsyncClientInfo` | `S3AsyncClient` | Asynchronous S3 operations |
+| `S3TransferManagerClientInfo` | `S3TransferManager` | High-throughput multipart transfers |
+
+All three extend `AwsClientInfo` (except `S3TransferManagerClientInfo`). Use the convenience extensions on
+`ClientsBaseExtension` to register clients:
 
 ```kotlin
-serviceClients.registerAwsS3JavaClient("myClient") {
-    region.set(...)
-    credentials.set(...)
+serviceClients.registerAwsS3JavaClient("myS3Client") {
+    region.set(Region.US_EAST_1)
+    credentials.set(DefaultCredentialsProvider.create())
+}
+
+serviceClients.registerAwsS3AsyncJavaClient("myS3AsyncClient") {
+    region.set(Region.US_EAST_1)
+    credentials.set(DefaultCredentialsProvider.create())
 }
 ```
 
-Note that it is recommended that, when registering an `S3TransferManagerClientInfo`, that the underlying `S3AsyncClient`
-itself be a registered client. This should allow for both clients to be properly cleaned up at the end of a build.
+When registering an `S3TransferManagerClientInfo`, pass the underlying `S3AsyncClient` as the `baseClient` so both
+clients share a lifecycle through `ClientsBaseService`:
 
 ```kotlin
-val client = serviceClients.registerAwsS3AsyncJavaClient("myBaseClient") {
-    // ...
+// Register the async client first
+serviceClients.registerAwsS3AsyncJavaClient("myS3AsyncClient") {
+    region.set(Region.US_EAST_1)
+    credentials.set(DefaultCredentialsProvider.create())
 }
-serviceClients.registerAwsS3TransferManagerJavaClient("myClient") {
-    baseClient.set(client)
+
+// Wire it as the base client for the transfer manager
+serviceClients.registerAwsS3TransferManagerJavaClient("myTransferManager") {
+    baseClient.set(serviceClients.getClient<S3AsyncClient, S3AsyncClientInfo>("myS3AsyncClient").get())
 }
 ```
 
-### `AbstractS3ValueSource`
-`AbstractS3ValueSource` is a `ValueSource` type, used in creating `Provider` instances. This class is used to create
-`Provider` instances whose values are obtained from Amazon S3.
+### `AwsClientInfo` properties
+
+| Property | Type | Description |
+|---|---|---|
+| `region` | `Property<Region>` | AWS region. Leave unset to use `DefaultAwsRegionProviderChain`. |
+| `credentials` | `Property<AwsCredentialsProvider>` | Credentials. If absent, uses `AnonymousCredentialsProvider`. |
+
+### `S3TransferManagerClientInfo` properties
+
+| Property | Type | Description |
+|---|---|---|
+| `baseClient` | `Property<S3AsyncClient>` | The underlying async client powering the transfer manager |
+| `uploadDirectoryFollowSymbolicLinks` | `Property<Boolean>` | Whether to follow symlinks during directory uploads. Defaults to `false`. |
+
+## Value Source: `AbstractS3ValueSource`
+
+Extend `AbstractS3ValueSource` to read an S3 object into memory and transform it:
 
 ```kotlin
-abstract class MyValueSource : AbstractS3ValueSource<String, AbstractS3ValueSource.Parameters> {
-    override fun doObtain(input: ResponseBytes<GetObjectResponse>) {
-        // ...
+abstract class MyS3ValueSource : AbstractS3ValueSource<String, AbstractS3ValueSource.Parameters>() {
+    override fun doObtain(content: ResponseBytes<GetObjectResponse>): String =
+        content.asUtf8String()
+}
+```
+
+Use it in task configuration:
+
+```kotlin
+tasks.register("readFromS3") {
+    val content: Provider<String> = providers.of(MyS3ValueSource::class) {
+        parameters {
+            service.set(serviceClients.service)
+            clientName.set("myS3Client")
+            bucket.set("my-bucket")
+            key.set("path/to/object.txt")
+        }
+    }
+
+    doLast {
+        println(content.get())
     }
 }
 ```
 
-Note that the retrieved object contents are stored in memory before being converted to the desired data type.
+The entire object is read into memory as a `ResponseBytes<GetObjectResponse>`. Only use this for objects that fit
+comfortably in memory.
 
-As with other `ValueSource` instances, you can then obtain providers using:
+Parameters:
+
+| Parameter | Type | Description |
+|---|---|---|
+| `service` | `Property<ClientsBaseService>` | The shared build service (set from `serviceClients.service`) |
+| `clientName` | `Property<String>` | Registered name of a `S3ClientInfo` |
+| `bucket` | `Property<String>` | S3 bucket name |
+| `key` | `Property<String>` | S3 object key |
+
+## Tasks: `BatchDownloadFromS3` / `BatchUploadToS3`
+
+These tasks perform concurrent batch downloads/uploads using an `S3TransferManager` client. Register artifacts using
+`registerArtifact`, then set `clientName` to a registered `S3TransferManagerClientInfo`. The plugin auto-wires
+`client` from `clientsService` and `clientName`.
 
 ```kotlin
-val provider = providers.of(MyValueSource::class) {
-    client.set(...)
-    bucket.set(...)
-    key.set(...)
+tasks.register<BatchDownloadFromS3>("downloadArtifacts") {
+    clientName.set("myTransferManager")
+
+    registerArtifact("config") {
+        bucket.set("my-bucket")
+        key.set("config/settings.json")
+        outputFile.set(layout.buildDirectory.file("config/settings.json"))
+    }
+    registerArtifact("data") {
+        bucket.set("my-bucket")
+        key.set("data/input.csv")
+        outputFile.set(layout.buildDirectory.file("data/input.csv"))
+    }
 }
 ```
 
-Note that it is not required that the supplied client be a registered client, though it is recommended.
+Use `outputFiles` to wire the outputs of `BatchDownloadFromS3` to inputs of other tasks:
 
-These `Provider` instances will only make one call to AWS the first time `get()` is called; the result will be cached
-for all subsequent calls to `get()`. The `doObtain()` function is guaranteed to be called once, whenever `get()` is
-called the first time.
+```kotlin
+tasks.register<MyProcessingTask>("process") {
+    inputFile.set(tasks.named<BatchDownloadFromS3>("downloadArtifacts").flatMap {
+        it.outputFiles.getting("config").map { it.asFile }
+    })
+}
+```
+
+`BatchUploadToS3` works the same way, with `inputFile` in place of `outputFile` per artifact.
+
+To use a client from outside `ClientsBaseService`, use `AbstractBatchDownloadFromS3` / `AbstractBatchUploadToS3`
+directly and set `client` manually.
+
+## See Also
+
+- [clients-base](../clients-base) — The underlying service client infrastructure
+- [aws-java-extensions](../aws-java-extensions) — `AwsClientInfo` base interface and Gradle credentials adapters

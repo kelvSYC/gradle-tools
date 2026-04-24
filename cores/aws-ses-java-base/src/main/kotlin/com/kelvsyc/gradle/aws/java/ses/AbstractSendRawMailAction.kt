@@ -16,7 +16,7 @@ abstract class AbstractSendRawMailAction<P : AbstractSendRawMailAction.Parameter
         val clientName: Property<String>
 
         val sender: Property<String>
-        val message: Provider<ByteArray>
+        val message: Property<ByteArray>
     }
 
     private val client: Provider<SesClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)

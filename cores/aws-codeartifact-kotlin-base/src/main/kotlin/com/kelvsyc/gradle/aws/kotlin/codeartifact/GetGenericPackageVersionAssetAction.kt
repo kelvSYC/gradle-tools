@@ -15,7 +15,7 @@ import org.gradle.workers.WorkParameters
 /**
  * [WorkAction] implementation downloading an asset form a CodeArtifact generic repo.
  */
-abstract class GetGenericPackageVersionAsseetAction : WorkAction<GetGenericPackageVersionAsseetAction.Parameters> {
+abstract class GetGenericPackageVersionAssetAction : WorkAction<GetGenericPackageVersionAssetAction.Parameters> {
     /**
      * Parameters for [GetGenericPackageVersionAssetAction].
      */
