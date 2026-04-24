@@ -57,6 +57,7 @@ commons-numbers-complex = { module = "org.apache.commons:commons-numbers-complex
 commons-numbers-core = { module = "org.apache.commons:commons-numbers-core" } # version from BOM 'commons-numbers-bom'
 commons-numbers-fraction = { module = "org.apache.commons:commons-numbers-fraction" } # version from BOM 'commons-numbers-bom'
 google-cloud-artifact-registry = { module = "com.google.cloud:google-cloud-artifact-registry" } # version from BOM 'google-cloud-libraries-bom'
+google-cloud-secret-manager = { module = "com.google.cloud:google-cloud-secretmanager" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-storage = { module = "com.google.cloud:google-cloud-storage" } # version from BOM 'google-cloud-libraries-bom'
 guava = "com.google.guava:guava:33.6.0-jre"
 jgit = "org.eclipse.jgit:org.eclipse.jgit:7.6.0.202603022253-r"

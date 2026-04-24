@@ -21,6 +21,7 @@ includeBuild("cores/aws-sqs-kotlin-base")
 includeBuild("cores/clients-base")
 includeBuild("cores/git-core")
 includeBuild("cores/google-cloud-artifact-registry-base")
+includeBuild("cores/google-cloud-secret-manager-base")
 includeBuild("cores/google-cloud-storage-base")
 includeBuild("cores/gradle-extensions")
 

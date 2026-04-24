@@ -35,6 +35,18 @@ To work on a single component, use the included build form from the repository r
 
 All builds must pass a detekt check. When adding or modifying Kotlin source files, run `./gradlew :detekt` (or `./gradlew :<component-name>:detekt` for a single component) and fix any reported issues before considering the build complete.
 
+Respect these active rules from `gradle/detekt.yml` when writing code to avoid detekt failures:
+
+- **`NewLineAtEndOfFile`** — every `.kt` file must end with a newline.
+- **`TooGenericExceptionCaught`** — catch specific exception types only; forbidden generics include `Exception`, `RuntimeException`, `Error`, `Throwable`, `NullPointerException`, `IndexOutOfBoundsException`, `IllegalMonitorStateException`.
+- **`TooGenericExceptionThrown`** — do not throw `Exception`, `RuntimeException`, `Error`, or `Throwable`.
+- **`WildcardImport`** — no wildcard imports (only `java.util.*` is permitted).
+- **`SwallowedException`** — caught exceptions must be referenced (e.g. passed to a logger).
+- **`ForbiddenComment`** — no `TODO:`, `FIXME:`, or `STOPSHIP:` markers.
+- **`MagicNumber`** — unexplained numeric literals are forbidden in non-test, non-`.kts` source; use named constants.
+- **`ReturnCount`** — max 2 `return` statements per function.
+- **`UnusedPrivateMember` / `UnusedPrivateProperty` / `UnusedPrivateClass`** — remove unused private declarations.
+
 Publishing requires `GITHUB_ACTOR` and `GITHUB_TOKEN` environment variables.
 
 ## Architecture
