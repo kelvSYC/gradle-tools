@@ -18,4 +18,6 @@ dependencies {
     api(libs.aws.smithy.credentials)
     implementation(libs.aws.config.kotlin)
     implementation(libs.aws.smithy.runtime.core)
+
+    testImplementation(libs.mockk)
 }
