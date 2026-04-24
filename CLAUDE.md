@@ -37,7 +37,7 @@ All builds must pass a detekt check. When adding or modifying Kotlin source file
 
 Respect these active rules from `gradle/detekt.yml` when writing code to avoid detekt failures:
 
-- **`NewLineAtEndOfFile`** — every `.kt` file must end with a newline.
+- **`NewLineAtEndOfFile`** — every `.kt` file must end with a newline. **This is the most common source of avoidable detekt failures.** Every `.kt` file you create or edit must have a newline as its final character — verify before running detekt. Check with `tail -c1 <file> | xxd` (output must be `0a`); fix with `echo "" >> <file>`.
 - **`TooGenericExceptionCaught`** — catch specific exception types only; forbidden generics include `Exception`, `RuntimeException`, `Error`, `Throwable`, `NullPointerException`, `IndexOutOfBoundsException`, `IllegalMonitorStateException`.
 - **`TooGenericExceptionThrown`** — do not throw `Exception`, `RuntimeException`, `Error`, or `Throwable`.
 - **`WildcardImport`** — no wildcard imports (only `java.util.*` is permitted).

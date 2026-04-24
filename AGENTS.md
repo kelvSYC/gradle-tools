@@ -29,7 +29,7 @@ Single component (included build form, from repository root):
 
 Config is at `gradle/detekt.yml`. Rules most likely to trip up generated code:
 
-- **`NewLineAtEndOfFile`** — every `.kt` file must end with a newline character.
+- **`NewLineAtEndOfFile`** — every `.kt` file must end with a newline character. **This is the single most common cause of detekt failures on generated files.** Every `.kt` file you write or edit must have `\n` as its final byte. Verify before finishing.
 - **`TooGenericExceptionCaught`** — do not catch `Exception`, `RuntimeException`, `Error`, `Throwable`, `NullPointerException`, `IndexOutOfBoundsException`, or `IllegalMonitorStateException`. Catch the specific exception type thrown by the API.
 - **`TooGenericExceptionThrown`** — do not throw `Exception`, `RuntimeException`, `Error`, or `Throwable`.
 - **`WildcardImport`** — no wildcard imports (only `java.util.*` is allowed).
@@ -38,6 +38,17 @@ Config is at `gradle/detekt.yml`. Rules most likely to trip up generated code:
 - **`MagicNumber`** — no unexplained numeric literals in non-test, non-`.kts` source; extract to named constants.
 - **`ReturnCount`** — max 2 `return` statements per function.
 - **`UnusedPrivateMember` / `UnusedPrivateProperty` / `UnusedPrivateClass`** — remove unused private declarations.
+
+### Pre-completion checklist for Kotlin file changes
+
+Before declaring any task done, run through this list for every `.kt` file you created or modified:
+
+1. **Trailing newline** — file ends with `\n`. Check with: `tail -c1 <file> | xxd` — output should be `0a`. Fix with: `echo "" >> <file>`.
+2. **No wildcard imports** — no `import foo.bar.*` (except `java.util.*`).
+3. **No magic numbers** in non-test, non-`.kts` source.
+4. **No generic exception types** caught or thrown.
+5. **No unused private members**.
+6. **No TODO/FIXME/STOPSHIP comments**.
 
 ## Critical Gotchas
 

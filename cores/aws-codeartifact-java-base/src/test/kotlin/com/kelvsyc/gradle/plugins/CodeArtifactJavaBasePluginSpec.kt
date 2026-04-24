@@ -1,5 +1,6 @@
 package com.kelvsyc.gradle.plugins
 
+import com.kelvsyc.gradle.aws.java.codeartifact.CodeArtifactAsyncClientInfo
 import com.kelvsyc.gradle.aws.java.codeartifact.CodeArtifactClientInfo
 import com.kelvsyc.gradle.clients.ClientsBaseExtension
 import io.kotest.core.spec.style.FunSpec
@@ -21,6 +22,17 @@ class CodeArtifactJavaBasePluginSpec : FunSpec() {
             // FIXME creatableTypes is an internal API, but there is no public API to introspect bindings
             val clients = service.registrations as PolymorphicDomainObjectContainerInternal<*>
             clients.createableTypes shouldContain CodeArtifactClientInfo::class.java
+        }
+
+        test("Apply - Registers async client info type") {
+            val project = ProjectBuilder.builder().build()
+
+            project.pluginManager.apply(CodeArtifactJavaBasePlugin::class)
+
+            val service = project.the<ClientsBaseExtension>().service.get()
+            // FIXME creatableTypes is an internal API, but there is no public API to introspect bindings
+            val clients = service.registrations as PolymorphicDomainObjectContainerInternal<*>
+            clients.createableTypes shouldContain CodeArtifactAsyncClientInfo::class.java
         }
     }
 }
