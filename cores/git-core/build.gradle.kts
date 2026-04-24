@@ -22,4 +22,6 @@ dependencies {
     implementation("com.kelvsyc.gradle:gradle-extensions") // build 'gradle-extensions'
 
     api(libs.jgit)
+
+    testImplementation(libs.mockk)
 }
