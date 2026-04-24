@@ -9,6 +9,7 @@ Comprehensive reference for building, testing, and publishing in this Gradle com
 - **Be concise.** Avoid unnecessary elaboration or summaries. Show the work, not the narrative.
 - **Explanations only when prompted.** Don't explain what you're doing or why unless asked.
 - **Tests and detekt must pass.** All code changes must pass `./gradlew :test` and `./gradlew :detekt` before being considered complete. Never commit or propose code that breaks either check.
+- **README must stay current.** Any change that adds or significantly modifies a public-facing component — including Gradle tasks, `WorkAction` implementations, `ValueSource` implementations, extensions, or plugin behaviour — must include a corresponding update to the component's `README.md`.
 
 ## Build Commands
 

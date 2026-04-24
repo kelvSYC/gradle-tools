@@ -1,75 +1,143 @@
-# kelvSYC Gradle Tools - Google Cloud Storage Base
+# Google Cloud Storage Base
 
-This plugin contains Gradle tools that can be used to integrate with Google Cloud Stoarge.
+A Gradle plugin providing managed Google Cloud Storage client integration.
 
-## Usage
-Google Cloud Storage Base extends the Clients Base by adding support for GCS.
+## Applying the Plugin
 
 ```kotlin
 plugins {
-    id("com.kevlsyc.gradle.google-cloud-storage-base")
+    id("com.kelvsyc.gradle.google-cloud-storage-base")
 }
 ```
 
-## Components
-The client info type of a Google `Storage` client is a `StorageClientInfo`. To register a client:
+## Client Registration
+
+The client info type is `StorageClientInfo`. Use the `registerGoogleCloudServiceClient` convenience extension:
 
 ```kotlin
-serviceClients.registerGoogleCloudStorageClient("myClient") {
-    projectId.set(...)
-    credentials.set(...)
+val credentialsFile = layout.projectDirectory.file("service-account.json")
+
+serviceClients.registerGoogleCloudServiceClient("myGcsClient") {
+    projectId.set("my-gcp-project")
+    credentials.set(credentialsFile.asServiceAccountCredentials)
 }
 ```
 
-### `BatchDownloadFromGCS`
-The `BatchDownloadFromGCS` task downloads a collection of artifacts from Google Cloud Storage.
+### `StorageClientInfo` properties
+
+| Property | Type | Description |
+|---|---|---|
+| `projectId` | `Property<String>` | The GCP project ID |
+| `credentials` | `Property<Credentials>` | GCP credentials. If absent, the client uses no authentication. Set to `GoogleCredentials.getApplicationDefault()` for ADC. |
+
+### Credentials helpers
+
+`GoogleCredentialsExtensions` provides convenience extensions for loading service account credentials from a file:
 
 ```kotlin
-tasks.register<BatchDownloadFromGCS>("myTask") {
-    clientName.set("myClient")
-    
-    registerArtifact("myArtifact") {
-        bucketName.set(...)
-        blobName.set(...)
-        outputFile.set(...)
+// From a RegularFile directly
+val creds: ServiceAccountCredentials = layout.projectDirectory.file("sa.json").asServiceAccountCredentials
+
+// From a Provider<RegularFile>
+val credsProvider: Provider<ServiceAccountCredentials> =
+    layout.projectDirectory.file("sa.json").let { providers.provider { it } }.asServiceAccountCredentials
+```
+
+## Task: `BatchDownloadFromGCS`
+
+Downloads a collection of artifacts from GCS in a single batched request. Set `clientName` to a registered
+`StorageClientInfo`; the plugin auto-wires the underlying `Storage` client:
+
+```kotlin
+tasks.register<BatchDownloadFromGCS>("downloadArtifacts") {
+    clientName.set("myGcsClient")
+
+    registerArtifact("config") {
+        bucket.set("my-bucket")
+        blobName.set("config/settings.json")
+        outputFile.set(layout.buildDirectory.file("config/settings.json"))
     }
 }
 ```
 
-The `clientName` must be a registered `StorageClientInfo` from the Clients Base service. Artifact names are not used in
-the task, and is useful only if intending to wire the output of this task to the inputs of other tasks. The
-`outputFiles` property can be used for this purpose.
-
-All registered artifacts are downloaded in a single batched request, and the task fails if any registered artifact
-cannot be downloaded.
-
-If you have a client supplied from elsewhere, you can use the `AbstractBatchDownloadFromGCS` task, which is otherwise
-identical, except that the underlying client is supplied through the `client` property.
-
-### `AbstractGCSValueSource`
-`AbstractGCSValueSource` is a `ValueSource` type, used in creating `Provider` instances. This class is used to create
-`Provider` instances whose values are obtained from GCS.
+Use `outputFiles` to wire outputs to downstream task inputs:
 
 ```kotlin
-abstract class MyValueSource : AbstractGCSValueSource<String, AbstractGCSValueSource.Parameters> {
-    override fun doObtain(input: ByteArray) {
-        // ...
+someTask.configure {
+    inputFile.set(tasks.named<BatchDownloadFromGCS>("downloadArtifacts").flatMap {
+        it.outputFiles.getting("config").map { it.asFile }
+    })
+}
+```
+
+The task fails if any artifact cannot be downloaded. All requests are submitted to GCS in a single batch call.
+
+To use a `Storage` client from outside `ClientsBaseService`, use `AbstractBatchDownloadFromGCS` directly and set
+`client` manually.
+
+## Task: `BatchUploadToGCS`
+
+Uploads a collection of artifacts to GCS, dispatching each upload via `WorkerExecutor.noIsolation()`. Set `clientName`
+to a registered `StorageClientInfo`:
+
+```kotlin
+tasks.register<BatchUploadToGCS>("uploadArtifacts") {
+    clientName.set("myGcsClient")
+
+    registerArtifact("output") {
+        bucket.set("my-bucket")
+        blobName.set("output/result.json")
+        inputFile.set(layout.buildDirectory.file("result.json"))
     }
 }
 ```
 
-Note that the retrieved blob contents are stored in memory before being converted to the desired data type.
+Each artifact is uploaded independently via `UploadFileAction`. The task fails if any upload throws.
 
-As with other `ValueSource` instances, you can then obtain providers using:
+To use a client from outside `ClientsBaseService`, use `AbstractBatchUploadToGCS` directly and set `service`/`clientName`
+on the abstract class.
+
+## Value Source: `AbstractGCSValueSource`
+
+Extend `AbstractGCSValueSource` to read a GCS blob into memory and transform it:
 
 ```kotlin
-val provider = providers.of(MyValueSource::class) {
-    clientName.set(...)
-    bucketName.set(...)
-    blobName.set(...)
+abstract class MyGCSValueSource : AbstractGCSValueSource<String, AbstractGCSValueSource.Parameters>() {
+    override fun doObtain(content: ByteArray): String = content.decodeToString()
 }
 ```
 
-These `Provider` instances will only make one call to GCS the first time `get()` is called; the result will be cached
-for all subsequent calls to `get()`. The `doObtain()` function is guaranteed to be called once, whenever `get()` is
-called the first time.
+Use it in task configuration:
+
+```kotlin
+tasks.register("readFromGCS") {
+    val content: Provider<String> = providers.of(MyGCSValueSource::class) {
+        parameters {
+            service.set(serviceClients.service)
+            clientName.set("myGcsClient")
+            bucket.set("my-bucket")
+            blobName.set("path/to/object.txt")
+        }
+    }
+
+    doLast {
+        println(content.get())
+    }
+}
+```
+
+The entire blob is read into memory as a `ByteArray`. Only use this for blobs that fit comfortably in memory.
+
+Parameters:
+
+| Parameter | Type | Description |
+|---|---|---|
+| `service` | `Property<ClientsBaseService>` | The shared build service (set from `serviceClients.service`) |
+| `clientName` | `Property<String>` | Registered name of a `StorageClientInfo` |
+| `bucket` | `Property<String>` | GCS bucket name |
+| `blobName` | `Property<String>` | Blob name within the bucket |
+
+## See Also
+
+- [clients-base](../clients-base) — The underlying service client infrastructure
+- [Google Cloud Storage Java Client](https://cloud.google.com/java/docs/reference/google-cloud-storage/latest/overview)
