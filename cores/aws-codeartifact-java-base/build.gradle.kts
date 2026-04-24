@@ -27,4 +27,6 @@ dependencies {
     api(libs.aws.regions.java)
     api(libs.aws.codeartifact.java)
     implementation(libs.aws.core.java)
+
+    testImplementation(libs.mockk)
 }
