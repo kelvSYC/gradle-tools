@@ -26,7 +26,7 @@ abstract class AbstractSendTemplatedMailAction<P : AbstractSendTemplatedMailActi
          *
          * This value must be a JSON object, expressed as a string.
          */
-        val templateJson: Provider<String>
+        val templateJson: Property<String>
     }
 
     private val client: Provider<SesClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)

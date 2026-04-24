@@ -9,6 +9,7 @@ Comprehensive reference for building, testing, and publishing in this Gradle com
 - **Be concise.** Avoid unnecessary elaboration or summaries. Show the work, not the narrative.
 - **Explanations only when prompted.** Don't explain what you're doing or why unless asked.
 - **Tests and detekt must pass.** All code changes must pass `./gradlew :test` and `./gradlew :detekt` before being considered complete. Never commit or propose code that breaks either check.
+- **README must stay current.** Any change that adds or significantly modifies a public-facing component — including Gradle tasks, `WorkAction` implementations, `ValueSource` implementations, extensions, or plugin behaviour — must include a corresponding update to the component's `README.md`.
 
 ## Build Commands
 
@@ -24,16 +25,15 @@ All commands are run from the repository root via the Gradle wrapper:
 ./gradlew :clean          # Clean all components
 ```
 
-To work on a single component, run Gradle within its directory:
+To work on a single component, use the included build form from the repository root:
 
 ```bash
-cd cores/artifactory-base
-./gradlew :build          # Build only this component
-./gradlew :test           # Run only this component's tests
-./gradlew :detekt         # Lint only this component
+./gradlew :artifactory-base:build    # Build only this component
+./gradlew :artifactory-base:test     # Run only this component's tests
+./gradlew :artifactory-base:detekt   # Lint only this component
 ```
 
-All builds must pass a detekt check. When adding or modifying Kotlin source files, run `./gradlew :detekt` (or `:detekt` within the component directory) and fix any reported issues before considering the build complete.
+All builds must pass a detekt check. When adding or modifying Kotlin source files, run `./gradlew :detekt` (or `./gradlew :<component-name>:detekt` for a single component) and fix any reported issues before considering the build complete.
 
 Publishing requires `GITHUB_ACTOR` and `GITHUB_TOKEN` environment variables.
 
