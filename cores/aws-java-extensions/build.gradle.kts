@@ -17,4 +17,6 @@ dependencies {
     api(libs.aws.auth.java)
     api(libs.aws.core.java)
     api(libs.aws.regions.java)
+
+    testImplementation(libs.mockk)
 }
