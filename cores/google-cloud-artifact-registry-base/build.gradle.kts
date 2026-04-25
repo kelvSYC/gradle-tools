@@ -23,4 +23,6 @@ dependencies {
 
     api(libs.google.cloud.artifact.registry)
     implementation(libs.kotlinx.coroutines.core)
+
+    testImplementation(libs.mockk)
 }
