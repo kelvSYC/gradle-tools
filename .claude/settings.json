@@ -7,5 +7,19 @@
       "Bash(find ~/.gradle *)",
       "Bash(jar tf *)"
     ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // empty' | { read -r f; [[ \"$f\" == *.kt ]] || exit 0; tail -c1 \"$f\" | xxd | grep -q '0a' || printf '\\n' >> \"$f\"; wc=$(grep -nE '^import .*\\.\\*' \"$f\" | grep -v 'java\\.util\\.\\*' | head -3); fc=$(grep -nE '(TODO|FIXME|STOPSHIP):' \"$f\" | head -3); [[ -z \"$wc$fc\" ]] && exit 0; msg=\"Detekt violations in $f --\"; [[ -n \"$wc\" ]] && msg=\"$msg WildcardImport: $wc;\"; [[ -n \"$fc\" ]] && msg=\"$msg ForbiddenComment: $fc;\"; jq -n --arg c \"$msg\" '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":$c}}'; } 2>/dev/null || true",
+            "statusMessage": "Checking .kt file for Detekt violations"
+          }
+        ]
+      }
+    ]
   }
 }

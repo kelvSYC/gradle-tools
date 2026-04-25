@@ -9,11 +9,7 @@ on:
       - '**.gradle'
       - '**.properties'
       - '**.toml'
-    paths-ignore:
-      - '**.md'
-      - '**.txt'
-      - '.github/**'
-      - 'gradle/wrapper/**'
+      - '!gradle/wrapper/**'
 
 jobs:
   claude-review:
