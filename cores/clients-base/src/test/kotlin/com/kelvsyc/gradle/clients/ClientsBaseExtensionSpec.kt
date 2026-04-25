@@ -1,6 +1,7 @@
 package com.kelvsyc.gradle.clients
 
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.types.shouldBeSameInstanceAs
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.registerIfAbsent
@@ -49,6 +50,16 @@ class ClientsBaseExtensionSpec : FunSpec() {
             val actual1 = extension.getClient("dummy", DummyInfo::class.java, Dummy::class.java)
             val expected = service.get().getClient<Dummy, _>("dummy")
             actual1.get() shouldBeSameInstanceAs expected
+        }
+
+        test("getClient - no registration - provider has no value") {
+            val project = ProjectBuilder.builder().build()
+            val service = project.gradle.sharedServices.registerIfAbsent("clients-base", ClientsBaseService::class)
+            service.get().registerBinding(DummyInfo::class.java, DummyInfoInternal::class.java)
+            val extension = project.extensions.create<ClientsBaseExtension>("clients-base", service)
+
+            val actual = extension.getClient<Dummy, DummyInfo>("missing")
+            actual.isPresent.shouldBeFalse()
         }
     }
 }

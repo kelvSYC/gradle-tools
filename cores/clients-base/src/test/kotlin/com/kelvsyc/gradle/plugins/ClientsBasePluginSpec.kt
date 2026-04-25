@@ -225,6 +225,64 @@ class ClientsBasePluginSpec : FunSpec() {
             result.output.shouldContain("init extension by name: true")
         }
 
+        test("Apply to project - conflicting extension type throws GradleException") {
+            val projectDir = tempdir()
+            val projectFile = File(projectDir, "build.gradle.kts")
+            projectFile.writeText("""
+                plugins {
+                    id("jacoco-testkit-coverage")
+                }
+
+                // Register an extension with the same name but a different type before applying the plugin
+                extensions.add("${ClientsBasePlugin.EXTENSION_NAME}", "not-an-extension")
+
+                apply(plugin = "com.kelvsyc.gradle.clients-base")
+
+                tasks.register("doNothing")
+            """.trimIndent())
+
+            val result = GradleRunner.create().apply {
+                withPluginClasspath()
+                withProjectDir(projectDir)
+                withArguments(buildList {
+                    add("-Dorg.gradle.kotlin.dsl.scriptCompilationAvoidance=false")
+                    add("doNothing")
+                })
+            }.buildAndFail()
+
+            result.output.shouldContain("already registered of type")
+        }
+
+        test("Apply to settings - conflicting extension type throws GradleException") {
+            val projectDir = tempdir()
+            val settingsFile = File(projectDir, "settings.gradle.kts")
+            val projectFile = File(projectDir, "build.gradle.kts")
+            settingsFile.writeText("""
+                plugins {
+                    id("jacoco-testkit-coverage")
+                }
+
+                // Register an extension with the same name but a different type before applying the plugin
+                extensions.add("${ClientsBasePlugin.EXTENSION_NAME}", "not-an-extension")
+
+                apply(plugin = "com.kelvsyc.gradle.clients-base")
+            """.trimIndent())
+            projectFile.writeText("""
+                tasks.register("doNothing")
+            """.trimIndent())
+
+            val result = GradleRunner.create().apply {
+                withPluginClasspath()
+                withProjectDir(projectDir)
+                withArguments(buildList {
+                    add("-Dorg.gradle.kotlin.dsl.scriptCompilationAvoidance=false")
+                    add("doNothing")
+                })
+            }.buildAndFail()
+
+            result.output.shouldContain("already registered of type")
+        }
+
         test("Apply to project and settings") {
             val projectDir = tempdir()
             val settingsFile = File(projectDir, "settings.gradle.kts")
