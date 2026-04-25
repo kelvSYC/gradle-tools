@@ -13,7 +13,7 @@ configure<DokkaExtension> {
 
 gradlePlugin {
     plugins.register("aws-sqs-java-base") {
-        id = "com.kelvsyc.gradle.aws-sns-java-base"
+        id = "com.kelvsyc.gradle.aws-sqs-java-base"
         implementationClass = "com.kelvsyc.gradle.plugins.SqsJavaBasePlugin"
     }
 }
@@ -26,4 +26,6 @@ dependencies {
     implementation(libs.aws.auth.java)
     implementation(libs.aws.core.java)
     implementation(libs.aws.regions.java)
+
+    testImplementation(libs.mockk)
 }
