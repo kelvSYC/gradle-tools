@@ -6,6 +6,7 @@ import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeSameInstanceAs
 import org.gradle.api.internal.PolymorphicDomainObjectContainerInternal
 import org.gradle.kotlin.dsl.registerIfAbsent
@@ -20,6 +21,16 @@ class ClientsBaseServiceSpec : FunSpec() {
         override fun createClient(): Dummy {
             return object : Dummy {}
         }
+    }
+
+    interface CloseableDummy : Dummy, AutoCloseable
+
+    abstract class CloseableDummyInfoInternal : DummyInfo, ServiceClientInfoInternal<Dummy> {
+        override fun createClient(): Dummy = closeableClient!!
+    }
+
+    companion object {
+        var closeableClient: CloseableDummy? = null
     }
 
     init {
@@ -122,6 +133,46 @@ class ClientsBaseServiceSpec : FunSpec() {
 
             val actual1 = service.get().getClient("dummy", DummyInfo::class.java, Dummy::class.java)
             actual1.shouldBeNull()
+        }
+
+        test("Register Binding - idempotent") {
+            val project = ProjectBuilder.builder().build()
+            val service = project.gradle.sharedServices.registerIfAbsent("clients-base", ClientsBaseService::class)
+
+            service.get().registerBinding(DummyInfo::class, DummyInfoInternal::class)
+            service.get().registerBinding(DummyInfo::class, DummyInfoInternal::class)
+
+            val clients = service.get().registrations as PolymorphicDomainObjectContainerInternal<*>
+            clients.createableTypes shouldContain DummyInfo::class.java
+        }
+
+        test("Register Client - idempotent") {
+            val project = ProjectBuilder.builder().build()
+            val service = project.gradle.sharedServices.registerIfAbsent("clients-base", ClientsBaseService::class)
+            service.get().registerBinding(DummyInfo::class.java, DummyInfoInternal::class.java)
+
+            val ref1 = service.get().registerIfAbsent<DummyInfo>("dummy") {}
+            val ref2 = service.get().registerIfAbsent<DummyInfo>("dummy") {}
+
+            service.get().registrations.shouldHaveSize(1)
+            ref1.get() shouldBeSameInstanceAs ref2.get()
+        }
+
+        test("Close - AutoCloseable clients are closed") {
+            val project = ProjectBuilder.builder().build()
+            val service = project.gradle.sharedServices.registerIfAbsent("clients-base", ClientsBaseService::class)
+            var closed = false
+            closeableClient = object : CloseableDummy {
+                override fun close() { closed = true }
+            }
+
+            service.get().registerBinding(DummyInfo::class.java, CloseableDummyInfoInternal::class.java)
+            service.get().registerIfAbsent<DummyInfo>("dummy") {}
+            service.get().getClient<Dummy, DummyInfo>("dummy")
+
+            service.get().close()
+
+            closed.shouldBe(true)
         }
     }
 }
