@@ -1,8 +1,13 @@
 import org.jetbrains.dokka.gradle.DokkaExtension
+import java.net.URI
 
 plugins {
     id("org.jetbrains.dokka")
 }
+
+val gitCommitHash: Provider<String> = providers.exec {
+    commandLine("git", "rev-parse", "HEAD")
+}.standardOutput.asText.map { it.trim() }
 
 configure<DokkaExtension> {
     // Can't use Gradle.rootGradle from gradle-extensions due to circular shenanigans
@@ -30,8 +35,7 @@ configure<DokkaExtension> {
         }
 
         sourceLink {
-            // FIXME replace 'main' with git commit ref
-            remoteUrl("https://github.com/kelvSYC/gradle-tools/blob/main/$relativePath")
+            remoteUrl.set(gitCommitHash.map { URI("https://github.com/kelvSYC/rifflet/blob/$it/$relativePath") })
         }
     }
 }
