@@ -59,6 +59,7 @@ commons-numbers-fraction = { module = "org.apache.commons:commons-numbers-fracti
 google-cloud-artifact-registry = { module = "com.google.cloud:google-cloud-artifact-registry" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-secret-manager = { module = "com.google.cloud:google-cloud-secretmanager" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-storage = { module = "com.google.cloud:google-cloud-storage" } # version from BOM 'google-cloud-libraries-bom'
+gson = "com.google.code.gson:gson:2.10.1"
 guava = "com.google.guava:guava:33.6.0-jre"
 jgit = "org.eclipse.jgit:org.eclipse.jgit:7.6.0.202603022253-r"
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core" } # version from BOM 'kotest-bom'
@@ -68,6 +69,7 @@ kotest-property = { module = "io.kotest:kotest-property" } # version from BOM 'k
 kotest-runner = { module = "io.kotest:kotest-runner-junit5" } # version from BOM 'kotest-bom'
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" } # version from BOM 'kotlinx-coroutines-bom'
 mockk = "io.mockk:mockk:1.14.9"
+sqlite-jdbc = "org.xerial:sqlite-jdbc:3.47.1.0"
 woodstox = "com.fasterxml.woodstox:woodstox-core:7.1.1"
 
 [plugins]
