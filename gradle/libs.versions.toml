@@ -52,6 +52,7 @@ aws-sqs-java = { module = "software.amazon.awssdk:sqs" } # version from BOM 'aws
 aws-sqs-kotlin = { module = "aws.sdk.kotlin:sqs" } # version from BOM 'aws-kotlin-sdk-bom'
 caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.3"
 commons-io = "commons-io:commons-io:2.21.0"
+gson = "com.google.code.gson:gson:2.10.1"
 commons-lang = "org.apache.commons:commons-lang3:3.20.0"
 commons-numbers-complex = { module = "org.apache.commons:commons-numbers-complex" } # version from BOM 'commons-numbers-bom'
 commons-numbers-core = { module = "org.apache.commons:commons-numbers-core" } # version from BOM 'commons-numbers-bom'
@@ -68,6 +69,7 @@ kotest-property = { module = "io.kotest:kotest-property" } # version from BOM 'k
 kotest-runner = { module = "io.kotest:kotest-runner-junit5" } # version from BOM 'kotest-bom'
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" } # version from BOM 'kotlinx-coroutines-bom'
 mockk = "io.mockk:mockk:1.14.9"
+sqlite-jdbc = "org.xerial:sqlite-jdbc:3.47.1.0"
 woodstox = "com.fasterxml.woodstox:woodstox-core:7.1.1"
 
 [plugins]
