@@ -51,8 +51,7 @@ aws-sns-kotlin = { module = "aws.sdk.kotlin:sns" } # version from BOM 'aws-kotli
 aws-sqs-java = { module = "software.amazon.awssdk:sqs" } # version from BOM 'aws-java-sdk-bom'
 aws-sqs-kotlin = { module = "aws.sdk.kotlin:sqs" } # version from BOM 'aws-kotlin-sdk-bom'
 caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.3"
-commons-io = "commons-io:commons-io:2.21.0"
-gson = "com.google.code.gson:gson:2.10.1"
+commons-io = "commons-io:commons-io:2.22.0"
 commons-lang = "org.apache.commons:commons-lang3:3.20.0"
 commons-numbers-complex = { module = "org.apache.commons:commons-numbers-complex" } # version from BOM 'commons-numbers-bom'
 commons-numbers-core = { module = "org.apache.commons:commons-numbers-core" } # version from BOM 'commons-numbers-bom'
@@ -60,6 +59,7 @@ commons-numbers-fraction = { module = "org.apache.commons:commons-numbers-fracti
 google-cloud-artifact-registry = { module = "com.google.cloud:google-cloud-artifact-registry" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-secret-manager = { module = "com.google.cloud:google-cloud-secretmanager" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-storage = { module = "com.google.cloud:google-cloud-storage" } # version from BOM 'google-cloud-libraries-bom'
+gson = "com.google.code.gson:gson:2.10.1"
 guava = "com.google.guava:guava:33.6.0-jre"
 jgit = "org.eclipse.jgit:org.eclipse.jgit:7.6.0.202603022253-r"
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core" } # version from BOM 'kotest-bom'
