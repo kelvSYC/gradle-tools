@@ -27,11 +27,5 @@ semver {
     gitDir.set(layout.settingsDirectory.dir("../.git"))
 }
 
-include("dokka")
-include("jacoco")
-include("testing")
-
-// Builds to be aggregated
-file("../cores").list { dir, _ -> dir.isDirectory }?.forEach {
-    includeBuild("../cores/$it")
-}
+include("bom")
+include("catalog")
