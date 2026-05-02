@@ -29,11 +29,6 @@ configure<DokkaExtension> {
         externalDocumentationLinks.register("commons-numbers") {
             url("https://commons.apache.org/proper/commons-numbers/commons-numbers-docs/apidocs")
         }
-        externalDocumentationLinks.register("guava") {
-            url("https://javadoc.io/doc/com.google.guava/guava/latest")
-            packageListUrl("https://javadoc.io/doc/com.google.guava/guava/latest/element-list")
-        }
-
         sourceLink {
             remoteUrl.set(gitCommitHash.map { URI("https://github.com/kelvSYC/rifflet/blob/$it/$relativePath") })
         }
