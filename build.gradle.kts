@@ -30,7 +30,6 @@ val components = buildList {
     // Kotlin Extension Libraries
     add("commons-lang-extensions")
     add("commons-numbers-extensions")
-    add("guava-extensions")
 }
 
 tasks.register("clean") {

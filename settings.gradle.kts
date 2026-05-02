@@ -29,7 +29,5 @@ includeBuild("cores/gradle-extensions")
 // Kotlin extension components
 includeBuild("extensions/commons-lang-extensions")
 includeBuild("extensions/commons-numbers-extensions")
-includeBuild("extensions/guava-extensions")
-
 includeBuild("aggregation")
 includeBuild("metadata")
