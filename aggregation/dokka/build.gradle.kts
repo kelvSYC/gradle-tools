@@ -20,11 +20,6 @@ dependencies {
         dokka("$group:${it.name}") // from included build ${it.name}
     }
     extensionComponents.forEach {
-        if (it.name == "kotlin-core") {
-            // FIXME Placeholder due to kotlin-core using a different group ID
-            dokka("com.kelvsyc.kotlin:kotlin-core")
-        } else {
-            dokka("$group:${it.name}") // from included build ${it.name}
-        }
+        dokka("$group:${it.name}") // from included build ${it.name}
     }
 }

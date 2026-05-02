@@ -16,12 +16,7 @@ dependencies {
         jacocoAggregation("$group:${it.name}") // from included build $it.name
     }
     extensionComponents.forEach {
-        if (it.name == "kotlin-core") {
-            // FIXME Placeholder due to kotlin-core using a different group ID
-            jacocoAggregation("com.kelvsyc.kotlin:kotlin-core")
-        } else {
-            jacocoAggregation("$group:${it.name}") // from included build $it.name
-        }
+        jacocoAggregation("$group:${it.name}") // from included build $it.name
     }
 }
 

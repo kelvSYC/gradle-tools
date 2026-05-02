@@ -17,12 +17,7 @@ dependencies {
         testReportAggregation("$group:${it.name}") // from included build $it.name
     }
     extensionComponents.forEach {
-        if (it.name == "kotlin-core") {
-            // FIXME Placeholder due to kotlin-core using a different group ID
-            testReportAggregation("com.kelvsyc.kotlin:kotlin-core")
-        } else {
-            testReportAggregation("$group:${it.name}") // from included build $it.name
-        }
+        testReportAggregation("$group:${it.name}") // from included build $it.name
     }
 }
 
