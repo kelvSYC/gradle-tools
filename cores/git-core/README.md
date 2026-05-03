@@ -110,6 +110,137 @@ val repoProvider: Provider<Repository?> = layout.projectDirectory.let {
 val gitPath: Provider<String> = providers.which("git")
 ```
 
+## GitHub Support
+
+Requires the [GitHub CLI (`gh`)](https://cli.github.com/) to be installed. The plugin sets the `ghCommand` convention
+on all `GetGitHubRepoArchive` tasks via `command -v gh`.
+
+### `GetGitHubRepoArchive`
+
+Downloads a GitHub repository tree at a specific ref as an archive, using `gh api`. Supported formats are `.tar.gz`
+(and `.tgz`) and `.zip`, which map to the GitHub `tarball` and `zipball` API endpoints respectively.
+
+```kotlin
+tasks.register<GetGitHubRepoArchive>("fetchSource") {
+    owner.set("example")
+    repo.set("my-repo")
+    ref.set("v2.0.0")
+    token.set(providers.environmentVariable("GITHUB_TOKEN"))
+    outputFile.set(layout.buildDirectory.file("source.tar.gz"))
+}
+```
+
+| Property | Type | Description |
+|---|---|---|
+| `ghCommand` | `Property<String>` | Path to the `gh` binary. Set via convention when plugin is applied. |
+| `hostname` | `Property<String>` | GitHub Enterprise hostname. Leave unset for GitHub.com. |
+| `token` | `Property<String>` | Personal access token (`GH_TOKEN` or `GH_ENTERPRISE_TOKEN`). |
+| `owner` | `Property<String>` | Repository owner |
+| `repo` | `Property<String>` | Repository name |
+| `ref` | `Property<String>` | Commit ref to archive |
+| `outputFile` | `RegularFileProperty` | Output archive file (`.tar.gz`, `.tgz`, or `.zip`) |
+
+### `WorkAction`: `GitHubRepoArchiveAction`
+
+The task delegates to `GitHubRepoArchiveAction`. Use it directly for custom tasks.
+
+### `WorkAction`: `DownloadGitHubReleaseArtifactAction`
+
+Downloads assets from a GitHub release using `gh release download`.
+
+```kotlin
+abstract class MyTask @Inject constructor(private val workers: WorkerExecutor) : DefaultTask() {
+    @TaskAction
+    fun run() {
+        workers.noIsolation().submit(DownloadGitHubReleaseArtifactAction::class) {
+            owner.set("example")
+            repo.set("my-repo")
+            tag.set("v2.0.0")
+            patternGlobs.add("*.jar")
+            outputDirectory.set(layout.buildDirectory.dir("libs"))
+        }
+    }
+}
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `ghCommand` | `Property<String>` | Path to the `gh` binary |
+| `hostname` | `Property<String>` | GitHub Enterprise hostname. Leave unset for GitHub.com. |
+| `token` | `Property<String>` | Personal access token |
+| `owner` | `Property<String>` | Repository owner |
+| `repo` | `Property<String>` | Repository name |
+| `tag` | `Property<String>` | Release tag |
+| `patternGlobs` | `ListProperty<String>` | Glob patterns to filter assets. Leave empty for all assets. |
+| `outputDirectory` | `DirectoryProperty` | Directory to download assets into |
+
+## GitLab Support
+
+Requires the [GitLab CLI (`glab`)](https://gitlab.com/gitlab-org/cli) to be installed. The plugin sets the
+`glabCommand` convention on all `GetGitLabRepoArchive` tasks via `command -v glab`.
+
+For self-hosted GitLab instances, set `hostname` to your instance's hostname. The hostname is embedded in the
+repository path passed to `glab` as `hostname/owner/repo`. The token is always supplied as `GITLAB_TOKEN`.
+
+### `GetGitLabRepoArchive`
+
+Downloads a GitLab repository tree at a specific ref as an archive, using `glab repo archive`. Supported formats are
+`.tar.gz`/`.tgz`, `.tar.bz2`/`.tbz2`, `.tar`, and `.zip`.
+
+```kotlin
+tasks.register<GetGitLabRepoArchive>("fetchSource") {
+    owner.set("example-group")
+    repo.set("my-project")
+    ref.set("v2.0.0")
+    token.set(providers.environmentVariable("GITLAB_TOKEN"))
+    outputFile.set(layout.buildDirectory.file("source.tar.gz"))
+}
+```
+
+| Property | Type | Description |
+|---|---|---|
+| `glabCommand` | `Property<String>` | Path to the `glab` binary. Set via convention when plugin is applied. |
+| `hostname` | `Property<String>` | Self-hosted GitLab hostname. Leave unset for GitLab.com. |
+| `token` | `Property<String>` | Personal access token (`GITLAB_TOKEN`). |
+| `owner` | `Property<String>` | Namespace or group owning the repository |
+| `repo` | `Property<String>` | Repository name |
+| `ref` | `Property<String>` | Commit ref to archive |
+| `outputFile` | `RegularFileProperty` | Output archive file (`.tar.gz`, `.tgz`, `.tar.bz2`, `.tbz2`, `.tar`, or `.zip`) |
+
+### `WorkAction`: `GitLabRepoArchiveAction`
+
+The task delegates to `GitLabRepoArchiveAction`. Use it directly for custom tasks.
+
+### `WorkAction`: `DownloadGitLabReleaseArtifactAction`
+
+Downloads assets from a GitLab release using `glab release download`.
+
+```kotlin
+abstract class MyTask @Inject constructor(private val workers: WorkerExecutor) : DefaultTask() {
+    @TaskAction
+    fun run() {
+        workers.noIsolation().submit(DownloadGitLabReleaseArtifactAction::class) {
+            owner.set("example-group")
+            repo.set("my-project")
+            tag.set("v2.0.0")
+            assetNames.add("*.jar")
+            outputDirectory.set(layout.buildDirectory.dir("libs"))
+        }
+    }
+}
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `glabCommand` | `Property<String>` | Path to the `glab` binary |
+| `hostname` | `Property<String>` | Self-hosted GitLab hostname. Leave unset for GitLab.com. |
+| `token` | `Property<String>` | Personal access token |
+| `owner` | `Property<String>` | Namespace or group owning the repository |
+| `repo` | `Property<String>` | Repository name |
+| `tag` | `Property<String>` | Release tag |
+| `assetNames` | `ListProperty<String>` | Asset name filters (supports globs). Leave empty for all assets. |
+| `outputDirectory` | `DirectoryProperty` | Directory to download assets into |
+
 ## See Also
 
 - [JGit](https://github.com/eclipse-jgit/jgit) — The Java Git library used for repository introspection
