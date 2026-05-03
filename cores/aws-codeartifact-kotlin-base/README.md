@@ -86,6 +86,27 @@ abstract class MyAssetValueSource
 
 Parameters mirror those of the Java variant (see [aws-codeartifact-java-base](../aws-codeartifact-java-base)).
 
+## Value Source: `ListPackageVersionsValueSource`
+
+Lists all version strings for a package in a CodeArtifact repository, paginating automatically:
+
+```kotlin
+val versions: Provider<List<String>> = providers.of(ListPackageVersionsValueSource::class) {
+    parameters {
+        service.set(serviceClients.service)
+        clientName.set("myCodeArtifact")
+        domain.set("my-domain")
+        domainOwner.set("111122223333")
+        repository.set("my-repo")
+        format.set("generic")
+        namespace.set("my-namespace")
+        packageValue.set("my-package")
+    }
+}
+```
+
+Parameters mirror the Java variant, except `format` is `Property<String>` (resolved to `PackageFormat` via `PackageFormat.fromValue()`).
+
 ## WorkAction: `GetGenericPackageVersionAssetAction`
 
 Downloads a CodeArtifact generic repository asset to a file:
@@ -102,6 +123,27 @@ workerExecutor.noIsolation().submit(GetGenericPackageVersionAssetAction::class) 
     packageVersion.set("1.0.0")
     asset.set("my-package-1.0.0.jar")
     outputFile.set(layout.buildDirectory.file("downloads/my-package-1.0.0.jar"))
+}
+```
+
+## WorkAction: `PublishPackageVersionAction`
+
+Publishes an asset to a CodeArtifact generic package version:
+
+```kotlin
+workerExecutor.noIsolation().submit(PublishPackageVersionAction::class) {
+    service.set(serviceClients.service)
+    clientName.set("myCodeArtifact")
+    domain.set("my-domain")
+    domainOwner.set("111122223333")
+    repository.set("my-repo")
+    namespace.set("my-namespace")
+    packageValue.set("my-package")
+    packageVersion.set("1.0.0")
+    assetName.set("my-asset.jar")
+    assetSHA256.set("abc123...")
+    assetContent.set(layout.buildDirectory.file("artifacts/my-asset.jar"))
+    unfinished.set(false) // optional; set true when uploading multiple assets
 }
 ```
 
