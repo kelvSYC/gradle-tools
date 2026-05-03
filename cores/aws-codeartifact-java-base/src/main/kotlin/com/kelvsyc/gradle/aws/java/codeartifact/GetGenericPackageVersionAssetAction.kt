@@ -19,16 +19,31 @@ abstract class GetGenericPackageVersionAssetAction : WorkAction<GetGenericPackag
      * Parameters for [GetGenericPackageVersionAssetAction].
      */
     interface Parameters : WorkParameters {
+        /** The shared build service managing CodeArtifact clients. */
         val service: Property<ClientsBaseService>
+
+        /** Registered name of a [CodeArtifactClientInfo]. */
         val clientName: Property<String>
 
+        /** The CodeArtifact domain name. */
         val domain: Property<String>
+
+        /** The 12-digit account number of the domain owner. */
         val domainOwner: Property<String>
+
+        /** The CodeArtifact repository name. */
         val repository: Property<String>
 
+        /** The package namespace. */
         val namespace: Property<String>
+
+        /** The package name. */
         val packageValue: Property<String>
+
+        /** The package version. */
         val packageVersion: Property<String>
+
+        /** The asset name within the package version. */
         val asset: Property<String>
 
         /**

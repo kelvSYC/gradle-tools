@@ -16,13 +16,19 @@ import software.amazon.awssdk.services.codeartifact.model.GetAuthorizationTokenR
  */
 abstract class GetAuthorizationTokenValueSource : ValueSource<String, GetAuthorizationTokenValueSource.Parameters> {
     /**
-     * Parameters for [GetRepositoryEndpointValueSource].
+     * Parameters for [GetAuthorizationTokenValueSource].
      */
     interface Parameters : ValueSourceParameters {
+        /** The shared build service managing CodeArtifact clients. */
         val service: Property<ClientsBaseService>
+
+        /** Registered name of a [CodeArtifactClientInfo]. */
         val clientName: Property<String>
 
+        /** The CodeArtifact domain name. */
         val domain: Property<String>
+
+        /** The 12-digit account number of the domain owner. */
         val domainOwner: Property<String>
 
         /**

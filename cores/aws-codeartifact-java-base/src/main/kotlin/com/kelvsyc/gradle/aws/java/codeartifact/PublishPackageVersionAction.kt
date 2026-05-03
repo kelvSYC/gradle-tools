@@ -1,33 +1,24 @@
 package com.kelvsyc.gradle.aws.java.codeartifact
 
 import com.kelvsyc.gradle.clients.ClientsBaseService
+import com.kelvsyc.gradle.providers.asPath
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.api.provider.ValueSource
-import org.gradle.api.provider.ValueSourceParameters
-import software.amazon.awssdk.http.AbortableInputStream
+import org.gradle.workers.WorkAction
+import org.gradle.workers.WorkParameters
 import software.amazon.awssdk.services.codeartifact.CodeartifactClient
-import software.amazon.awssdk.services.codeartifact.model.GetPackageVersionAssetRequest
-import software.amazon.awssdk.services.codeartifact.model.GetPackageVersionAssetResponse
 import software.amazon.awssdk.services.codeartifact.model.PackageFormat
+import software.amazon.awssdk.services.codeartifact.model.PublishPackageVersionRequest
 
 /**
- * Base class for [ValueSource] implementations that provide a value by reading an asset located in a CodeArtifact
- * generic repo.
- *
- * Subclasses should implement the [doObtain] function, transforming the supplied parameters to an object of the
- * desired type.
+ * [WorkAction] implementation publishing an asset to a CodeArtifact generic package version.
  */
-abstract class AbstractGetGenericAssetValueSource<T : Any, P : AbstractGetGenericAssetValueSource.Parameters> :
-    ValueSource<T, P> {
+abstract class PublishPackageVersionAction : WorkAction<PublishPackageVersionAction.Parameters> {
     /**
-     * Base parameters interface for [AbstractGetGenericAssetValueSource]. This contains the data needed to retrieve an
-     * asset from a CodeArtifact generic info.
-     *
-     * Extend this interface if there is a need to supply additional parameters to the
-     * [AbstractGetGenericAssetValueSource] subclass.
+     * Parameters for [PublishPackageVersionAction].
      */
-    interface Parameters : ValueSourceParameters {
+    interface Parameters : WorkParameters {
         /** The shared build service managing CodeArtifact clients. */
         val service: Property<ClientsBaseService>
 
@@ -53,15 +44,26 @@ abstract class AbstractGetGenericAssetValueSource<T : Any, P : AbstractGetGeneri
         val packageVersion: Property<String>
 
         /** The asset name within the package version. */
-        val asset: Property<String>
+        val assetName: Property<String>
+
+        /** The SHA-256 hash of the asset content. */
+        val assetSHA256: Property<String>
+
+        /** The asset file to upload. */
+        val assetContent: RegularFileProperty
+
+        /**
+         * Whether the package version should remain in the `Unfinished` state after publishing.
+         *
+         * Set to `true` when uploading multiple assets to the same package version.
+         */
+        val unfinished: Property<Boolean>
     }
 
     private val client: Provider<CodeartifactClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
-    abstract fun doObtain(response: GetPackageVersionAssetResponse, input: AbortableInputStream): T?
-
-    override fun obtain(): T? {
-        val request = GetPackageVersionAssetRequest.builder().apply {
+    override fun execute() {
+        val request = PublishPackageVersionRequest.builder().apply {
             domain(parameters.domain.get())
             domainOwner(parameters.domainOwner.get())
             repository(parameters.repository.get())
@@ -70,9 +72,14 @@ abstract class AbstractGetGenericAssetValueSource<T : Any, P : AbstractGetGeneri
             namespace(parameters.namespace.get())
             packageValue(parameters.packageValue.get())
             packageVersion(parameters.packageVersion.get())
-            asset(parameters.asset.get())
+            assetName(parameters.assetName.get())
+            assetSHA256(parameters.assetSHA256.get())
+
+            if (parameters.unfinished.isPresent) {
+                unfinished(parameters.unfinished.get())
+            }
         }.build()
 
-        return client.get().getPackageVersionAsset(request, ::doObtain)
+        client.get().publishPackageVersion(request, parameters.assetContent.asPath.get())
     }
 }
