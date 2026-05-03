@@ -102,6 +102,62 @@ class SendMessageActionSpec : FunSpec() {
 
             requestSlot.captured.messageAttributes().isEmpty() shouldBe true
         }
+
+        test("execute - forwards FIFO message group id and deduplication id") {
+            val project = ProjectBuilder.builder().build()
+            project.pluginManager.apply(SqsJavaBasePlugin::class)
+            val extension = project.the<ClientsBaseExtension>()
+            extension.service.get().registerBinding(MockSqsClientInfo::class, MockSqsClientInfoInternal::class)
+            extension.service.get().registerIfAbsent<MockSqsClientInfo>("mock") {}
+
+            val client = extension.getClient<SqsClient, MockSqsClientInfo>("mock").get()!!
+            val requestSlot = slot<SendMessageRequest>()
+            every { client.sendMessage(capture(requestSlot)) } returns mockk<SendMessageResponse>()
+
+            val params = project.objects.newInstance<SendMessageAction.Parameters>()
+            params.service.set(extension.service.get())
+            params.clientName.set("mock")
+            params.queueUrl.set("https://sqs.us-east-1.amazonaws.com/123456789012/MyQueue.fifo")
+            params.messageBody.set("Hello")
+            params.messageGroupId.set("group-1")
+            params.messageDeduplicationId.set("dedup-1")
+
+            val action = object : SendMessageAction() {
+                override fun getParameters() = params
+            }
+            action.execute()
+
+            val captured = requestSlot.captured
+            captured.messageGroupId() shouldBe "group-1"
+            captured.messageDeduplicationId() shouldBe "dedup-1"
+        }
+
+        test("execute - omits FIFO ids when not present") {
+            val project = ProjectBuilder.builder().build()
+            project.pluginManager.apply(SqsJavaBasePlugin::class)
+            val extension = project.the<ClientsBaseExtension>()
+            extension.service.get().registerBinding(MockSqsClientInfo::class, MockSqsClientInfoInternal::class)
+            extension.service.get().registerIfAbsent<MockSqsClientInfo>("mock") {}
+
+            val client = extension.getClient<SqsClient, MockSqsClientInfo>("mock").get()!!
+            val requestSlot = slot<SendMessageRequest>()
+            every { client.sendMessage(capture(requestSlot)) } returns mockk<SendMessageResponse>()
+
+            val params = project.objects.newInstance<SendMessageAction.Parameters>()
+            params.service.set(extension.service.get())
+            params.clientName.set("mock")
+            params.queueUrl.set("https://sqs.us-east-1.amazonaws.com/123456789012/MyQueue")
+            params.messageBody.set("Hello")
+
+            val action = object : SendMessageAction() {
+                override fun getParameters() = params
+            }
+            action.execute()
+
+            val captured = requestSlot.captured
+            (captured.messageGroupId() == null) shouldBe true
+            (captured.messageDeduplicationId() == null) shouldBe true
+        }
     }
 }
 

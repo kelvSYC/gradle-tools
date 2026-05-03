@@ -10,14 +10,51 @@ import software.amazon.awssdk.services.sqs.SqsClient
 import software.amazon.awssdk.services.sqs.model.MessageAttributeValue
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
 
+/**
+ * A [WorkAction] that sends a single message to an SQS queue.
+ *
+ * For FIFO queues, set [Parameters.messageGroupId] (required) and optionally [Parameters.messageDeduplicationId]
+ * (required if content-based deduplication is not enabled on the queue).
+ */
 abstract class SendMessageAction : WorkAction<SendMessageAction.Parameters> {
+    /**
+     * Parameters for [SendMessageAction].
+     */
     interface Parameters : WorkParameters {
+        /**
+         * The shared [ClientsBaseService] holding the registered SQS client.
+         */
         val service: Property<ClientsBaseService>
-        val clientName : Property<String>
 
+        /**
+         * Registered name of an [SqsClientInfo].
+         */
+        val clientName: Property<String>
+
+        /**
+         * URL of the target SQS queue.
+         */
         val queueUrl: Property<String>
+
+        /**
+         * Body of the message.
+         */
         val messageBody: Property<String>
+
+        /**
+         * Optional message attributes.
+         */
         val attributes: MapProperty<String, MessageAttributeValue>
+
+        /**
+         * Message group id; required for FIFO queues, must be unset for standard queues.
+         */
+        val messageGroupId: Property<String>
+
+        /**
+         * Message deduplication id; used by FIFO queues without content-based deduplication.
+         */
+        val messageDeduplicationId: Property<String>
     }
 
     private val client: Provider<SqsClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
@@ -29,6 +66,8 @@ abstract class SendMessageAction : WorkAction<SendMessageAction.Parameters> {
             if (parameters.attributes.isPresent) {
                 messageAttributes(parameters.attributes.get())
             }
+            parameters.messageGroupId.orNull?.let { messageGroupId(it) }
+            parameters.messageDeduplicationId.orNull?.let { messageDeduplicationId(it) }
         }.build()
 
         client.get().sendMessage(request)
