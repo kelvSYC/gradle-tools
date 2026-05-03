@@ -108,9 +108,49 @@ Both tasks fail if any artifact operation fails after exhausting retries. Non-re
 To use an `S3Client` from outside `ClientsBaseService`, use `AbstractBatchDownloadFromS3` /
 `AbstractBatchUploadToS3` directly and set `client` manually.
 
-## WorkActions: `UploadFileAction` / `DownloadFileAction`
+## Value Source: `AbstractListObjectsValueSource`
 
-Low-level `WorkAction` implementations for single-file S3 operations. Submit via `WorkerExecutor`:
+Extend `AbstractListObjectsValueSource` to list keys under a bucket (optionally filtered by prefix) and transform
+the results. Pagination is handled internally via the SDK Kotlin paginated flow — `doObtain` receives every
+object summary in a single list.
+
+```kotlin
+abstract class AllKeysValueSource :
+    AbstractListObjectsValueSource<List<String>, AbstractListObjectsValueSource.Parameters>() {
+    override fun doObtain(objects: List<Object>): List<String> = objects.mapNotNull { it.key }
+}
+
+val keys: Provider<List<String>> = providers.of(AllKeysValueSource::class) {
+    parameters {
+        service.set(serviceClients.service)
+        clientName.set("myS3Client")
+        bucket.set("my-bucket")
+        prefix.set("artifacts/")  // optional
+    }
+}
+```
+
+Parameters:
+
+| Parameter | Type | Description |
+|---|---|---|
+| `service` | `Property<ClientsBaseService>` | The shared build service |
+| `clientName` | `Property<String>` | Registered name of an `S3ClientInfo` |
+| `bucket` | `Property<String>` | S3 bucket name |
+| `prefix` | `Property<String>` | Optional key prefix filter |
+
+## WorkActions: single-object operations
+
+Low-level `WorkAction` implementations for single-object S3 operations. Submit via `WorkerExecutor`:
+
+| Action | Purpose | Required parameters |
+|---|---|---|
+| `DownloadFileAction` | Download one object to a local file | `bucket`, `key`, `outputFile` |
+| `UploadFileAction` | Upload one local file | `bucket`, `key`, `inputFile` |
+| `CopyObjectAction` | Server-side copy between bucket/key pairs | `sourceBucket`, `sourceKey`, `destinationBucket`, `destinationKey` |
+| `DeleteObjectAction` | Delete one object | `bucket`, `key` |
+
+All four also require `service` and `clientName` referencing a registered `S3ClientInfo`.
 
 ```kotlin
 workerExecutor.noIsolation().submit(UploadFileAction::class) {
@@ -121,12 +161,13 @@ workerExecutor.noIsolation().submit(UploadFileAction::class) {
     inputFile.set(layout.buildDirectory.file("result.json"))
 }
 
-workerExecutor.noIsolation().submit(DownloadFileAction::class) {
+workerExecutor.noIsolation().submit(CopyObjectAction::class) {
     service.set(serviceClients.service)
     clientName.set("myS3Client")
-    bucket.set("my-bucket")
-    key.set("config/settings.json")
-    outputFile.set(layout.buildDirectory.file("settings.json"))
+    sourceBucket.set("staging-bucket")
+    sourceKey.set("artifact-1.0.0.jar")
+    destinationBucket.set("release-bucket")
+    destinationKey.set("artifact-1.0.0.jar")
 }
 ```
 
