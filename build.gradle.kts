@@ -27,8 +27,6 @@ val components = buildList {
     add("google-cloud-artifact-registry-base")
     add("google-cloud-storage-base")
 
-    // Kotlin Extension Libraries
-    add("commons-numbers-extensions")
 }
 
 tasks.register("clean") {

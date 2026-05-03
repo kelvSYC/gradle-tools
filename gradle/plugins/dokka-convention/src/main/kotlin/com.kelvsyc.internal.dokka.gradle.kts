@@ -22,13 +22,6 @@ configure<DokkaExtension> {
         externalDocumentationLinks.register("gradle") {
             url("https://docs.gradle.org/current/kotlin-dsl/gradle")
         }
-        externalDocumentationLinks.register("commons-lang") {
-            url("https://commons.apache.org/proper/commons-lang/apidocs")
-            packageListUrl("https://commons.apache.org/proper/commons-lang/apidocs/element-list")
-        }
-        externalDocumentationLinks.register("commons-numbers") {
-            url("https://commons.apache.org/proper/commons-numbers/commons-numbers-docs/apidocs")
-        }
         sourceLink {
             remoteUrl.set(gitCommitHash.map { URI("https://github.com/kelvSYC/rifflet/blob/$it/$relativePath") })
         }

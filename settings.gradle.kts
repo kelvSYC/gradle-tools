@@ -26,7 +26,5 @@ includeBuild("cores/google-cloud-secret-manager-base")
 includeBuild("cores/google-cloud-storage-base")
 includeBuild("cores/gradle-extensions")
 
-// Kotlin extension components
-includeBuild("extensions/commons-numbers-extensions")
 includeBuild("aggregation")
 includeBuild("metadata")
