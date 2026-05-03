@@ -107,6 +107,40 @@ Parameters extend `AbstractGetGenericAssetValueSource.Parameters`:
 | `packageVersion` | `Property<String>` | Package version |
 | `asset` | `Property<String>` | Asset name |
 
+## Value Source: `ListPackageVersionsValueSource`
+
+Lists all version strings for a package in a CodeArtifact repository, paginating automatically:
+
+```kotlin
+val versions: Provider<List<String>> = providers.of(ListPackageVersionsValueSource::class) {
+    parameters {
+        service.set(serviceClients.service)
+        clientName.set("myCodeArtifact")
+        domain.set("my-domain")
+        domainOwner.set("111122223333")
+        repository.set("my-repo")
+        format.set(PackageFormat.GENERIC)
+        namespace.set("my-namespace")
+        packageValue.set("my-package")
+    }
+}
+```
+
+Returns `null` if the call throws `CodeartifactException`.
+
+Parameters:
+
+| Parameter | Type | Description |
+|---|---|---|
+| `service` | `Property<ClientsBaseService>` | The shared build service |
+| `clientName` | `Property<String>` | Registered name of a `CodeArtifactClientInfo` |
+| `domain` | `Property<String>` | CodeArtifact domain name |
+| `domainOwner` | `Property<String>` | AWS account ID owning the domain |
+| `repository` | `Property<String>` | Repository name |
+| `format` | `Property<PackageFormat>` | Package format |
+| `namespace` | `Property<String>` | Package namespace |
+| `packageValue` | `Property<String>` | Package name |
+
 ## WorkAction: `GetGenericPackageVersionAssetAction`
 
 Downloads a CodeArtifact generic repository asset to a file. Submit via `WorkerExecutor`:
@@ -123,6 +157,27 @@ workerExecutor.noIsolation().submit(GetGenericPackageVersionAssetAction::class) 
     packageVersion.set("1.0.0")
     asset.set("my-package-1.0.0.jar")
     outputFile.set(layout.buildDirectory.file("downloads/my-package-1.0.0.jar"))
+}
+```
+
+## WorkAction: `PublishPackageVersionAction`
+
+Publishes an asset to a CodeArtifact generic package version. Submit via `WorkerExecutor`:
+
+```kotlin
+workerExecutor.noIsolation().submit(PublishPackageVersionAction::class) {
+    service.set(serviceClients.service)
+    clientName.set("myCodeArtifact")
+    domain.set("my-domain")
+    domainOwner.set("111122223333")
+    repository.set("my-repo")
+    namespace.set("my-namespace")
+    packageValue.set("my-package")
+    packageVersion.set("1.0.0")
+    assetName.set("my-asset.jar")
+    assetSHA256.set("abc123...")
+    assetContent.set(layout.buildDirectory.file("artifacts/my-asset.jar"))
+    unfinished.set(false) // optional; set true when uploading multiple assets
 }
 ```
 

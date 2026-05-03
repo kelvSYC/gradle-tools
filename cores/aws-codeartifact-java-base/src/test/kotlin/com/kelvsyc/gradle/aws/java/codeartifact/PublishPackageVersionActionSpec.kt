@@ -1,0 +1,70 @@
+package com.kelvsyc.gradle.aws.java.codeartifact
+
+import com.kelvsyc.gradle.clients.ClientsBaseExtension
+import com.kelvsyc.gradle.internal.aws.java.codeartifact.MockCodeArtifactClientInfoInternal
+import com.kelvsyc.gradle.plugins.CodeArtifactJavaBasePlugin
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.slot
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.newInstance
+import org.gradle.kotlin.dsl.the
+import org.gradle.testfixtures.ProjectBuilder
+import software.amazon.awssdk.services.codeartifact.CodeartifactClient
+import software.amazon.awssdk.services.codeartifact.model.PackageFormat
+import software.amazon.awssdk.services.codeartifact.model.PublishPackageVersionRequest
+import software.amazon.awssdk.services.codeartifact.model.PublishPackageVersionResponse
+import java.nio.file.Files
+import java.nio.file.Path
+
+class PublishPackageVersionActionSpec : FunSpec() {
+    init {
+        test("execute - passes correct request parameters to CodeArtifact") {
+            val project = ProjectBuilder.builder().build()
+            project.pluginManager.apply(CodeArtifactJavaBasePlugin::class)
+            val extension = project.the<ClientsBaseExtension>()
+            extension.service.get().registerBinding(MockCodeArtifactClientInfo::class, MockCodeArtifactClientInfoInternal::class)
+            extension.service.get().registerIfAbsent<MockCodeArtifactClientInfo>("mock") {}
+
+            val client = extension.getClient<CodeartifactClient, MockCodeArtifactClientInfo>("mock").get()!!
+            val requestSlot = slot<PublishPackageVersionRequest>()
+            every { client.publishPackageVersion(capture(requestSlot), any<Path>()) } returns mockk<PublishPackageVersionResponse>()
+
+            val assetFile = Files.createTempFile("publish-test", ".jar")
+            Files.writeString(assetFile, "test-content")
+
+            val params = project.objects.newInstance<PublishPackageVersionAction.Parameters>()
+            params.service.set(extension.service.get())
+            params.clientName.set("mock")
+            params.domain.set("my-domain")
+            params.domainOwner.set("123456789012")
+            params.repository.set("my-repo")
+            params.namespace.set("my-namespace")
+            params.packageValue.set("my-package")
+            params.packageVersion.set("1.0.0")
+            params.assetName.set("my-asset.jar")
+            params.assetSHA256.set("abc123def456")
+            params.assetContent.set(assetFile.toFile())
+
+            val action = object : PublishPackageVersionAction() {
+                override fun getParameters() = params
+            }
+            action.execute()
+
+            val captured = requestSlot.captured
+            captured.domain() shouldBe "my-domain"
+            captured.domainOwner() shouldBe "123456789012"
+            captured.repository() shouldBe "my-repo"
+            captured.format() shouldBe PackageFormat.GENERIC
+            captured.namespace() shouldBe "my-namespace"
+            captured.packageValue() shouldBe "my-package"
+            captured.packageVersion() shouldBe "1.0.0"
+            captured.assetName() shouldBe "my-asset.jar"
+            captured.assetSHA256() shouldBe "abc123def456"
+
+            assetFile.toFile().delete()
+        }
+    }
+}

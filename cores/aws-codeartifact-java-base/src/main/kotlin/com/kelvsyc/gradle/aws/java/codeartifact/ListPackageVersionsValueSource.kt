@@ -7,18 +7,19 @@ import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import software.amazon.awssdk.services.codeartifact.CodeartifactClient
 import software.amazon.awssdk.services.codeartifact.model.CodeartifactException
-import software.amazon.awssdk.services.codeartifact.model.EndpointType
-import software.amazon.awssdk.services.codeartifact.model.GetRepositoryEndpointRequest
+import software.amazon.awssdk.services.codeartifact.model.ListPackageVersionsRequest
+import software.amazon.awssdk.services.codeartifact.model.ListPackageVersionsResponse
 import software.amazon.awssdk.services.codeartifact.model.PackageFormat
 
 /**
- * [ValueSource] implementation providing an AWS CodeArtifact repository endpoint URL.
+ * [ValueSource] implementation providing a list of package version strings from a CodeArtifact repository.
  *
- * The value is obtained from a request to CodeArtifact.
+ * The value is obtained by paginating through the CodeArtifact ListPackageVersions API.
  */
-abstract class GetRepositoryEndpointValueSource : ValueSource<String, GetRepositoryEndpointValueSource.Parameters> {
+abstract class ListPackageVersionsValueSource :
+    ValueSource<List<String>, ListPackageVersionsValueSource.Parameters> {
     /**
-     * Parameters to [GetRepositoryEndpointValueSource].
+     * Parameters for [ListPackageVersionsValueSource].
      */
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing CodeArtifact clients. */
@@ -36,31 +37,38 @@ abstract class GetRepositoryEndpointValueSource : ValueSource<String, GetReposit
         /** The CodeArtifact repository name. */
         val repository: Property<String>
 
-        /**
-         * The endpoint type. Defaults to [EndpointType.IPV4].
-         */
-        val endpointType: Property<EndpointType>
-
-        /**
-         * The repository's package format. Defaults to [PackageFormat.GENERIC]
-         */
+        /** The package format. */
         val format: Property<PackageFormat>
+
+        /** The package namespace. */
+        val namespace: Property<String>
+
+        /** The package name. */
+        val packageValue: Property<String>
     }
 
     private val client: Provider<CodeartifactClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
-    override fun obtain(): String? {
-        val request = GetRepositoryEndpointRequest.builder().apply {
+    override fun obtain(): List<String>? {
+        val baseRequest = ListPackageVersionsRequest.builder().apply {
             domain(parameters.domain.get())
             domainOwner(parameters.domainOwner.get())
             repository(parameters.repository.get())
-            endpointType(parameters.endpointType.getOrElse(EndpointType.IPV4))
-            format(parameters.format.getOrElse(PackageFormat.GENERIC))
-        }.build()
+            format(parameters.format.get())
+            namespace(parameters.namespace.get())
+            packageValue(parameters.packageValue.get())
+        }
 
         return try {
-            val response = client.get().getRepositoryEndpoint(request)
-            response.repositoryEndpoint()
+            val versions = mutableListOf<String>()
+            var nextToken: String? = null
+            do {
+                val request = baseRequest.nextToken(nextToken).build()
+                val response: ListPackageVersionsResponse = client.get().listPackageVersions(request)
+                response.versions().forEach { versions.add(it.version()) }
+                nextToken = response.nextToken()
+            } while (nextToken != null)
+            versions
         } catch (_: CodeartifactException) {
             null
         }
