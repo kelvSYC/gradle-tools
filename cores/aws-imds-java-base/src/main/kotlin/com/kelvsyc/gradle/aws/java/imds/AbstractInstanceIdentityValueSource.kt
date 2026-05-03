@@ -28,7 +28,10 @@ abstract class AbstractInstanceIdentityValueSource<T : Any, P : AbstractInstance
      * subclass.
      */
     interface Parameters : ValueSourceParameters {
+        /** The shared build service managing IMDS clients. */
         val service: Property<ClientsBaseService>
+
+        /** Registered name of an [ImdsClientInfo]. */
         val clientName: Property<String>
     }
 
