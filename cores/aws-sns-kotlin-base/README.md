@@ -100,6 +100,7 @@ For FIFO topics, set `messageGroupId` (and `messageDeduplicationId` if needed) o
 
 | Property | Type | Description |
 |---|---|---|
+| `service` | `Property<ClientsBaseService>` | The shared build service |
 | `clientName` | `Property<String>` | Registered name of a `SnsClientInfo` |
 | `topicArn` | `Property<String>` | SNS topic ARN |
 | Entry: `message` | `Property<String>` | Message body |
