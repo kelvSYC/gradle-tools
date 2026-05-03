@@ -17,9 +17,13 @@ import kotlin.streams.asSequence
  */
 abstract class SecretBatchValueSource : ValueSource<Map<String, String>, SecretBatchValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
+        /** The shared build service managing Secrets Manager clients. */
         val service: Property<ClientsBaseService>
+
+        /** Registered name of a [SecretsManagerClientInfo]. */
         val clientName: Property<String>
 
+        /** Set of secret IDs (names or ARNs) to retrieve. */
         val secretIds: SetProperty<String>
     }
 

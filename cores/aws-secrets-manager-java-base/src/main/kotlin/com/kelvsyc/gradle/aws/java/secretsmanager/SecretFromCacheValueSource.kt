@@ -14,9 +14,13 @@ import org.gradle.api.provider.ValueSourceParameters
  */
 abstract class SecretFromCacheValueSource : ValueSource<String, SecretFromCacheValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
+        /** The shared build service managing Secrets Manager clients. */
         val service: Property<ClientsBaseService>
+
+        /** Registered name of a [SecretCacheClientInfo]. */
         val clientName: Property<String>
 
+        /** The name or ARN of the secret to retrieve. */
         val secretName: Property<String>
     }
 
