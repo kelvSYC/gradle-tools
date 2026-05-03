@@ -34,6 +34,8 @@ aws-regions-java = { module = "software.amazon.awssdk:regions" } # version from 
 aws-codeartifact-java = { module = "software.amazon.awssdk:codeartifact" } # version from BOM 'aws-java-sdk-bom'
 aws-codeartifact-kotlin = { module = "aws.sdk.kotlin:codeartifact" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-imds-java = { module = "software.amazon.awssdk:imds" } # version from BOM 'aws-java-sdk-bom'
+aws-lambda-java = { module = "software.amazon.awssdk:lambda" } # version from BOM 'aws-java-sdk-bom'
+aws-lambda-kotlin = { module = "aws.sdk.kotlin:lambda" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-s3-java = { module = "software.amazon.awssdk:s3" } # version from BOM 'aws-java-sdk-bom'
 aws-s3-kotlin = { module = "aws.sdk.kotlin:s3" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-s3-transfer-manager-java = { module = "software.amazon.awssdk:s3-transfer-manager" } # version from BOM 'aws-java-sdk-bom'
