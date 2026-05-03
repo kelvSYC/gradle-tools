@@ -104,5 +104,5 @@ Do not modify these — they wire up the composite build correctly.
 
 - **Architecture & detailed build hierarchy**: See `CLAUDE.md`
 - **Linting config**: `gradle/detekt.yml`
-- **Source code structure**: `cores/*/src/main/kotlin/`, `extensions/*/src/main/kotlin/`
+- **Source code structure**: `cores/*/src/main/kotlin/`
 - **Tests**: Mirror `src/main` structure under `src/test/`

@@ -55,9 +55,7 @@ The root `settings.gradle.kts` composes three layers of included builds:
    - `clients-base` — Base service for SDK client management (prerequisite for most AWS/GCP plugins)
    - `*-base` — Plugins for specific cloud services (Artifactory, AWS S3/SQS/SNS/SES/SecretsManager/CodeArtifact/IMDS, GCP Artifact Registry/Storage, Git)
 
-3. **`extensions/`** — Published Kotlin libraries (group `com.kelvsyc.kotlin` / `com.kelvsyc.gradle`). Pure Kotlin extensions; no Gradle plugin API.
-
-4. **`aggregation/`** — Publishes BOM and version catalog; aggregates Dokka docs, JaCoCo coverage, and test reports.
+3. **`aggregation/`** — Publishes BOM and version catalog; aggregates Dokka docs, JaCoCo coverage, and test reports.
 
 ### Component Settings Pattern
 
@@ -74,6 +72,6 @@ Tests use [Kotest](https://kotest.io/) with JUnit Platform. Gradle plugin tests 
 
 ### JDK Constraints (do not change)
 
-The Gradle daemon is pinned to JDK 21 (`gradle/gradle-daemon-jvm.properties`). **Do not change `toolchainVersion` to 25** — Detekt 1.23.x cannot parse JVM version "25.x". Convention plugins override `jvmTarget = "22"` and `jdkHome` to JDK 21 for detekt tasks; `cores/` and `extensions/` still compile to JDK 25 via a forked toolchain process.
+The Gradle daemon is pinned to JDK 21 (`gradle/gradle-daemon-jvm.properties`). **Do not change `toolchainVersion` to 25** — Detekt 1.23.x cannot parse JVM version "25.x". Convention plugins override `jvmTarget = "22"` and `jdkHome` to JDK 21 for detekt tasks; `cores/` components still compile to JDK 25 via a forked toolchain process.
 
 Tests run on JDK 25 via toolchain. Convention plugins wire the required mockk/ByteBuddy JVM args (`-XX:+EnableDynamicAgentLoading`, `-Dnet.bytebuddy.experimental=true`, `-javaagent:[byte-buddy-agent]`). **Do not remove these.**
