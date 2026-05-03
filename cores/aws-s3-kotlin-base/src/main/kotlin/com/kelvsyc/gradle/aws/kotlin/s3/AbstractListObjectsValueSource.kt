@@ -1,0 +1,73 @@
+package com.kelvsyc.gradle.aws.kotlin.s3
+
+import aws.sdk.kotlin.services.s3.S3Client
+import aws.sdk.kotlin.services.s3.model.ListObjectsV2Request
+import aws.sdk.kotlin.services.s3.model.Object as S3Object
+import aws.sdk.kotlin.services.s3.paginators.listObjectsV2Paginated
+import com.kelvsyc.gradle.clients.ClientsBaseService
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.runBlocking
+import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
+import org.gradle.api.provider.ValueSource
+import org.gradle.api.provider.ValueSourceParameters
+
+/**
+ * Base class for [ValueSource] implementations that produce a value by listing objects in an S3 bucket.
+ *
+ * Pagination is handled internally via the SDK Kotlin paginated flow; subclasses receive the full list of
+ * [S3Object] summaries across all pages via [doObtain] and transform it to the desired type.
+ */
+abstract class AbstractListObjectsValueSource<T : Any, P : AbstractListObjectsValueSource.Parameters>
+    : ValueSource<T, P> {
+    /**
+     * Base parameters interface for [AbstractListObjectsValueSource].
+     *
+     * Extend this interface if there is a need to supply additional parameters to the subclass.
+     */
+    interface Parameters : ValueSourceParameters {
+        /**
+         * The shared [ClientsBaseService] holding the registered S3 client.
+         */
+        val service: Property<ClientsBaseService>
+
+        /**
+         * Registered name of an [S3ClientInfo].
+         */
+        val clientName: Property<String>
+
+        /**
+         * S3 bucket name.
+         */
+        val bucket: Property<String>
+
+        /**
+         * Optional key prefix used to filter the listing.
+         */
+        val prefix: Property<String>
+    }
+
+    private val client: Provider<S3Client> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
+
+    /**
+     * Transforms the listed objects into the target type.
+     *
+     * @param objects All [S3Object] summaries returned across paginated responses.
+     * @return The transformed value, or `null` if the listing cannot be transformed.
+     */
+    abstract fun doObtain(objects: List<S3Object>): T?
+
+    override fun obtain(): T? {
+        val request = ListObjectsV2Request {
+            bucket = parameters.bucket.get()
+            prefix = parameters.prefix.orNull
+        }
+
+        return runBlocking {
+            val objects = client.get().listObjectsV2Paginated(request)
+                .toList()
+                .flatMap { it.contents.orEmpty() }
+            doObtain(objects)
+        }
+    }
+}
