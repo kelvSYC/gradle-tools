@@ -3,6 +3,7 @@ package com.kelvsyc.gradle.plugins
 import com.kelvsyc.gradle.git.GetGitRemoteArchive
 import com.kelvsyc.gradle.git.GitExport
 import com.kelvsyc.gradle.github.GetGitHubRepoArchive
+import com.kelvsyc.gradle.gitlab.GetGitLabRepoArchive
 import io.kotest.core.spec.style.FunSpec
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.register
@@ -37,6 +38,18 @@ class GitCorePluginSpec : FunSpec() {
             project.pluginManager.apply(GitCorePlugin::class)
 
             project.tasks.register<GetGitHubRepoArchive>("myTask") {
+                owner.set("myowner")
+                repo.set("myrepo")
+                ref.set("main")
+                outputFile.set(project.layout.buildDirectory.file("archive.tar.gz"))
+            }.get()
+        }
+
+        test("Apply - configures GetGitLabRepoArchive tasks without error") {
+            val project = ProjectBuilder.builder().build()
+            project.pluginManager.apply(GitCorePlugin::class)
+
+            project.tasks.register<GetGitLabRepoArchive>("myTask") {
                 owner.set("myowner")
                 repo.set("myrepo")
                 ref.set("main")

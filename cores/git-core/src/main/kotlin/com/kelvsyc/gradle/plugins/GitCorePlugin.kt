@@ -4,6 +4,7 @@ import com.kelvsyc.gradle.git.GetGitRemoteArchive
 import com.kelvsyc.gradle.git.GitExport
 import com.kelvsyc.gradle.git.which
 import com.kelvsyc.gradle.github.GetGitHubRepoArchive
+import com.kelvsyc.gradle.gitlab.GetGitLabRepoArchive
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType
@@ -18,6 +19,9 @@ class GitCorePlugin : Plugin<Project> {
         }
         project.tasks.withType<GetGitHubRepoArchive>().configureEach {
             ghCommand.convention(project.providers.which("gh"))
+        }
+        project.tasks.withType<GetGitLabRepoArchive>().configureEach {
+            glabCommand.convention(project.providers.which("glab"))
         }
     }
 }
