@@ -62,6 +62,31 @@ val secrets: Provider<Map<String, String>> = providers.of(SecretBatchValueSource
 Only string secrets are supported. Secrets with a `null` name or `null` `secretString` will cause a
 `NullPointerException` — ensure all requested secrets are string secrets.
 
+## WorkActions
+
+### `PutSecretValueAction`
+
+Stores a new value in an existing Secrets Manager secret:
+
+```kotlin
+workerExecutor.noIsolation().submit(PutSecretValueAction::class) {
+    service.set(serviceClients.service)
+    clientName.set("secretsManager")
+    secretId.set("my/secret/name")
+    secretString.set("{\"username\":\"admin\",\"password\":\"newPassword\"}")
+}
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `service` | `Property<ClientsBaseService>` | The shared build service |
+| `clientName` | `Property<String>` | Registered name of a `SecretsManagerClientInfo` |
+| `secretId` | `Property<String>` | Name or ARN of the secret to update |
+| `secretString` | `Property<String>` | New secret value (string) |
+
+Only string secrets are supported. The secret must already exist — use `CreateSecret` via the AWS CLI or console
+to create new secrets.
+
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure

@@ -3,10 +3,12 @@ package com.kelvsyc.gradle.aws.kotlin.secretsmanager
 import aws.sdk.kotlin.services.secretsmanager.SecretsManagerClient
 import aws.sdk.kotlin.services.secretsmanager.model.GetSecretValueRequest
 import aws.sdk.kotlin.services.secretsmanager.model.GetSecretValueResponse
+import aws.sdk.kotlin.services.secretsmanager.model.SecretsManagerException
 import com.kelvsyc.gradle.clients.ClientsBaseExtension
 import com.kelvsyc.gradle.internal.aws.kotlin.secretsmanager.MockSecretsManagerClientInfoInternal
 import com.kelvsyc.gradle.plugins.SecretsManagerKotlinBasePlugin
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.slot
@@ -38,6 +40,25 @@ class SecretsManagerValueSourceSpec : FunSpec() {
 
             result shouldBe "super-secret"
             slot.captured.secretId shouldBe "my-secret"
+        }
+
+        test("obtain - returns null when SecretsManagerException is thrown") {
+            val project = ProjectBuilder.builder().build()
+            project.pluginManager.apply(SecretsManagerKotlinBasePlugin::class)
+            val extension = project.the<ClientsBaseExtension>()
+            extension.service.get().registerBinding(MockSecretsManagerClientInfo::class, MockSecretsManagerClientInfoInternal::class)
+            extension.service.get().registerIfAbsent<MockSecretsManagerClientInfo>("mock") {}
+            val client = extension.getClient<SecretsManagerClient, MockSecretsManagerClientInfo>("mock").get()!!
+            coEvery { client.getSecretValue(any<GetSecretValueRequest>()) } throws SecretsManagerException("not found")
+
+            val provider = project.providers.of(SecretsManagerValueSource::class) {
+                parameters.service.set(extension.service)
+                parameters.clientName.set("mock")
+                parameters.secretName.set("missing-secret")
+            }
+            val result = provider.orNull
+
+            result.shouldBeNull()
         }
     }
 }
