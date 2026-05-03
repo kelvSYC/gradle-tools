@@ -13,17 +13,38 @@ import software.amazon.awssdk.services.ses.model.Destination
 import software.amazon.awssdk.services.ses.model.Message
 import software.amazon.awssdk.services.ses.model.SendEmailRequest
 
+/**
+ * [WorkAction] implementation sending a simple email via SES.
+ *
+ * At least one of [Parameters.htmlMessage] or [Parameters.textMessage] should be provided.
+ */
 abstract class SendMailAction : WorkAction<SendMailAction.Parameters> {
     interface Parameters : WorkParameters {
+        /** The shared build service managing SES clients. */
         val service: Property<ClientsBaseService>
+
+        /** Registered name of a [SesClientInfo]. */
         val clientName: Property<String>
 
+        /** The sender (From) email address. */
         val sender: Property<String>
+
+        /** To addresses. */
         val recipients: ListProperty<String>
+
+        /** CC addresses. */
         val ccAddresses: ListProperty<String>
+
+        /** BCC addresses. */
         val bccAddresses: ListProperty<String>
+
+        /** Email subject line. */
         val subject: Property<String>
+
+        /** HTML body content. */
         val htmlMessage: Property<String>
+
+        /** Plain-text body content. */
         val textMessage: Property<String>
     }
 

@@ -82,6 +82,46 @@ Extend this class to send a raw MIME email. Subclasses must define a concrete `P
 | `sender` | `Property<String>` | From address |
 | `message` | `Property<ByteArray>` | Raw MIME message bytes |
 
+## Tasks
+
+### `SendBulkTemplatedMail`
+
+Sends a templated email to multiple destinations via the SES `SendBulkTemplatedEmail` API. Internally chunks
+entries into the maximum batch size (50) supported by SES:
+
+```kotlin
+tasks.register<SendBulkTemplatedMail>("notifyAll") {
+    clientName.set("ses")
+    sender.set("no-reply@example.com")
+    templateName.set("build-report")
+    defaultTemplateData.set("{\"project\":\"my-project\"}")   // optional fallback
+    registerEntry("user1") {
+        recipients.set(listOf("user1@example.com"))
+        templateData.set("{\"project\":\"my-project\",\"status\":\"success\"}")
+    }
+    registerEntry("user2") {
+        recipients.set(listOf("user2@example.com"))
+        ccAddresses.set(listOf("manager@example.com"))
+    }
+}
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `clientName` | `Property<String>` | Registered name of a `SesClientInfo` |
+| `sender` | `Property<String>` | From address |
+| `templateName` | `Property<String>` | SES template name |
+| `defaultTemplateData` | `Property<String>` | Default template data JSON (optional) |
+
+Each entry accepts:
+
+| Property | Type | Description |
+|---|---|---|
+| `recipients` | `ListProperty<String>` | To addresses |
+| `ccAddresses` | `ListProperty<String>` | CC addresses (optional) |
+| `bccAddresses` | `ListProperty<String>` | BCC addresses (optional) |
+| `templateData` | `Property<String>` | Per-destination replacement template data JSON (optional) |
+
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure
