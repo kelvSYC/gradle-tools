@@ -95,5 +95,34 @@ class PublishActionSpec : FunSpec() {
 
             requestSlot.captured.subject shouldBe null
         }
+
+        test("execute - forwards FIFO message group id and deduplication id") {
+            val project = ProjectBuilder.builder().build()
+            project.pluginManager.apply(SnsKotlinBasePlugin::class)
+            val extension = project.the<ClientsBaseExtension>()
+            extension.service.get().registerBinding(MockSnsClientInfo::class, MockSnsClientInfoInternal::class)
+            extension.service.get().registerIfAbsent<MockSnsClientInfo>("mock") {}
+
+            val client = extension.getClient<SnsClient, MockSnsClientInfo>("mock").get()!!
+            val requestSlot = slot<PublishRequest>()
+            coEvery { client.publish(capture(requestSlot)) } returns mockk<PublishResponse>()
+
+            val params = project.objects.newInstance<PublishAction.Parameters>()
+            params.service.set(extension.service.get())
+            params.clientName.set("mock")
+            params.topicArn.set("arn:aws:sns:us-east-1:123456789012:MyTopic.fifo")
+            params.message.set("Hello, FIFO!")
+            params.messageGroupId.set("group-1")
+            params.messageDeduplicationId.set("dedup-1")
+
+            val action = object : PublishAction() {
+                override fun getParameters() = params
+            }
+            action.execute()
+
+            val captured = requestSlot.captured
+            captured.messageGroupId shouldBe "group-1"
+            captured.messageDeduplicationId shouldBe "dedup-1"
+        }
     }
 }

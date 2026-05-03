@@ -1,11 +1,14 @@
 package com.kelvsyc.gradle.plugins
 
+import com.kelvsyc.gradle.aws.kotlin.sns.PublishBatch
 import com.kelvsyc.gradle.aws.kotlin.sns.SnsClientInfo
 import com.kelvsyc.gradle.clients.ClientsBaseExtension
+import com.kelvsyc.gradle.clients.ClientsBaseService
 import com.kelvsyc.gradle.internal.aws.kotlin.sns.SnsClientInfoInternal
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.withType
 
 class SnsKotlinBasePlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -13,5 +16,11 @@ class SnsKotlinBasePlugin : Plugin<Project> {
 
         val extension = project.the<ClientsBaseExtension>()
         extension.service.get().registerBinding(SnsClientInfo::class, SnsClientInfoInternal::class)
+
+        project.tasks.withType<PublishBatch>().configureEach {
+            client.set(service.zip(clientName, ClientsBaseService::getClient))
+            client.disallowChanges()
+            client.finalizeValueOnRead()
+        }
     }
 }
