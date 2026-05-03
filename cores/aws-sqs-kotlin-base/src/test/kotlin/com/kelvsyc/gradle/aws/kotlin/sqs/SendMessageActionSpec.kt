@@ -50,6 +50,35 @@ class SendMessageActionSpec : FunSpec() {
             captured.messageAttributes!!["key"]!!.stringValue shouldBe "value"
         }
 
+        test("execute - forwards FIFO message group id and deduplication id") {
+            val project = ProjectBuilder.builder().build()
+            project.pluginManager.apply(SqsKotlinBasePlugin::class)
+            val extension = project.the<ClientsBaseExtension>()
+            extension.service.get().registerBinding(MockSqsClientInfo::class, MockSqsClientInfoInternal::class)
+            extension.service.get().registerIfAbsent<MockSqsClientInfo>("mock") {}
+
+            val client = extension.getClient<SqsClient, MockSqsClientInfo>("mock").get()!!
+            val requestSlot = slot<SendMessageRequest>()
+            coEvery { client.sendMessage(capture(requestSlot)) } returns mockk<SendMessageResponse>()
+
+            val params = project.objects.newInstance<SendMessageAction.Parameters>()
+            params.service.set(extension.service.get())
+            params.clientName.set("mock")
+            params.queueUrl.set("https://sqs.us-east-1.amazonaws.com/123456789012/test-queue.fifo")
+            params.messageBody.set("Hello, FIFO!")
+            params.messageGroupId.set("group-1")
+            params.messageDeduplicationId.set("dedup-1")
+
+            val action = object : SendMessageAction() {
+                override fun getParameters() = params
+            }
+            action.execute()
+
+            val captured = requestSlot.captured
+            captured.messageGroupId shouldBe "group-1"
+            captured.messageDeduplicationId shouldBe "dedup-1"
+        }
+
         test("execute - sends message with empty attributes") {
             val project = ProjectBuilder.builder().build()
             project.pluginManager.apply(SqsKotlinBasePlugin::class)
