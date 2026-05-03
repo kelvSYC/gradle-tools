@@ -27,7 +27,6 @@ includeBuild("cores/google-cloud-storage-base")
 includeBuild("cores/gradle-extensions")
 
 // Kotlin extension components
-includeBuild("extensions/commons-lang-extensions")
 includeBuild("extensions/commons-numbers-extensions")
 includeBuild("aggregation")
 includeBuild("metadata")

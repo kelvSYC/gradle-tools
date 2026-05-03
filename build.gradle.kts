@@ -28,7 +28,6 @@ val components = buildList {
     add("google-cloud-storage-base")
 
     // Kotlin Extension Libraries
-    add("commons-lang-extensions")
     add("commons-numbers-extensions")
 }
 
