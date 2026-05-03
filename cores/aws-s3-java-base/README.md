@@ -145,6 +145,70 @@ tasks.register<MyProcessingTask>("process") {
 To use a client from outside `ClientsBaseService`, use `AbstractBatchDownloadFromS3` / `AbstractBatchUploadToS3`
 directly and set `client` manually.
 
+## Value Source: `AbstractListObjectsValueSource`
+
+Extend `AbstractListObjectsValueSource` to list keys under a bucket (optionally filtered by prefix) and transform
+the results. Pagination is handled internally — `doObtain` receives every `S3Object` summary in a single list.
+
+```kotlin
+abstract class AllKeysValueSource :
+    AbstractListObjectsValueSource<List<String>, AbstractListObjectsValueSource.Parameters>() {
+    override fun doObtain(objects: List<S3Object>): List<String> = objects.map { it.key() }
+}
+
+val keys: Provider<List<String>> = providers.of(AllKeysValueSource::class) {
+    parameters {
+        service.set(serviceClients.service)
+        clientName.set("myS3Client")
+        bucket.set("my-bucket")
+        prefix.set("artifacts/")  // optional
+    }
+}
+```
+
+Parameters:
+
+| Parameter | Type | Description |
+|---|---|---|
+| `service` | `Property<ClientsBaseService>` | The shared build service |
+| `clientName` | `Property<String>` | Registered name of an `S3ClientInfo` |
+| `bucket` | `Property<String>` | S3 bucket name |
+| `prefix` | `Property<String>` | Optional key prefix filter |
+
+## WorkActions: single-object operations
+
+Low-level `WorkAction` implementations using the synchronous `S3Client`. Submitting through
+`WorkerExecutor.noIsolation()` gives Gradle-managed parallel execution without requiring an
+`S3TransferManager` registration.
+
+| Action | Purpose | Required parameters |
+|---|---|---|
+| `DownloadFileAction` | Download one object to a local file | `bucket`, `key`, `outputFile` |
+| `UploadFileAction` | Upload one local file | `bucket`, `key`, `inputFile` |
+| `CopyObjectAction` | Server-side copy between bucket/key pairs | `sourceBucket`, `sourceKey`, `destinationBucket`, `destinationKey` |
+| `DeleteObjectAction` | Delete one object | `bucket`, `key` |
+
+All four also require `service` and `clientName` referencing a registered `S3ClientInfo`.
+
+```kotlin
+workerExecutor.noIsolation().submit(DownloadFileAction::class) {
+    service.set(serviceClients.service)
+    clientName.set("myS3Client")
+    bucket.set("my-bucket")
+    key.set("config/settings.json")
+    outputFile.set(layout.buildDirectory.file("settings.json"))
+}
+
+workerExecutor.noIsolation().submit(CopyObjectAction::class) {
+    service.set(serviceClients.service)
+    clientName.set("myS3Client")
+    sourceBucket.set("staging-bucket")
+    sourceKey.set("artifact-1.0.0.jar")
+    destinationBucket.set("release-bucket")
+    destinationKey.set("artifact-1.0.0.jar")
+}
+```
+
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure
