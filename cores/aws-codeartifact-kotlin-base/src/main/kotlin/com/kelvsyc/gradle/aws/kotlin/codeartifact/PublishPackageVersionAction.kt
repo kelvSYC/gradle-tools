@@ -1,9 +1,9 @@
 package com.kelvsyc.gradle.aws.kotlin.codeartifact
 
 import aws.sdk.kotlin.services.codeartifact.CodeartifactClient
-import aws.sdk.kotlin.services.codeartifact.model.GetPackageVersionAssetRequest
 import aws.sdk.kotlin.services.codeartifact.model.PackageFormat
-import aws.smithy.kotlin.runtime.content.writeToFile
+import aws.sdk.kotlin.services.codeartifact.model.PublishPackageVersionRequest
+import aws.smithy.kotlin.runtime.content.asByteStream
 import com.kelvsyc.gradle.clients.ClientsBaseService
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.file.RegularFileProperty
@@ -13,11 +13,11 @@ import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 
 /**
- * [WorkAction] implementation downloading an asset form a CodeArtifact generic repo.
+ * [WorkAction] implementation publishing an asset to a CodeArtifact generic package version.
  */
-abstract class GetGenericPackageVersionAssetAction : WorkAction<GetGenericPackageVersionAssetAction.Parameters> {
+abstract class PublishPackageVersionAction : WorkAction<PublishPackageVersionAction.Parameters> {
     /**
-     * Parameters for [GetGenericPackageVersionAssetAction].
+     * Parameters for [PublishPackageVersionAction].
      */
     interface Parameters : WorkParameters {
         /** The shared build service managing CodeArtifact clients. */
@@ -45,18 +45,26 @@ abstract class GetGenericPackageVersionAssetAction : WorkAction<GetGenericPackag
         val packageVersion: Property<String>
 
         /** The asset name within the package version. */
-        val asset: Property<String>
+        val assetName: Property<String>
+
+        /** The SHA-256 hash of the asset content. */
+        val assetSHA256: Property<String>
+
+        /** The asset file to upload. */
+        val assetContent: RegularFileProperty
 
         /**
-         * The location the asset is to be downloaded to.
+         * Whether the package version should remain in the `Unfinished` state after publishing.
+         *
+         * Set to `true` when uploading multiple assets to the same package version.
          */
-        val outputFile: RegularFileProperty
+        val unfinished: Property<Boolean>
     }
 
     private val client: Provider<CodeartifactClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     override fun execute() {
-        val request = GetPackageVersionAssetRequest {
+        val request = PublishPackageVersionRequest {
             domain = parameters.domain.get()
             domainOwner = parameters.domainOwner.get()
             repository = parameters.repository.get()
@@ -65,13 +73,17 @@ abstract class GetGenericPackageVersionAssetAction : WorkAction<GetGenericPackag
             namespace = parameters.namespace.get()
             `package` = parameters.packageValue.get()
             packageVersion = parameters.packageVersion.get()
-            asset = parameters.asset.get()
+            assetName = parameters.assetName.get()
+            assetSha256 = parameters.assetSHA256.get()
+            assetContent = parameters.assetContent.get().asFile.asByteStream()
+
+            if (parameters.unfinished.isPresent) {
+                unfinished = parameters.unfinished.get()
+            }
         }
 
         runBlocking {
-            client.get().getPackageVersionAsset(request) {
-                it.asset?.writeToFile(parameters.outputFile.get().asFile)
-            }
+            client.get().publishPackageVersion(request)
         }
     }
 }
