@@ -22,9 +22,13 @@ abstract class SecretsManagerValueSource : ValueSource<String, SecretsManagerVal
     }
 
     interface Parameters : ValueSourceParameters {
+        /** The shared build service managing Secrets Manager clients. */
         val service: Property<ClientsBaseService>
+
+        /** Registered name of a [SecretsManagerClientInfo]. */
         val clientName: Property<String>
 
+        /** The name or ARN of the secret to retrieve. */
         val secretName: Property<String>
     }
 
@@ -38,7 +42,7 @@ abstract class SecretsManagerValueSource : ValueSource<String, SecretsManagerVal
         return try {
             val response = client.get().getSecretValue(request)
             response.secretString()
-        } catch(e: SecretsManagerException) {
+        } catch (e: SecretsManagerException) {
             logger.warn(e) { "Unable to retrieve secret '${parameters.secretName.get()}' from AWS" }
             null
         }
