@@ -63,6 +63,7 @@ caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.3"
 commons-io = "commons-io:commons-io:2.22.0"
 commons-lang = "org.apache.commons:commons-lang3:3.20.0"
 google-cloud-artifact-registry = { module = "com.google.cloud:google-cloud-artifact-registry" } # version from BOM 'google-cloud-libraries-bom'
+google-cloud-pubsub = { module = "com.google.cloud:google-cloud-pubsub" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-secret-manager = { module = "com.google.cloud:google-cloud-secretmanager" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-storage = { module = "com.google.cloud:google-cloud-storage" } # version from BOM 'google-cloud-libraries-bom'
 gson = "com.google.code.gson:gson:2.14.0"
