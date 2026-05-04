@@ -76,6 +76,92 @@ Parameters:
 | `repository` | `Property<String>` | Repository name |
 | `filename` | `Property<String>` | File path within the repository |
 
+## Value Source: `GetRepositoryValueSource`
+
+Returns the [`Repository`](https://cloud.google.com/java/docs/reference/google-cloud-artifact-registry/latest/com.google.devtools.artifactregistry.v1.Repository)
+proto for the named repository, exposing format, mode, description, labels, and other metadata.
+
+```kotlin
+val repository: Provider<Repository> = providers.of(GetRepositoryValueSource::class) {
+    parameters {
+        service.set(serviceClients.service)
+        clientName.set("myArtifactRegistry")
+        projectName.set("my-gcp-project")
+        location.set("us-east1")
+        repository.set("my-repo")
+    }
+}
+```
+
+## Value Source: `ListPackagesValueSource`
+
+Returns the fully-qualified resource names of every package in a repository. Pagination is handled internally.
+
+```kotlin
+val packages: Provider<List<String>> = providers.of(ListPackagesValueSource::class) {
+    parameters {
+        service.set(serviceClients.service)
+        clientName.set("myArtifactRegistry")
+        projectName.set("my-gcp-project")
+        location.set("us-east1")
+        repository.set("my-repo")
+    }
+}
+```
+
+## Value Source: `ListVersionsValueSource`
+
+Returns the fully-qualified resource names of every version of a given package.
+
+```kotlin
+val versions: Provider<List<String>> = providers.of(ListVersionsValueSource::class) {
+    parameters {
+        service.set(serviceClients.service)
+        clientName.set("myArtifactRegistry")
+        projectName.set("my-gcp-project")
+        location.set("us-east1")
+        repository.set("my-repo")
+        packageName.set("my-package")
+    }
+}
+```
+
+## Value Source: `ListFilesValueSource`
+
+Returns the fully-qualified resource names of files in a repository, with an optional filter expression.
+
+```kotlin
+val files: Provider<List<String>> = providers.of(ListFilesValueSource::class) {
+    parameters {
+        service.set(serviceClients.service)
+        clientName.set("myArtifactRegistry")
+        projectName.set("my-gcp-project")
+        location.set("us-east1")
+        repository.set("my-repo")
+        // Optional — narrow to files owned by a specific package version.
+        filter.set("owner=\"projects/my-gcp-project/locations/us-east1/repositories/my-repo/packages/my-package/versions/1.0.0\"")
+    }
+}
+```
+
+## Work Action: `DownloadFileAction`
+
+Companion to `AbstractArtifactValueSource` that writes the `GetFile` response to a `RegularFileProperty`,
+matching the action-style download primitives in the AWS bases. Suitable for dispatch via `WorkerExecutor`.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `service` | `Property<ClientsBaseService>` | The shared build service |
+| `clientName` | `Property<String>` | Registered name of an `ArtifactRegistryClientInfo` |
+| `projectName` | `Property<String>` | GCP project ID |
+| `location` | `Property<String>` | Artifact Registry location |
+| `repository` | `Property<String>` | Repository name |
+| `filename` | `Property<String>` | File path within the repository |
+| `outputFile` | `RegularFileProperty` | Destination file |
+
+> **Note:** Generic-artifact upload is not exposed by the Artifact Registry Java client and is not yet
+> implemented in this base.
+
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure
