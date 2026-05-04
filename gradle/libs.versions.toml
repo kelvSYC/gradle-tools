@@ -36,6 +36,8 @@ aws-codeartifact-kotlin = { module = "aws.sdk.kotlin:codeartifact" } # version f
 aws-ecr-java = { module = "software.amazon.awssdk:ecr" } # version from BOM 'aws-java-sdk-bom'
 aws-ecr-kotlin = { module = "aws.sdk.kotlin:ecr" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-imds-java = { module = "software.amazon.awssdk:imds" } # version from BOM 'aws-java-sdk-bom'
+aws-kms-java = { module = "software.amazon.awssdk:kms" } # version from BOM 'aws-java-sdk-bom'
+aws-kms-kotlin = { module = "aws.sdk.kotlin:kms" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-lambda-java = { module = "software.amazon.awssdk:lambda" } # version from BOM 'aws-java-sdk-bom'
 aws-lambda-kotlin = { module = "aws.sdk.kotlin:lambda" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-s3-java = { module = "software.amazon.awssdk:s3" } # version from BOM 'aws-java-sdk-bom'
