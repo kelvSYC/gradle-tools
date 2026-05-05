@@ -28,6 +28,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          filter: tree:0
       - name: Set up JDK 25 (Kotlin compilation toolchain)
         uses: actions/setup-java@v5
         with:
@@ -107,6 +108,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          filter: tree:0
       - name: Set up JDK 25 (Kotlin compilation toolchain)
         uses: actions/setup-java@v5
         with:
@@ -126,6 +128,8 @@ jobs:
       - name: Create initial tag for semver
         run: |
           if ! git rev-parse v0.1.0 >/dev/null 2>&1; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
             git tag v0.1.0
             git push origin v0.1.0
           fi
