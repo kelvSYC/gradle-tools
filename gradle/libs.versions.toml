@@ -59,7 +59,7 @@ aws-ssm-java = { module = "software.amazon.awssdk:ssm" } # version from BOM 'aws
 aws-ssm-kotlin = { module = "aws.sdk.kotlin:ssm" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-sts-java = { module = "software.amazon.awssdk:sts" } # version from BOM 'aws-java-sdk-bom'
 aws-sts-kotlin = { module = "aws.sdk.kotlin:sts" } # version from BOM 'aws-kotlin-sdk-bom'
-caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.3"
+caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.4"
 commons-io = "commons-io:commons-io:2.22.0"
 commons-lang = "org.apache.commons:commons-lang3:3.20.0"
 google-cloud-artifact-registry = { module = "com.google.cloud:google-cloud-artifact-registry" } # version from BOM 'google-cloud-libraries-bom'
