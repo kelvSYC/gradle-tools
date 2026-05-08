@@ -5,6 +5,9 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.gradle.api.artifacts.ConfigurationContainer
+import org.gradle.api.artifacts.ConsumableConfiguration
+import org.gradle.api.artifacts.DependencyScopeConfiguration
+import org.gradle.api.artifacts.ResolvableConfiguration
 import org.gradle.api.tasks.SourceSet
 
 class ConfigurationContainerExtensionsSpec : FunSpec() {
@@ -18,7 +21,7 @@ class ConfigurationContainerExtensionsSpec : FunSpec() {
             container.annotationProcessor(sourceSet)
 
             verify {
-                container.named(name)
+                container.named(name, DependencyScopeConfiguration::class.java)
             }
         }
 
@@ -31,7 +34,7 @@ class ConfigurationContainerExtensionsSpec : FunSpec() {
             container.api(sourceSet)
 
             verify {
-                container.named(name)
+                container.named(name, DependencyScopeConfiguration::class.java)
             }
         }
 
@@ -44,7 +47,7 @@ class ConfigurationContainerExtensionsSpec : FunSpec() {
             container.compileClasspath(sourceSet)
 
             verify {
-                container.named(name)
+                container.named(name, ResolvableConfiguration::class.java)
             }
         }
 
@@ -57,7 +60,7 @@ class ConfigurationContainerExtensionsSpec : FunSpec() {
             container.compileOnlyApi(sourceSet)
 
             verify {
-                container.named(name)
+                container.named(name, DependencyScopeConfiguration::class.java)
             }
         }
 
@@ -70,7 +73,7 @@ class ConfigurationContainerExtensionsSpec : FunSpec() {
             container.compileOnly(sourceSet)
 
             verify {
-                container.named(name)
+                container.named(name, DependencyScopeConfiguration::class.java)
             }
         }
 
@@ -83,7 +86,7 @@ class ConfigurationContainerExtensionsSpec : FunSpec() {
             container.implementation(sourceSet)
 
             verify {
-                container.named(name)
+                container.named(name, DependencyScopeConfiguration::class.java)
             }
         }
 
@@ -96,7 +99,7 @@ class ConfigurationContainerExtensionsSpec : FunSpec() {
             container.javadocElements(sourceSet)
 
             verify {
-                container.named(name)
+                container.named(name, ConsumableConfiguration::class.java)
             }
         }
 
@@ -109,7 +112,7 @@ class ConfigurationContainerExtensionsSpec : FunSpec() {
             container.runtimeClasspath(sourceSet)
 
             verify {
-                container.named(name)
+                container.named(name, ResolvableConfiguration::class.java)
             }
         }
 
@@ -122,7 +125,7 @@ class ConfigurationContainerExtensionsSpec : FunSpec() {
             container.runtimeElements(sourceSet)
 
             verify {
-                container.named(name)
+                container.named(name, ConsumableConfiguration::class.java)
             }
         }
 
@@ -135,7 +138,7 @@ class ConfigurationContainerExtensionsSpec : FunSpec() {
             container.runtimeOnly(sourceSet)
 
             verify {
-                container.named(name)
+                container.named(name, DependencyScopeConfiguration::class.java)
             }
         }
 
@@ -148,7 +151,7 @@ class ConfigurationContainerExtensionsSpec : FunSpec() {
             container.sourcesElements(sourceSet)
 
             verify {
-                container.named(name)
+                container.named(name, ConsumableConfiguration::class.java)
             }
         }
     }
