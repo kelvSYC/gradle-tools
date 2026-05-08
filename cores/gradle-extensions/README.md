@@ -118,6 +118,7 @@ abstract class MyPlugin @Inject constructor(private val objects: ObjectFactory) 
         val gcb = objects.googleCloudBuild
         val gitlab = objects.gitlabCI
         val gitlabMR = objects.gitlabMergeRequest       // GitLab merge request pipelines
+        val tc = objects.teamCity
     }
 }
 ```
@@ -174,6 +175,15 @@ Provides typed `Provider`s for the
 [merge-request-specific predefined variables](https://docs.gitlab.com/ee/ci/variables/predefined_variables.html)
 available only in merge request pipelines, including `title`, `sourceBranchName`, `targetBranchName`, `approved`,
 `labels`, and diff/branch SHA variables.
+
+### `TeamCityProviders`
+
+Provides typed `Provider`s for
+[TeamCity build parameters](https://www.jetbrains.com/help/teamcity/build-script-interaction-with-teamcity.html).
+Environment variables (`TEAMCITY_VERSION`, `BUILD_NUMBER`, `BUILD_VCS_NUMBER`, etc.) are read directly. Additional
+system properties (`teamcity.build.id`, `teamcity.buildType.id`, `teamcity.build.checkoutDir`, etc.) are read from the
+build properties file whose path is given by the `TEAMCITY_BUILD_PROPERTIES_FILE` environment variable, using
+`PropertiesFromFileValueSource`.
 
 ## Logging Extensions (`GradleLoggerExtensions`)
 

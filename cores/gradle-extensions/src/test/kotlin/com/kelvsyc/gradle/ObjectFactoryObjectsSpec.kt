@@ -8,6 +8,7 @@ import com.kelvsyc.gradle.providers.GitHubCodeBuildActionsProviders
 import com.kelvsyc.gradle.providers.GitLabCIMergeRequestProviders
 import com.kelvsyc.gradle.providers.GitLabCIProviders
 import com.kelvsyc.gradle.providers.GoogleCloudBuildProviders
+import com.kelvsyc.gradle.providers.TeamCityProviders
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -145,6 +146,25 @@ class ObjectFactoryObjectsSpec : FunSpec() {
 
             first.shouldBeInstanceOf<GoogleCloudBuildProviders>()
             second.shouldBeInstanceOf<GoogleCloudBuildProviders>()
+        }
+
+        test("teamCity returns TeamCityProviders instance") {
+            val project = ProjectBuilder.builder().build()
+
+            val result = project.objects.teamCity
+
+            result.shouldNotBeNull()
+            result.shouldBeInstanceOf<TeamCityProviders>()
+        }
+
+        test("teamCity is cached across calls") {
+            val project = ProjectBuilder.builder().build()
+
+            val first = project.objects.teamCity
+            val second = project.objects.teamCity
+
+            first.shouldBeInstanceOf<TeamCityProviders>()
+            second.shouldBeInstanceOf<TeamCityProviders>()
         }
     }
 }

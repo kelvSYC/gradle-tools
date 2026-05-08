@@ -8,6 +8,7 @@ import com.kelvsyc.gradle.internal.GitHubCodeBuildActionsProvidersDelegate
 import com.kelvsyc.gradle.internal.GitLabCIMergeRequestProvidersDelegate
 import com.kelvsyc.gradle.internal.GitLabCIProvidersDelegate
 import com.kelvsyc.gradle.internal.GoogleCloudBuildProvidersDelegate
+import com.kelvsyc.gradle.internal.TeamCityProvidersDelegate
 import org.gradle.api.model.ObjectFactory
 
 /**
@@ -51,3 +52,8 @@ val ObjectFactory.gitlabMergeRequest by GitLabCIMergeRequestProvidersDelegate
  * Retrieves an object used to create [Provider][org.gradle.api.provider.Provider]s relating to Google Cloud Build.
  */
 val ObjectFactory.googleCloudBuild by GoogleCloudBuildProvidersDelegate
+
+/**
+ * Retrieves an object used to create [Provider][org.gradle.api.provider.Provider]s relating to TeamCity.
+ */
+val ObjectFactory.teamCity by TeamCityProvidersDelegate
