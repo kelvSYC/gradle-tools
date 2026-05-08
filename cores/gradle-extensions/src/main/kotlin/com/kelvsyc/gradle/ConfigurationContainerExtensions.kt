@@ -3,27 +3,51 @@
 package com.kelvsyc.gradle
 
 import org.gradle.api.artifacts.ConfigurationContainer
+import org.gradle.api.artifacts.ConsumableConfiguration
+import org.gradle.api.artifacts.DependencyScopeConfiguration
+import org.gradle.api.artifacts.ResolvableConfiguration
 import org.gradle.api.tasks.SourceSet
 
+/** Returns the annotation processor [DependencyScopeConfiguration] for the given [sourceSet]. */
 fun ConfigurationContainer.annotationProcessor(sourceSet: SourceSet) =
-    named(sourceSet.annotationProcessorConfigurationName)
+    named(sourceSet.annotationProcessorConfigurationName, DependencyScopeConfiguration::class.java)
 
-fun ConfigurationContainer.api(sourceSet: SourceSet) = named(sourceSet.apiConfigurationName)
+/** Returns the `api` [DependencyScopeConfiguration] for the given [sourceSet]. */
+fun ConfigurationContainer.api(sourceSet: SourceSet) =
+    named(sourceSet.apiConfigurationName, DependencyScopeConfiguration::class.java)
 
-fun ConfigurationContainer.compileClasspath(sourceSet: SourceSet) = named(sourceSet.compileClasspathConfigurationName)
+/** Returns the compile classpath [ResolvableConfiguration] for the given [sourceSet]. */
+fun ConfigurationContainer.compileClasspath(sourceSet: SourceSet) =
+    named(sourceSet.compileClasspathConfigurationName, ResolvableConfiguration::class.java)
 
-fun ConfigurationContainer.compileOnlyApi(sourceSet: SourceSet) = named(sourceSet.compileOnlyApiConfigurationName)
+/** Returns the `compileOnlyApi` [DependencyScopeConfiguration] for the given [sourceSet]. */
+fun ConfigurationContainer.compileOnlyApi(sourceSet: SourceSet) =
+    named(sourceSet.compileOnlyApiConfigurationName, DependencyScopeConfiguration::class.java)
 
-fun ConfigurationContainer.compileOnly(sourceSet: SourceSet) = named(sourceSet.compileOnlyConfigurationName)
+/** Returns the `compileOnly` [DependencyScopeConfiguration] for the given [sourceSet]. */
+fun ConfigurationContainer.compileOnly(sourceSet: SourceSet) =
+    named(sourceSet.compileOnlyConfigurationName, DependencyScopeConfiguration::class.java)
 
-fun ConfigurationContainer.implementation(sourceSet: SourceSet) = named(sourceSet.implementationConfigurationName)
+/** Returns the `implementation` [DependencyScopeConfiguration] for the given [sourceSet]. */
+fun ConfigurationContainer.implementation(sourceSet: SourceSet) =
+    named(sourceSet.implementationConfigurationName, DependencyScopeConfiguration::class.java)
 
-fun ConfigurationContainer.javadocElements(sourceSet: SourceSet) = named(sourceSet.javadocElementsConfigurationName)
+/** Returns the Javadoc elements [ConsumableConfiguration] for the given [sourceSet]. */
+fun ConfigurationContainer.javadocElements(sourceSet: SourceSet) =
+    named(sourceSet.javadocElementsConfigurationName, ConsumableConfiguration::class.java)
 
-fun ConfigurationContainer.runtimeClasspath(sourceSet: SourceSet) = named(sourceSet.runtimeClasspathConfigurationName)
+/** Returns the runtime classpath [ResolvableConfiguration] for the given [sourceSet]. */
+fun ConfigurationContainer.runtimeClasspath(sourceSet: SourceSet) =
+    named(sourceSet.runtimeClasspathConfigurationName, ResolvableConfiguration::class.java)
 
-fun ConfigurationContainer.runtimeElements(sourceSet: SourceSet) = named(sourceSet.runtimeElementsConfigurationName)
+/** Returns the runtime elements [ConsumableConfiguration] for the given [sourceSet]. */
+fun ConfigurationContainer.runtimeElements(sourceSet: SourceSet) =
+    named(sourceSet.runtimeElementsConfigurationName, ConsumableConfiguration::class.java)
 
-fun ConfigurationContainer.runtimeOnly(sourceSet: SourceSet) = named(sourceSet.runtimeOnlyConfigurationName)
+/** Returns the `runtimeOnly` [DependencyScopeConfiguration] for the given [sourceSet]. */
+fun ConfigurationContainer.runtimeOnly(sourceSet: SourceSet) =
+    named(sourceSet.runtimeOnlyConfigurationName, DependencyScopeConfiguration::class.java)
 
-fun ConfigurationContainer.sourcesElements(sourceSet: SourceSet) = named(sourceSet.sourcesElementsConfigurationName)
+/** Returns the sources elements [ConsumableConfiguration] for the given [sourceSet]. */
+fun ConfigurationContainer.sourcesElements(sourceSet: SourceSet) =
+    named(sourceSet.sourcesElementsConfigurationName, ConsumableConfiguration::class.java)
