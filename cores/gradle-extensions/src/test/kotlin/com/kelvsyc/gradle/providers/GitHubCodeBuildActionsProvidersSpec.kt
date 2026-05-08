@@ -25,18 +25,53 @@ class GitHubCodeBuildActionsProvidersSpec : FunSpec() {
             }
         }
 
-        test("runnerOwner provider is present (not null object)") {
+        test("runnerOwner provider is present") {
             val project = ProjectBuilder.builder().build()
             val providers = project.objects.githubCodeBuildActions
 
             providers.runnerOwner.shouldNotBeNull()
         }
 
-        test("webhookLabel provider is present (not null object)") {
+        test("runnerRepo provider is present") {
+            val project = ProjectBuilder.builder().build()
+            val providers = project.objects.githubCodeBuildActions
+
+            providers.runnerRepo.shouldNotBeNull()
+        }
+
+        test("runnerRepoDomain provider is present") {
+            val project = ProjectBuilder.builder().build()
+            val providers = project.objects.githubCodeBuildActions
+
+            providers.runnerRepoDomain.shouldNotBeNull()
+        }
+
+        test("webhookLabel provider is present") {
             val project = ProjectBuilder.builder().build()
             val providers = project.objects.githubCodeBuildActions
 
             providers.webhookLabel.shouldNotBeNull()
+        }
+
+        test("webhookRunId provider is present") {
+            val project = ProjectBuilder.builder().build()
+            val providers = project.objects.githubCodeBuildActions
+
+            providers.webhookRunId.shouldNotBeNull()
+        }
+
+        test("webhookJobId provider is present") {
+            val project = ProjectBuilder.builder().build()
+            val providers = project.objects.githubCodeBuildActions
+
+            providers.webhookJobId.shouldNotBeNull()
+        }
+
+        test("webhookWorkflowName provider is present") {
+            val project = ProjectBuilder.builder().build()
+            val providers = project.objects.githubCodeBuildActions
+
+            providers.webhookWorkflowName.shouldNotBeNull()
         }
     }
 }
