@@ -104,7 +104,7 @@ tasks.processResources<Copy>(sourceSets["main"]) // → TaskProvider<Copy>
 
 ## CI/CD Provider Objects (`ObjectFactoryObjects`)
 
-Three injectable objects expose environment variables for common CI platforms as typed `Provider`s. Obtain them via
+Injectable objects expose environment variables for common CI platforms as typed `Provider`s. Obtain them via
 `ObjectFactory` extensions:
 
 ```kotlin
@@ -113,6 +113,11 @@ abstract class MyPlugin @Inject constructor(private val objects: ObjectFactory) 
         val gha = objects.githubActions
         val codeBuild = objects.awsCodeBuild
         val combined = objects.githubCodeBuildActions  // GitHub Actions on CodeBuild runners
+        val azure = objects.azurePipelines
+        val circle = objects.circleCI
+        val gcb = objects.googleCloudBuild
+        val gitlab = objects.gitlabCI
+        val gitlabMR = objects.gitlabMergeRequest       // GitLab merge request pipelines
     }
 }
 ```
@@ -134,6 +139,41 @@ including `buildId`, `buildArn`, `resolvedSourceVersion`, `srcDir`, `srcDirs`, a
 
 Provides typed `Provider`s for the additional environment variables available on
 [GitHub Actions runners hosted by AWS CodeBuild](https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html).
+
+### `AzurePipelinesProviders`
+
+Provides typed `Provider`s for
+[Azure Pipelines predefined variables](https://learn.microsoft.com/en-us/azure/devops/pipelines/build/variables),
+including agent, build, source control, system, job, stage, pull request, deployment, and pipeline workspace variables.
+Sensitive variables (`System.AccessToken`, `System.OidcRequestUri`) are intentionally excluded.
+
+### `CircleCIProviders`
+
+Provides typed `Provider`s for
+[CircleCI built-in environment variables](https://circleci.com/docs/variables/#built-in-environment-variables),
+including `buildNum`, `sha1`, `branch`, `job`, `pipelineId`, `workflowId`, and parallel run variables. Sensitive
+variables (OIDC tokens) are intentionally excluded.
+
+### `GoogleCloudBuildProviders`
+
+Provides typed `Provider`s for
+[Google Cloud Build default substitutions](https://cloud.google.com/build/docs/configuring-builds/substitute-variable-values#using_default_substitutions),
+including `projectId`, `buildId`, `commitSha`, `branchName`, `triggerName`, and GitHub PR variables. Note that Cloud
+Build substitutions must be explicitly passed as environment variables in the build step configuration.
+
+### `GitLabCIProviders`
+
+Provides typed `Provider`s for
+[GitLab CI/CD predefined variables](https://docs.gitlab.com/ee/ci/variables/predefined_variables.html), including
+server, commit, pipeline, project, job, runner, environment, registry, and user variables. Sensitive variables (tokens,
+passwords) are intentionally excluded.
+
+### `GitLabCIMergeRequestProviders`
+
+Provides typed `Provider`s for the
+[merge-request-specific predefined variables](https://docs.gitlab.com/ee/ci/variables/predefined_variables.html)
+available only in merge request pipelines, including `title`, `sourceBranchName`, `targetBranchName`, `approved`,
+`labels`, and diff/branch SHA variables.
 
 ## Logging Extensions (`GradleLoggerExtensions`)
 
