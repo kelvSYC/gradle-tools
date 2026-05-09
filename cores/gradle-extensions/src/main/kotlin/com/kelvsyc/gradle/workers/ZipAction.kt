@@ -18,6 +18,10 @@ import java.util.zip.ZipOutputStream
  * solely produce an archive should use the built-in `Zip` task type instead.
  */
 abstract class ZipAction : WorkAction<ZipAction.Parameters> {
+    private companion object {
+        const val MAX_COMPRESSION_LEVEL = 9
+    }
+
     /**
      * Parameters for [ZipAction].
      */
@@ -54,13 +58,15 @@ abstract class ZipAction : WorkAction<ZipAction.Parameters> {
 
         ZipOutputStream(output.outputStream().buffered()).use { zos ->
             if (parameters.compressionLevel.isPresent) {
-                zos.setLevel(parameters.compressionLevel.get())
+                val level = parameters.compressionLevel.get()
+                require(level in 0..MAX_COMPRESSION_LEVEL) { "Compression level must be 0-$MAX_COMPRESSION_LEVEL, got: $level" }
+                zos.setLevel(level)
             }
             for (file in parameters.sourceFiles) {
                 if (!file.isFile) continue
                 val filePath = file.toPath()
                 val entryName = if (filePath.startsWith(baseDir)) {
-                    baseDir.relativize(filePath).toString()
+                    baseDir.relativize(filePath).toString().replace("\\", "/")
                 } else {
                     file.name
                 }

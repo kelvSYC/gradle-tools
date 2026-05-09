@@ -1,10 +1,12 @@
 package com.kelvsyc.gradle.workers
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.engine.spec.tempdir
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.file.shouldExist
+import io.kotest.matchers.string.shouldContain
 import org.gradle.kotlin.dsl.newInstance
 import org.gradle.testfixtures.ProjectBuilder
 import java.util.zip.ZipFile
@@ -103,6 +105,28 @@ class ZipActionSpec : FunSpec() {
             assert(compressed.length() < stored.length()) {
                 "Compressed (${compressed.length()}) should be smaller than stored (${stored.length()})"
             }
+        }
+
+        test("rejects invalid compression level") {
+            val project = ProjectBuilder.builder().build()
+            val baseDir = tempdir()
+            baseDir.resolve("file.txt").writeText("content")
+
+            val outputDir = tempdir()
+            val outputFile = outputDir.resolve("out.zip")
+
+            val params = project.objects.newInstance<ZipAction.Parameters>()
+            params.baseDirectory.set(baseDir)
+            params.sourceFiles.from(baseDir.resolve("file.txt"))
+            params.outputFile.set(outputFile)
+            params.compressionLevel.set(10)
+
+            val action = object : ZipAction() {
+                override fun getParameters() = params
+            }
+
+            val exception = shouldThrow<IllegalArgumentException> { action.execute() }
+            exception.message shouldContain "Compression level must be 0-9"
         }
 
         test("skips directories in source files") {
