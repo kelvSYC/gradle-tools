@@ -23,4 +23,5 @@ dependencyResolutionManagement {
 configure<SemverSettingsExtension> {
     isEnabled.set(true)
     gitDir.set(layout.settingsDirectory.dir("../../.git"))
+    tagPrefix.set("v")
 }
