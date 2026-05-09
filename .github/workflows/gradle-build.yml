@@ -17,6 +17,7 @@ jobs:
     permissions:
       contents: read
       checks: write
+      packages: read
       pull-requests: write
     outputs:
       aggregate-jacoco-id: ${{ steps.upload-aggregate-jacoco.outputs.artifact-id }}
@@ -47,6 +48,9 @@ jobs:
           build-scan-terms-of-use-agree: "yes"
       - name: Build
         run: ./gradlew :build
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish Test Results
         uses: mikepenz/action-junit-report@v6
         if: always()

@@ -2,6 +2,7 @@
 dokka = "2.2.0"
 dokkatoo = "2.4.0"
 kotlin = "2.3.0"
+kotlin-tools = "0.2.5"
 moshi = "1.15.2"
 
 [libraries]
@@ -11,6 +12,7 @@ aws-kotlin-sdk-bom = "aws.sdk.kotlin:bom:1.6.59"
 google-cloud-libraries-bom = "com.google.cloud:libraries-bom:26.80.0"
 jackson-bom = "com.fasterxml.jackson:jackson-bom:2.21.3"
 kotlin-gradle-plugins-bom = { module = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom", version.ref = "kotlin" }
+kotlin-tools-bom = { module = "com.kelvsyc.kotlin:bom", version.ref = "kotlin-tools" }
 kotlinx-coroutines-bom = "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.2"
 kotest-bom = "io.kotest:kotest-bom:6.1.11"
 okhttp-bom = "com.squareup.okhttp3:okhttp-bom:5.3.2"
@@ -82,6 +84,7 @@ google-cloud-storage = { module = "com.google.cloud:google-cloud-storage" } # ve
 google-gax = { module = "com.google.api:gax" } # version from BOM 'google-cloud-libraries-bom'
 google-protobuf-java = { module = "com.google.protobuf:protobuf-java" } # version from BOM 'google-cloud-libraries-bom'
 gson = "com.google.code.gson:gson:2.14.0"
+kotlin-tools-moshi-extensions = { module = "com.kelvsyc.kotlin:moshi-extensions" } # version from BOM 'kotlin-tools-bom'
 jgit = "org.eclipse.jgit:org.eclipse.jgit:7.6.0.202603022253-r"
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core" } # version from BOM 'kotest-bom'
 kotest-assertions-shared = { module = "io.kotest:kotest-assertions-shared" } # version from BOM 'kotest-bom'
