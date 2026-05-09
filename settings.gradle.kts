@@ -2,6 +2,7 @@ rootProject.name = "gradle-tools"
 
 // Gradle components
 includeBuild("cores/artifactory-base")
+includeBuild("cores/bitbucket-cloud-base")
 includeBuild("cores/aws-codeartifact-java-base")
 includeBuild("cores/aws-codeartifact-kotlin-base")
 includeBuild("cores/aws-ecr-java-base")
