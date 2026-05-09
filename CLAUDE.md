@@ -48,7 +48,7 @@ The root `settings.gradle.kts` composes three layers of included builds:
 1. **`gradle/`** — Internal build infrastructure (not published):
    - `gradle/platform` — BOM centralizing all dependency versions
    - `gradle/settings` — Settings plugin (`com.kelvsyc.internal`) wiring platform/catalog into every component build
-   - `gradle/plugins` — Convention plugins: `kotlin-library`, `kotlin-gradle-library`, `kotlin-plugin`, `kotlin-multiplatform-jvm-library`, `github-publishing`, `jacoco`, `dokka`
+   - `gradle/plugins` — Convention plugins: `kotlin-library`, `kotlin-gradle-library`, `kotlin-plugin`, `kotlin-multiplatform-jvm-library`, `github-publishing`, `jacoco`, `dokka`. The `github-publishing` plugin strips the internal platform BOM (`com.kelvsyc.internal:platform`) from published POM and Gradle module metadata so that consumers don't see an unresolvable dependency. The convention plugins still declare `implementation(platform(...))` for local resolution — the stripping happens at publication time via `pom.withXml` and a `GenerateModuleMetadata` post-processing action (`StripInternalPlatform`).
 
 2. **`cores/`** — Published Gradle plugins (group `com.kelvsyc.gradle`). Each is an independent included build. Types:
    - `*-extensions` — Gradle API utility libraries
