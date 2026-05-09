@@ -20,6 +20,10 @@ dependencies {
 | `absent` | Returns an always-absent `Provider` |
 | `propertiesFile(file)` | Returns a `Provider<Properties>` backed by a `.properties` file |
 | `propertiesFile(Provider<RegularFile>)` | Lazy variant of the above |
+| `checksum(file, algorithm)` | Returns a `Provider<String>` with the hex-encoded checksum of a file |
+| `checksum(Provider<RegularFile>, algorithm)` | Lazy file variant |
+| `checksum(file, Provider<String>)` | Lazy algorithm variant |
+| `checksum(Provider<RegularFile>, Provider<String>)` | Fully lazy variant |
 
 ### `Provider<T>` caching (`ProviderExtensions`)
 
@@ -199,10 +203,36 @@ logger.lifecycle { "Starting phase" }
 All methods accept either `message: () -> String` or `(Throwable, () -> String)`. Levels: `debug`, `info`, `lifecycle`,
 `quiet`, `warn`, `error`.
 
-## Value Source: `PropertiesFromFileValueSource`
+## Value Sources
+
+### `PropertiesFromFileValueSource`
 
 Reads a `.properties` file into a `Provider<Properties>`. Returns absent (rather than throwing) on missing or
 malformed files. Use via `ProviderFactory.propertiesFile()`.
+
+### `ChecksumValueSource`
+
+Computes the checksum of a file using a specified digest algorithm (e.g. `SHA-256`, `SHA-512`, `MD5`) and returns
+the result as a lowercase hex-encoded `Provider<String>`. Returns absent on missing files or unsupported algorithms.
+Use via `ProviderFactory.checksum()`.
+
+```kotlin
+val sha256: Provider<String> = providers.checksum(layout.projectDirectory.file("artifact.jar"), "SHA-256")
+```
+
+## Work Actions
+
+### `ChecksumWorkAction`
+
+A `WorkAction` that computes the checksum of an input file and writes the hex-encoded result to a specified output file.
+
+```kotlin
+workerExecutor.noIsolation().submit(ChecksumWorkAction::class) {
+    inputFile.set(layout.buildDirectory.file("libs/my-lib.jar"))
+    algorithm.set("SHA-256")
+    outputFile.set(layout.buildDirectory.file("libs/my-lib.jar.sha256"))
+}
+```
 
 ## See Also
 
