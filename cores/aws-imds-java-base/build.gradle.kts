@@ -22,6 +22,7 @@ dependencies {
     api("com.kelvsyc.gradle:clients-base")
 
     api(libs.aws.imds.java)
+    api(libs.aws.sdk.core.java)
 
     testImplementation(libs.mockk)
 }

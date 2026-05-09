@@ -11,6 +11,24 @@ plugins {
     id("io.gitlab.arturbosch.detekt")
 }
 
+dependencyAnalysis {
+    issues {
+        all {
+            onUsedTransitiveDependencies {
+                severity("fail")
+                exclude(
+                    "io.mockk:mockk-core",
+                    "io.mockk:mockk-dsl",
+                    "io.kotest:kotest-assertions-shared",
+                    "io.kotest:kotest-common",
+                )
+            }
+            onUnusedDependencies { severity("fail") }
+            onIncorrectConfiguration { severity("fail") }
+        }
+    }
+}
+
 group = "com.kelvsyc.gradle"
 
 java {
@@ -55,7 +73,6 @@ dependencies {
     testRuntimeOnly(gradleKotlinDsl())
 
     libs.findLibrary("kotest-assertions-core").getOrNull()?.let { testImplementation(it) }
-    libs.findLibrary("kotest-assertions-shared").getOrNull()?.let { testImplementation(it) }
     libs.findLibrary("kotest-framework-engine").getOrNull()?.let { testImplementation(it) }
     libs.findLibrary("kotest-runner").getOrNull()?.let { testImplementation(it) }
 }

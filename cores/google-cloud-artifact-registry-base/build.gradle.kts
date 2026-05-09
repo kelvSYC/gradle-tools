@@ -22,6 +22,8 @@ dependencies {
     api("com.kelvsyc.gradle:clients-base")
 
     api(libs.google.cloud.artifact.registry)
+    api(libs.google.cloud.artifact.registry.proto)
+    api(libs.google.gax)
     implementation(libs.kotlinx.coroutines.core)
 
     testImplementation(libs.mockk)

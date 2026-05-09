@@ -24,9 +24,11 @@ dependencies {
     implementation("com.kelvsyc.gradle:gradle-extensions") // build 'gradle-extensions'
 
     api(libs.aws.auth.java)
+    api(libs.aws.http.client.spi.java)
     api(libs.aws.regions.java)
     api(libs.aws.codeartifact.java)
     implementation(libs.aws.core.java)
+    implementation(libs.aws.sdk.core.java)
 
     testImplementation(libs.mockk)
 }

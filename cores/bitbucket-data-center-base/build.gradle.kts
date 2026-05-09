@@ -22,7 +22,7 @@ dependencies {
     api("com.kelvsyc.gradle:clients-base")
 
     api(libs.retrofit)
-    implementation(libs.moshi)
+    api(libs.moshi)
     implementation(libs.moshi.kotlin)
     implementation(libs.okhttp)
     implementation(libs.retrofit.converter.moshi)

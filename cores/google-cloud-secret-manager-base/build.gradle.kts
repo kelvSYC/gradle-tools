@@ -22,7 +22,11 @@ dependencies {
     api("com.kelvsyc.gradle:clients-base")
     implementation("com.kelvsyc.gradle:gradle-extensions") // build 'gradle-extensions'
 
+    api(libs.google.auth.library.credentials)
     api(libs.google.cloud.secret.manager)
+    implementation(libs.google.cloud.secret.manager.proto)
+    implementation(libs.google.gax)
+    implementation(libs.google.protobuf.java)
 
     testImplementation(libs.mockk)
 }

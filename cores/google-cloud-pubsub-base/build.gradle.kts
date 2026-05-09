@@ -22,6 +22,9 @@ dependencies {
     api("com.kelvsyc.gradle:clients-base")
 
     api(libs.google.cloud.pubsub)
+    api(libs.google.gax)
+    implementation(libs.google.cloud.pubsub.proto)
+    implementation(libs.google.protobuf.java)
 
     testImplementation(libs.mockk)
 }

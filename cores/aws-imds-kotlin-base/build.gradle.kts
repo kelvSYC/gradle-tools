@@ -22,6 +22,9 @@ dependencies {
     api("com.kelvsyc.gradle:clients-base")
 
     api(libs.aws.config.kotlin)
+    implementation(libs.aws.smithy.client)
+    implementation(libs.kotlinx.coroutines.core)
 
+    testImplementation(libs.aws.smithy.http)
     testImplementation(libs.mockk)
 }
