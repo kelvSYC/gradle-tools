@@ -168,3 +168,4 @@ Response types are in the `com.kelvsyc.gradle.bitbucket.cloud.model` package:
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure
+- [bitbucket-data-center-base](../bitbucket-data-center-base) — Bitbucket Data Center variant
