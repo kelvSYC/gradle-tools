@@ -234,6 +234,30 @@ workerExecutor.noIsolation().submit(ChecksumWorkAction::class) {
 }
 ```
 
+### `ZipAction`
+
+A `WorkAction` that creates a ZIP archive from a set of input files. This is **not** a replacement for the built-in
+[`Zip`](https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Zip.html) task type — new tasks that solely
+produce an archive should continue to use `Zip`. Instead, `ZipAction` is a migration aid for legacy tasks that create
+archives as one step among many (e.g. inline `ant.zip` calls), allowing that step to participate in the Worker API
+without requiring decomposition into a separate task.
+
+```kotlin
+workerExecutor.noIsolation().submit(ZipAction::class.java) {
+    baseDirectory.set(layout.buildDirectory.dir("staging"))
+    sourceFiles.from(fileTree(layout.buildDirectory.dir("staging")))
+    outputFile.set(layout.buildDirectory.file("output/archive.zip"))
+    compressionLevel.set(6) // optional; defaults to JDK default
+}
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `baseDirectory` | `DirectoryProperty` | Base directory for computing relative ZIP entry paths |
+| `sourceFiles` | `ConfigurableFileCollection` | Files to include in the archive |
+| `outputFile` | `RegularFileProperty` | The output ZIP file |
+| `compressionLevel` | `Property<Int>` | Compression level (0–9); optional |
+
 ## See Also
 
 - [Gradle Providers API](https://docs.gradle.org/current/userguide/lazy_configuration.html)
