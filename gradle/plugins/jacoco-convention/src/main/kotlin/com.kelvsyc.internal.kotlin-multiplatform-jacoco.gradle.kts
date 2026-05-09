@@ -1,9 +1,6 @@
-import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.invoke
 import org.gradle.kotlin.dsl.jacoco
 import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.provideDelegate
-import org.gradle.kotlin.dsl.registering
 import org.gradle.kotlin.dsl.the
 import java.util.Optional
 
@@ -15,7 +12,7 @@ plugins {
 // Because Kotlin Multiplatform plugin doesn't integrate with the JaCoCo plugin, we have to
 // write our own integration.
 // Defaults from jacoco plugin
-val jacocoJvmTestReport by tasks.registering(JacocoReport::class) {
+val jacocoJvmTestReport = tasks.register<JacocoReport>("jacocoJvmTestReport") {
     group = LifecycleBasePlugin.VERIFICATION_GROUP
     description = "Generates code coverage report for the 'jvmTest' task."
 
