@@ -45,3 +45,51 @@ fun ProviderFactory.propertiesFile(file: RegularFile) = ofKt(PropertiesFromFileV
 fun ProviderFactory.propertiesFile(file: Provider<RegularFile>) = ofKt(PropertiesFromFileValueSource::class) {
     parameters.inputFile.set(file)
 }
+
+/**
+ * Returns a [Provider] providing the checksum of a file as a lowercase hex-encoded string.
+ *
+ * @param file the file to compute the checksum of
+ * @param algorithm the digest algorithm to use (e.g. `SHA-256`, `SHA-512`, `MD5`)
+ * @see [ChecksumValueSource]
+ */
+fun ProviderFactory.checksum(file: RegularFile, algorithm: String) = ofKt(ChecksumValueSource::class) {
+    parameters.inputFile.set(file)
+    parameters.algorithm.set(algorithm)
+}
+
+/**
+ * Returns a [Provider] providing the checksum of a file as a lowercase hex-encoded string.
+ *
+ * @param file the file to compute the checksum of
+ * @param algorithm the digest algorithm to use (e.g. `SHA-256`, `SHA-512`, `MD5`)
+ * @see [ChecksumValueSource]
+ */
+fun ProviderFactory.checksum(file: Provider<RegularFile>, algorithm: String) = ofKt(ChecksumValueSource::class) {
+    parameters.inputFile.set(file)
+    parameters.algorithm.set(algorithm)
+}
+
+/**
+ * Returns a [Provider] providing the checksum of a file as a lowercase hex-encoded string.
+ *
+ * @param file the file to compute the checksum of
+ * @param algorithm a [Provider] for the digest algorithm to use
+ * @see [ChecksumValueSource]
+ */
+fun ProviderFactory.checksum(file: RegularFile, algorithm: Provider<String>) = ofKt(ChecksumValueSource::class) {
+    parameters.inputFile.set(file)
+    parameters.algorithm.set(algorithm)
+}
+
+/**
+ * Returns a [Provider] providing the checksum of a file as a lowercase hex-encoded string.
+ *
+ * @param file the file to compute the checksum of
+ * @param algorithm a [Provider] for the digest algorithm to use
+ * @see [ChecksumValueSource]
+ */
+fun ProviderFactory.checksum(file: Provider<RegularFile>, algorithm: Provider<String>) = ofKt(ChecksumValueSource::class) {
+    parameters.inputFile.set(file)
+    parameters.algorithm.set(algorithm)
+}
