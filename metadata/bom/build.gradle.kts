@@ -8,7 +8,7 @@ group = "com.kelvsyc.gradle"
 val pluginIdPrefix = "com.kelvsyc.gradle"
 
 val coreNames = file("../../cores")
-    .listFiles { f -> f.isDirectory }
+    .listFiles { f -> f.isDirectory && f.resolve("settings.gradle.kts").exists() }
     ?.toList()
     .orEmpty()
     .map { it.name }

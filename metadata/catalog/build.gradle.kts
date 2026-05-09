@@ -9,7 +9,7 @@ val pluginIdPrefix = "com.kelvsyc.gradle"
 val projectVersionAlias = "gradle-tools-version"
 
 val coreNames = file("../../cores")
-    .listFiles { f -> f.isDirectory }
+    .listFiles { f -> f.isDirectory && f.resolve("settings.gradle.kts").exists() }
     ?.toList()
     .orEmpty()
     .map { it.name }
