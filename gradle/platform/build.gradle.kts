@@ -18,6 +18,7 @@ dependencies {
     api(platform(libs.okhttp.bom))
     api(platform(libs.retrofit.bom))
     api(platform(libs.kotlin.gradle.plugins.bom))
+    api(platform(libs.kotlin.tools.bom))
     api(platform(libs.kotlinx.coroutines.bom))
     constraints {
         api(libs.commons.lang)
