@@ -32,6 +32,7 @@ artifactory-client-impl = "org.jfrog.artifactory.client:artifactory-java-client-
 aws-auth-java = { module = "software.amazon.awssdk:auth" } # version from BOM 'aws-java-sdk-bom'
 aws-config-kotlin = { module = "aws.sdk.kotlin:aws-config" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-core-java = { module = "software.amazon.awssdk:aws-core" } # version from BOM 'aws-java-sdk-bom'
+aws-http-client-spi-java = { module = "software.amazon.awssdk:http-client-spi" } # version from BOM 'aws-java-sdk-bom'
 aws-core-kotlin = { module = "aws.sdk.kotlin:aws-core" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-regions-java = { module = "software.amazon.awssdk:regions" } # version from BOM 'aws-java-sdk-bom'
 aws-codeartifact-java = { module = "software.amazon.awssdk:codeartifact" } # version from BOM 'aws-java-sdk-bom'
@@ -39,6 +40,7 @@ aws-codeartifact-kotlin = { module = "aws.sdk.kotlin:codeartifact" } # version f
 aws-ecr-java = { module = "software.amazon.awssdk:ecr" } # version from BOM 'aws-java-sdk-bom'
 aws-ecr-kotlin = { module = "aws.sdk.kotlin:ecr" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-imds-java = { module = "software.amazon.awssdk:imds" } # version from BOM 'aws-java-sdk-bom'
+aws-imds-kotlin = { module = "aws.sdk.kotlin:imds" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-kms-java = { module = "software.amazon.awssdk:kms" } # version from BOM 'aws-java-sdk-bom'
 aws-kms-kotlin = { module = "aws.sdk.kotlin:kms" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-lambda-java = { module = "software.amazon.awssdk:lambda" } # version from BOM 'aws-java-sdk-bom'
@@ -46,6 +48,7 @@ aws-lambda-kotlin = { module = "aws.sdk.kotlin:lambda" } # version from BOM 'aws
 aws-s3-java = { module = "software.amazon.awssdk:s3" } # version from BOM 'aws-java-sdk-bom'
 aws-s3-kotlin = { module = "aws.sdk.kotlin:s3" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-s3-transfer-manager-java = { module = "software.amazon.awssdk:s3-transfer-manager" } # version from BOM 'aws-java-sdk-bom'
+aws-sdk-core-java = { module = "software.amazon.awssdk:sdk-core" } # version from BOM 'aws-java-sdk-bom'
 aws-secrets-manager-caching-java = "com.amazonaws.secretsmanager:aws-secretsmanager-caching-java:2.2.0"
 aws-secrets-manager-java = { module = "software.amazon.awssdk:secretsmanager" } # version from BOM 'aws-java-sdk-bom'
 aws-secrets-manager-kotlin = { module = "aws.sdk.kotlin:secretsmanager" } # version from BOM 'aws-kotlin-sdk-bom'
@@ -53,6 +56,7 @@ aws-ses-java = { module = "software.amazon.awssdk:ses" } # version from BOM 'aws
 aws-ses-kotlin = { module = "aws.sdk.kotlin:ses" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-smithy-client = { module = "aws.smithy.kotlin:smithy-client" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-smithy-credentials = { module = "aws.smithy.kotlin:aws-credentials" } # version from BOM 'aws-kotlin-sdk-bom'
+aws-smithy-http = { module = "aws.smithy.kotlin:http" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-smithy-runtime-core = { module = "aws.smithy.kotlin:runtime-core" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-sns-java = { module = "software.amazon.awssdk:sns" } # version from BOM 'aws-java-sdk-bom'
 aws-sns-kotlin = { module = "aws.sdk.kotlin:sns" } # version from BOM 'aws-kotlin-sdk-bom'
@@ -65,10 +69,18 @@ aws-sts-kotlin = { module = "aws.sdk.kotlin:sts" } # version from BOM 'aws-kotli
 caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.4"
 commons-io = "commons-io:commons-io:2.22.0"
 commons-lang = "org.apache.commons:commons-lang3:3.20.0"
+google-auth-library-credentials = { module = "com.google.auth:google-auth-library-credentials" } # version from BOM 'google-cloud-libraries-bom'
+google-auth-library-oauth2-http = { module = "com.google.auth:google-auth-library-oauth2-http" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-artifact-registry = { module = "com.google.cloud:google-cloud-artifact-registry" } # version from BOM 'google-cloud-libraries-bom'
+google-cloud-artifact-registry-proto = { module = "com.google.api.grpc:proto-google-cloud-artifact-registry-v1" } # version from BOM 'google-cloud-libraries-bom'
+google-cloud-core = { module = "com.google.cloud:google-cloud-core" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-pubsub = { module = "com.google.cloud:google-cloud-pubsub" } # version from BOM 'google-cloud-libraries-bom'
+google-cloud-pubsub-proto = { module = "com.google.api.grpc:proto-google-cloud-pubsub-v1" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-secret-manager = { module = "com.google.cloud:google-cloud-secretmanager" } # version from BOM 'google-cloud-libraries-bom'
+google-cloud-secret-manager-proto = { module = "com.google.api.grpc:proto-google-cloud-secretmanager-v1" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-storage = { module = "com.google.cloud:google-cloud-storage" } # version from BOM 'google-cloud-libraries-bom'
+google-gax = { module = "com.google.api:gax" } # version from BOM 'google-cloud-libraries-bom'
+google-protobuf-java = { module = "com.google.protobuf:protobuf-java" } # version from BOM 'google-cloud-libraries-bom'
 gson = "com.google.code.gson:gson:2.14.0"
 jgit = "org.eclipse.jgit:org.eclipse.jgit:7.6.0.202603022253-r"
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core" } # version from BOM 'kotest-bom'

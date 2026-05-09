@@ -21,7 +21,10 @@ gradlePlugin {
 dependencies {
     api("com.kelvsyc.gradle:clients-base")
 
+    api(libs.google.auth.library.credentials)
+    api(libs.google.auth.library.oauth2.http)
     api(libs.google.cloud.storage)
+    implementation(libs.google.cloud.core)
 
     testImplementation(libs.mockk)
 }
