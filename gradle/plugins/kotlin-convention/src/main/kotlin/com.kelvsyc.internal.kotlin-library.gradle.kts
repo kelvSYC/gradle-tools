@@ -73,6 +73,14 @@ dependencies {
     libs.findLibrary("kotest-runner").getOrNull()?.let { testImplementation(it) }
 }
 
+pluginManager.withPlugin("maven-publish") {
+    extensions.configure<PublishingExtension> {
+        publications.register<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
+}
+
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
     // mockk uses ByteBuddy dynamic agent loading; JVM 21+ warns and JVM 25 may deny it by default
