@@ -15,10 +15,14 @@ dependencies {
     api(platform(libs.google.cloud.libraries.bom))
     api(platform(libs.jackson.bom))
     api(platform(libs.kotest.bom))
+    api(platform(libs.okhttp.bom))
+    api(platform(libs.retrofit.bom))
     api(platform(libs.kotlin.gradle.plugins.bom))
     api(platform(libs.kotlinx.coroutines.bom))
     constraints {
         api(libs.commons.lang)
+        api(libs.moshi)
+        api(libs.moshi.kotlin)
         api(libs.woodstox)
     }
 }
