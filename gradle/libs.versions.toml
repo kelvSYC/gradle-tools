@@ -2,7 +2,7 @@
 dokka = "2.2.0"
 dokkatoo = "2.4.0"
 kotlin = "2.3.0"
-kotlin-tools = "0.2.5"
+kotlin-tools = "0.3.0"
 moshi = "1.15.2"
 
 [libraries]
@@ -86,6 +86,7 @@ google-gax = { module = "com.google.api:gax" } # version from BOM 'google-cloud-
 google-protobuf-java = { module = "com.google.protobuf:protobuf-java" } # version from BOM 'google-cloud-libraries-bom'
 gson = "com.google.code.gson:gson:2.14.0"
 kotlin-tools-moshi-extensions = { module = "com.kelvsyc.kotlin:moshi-extensions" } # version from BOM 'kotlin-tools-bom'
+kotlin-tools-xml-extensions = { module = "com.kelvsyc.kotlin:xml-extensions" } # version from BOM 'kotlin-tools-bom'
 jgit = "org.eclipse.jgit:org.eclipse.jgit:7.6.0.202603022253-r"
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core" } # version from BOM 'kotest-bom'
 kotest-assertions-shared = { module = "io.kotest:kotest-assertions-shared" } # version from BOM 'kotest-bom'
