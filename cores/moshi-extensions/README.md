@@ -60,6 +60,28 @@ Convenience functions on `ProviderFactory` for creating ValueSource-backed provi
 - `jsonPath(file, path)` — returns `Provider<String>` with all combinations of
   `RegularFile`/`Provider<RegularFile>` and `String`/`Provider<String>`
 
+## Groovy Migration Helpers
+
+The `com.kelvsyc.gradle.moshi.groovy` package provides operator extensions on `JsonValue` that
+mimic Groovy's `JsonSlurper` dynamic property access. These are intended as a **temporary migration
+aid** for codebases transitioning from Groovy to Kotlin — once the migration is complete, replace
+usages with the typed accessors from kotlin-tools (`stringAt`, `objectAt`, `at`, etc.) and remove
+the import.
+
+```kotlin
+import com.kelvsyc.gradle.moshi.groovy.*
+
+val json = """{"users": [{"name": "Alice"}]}""".parseJson()
+
+// Groovy-style chained navigation
+val name = json["users"]?.get(0)?.get("name")?.asString()  // "Alice"
+```
+
+- `operator fun JsonValue.get(key: String): JsonValue?` — navigates by object key; returns `null`
+  on type mismatch or missing key
+- `operator fun JsonValue.get(index: Int): JsonValue?` — navigates by array index; returns `null`
+  on type mismatch or out-of-bounds index
+
 ## Gradle Type Adapters
 
 `Moshi.Builder.addGradleTypeAdapters()` registers adapters for common types:
