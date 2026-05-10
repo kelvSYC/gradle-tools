@@ -205,6 +205,46 @@ All methods accept either `message: () -> String` or `(Throwable, () -> String)`
 
 ## Value Sources
 
+### `AbstractResourceValueSource`
+
+Abstract base class for `ValueSource` implementations that read a resource bundled in the plugin JAR. Subclasses
+implement `doObtain(input: InputStream): T?` to transform the resource stream into the desired type.
+
+```kotlin
+abstract class MyConfigValueSource :
+    AbstractResourceValueSource<Properties, AbstractResourceValueSource.Parameters>() {
+    override fun doObtain(input: InputStream): Properties =
+        Properties().apply { load(input) }
+}
+
+// Usage:
+val config: Provider<Properties> = providers.of(MyConfigValueSource::class.java) {
+    it.parameters.resourcePath.set("defaults.properties")
+}
+```
+
+Extend the `Parameters` interface if your subclass needs additional configuration beyond the resource path.
+
+### `StringResourceValueSource`
+
+Reads a classpath resource as a `String`.
+
+```kotlin
+val version: Provider<String> = providers.of(StringResourceValueSource::class.java) {
+    it.parameters.resourcePath.set("version.txt")
+}
+```
+
+### `PropertiesResourceValueSource`
+
+Reads a classpath resource as a `Properties` object.
+
+```kotlin
+val defaults: Provider<Properties> = providers.of(PropertiesResourceValueSource::class.java) {
+    it.parameters.resourcePath.set("defaults.properties")
+}
+```
+
 ### `PropertiesFromFileValueSource`
 
 Reads a `.properties` file into a `Provider<Properties>`. Returns absent (rather than throwing) on missing or
