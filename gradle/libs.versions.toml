@@ -9,6 +9,7 @@ moshi = "1.15.2"
 # BOMs
 aws-java-sdk-bom = "software.amazon.awssdk:bom:2.44.0"
 aws-kotlin-sdk-bom = "aws.sdk.kotlin:bom:1.6.59"
+azure-sdk-bom = "com.azure:azure-sdk-bom:1.2.32"
 google-cloud-libraries-bom = "com.google.cloud:libraries-bom:26.80.0"
 jackson-bom = "com.fasterxml.jackson:jackson-bom:2.21.3"
 kotlin-gradle-plugins-bom = { module = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom", version.ref = "kotlin" }
@@ -32,6 +33,9 @@ semver-plugin = "com.javiersc.semver:semver-gradle-plugin:0.9.0"
 # API Dependencies
 artifactory-client-api = "org.jfrog.artifactory.client:artifactory-java-client-api:2.21.2"
 artifactory-client-impl = "org.jfrog.artifactory.client:artifactory-java-client-services:2.21.2"
+azure-core = { module = "com.azure:azure-core" } # version from BOM 'azure-sdk-bom'
+azure-storage-blob = { module = "com.azure:azure-storage-blob" } # version from BOM 'azure-sdk-bom'
+azure-storage-common = { module = "com.azure:azure-storage-common" } # version from BOM 'azure-sdk-bom'
 aws-auth-java = { module = "software.amazon.awssdk:auth" } # version from BOM 'aws-java-sdk-bom'
 aws-config-kotlin = { module = "aws.sdk.kotlin:aws-config" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-core-java = { module = "software.amazon.awssdk:aws-core" } # version from BOM 'aws-java-sdk-bom'
