@@ -10,6 +10,7 @@ javaPlatform {
 }
 
 dependencies {
+    api(platform(libs.azure.sdk.bom))
     api(platform(libs.aws.java.sdk.bom))
     api(platform(libs.aws.kotlin.sdk.bom))
     api(platform(libs.google.cloud.libraries.bom))
