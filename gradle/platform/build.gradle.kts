@@ -25,6 +25,7 @@ dependencies {
         api(libs.commons.lang)
         api(libs.moshi)
         api(libs.moshi.kotlin)
+        api(libs.pkl.core)
         api(libs.woodstox)
     }
 }
