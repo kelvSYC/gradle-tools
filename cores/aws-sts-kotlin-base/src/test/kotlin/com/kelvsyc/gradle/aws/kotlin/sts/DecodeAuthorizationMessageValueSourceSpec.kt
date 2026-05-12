@@ -10,7 +10,6 @@ import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.slot
-import org.gradle.kotlin.dsl.of
 import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 
@@ -26,7 +25,7 @@ class DecodeAuthorizationMessageValueSourceSpec : FunSpec() {
                 decodedMessage = "{\"allowed\":false}"
             }
 
-            val provider = project.providers.of(DecodeAuthorizationMessageValueSource::class) {
+            val provider = project.providers.ofKt(DecodeAuthorizationMessageValueSource::class) {
                 parameters.service.set(service)
                 parameters.encodedMessage.set("encoded-blob")
             }
@@ -45,7 +44,7 @@ class DecodeAuthorizationMessageValueSourceSpec : FunSpec() {
                 client.decodeAuthorizationMessage(any<DecodeAuthorizationMessageRequest>())
             } throws StsException("expired")
 
-            val provider = project.providers.of(DecodeAuthorizationMessageValueSource::class) {
+            val provider = project.providers.ofKt(DecodeAuthorizationMessageValueSource::class) {
                 parameters.service.set(service)
                 parameters.encodedMessage.set("encoded-blob")
             }

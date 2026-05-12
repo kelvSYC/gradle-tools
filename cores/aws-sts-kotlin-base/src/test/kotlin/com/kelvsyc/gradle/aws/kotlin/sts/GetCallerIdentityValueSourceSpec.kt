@@ -8,7 +8,6 @@ import io.kotest.matchers.maps.shouldContain
 import io.kotest.matchers.maps.shouldHaveSize
 import io.mockk.coEvery
 import io.mockk.mockk
-import org.gradle.kotlin.dsl.of
 import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 
@@ -25,7 +24,7 @@ class GetCallerIdentityValueSourceSpec : FunSpec() {
                 userId = "AIDA1234EXAMPLE"
             }
 
-            val provider = project.providers.of(GetCallerIdentityValueSource::class) {
+            val provider = project.providers.ofKt(GetCallerIdentityValueSource::class) {
                 parameters.service.set(service)
             }
             val result = provider.get()
