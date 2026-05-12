@@ -1,14 +1,10 @@
 package com.kelvsyc.gradle.aws.java.kms
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import software.amazon.awssdk.services.kms.KmsClient
 import software.amazon.awssdk.services.kms.model.ListKeysRequest
 import kotlin.streams.asSequence
-import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that lists all KMS keys visible to the configured client, returned as a [Map]
@@ -17,29 +13,22 @@ import org.gradle.api.tasks.Internal
  * Pagination is handled internally via the SDK Java paginator.
  */
 abstract class ListKeysValueSource : ValueSource<Map<String, String>, ListKeysValueSource.Parameters> {
+    /**
+     * Parameters for [ListKeysValueSource].
+     */
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing KMS clients. */
-        @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [KmsClientInfo]. */
-        val clientName: Property<String>
+        /** The build service managing the KMS client. */
+        val service: Property<KmsClientBuildService>
     }
-
-    private val client: Provider<KmsClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     override fun obtain(): Map<String, String>? {
         val request = ListKeysRequest.builder().build()
 
-        val response = client.get()
+        return parameters.service.get().getClient()
             .listKeysPaginator(request)
             .stream()
             .asSequence()
-
-        return response
             .flatMap { it.keys() }
-            .associate {
-                it.keyId() to it.keyArn()
-            }
+            .associate { it.keyId() to it.keyArn() }
     }
 }

@@ -1,16 +1,11 @@
 package com.kelvsyc.gradle.aws.java.kms
 
-import com.kelvsyc.gradle.clients.ClientsBaseExtension
-import com.kelvsyc.gradle.internal.aws.java.kms.MockKmsClientInfoInternal
-import com.kelvsyc.gradle.plugins.KmsJavaBasePlugin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.maps.shouldContain
 import io.kotest.matchers.maps.shouldHaveSize
 import io.mockk.every
 import io.mockk.mockk
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.of
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 import software.amazon.awssdk.services.kms.KmsClient
 import software.amazon.awssdk.services.kms.model.KeyListEntry
@@ -23,11 +18,9 @@ class ListKeysValueSourceSpec : FunSpec() {
     init {
         test("obtain - returns map of key IDs to ARNs") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(KmsJavaBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockKmsClientInfo::class, MockKmsClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockKmsClientInfo>("mock") {}
-            val client = extension.getClient<KmsClient, _>("mock").get()
+            val client = mockk<KmsClient>()
+            MockKmsClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent("kms", MockKmsClientBuildService::class)
 
             val key1 = mockk<KeyListEntry>()
             every { key1.keyId() } returns "key-1"
@@ -45,9 +38,8 @@ class ListKeysValueSourceSpec : FunSpec() {
 
             every { client.listKeysPaginator(any<ListKeysRequest>()) } returns paginator
 
-            val provider = project.providers.of(ListKeysValueSource::class) {
-                parameters.service.set(extension.service)
-                parameters.clientName.set("mock")
+            val provider = project.providers.ofKt(ListKeysValueSource::class) {
+                parameters.service.set(service)
             }
             val result = provider.get()
 

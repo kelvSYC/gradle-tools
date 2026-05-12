@@ -1,15 +1,11 @@
 package com.kelvsyc.gradle.aws.java.kms
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import software.amazon.awssdk.core.SdkBytes
-import software.amazon.awssdk.services.kms.KmsClient
 import software.amazon.awssdk.services.kms.model.EncryptRequest
-import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation that encrypts the contents of [Parameters.plaintextFile] under a KMS key and
@@ -19,13 +15,12 @@ import org.gradle.api.tasks.Internal
  * returned by KMS, which embeds the key context required for decryption).
  */
 abstract class EncryptAction : WorkAction<EncryptAction.Parameters> {
+    /**
+     * Parameters for [EncryptAction].
+     */
     interface Parameters : WorkParameters {
-        /** The shared build service managing KMS clients. */
-        @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [KmsClientInfo]. */
-        val clientName: Property<String>
+        /** The build service managing the KMS client. */
+        val service: Property<KmsClientBuildService>
 
         /** Key ID, ARN, or alias name (e.g. `alias/my-key`) to encrypt under. */
         val keyId: Property<String>
@@ -37,8 +32,6 @@ abstract class EncryptAction : WorkAction<EncryptAction.Parameters> {
         val ciphertextFile: RegularFileProperty
     }
 
-    private val client: Provider<KmsClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
         val plaintextBytes = parameters.plaintextFile.get().asFile.readBytes()
         val request = EncryptRequest.builder().apply {
@@ -46,7 +39,7 @@ abstract class EncryptAction : WorkAction<EncryptAction.Parameters> {
             plaintext(SdkBytes.fromByteArray(plaintextBytes))
         }.build()
 
-        val response = client.get().encrypt(request)
+        val response = parameters.service.get().getClient().encrypt(request)
         parameters.ciphertextFile.get().asFile.writeBytes(response.ciphertextBlob().asByteArray())
     }
 }

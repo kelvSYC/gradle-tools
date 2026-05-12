@@ -1,32 +1,31 @@
 # AWS KMS Java Base
 
-A Gradle plugin providing managed AWS Key Management Service (KMS) client integration using the AWS SDK for
-Java.
+A Kotlin library providing managed AWS Key Management Service (KMS) client integration using the AWS SDK for
+Java, built on `clients-base`.
 
-## Applying the Plugin
+## Dependency
 
 ```kotlin
-plugins {
-    id("com.kelvsyc.gradle.aws-kms-java-base")
+dependencies {
+    implementation("com.kelvsyc.gradle:aws-kms-java-base")
 }
 ```
 
-## Client Type
+## Build Service
 
-One client info type is registered:
-
-| Client info type | Client type |
+| Class | Client type |
 |---|---|
-| `KmsClientInfo` | `KmsClient` (AWS SDK for Java) |
-
-`KmsClientInfo` extends `AwsClientInfo` from `aws-java-extensions`. Register a client:
+| `KmsClientBuildService` | `KmsClient` (AWS SDK for Java) |
 
 ```kotlin
-serviceClients.service.get().registerIfAbsent<KmsClientInfo>("kms") {
-    region.set(Region.US_EAST_1)
-    credentials.set(DefaultCredentialsProvider.create())
+val kms = gradle.sharedServices.registerIfAbsent("kms", KmsClientBuildService::class) {
+    parameters.region.set(Region.US_EAST_1)
+    parameters.credentials.set(DefaultCredentialsProvider.create())
 }
 ```
+
+Leave `region` unset to fall back to `DefaultAwsRegionProviderChain`. Leave `credentials` unset to fall back to
+`AnonymousCredentialsProvider`.
 
 ## Value Sources
 
@@ -37,8 +36,7 @@ Retrieves the canonical ARN of a KMS key from its ID, ARN, or alias name:
 ```kotlin
 val keyArn: Provider<String> = providers.of(DescribeKeyValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("kms")
+        service.set(kms)
         keyId.set("alias/my-key")
     }
 }
@@ -54,8 +52,7 @@ the key ARN as the value. Pagination is handled internally:
 ```kotlin
 val keys: Provider<Map<String, String>> = providers.of(ListKeysValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("kms")
+        service.set(kms)
     }
 }
 ```
@@ -68,8 +65,7 @@ Encrypts the contents of a plaintext file under a KMS key and writes the resulti
 
 ```kotlin
 workerExecutor.noIsolation().submit(EncryptAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("kms")
+    service.set(kms)
     keyId.set("alias/my-key")
     plaintextFile.set(layout.projectDirectory.file("secrets/config.json"))
     ciphertextFile.set(layout.buildDirectory.file("encrypted/config.json.kms"))
@@ -78,8 +74,7 @@ workerExecutor.noIsolation().submit(EncryptAction::class) {
 
 | Parameter | Type | Description |
 |---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of a `KmsClientInfo` |
+| `service` | `Property<KmsClientBuildService>` | Build service supplying the KMS client |
 | `keyId` | `Property<String>` | Key ID, ARN, or alias name to encrypt under |
 | `plaintextFile` | `RegularFileProperty` | Plaintext input file |
 | `ciphertextFile` | `RegularFileProperty` | Ciphertext output file |
@@ -90,8 +85,7 @@ Decrypts a KMS ciphertext blob back into plaintext:
 
 ```kotlin
 workerExecutor.noIsolation().submit(DecryptAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("kms")
+    service.set(kms)
     ciphertextFile.set(layout.projectDirectory.file("encrypted/config.json.kms"))
     plaintextFile.set(layout.buildDirectory.file("decrypted/config.json"))
 }
@@ -99,8 +93,7 @@ workerExecutor.noIsolation().submit(DecryptAction::class) {
 
 | Parameter | Type | Description |
 |---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of a `KmsClientInfo` |
+| `service` | `Property<KmsClientBuildService>` | Build service supplying the KMS client |
 | `keyId` | `Property<String>` | Optional; required only for asymmetric keys |
 | `ciphertextFile` | `RegularFileProperty` | Ciphertext input file |
 | `plaintextFile` | `RegularFileProperty` | Plaintext output file |
@@ -110,5 +103,4 @@ For symmetric keys the key is determined from the ciphertext blob itself.
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure
-- [aws-java-extensions](../aws-java-extensions) — `AwsClientInfo` base interface and credential adapters
 - [aws-kms-kotlin-base](../aws-kms-kotlin-base) — Kotlin SDK variant
