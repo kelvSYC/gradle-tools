@@ -1,32 +1,40 @@
 # AWS SNS Java Base
 
-A Gradle plugin providing managed AWS Simple Notification Service (SNS) client integration using the AWS SDK for Java.
+A Kotlin library providing managed AWS Simple Notification Service (SNS) client integration using the AWS SDK
+for Java, built on `clients-base`.
 
-## Applying the Plugin
+## Dependency
 
 ```kotlin
-plugins {
-    id("com.kelvsyc.gradle.aws-sns-java-base")
+dependencies {
+    implementation("com.kelvsyc.gradle:aws-sns-java-base")
 }
 ```
 
-## Client Types
+## Build Services
 
-Two client info types are registered:
-
-| Client info type | Client type | Use case |
+| Class | Client type | Use case |
 |---|---|---|
-| `SnsClientInfo` | `SnsClient` | Synchronous SNS operations |
-| `SnsAsyncClientInfo` | `SnsAsyncClient` | Asynchronous SNS operations |
+| `SnsClientBuildService` | `SnsClient` | Synchronous SNS operations |
+| `SnsAsyncClientBuildService` | `SnsAsyncClient` | Asynchronous SNS operations |
 
-Both extend `AwsClientInfo` from `aws-java-extensions`. Register a client:
+Each service is registered independently. Two sync clients with different configurations can coexist by
+registering under different names. Same applies to the async service.
 
 ```kotlin
-serviceClients.service.get().registerIfAbsent<SnsClientInfo>("sns") {
-    region.set(Region.US_EAST_1)
-    credentials.set(DefaultCredentialsProvider.create())
+val sns = gradle.sharedServices.registerIfAbsent("sns", SnsClientBuildService::class) {
+    parameters.region.set(Region.US_EAST_1)
+    parameters.credentials.set(DefaultCredentialsProvider.create())
+}
+
+val snsAsync = gradle.sharedServices.registerIfAbsent("sns-async", SnsAsyncClientBuildService::class) {
+    parameters.region.set(Region.US_EAST_1)
+    parameters.credentials.set(DefaultCredentialsProvider.create())
 }
 ```
+
+Leave `region` unset to fall back to `DefaultAwsRegionProviderChain`. Leave `credentials` unset to fall back to
+`AnonymousCredentialsProvider`.
 
 ## WorkAction: `PublishAction`
 
@@ -34,8 +42,7 @@ Publishes a message to an SNS topic. Only simple (non-JSON) messages are support
 
 ```kotlin
 workerExecutor.noIsolation().submit(PublishAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("sns")
+    service.set(sns)
     topicArn.set("arn:aws:sns:us-east-1:111122223333:my-topic")
     message.set("Build complete.")
     subject.set("CI Notification")    // optional
@@ -44,8 +51,7 @@ workerExecutor.noIsolation().submit(PublishAction::class) {
 
 | Parameter | Type | Description |
 |---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of a `SnsClientInfo` |
+| `service` | `Property<SnsClientBuildService>` | The build service supplying the SNS client |
 | `topicArn` | `Property<String>` | SNS topic ARN |
 | `message` | `Property<String>` | Message body (sent to all transport protocols) |
 | `subject` | `Property<String>` | Optional message subject |
@@ -57,8 +63,7 @@ deduplication disabled):
 
 ```kotlin
 workerExecutor.noIsolation().submit(PublishAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("sns")
+    service.set(sns)
     topicArn.set("arn:aws:sns:us-east-1:111122223333:my-topic.fifo")
     message.set("Build complete.")
     messageGroupId.set("build-events")
@@ -74,7 +79,7 @@ callers may register any number of entries.
 
 ```kotlin
 tasks.register<PublishBatch>("notify") {
-    clientName.set("sns")
+    service.set(sns)
     topicArn.set("arn:aws:sns:us-east-1:111122223333:my-topic")
 
     registerEntry("module-a") {
@@ -94,11 +99,12 @@ any chunk's API call fails or if SNS reports per-entry failures (the failure mes
 entry ids).
 
 For FIFO topics, set `messageGroupId` (and `messageDeduplicationId` if needed) on each entry. Use
-`AbstractPublishBatch` directly to wire `client` from outside `ClientsBaseService`.
+`AbstractPublishBatch` directly to wire `client` from a custom source (e.g., a test or a third-party
+client provider).
 
 | Property | Type | Description |
 |---|---|---|
-| `clientName` | `Property<String>` | Registered name of a `SnsClientInfo` |
+| `service` | `Property<SnsClientBuildService>` | Build service supplying the SNS client |
 | `topicArn` | `Property<String>` | SNS topic ARN |
 | Entry: `message` | `Property<String>` | Message body |
 | Entry: `subject` | `Property<String>` | Optional subject |
@@ -109,5 +115,4 @@ For FIFO topics, set `messageGroupId` (and `messageDeduplicationId` if needed) o
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure
-- [aws-java-extensions](../aws-java-extensions) — `AwsClientInfo` base interface and credential adapters
 - [aws-sns-kotlin-base](../aws-sns-kotlin-base) — Kotlin SDK variant
