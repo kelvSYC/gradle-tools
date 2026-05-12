@@ -1,16 +1,13 @@
 package com.kelvsyc.gradle.aws.kotlin.s3
 
-import aws.sdk.kotlin.services.s3.S3Client
 import aws.sdk.kotlin.services.s3.model.CopyObjectRequest
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import org.gradle.api.tasks.Internal
 
 /**
  * A [WorkAction] that copies a single S3 object from a source bucket/key pair to a destination bucket/key
@@ -22,15 +19,10 @@ abstract class CopyObjectAction : WorkAction<CopyObjectAction.Parameters> {
      */
     interface Parameters : WorkParameters {
         /**
-         * The shared [ClientsBaseService] holding the registered S3 client.
+         * The shared build service managing the S3 client.
          */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /**
-         * Registered name of an [S3ClientInfo].
-         */
-        val clientName: Property<String>
+        val service: Property<S3ClientBuildService>
 
         /**
          * Source bucket name.
@@ -53,8 +45,6 @@ abstract class CopyObjectAction : WorkAction<CopyObjectAction.Parameters> {
         val destinationKey: Property<String>
     }
 
-    private val client: Provider<S3Client> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
         val src = parameters.sourceBucket.get() + "/" +
             URLEncoder.encode(parameters.sourceKey.get(), StandardCharsets.UTF_8)
@@ -65,7 +55,7 @@ abstract class CopyObjectAction : WorkAction<CopyObjectAction.Parameters> {
         }
 
         runBlocking {
-            client.get().copyObject(request)
+            parameters.service.get().getClient().copyObject(request)
         }
     }
 }

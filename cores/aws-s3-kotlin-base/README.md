@@ -1,31 +1,32 @@
 # AWS S3 Kotlin Base
 
-A Gradle plugin providing managed AWS S3 client integration using the AWS SDK for Kotlin.
+A Kotlin library providing managed AWS S3 client integration using the AWS SDK for Kotlin, built on `clients-base`.
 
-## Applying the Plugin
+## Dependency
 
 ```kotlin
-plugins {
-    id("com.kelvsyc.gradle.aws-s3-kotlin-base")
+dependencies {
+    implementation("com.kelvsyc.gradle:aws-s3-kotlin-base")
 }
 ```
 
-## Client Type
+## Build Service
 
-One client info type is registered:
-
-| Client info type | Client type |
+| Class | Client type |
 |---|---|
-| `S3ClientInfo` | `S3Client` (AWS SDK for Kotlin) |
+| `S3ClientBuildService` | `S3Client` (AWS SDK for Kotlin) |
 
-`S3ClientInfo` extends `AwsClientInfo` from `aws-kotlin-extensions`. Register a client:
+Register the build service from a plugin or `build.gradle.kts`:
 
 ```kotlin
-serviceClients.registerAwsS3KotlinClient("myS3Client") {
-    region.set("us-east-1")
-    credentials.set(providers.credentials(AwsCredentials::class.java, "myS3Client").asCredentialsProvider)
+val s3 = gradle.sharedServices.registerIfAbsent("s3", S3ClientBuildService::class) {
+    parameters.region.set("us-east-1")
+    parameters.credentials.set(providers.credentials(AwsCredentials::class.java, "s3").asCredentialsProvider)
 }
 ```
+
+Both parameters are optional. Leave `region` unset to fall back to the AWS SDK for Kotlin default region provider
+chain, and leave `credentials` unset to fall back to the default credentials provider chain.
 
 ## Value Source: `AbstractS3ValueSource`
 
@@ -44,8 +45,7 @@ Use it in task configuration:
 tasks.register("readFromS3") {
     val content: Provider<String> = providers.of(MyS3ValueSource::class) {
         parameters {
-            service.set(serviceClients.service)
-            clientName.set("myS3Client")
+            service.set(s3)
             bucket.set("my-bucket")
             key.set("path/to/object.txt")
         }
@@ -59,36 +59,35 @@ Parameters:
 
 | Parameter | Type | Description |
 |---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of an `S3ClientInfo` |
+| `service` | `Property<S3ClientBuildService>` | The shared build service |
 | `bucket` | `Property<String>` | S3 bucket name |
 | `key` | `Property<String>` | S3 object key |
 
 ## Tasks: `BatchDownloadFromS3` / `BatchUploadToS3`
 
-These tasks perform concurrent batch downloads/uploads using Kotlin flows. The plugin auto-wires `client` from
-`service` and `clientName`. Set `clientName` to a registered `S3ClientInfo`:
+These tasks perform concurrent batch downloads/uploads using Kotlin flows. The `client` is automatically wired
+from the build service set on the task:
 
 ```kotlin
 tasks.register<BatchDownloadFromS3>("downloadArtifacts") {
-    clientName.set("myS3Client")
+    service.set(s3)
 
-    registerArtifact("config") {
-        bucket.set("my-bucket")
-        key.set("config/settings.json")
-        outputFile.set(layout.buildDirectory.file("config/settings.json"))
+    registerArtifact("config") { artifact ->
+        artifact.bucket.set("my-bucket")
+        artifact.key.set("config/settings.json")
+        artifact.outputFile.set(layout.buildDirectory.file("config/settings.json"))
     }
 }
 
 tasks.register<BatchUploadToS3>("uploadResults") {
-    clientName.set("myS3Client")
+    service.set(s3)
     checksumAlgorithm.set(ChecksumAlgorithm.Sha256)  // optional
     retries.set(3)                                    // optional, defaults to 1
 
-    registerArtifact("result") {
-        bucket.set("my-bucket")
-        key.set("results/output.json")
-        inputFile.set(layout.buildDirectory.file("output.json"))
+    registerArtifact("result") { artifact ->
+        artifact.bucket.set("my-bucket")
+        artifact.key.set("results/output.json")
+        artifact.inputFile.set(layout.buildDirectory.file("output.json"))
     }
 }
 ```
@@ -105,7 +104,7 @@ someTask.configure {
 Both tasks fail if any artifact operation fails after exhausting retries. Non-retriable errors
 (`ClientException`) are never retried.
 
-To use an `S3Client` from outside `ClientsBaseService`, use `AbstractBatchDownloadFromS3` /
+To use an `S3Client` from outside `S3ClientBuildService`, use `AbstractBatchDownloadFromS3` /
 `AbstractBatchUploadToS3` directly and set `client` manually.
 
 ## Value Source: `AbstractListObjectsValueSource`
@@ -122,8 +121,7 @@ abstract class AllKeysValueSource :
 
 val keys: Provider<List<String>> = providers.of(AllKeysValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("myS3Client")
+        service.set(s3)
         bucket.set("my-bucket")
         prefix.set("artifacts/")  // optional
     }
@@ -134,8 +132,7 @@ Parameters:
 
 | Parameter | Type | Description |
 |---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of an `S3ClientInfo` |
+| `service` | `Property<S3ClientBuildService>` | The shared build service |
 | `bucket` | `Property<String>` | S3 bucket name |
 | `prefix` | `Property<String>` | Optional key prefix filter |
 
@@ -150,20 +147,18 @@ Low-level `WorkAction` implementations for single-object S3 operations. Submit v
 | `CopyObjectAction` | Server-side copy between bucket/key pairs | `sourceBucket`, `sourceKey`, `destinationBucket`, `destinationKey` |
 | `DeleteObjectAction` | Delete one object | `bucket`, `key` |
 
-All four also require `service` and `clientName` referencing a registered `S3ClientInfo`.
+All four also require `service` (a `Property<S3ClientBuildService>`).
 
 ```kotlin
 workerExecutor.noIsolation().submit(UploadFileAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("myS3Client")
+    service.set(s3)
     bucket.set("my-bucket")
     key.set("output/result.json")
     inputFile.set(layout.buildDirectory.file("result.json"))
 }
 
 workerExecutor.noIsolation().submit(CopyObjectAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("myS3Client")
+    service.set(s3)
     sourceBucket.set("staging-bucket")
     sourceKey.set("artifact-1.0.0.jar")
     destinationBucket.set("release-bucket")
@@ -174,5 +169,4 @@ workerExecutor.noIsolation().submit(CopyObjectAction::class) {
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure
-- [aws-kotlin-extensions](../aws-kotlin-extensions) — `AwsClientInfo` base interface and credential adapters
 - [aws-s3-java-base](../aws-s3-java-base) — Java SDK variant with `S3TransferManager` and async client support

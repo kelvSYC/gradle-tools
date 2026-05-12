@@ -1,12 +1,9 @@
 package com.kelvsyc.gradle.aws.kotlin.s3
 
-import aws.sdk.kotlin.services.s3.S3Client
 import aws.sdk.kotlin.services.s3.model.GetObjectRequest
 import aws.sdk.kotlin.services.s3.model.GetObjectResponse
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import org.gradle.api.tasks.Internal
@@ -14,14 +11,11 @@ import org.gradle.api.tasks.Internal
 abstract class AbstractS3ValueSource<T : Any, P : AbstractS3ValueSource.Parameters> : ValueSource<T, P> {
     interface Parameters : ValueSourceParameters {
         @get:Internal
-        val service: Property<ClientsBaseService>
-        val clientName: Property<String>
+        val service: Property<S3ClientBuildService>
 
         val bucket: Property<String>
         val key: Property<String>
     }
-
-    private val client: Provider<S3Client> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     abstract fun doObtain(response: GetObjectResponse): T?
 
@@ -32,7 +26,7 @@ abstract class AbstractS3ValueSource<T : Any, P : AbstractS3ValueSource.Paramete
         }
 
         return runBlocking {
-            client.get().getObject(request, ::doObtain)
+            parameters.service.get().getClient().getObject(request, ::doObtain)
         }
     }
 }

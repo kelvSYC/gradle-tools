@@ -1,14 +1,11 @@
 package com.kelvsyc.gradle.aws.kotlin.s3
 
-import aws.sdk.kotlin.services.s3.S3Client
 import aws.sdk.kotlin.services.s3.model.DeleteObjectRequest
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
-import org.gradle.api.tasks.Internal
 
 /**
  * A [WorkAction] that deletes a single S3 object.
@@ -19,15 +16,10 @@ abstract class DeleteObjectAction : WorkAction<DeleteObjectAction.Parameters> {
      */
     interface Parameters : WorkParameters {
         /**
-         * The shared [ClientsBaseService] holding the registered S3 client.
+         * The shared build service managing the S3 client.
          */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /**
-         * Registered name of an [S3ClientInfo].
-         */
-        val clientName: Property<String>
+        val service: Property<S3ClientBuildService>
 
         /**
          * S3 bucket name.
@@ -40,8 +32,6 @@ abstract class DeleteObjectAction : WorkAction<DeleteObjectAction.Parameters> {
         val key: Property<String>
     }
 
-    private val client: Provider<S3Client> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
         val request = DeleteObjectRequest {
             bucket = parameters.bucket.get()
@@ -49,7 +39,7 @@ abstract class DeleteObjectAction : WorkAction<DeleteObjectAction.Parameters> {
         }
 
         runBlocking {
-            client.get().deleteObject(request)
+            parameters.service.get().getClient().deleteObject(request)
         }
     }
 }

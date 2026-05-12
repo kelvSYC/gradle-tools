@@ -1,19 +1,22 @@
 package com.kelvsyc.gradle.aws.kotlin.s3
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
-import com.kelvsyc.gradle.plugins.ClientsBasePlugin
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.services.ServiceReference
-import org.gradle.api.tasks.Internal
 import org.gradle.work.DisableCachingByDefault
 import javax.inject.Inject
 
 @DisableCachingByDefault(because = "Uploading to an external service is not cacheable")
 abstract class BatchUploadToS3 @Inject constructor(objects: ObjectFactory) : AbstractBatchUploadToS3(objects) {
-    @get:ServiceReference(ClientsBasePlugin.EXTENSION_NAME)
-    abstract val service: Property<ClientsBaseService>
+    /**
+     * The shared build service managing the S3 client.
+     */
+    @get:ServiceReference
+    abstract val service: Property<S3ClientBuildService>
 
-    @get:Internal
-    abstract val clientName: Property<String>
+    init {
+        client.set(service.map { it.getClient() })
+        client.disallowChanges()
+        client.finalizeValueOnRead()
+    }
 }
