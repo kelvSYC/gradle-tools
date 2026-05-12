@@ -4,19 +4,14 @@ import com.azure.storage.blob.BlobContainerClient
 import com.azure.storage.blob.BlobServiceClient
 import com.azure.storage.blob.models.BlobItem
 import com.azure.storage.blob.models.ListBlobsOptions
-import com.kelvsyc.gradle.clients.ClientsBaseExtension
-import com.kelvsyc.gradle.internal.azure.storage.blob.MockBlobServiceClientInfoInternal
-import com.kelvsyc.gradle.plugins.AzureBlobStorageBasePlugin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import io.kotest.matchers.shouldBe
-import io.kotest.matchers.nulls.shouldBeNull
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.of
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 
 class AbstractListBlobsValueSourceSpec : FunSpec() {
@@ -28,13 +23,12 @@ class AbstractListBlobsValueSourceSpec : FunSpec() {
     init {
         test("get - lists blobs and forwards prefix") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(AzureBlobStorageBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get()
-                .registerBinding(MockBlobServiceClientInfo::class, MockBlobServiceClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockBlobServiceClientInfo>("mock") {}
-
-            val client = extension.getClient<BlobServiceClient, MockBlobServiceClientInfo>("mock").get()
+            val client = mockk<BlobServiceClient>()
+            MockBlobServiceClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent(
+                "blob-service",
+                MockBlobServiceClientBuildService::class
+            )
             val mockContainerClient = mockk<BlobContainerClient>()
             every { client.getBlobContainerClient("my-container") } returns mockContainerClient
 
@@ -48,9 +42,8 @@ class AbstractListBlobsValueSourceSpec : FunSpec() {
             every { mockIterable.iterator() } returns mutableListOf(item1, item2).iterator()
             every { mockContainerClient.listBlobs(capture(optionsSlot), any()) } returns mockIterable
 
-            val provider = project.providers.of(BlobNamesValueSource::class) {
-                parameters.service.set(extension.service)
-                parameters.clientName.set("mock")
+            val provider = project.providers.ofKt(BlobNamesValueSource::class) {
+                parameters.service.set(service)
                 parameters.containerName.set("my-container")
                 parameters.prefix.set("artifacts/")
             }
@@ -62,13 +55,12 @@ class AbstractListBlobsValueSourceSpec : FunSpec() {
 
         test("get - omits prefix when unset") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(AzureBlobStorageBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get()
-                .registerBinding(MockBlobServiceClientInfo::class, MockBlobServiceClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockBlobServiceClientInfo>("mock") {}
-
-            val client = extension.getClient<BlobServiceClient, MockBlobServiceClientInfo>("mock").get()
+            val client = mockk<BlobServiceClient>()
+            MockBlobServiceClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent(
+                "blob-service",
+                MockBlobServiceClientBuildService::class
+            )
             val mockContainerClient = mockk<BlobContainerClient>()
             every { client.getBlobContainerClient("my-container") } returns mockContainerClient
 
@@ -77,9 +69,8 @@ class AbstractListBlobsValueSourceSpec : FunSpec() {
             every { mockIterable.iterator() } returns mutableListOf<BlobItem>().iterator()
             every { mockContainerClient.listBlobs(capture(optionsSlot), any()) } returns mockIterable
 
-            val provider = project.providers.of(BlobNamesValueSource::class) {
-                parameters.service.set(extension.service)
-                parameters.clientName.set("mock")
+            val provider = project.providers.ofKt(BlobNamesValueSource::class) {
+                parameters.service.set(service)
                 parameters.containerName.set("my-container")
             }
             provider.get()

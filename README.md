@@ -44,19 +44,19 @@ the two AWS SDKs are distinct libraries:
 | SSM Parameter Store | `aws-ssm-java-base` (plugin) | `aws-ssm-kotlin-base` (plugin) |
 | STS | `aws-sts-java-base` (library) | `aws-sts-kotlin-base` (library) |
 
-**Other** bases have a single plugin each:
+**Other** bases:
 
-| Component | Description |
-|-----------|-------------|
-| `google-cloud-artifact-registry-base` | GCP Artifact Registry |
-| `google-cloud-storage-base` | GCP Cloud Storage |
-| `google-cloud-secret-manager-base` | GCP Secret Manager |
-| `google-cloud-pubsub-base` | GCP Pub/Sub |
-| `azure-blob-storage-base` | Azure Blob Storage |
-| `azure-key-vault-base` | Azure Key Vault |
-| `artifactory-base` | JFrog Artifactory |
-| `bitbucket-cloud-base` | Bitbucket Cloud REST API |
-| `bitbucket-data-center-base` | Bitbucket Data Center REST API |
+| Component | Description | Form |
+|-----------|-------------|------|
+| `google-cloud-artifact-registry-base` | GCP Artifact Registry | plugin |
+| `google-cloud-storage-base` | GCP Cloud Storage | plugin |
+| `google-cloud-secret-manager-base` | GCP Secret Manager | plugin |
+| `google-cloud-pubsub-base` | GCP Pub/Sub | plugin |
+| `azure-blob-storage-base` | Azure Blob Storage | library |
+| `azure-key-vault-base` | Azure Key Vault | plugin |
+| `artifactory-base` | JFrog Artifactory | plugin |
+| `bitbucket-cloud-base` | Bitbucket Cloud REST API | plugin |
+| `bitbucket-data-center-base` | Bitbucket Data Center REST API | plugin |
 
 All plugin IDs are prefixed with `com.kelvsyc.gradle.`.
 

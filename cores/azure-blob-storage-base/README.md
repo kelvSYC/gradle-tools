@@ -1,74 +1,65 @@
 # Azure Blob Storage Base
 
-A Gradle plugin providing managed Azure Blob Storage client integration.
+A Kotlin library providing managed Azure Blob Storage client integration, built on `clients-base`.
 
-## Applying the Plugin
+## Dependency
 
 ```kotlin
-plugins {
-    id("com.kelvsyc.gradle.azure-blob-storage-base")
+dependencies {
+    implementation("com.kelvsyc.gradle:azure-blob-storage-base")
 }
 ```
 
-## Client Registration
+## Build Services
 
-Four client info types are available, covering account-level and container-scoped access in both synchronous and
+Four build services are available, covering account-level and container-scoped access in both synchronous and
 asynchronous variants:
 
-| Type | Scope | Client |
+| Class | Scope | Client |
 |---|---|---|
-| `BlobServiceClientInfo` | Storage account | `BlobServiceClient` |
-| `BlobServiceAsyncClientInfo` | Storage account | `BlobServiceAsyncClient` |
-| `BlobContainerClientInfo` | Single container | `BlobContainerClient` |
-| `BlobContainerAsyncClientInfo` | Single container | `BlobContainerAsyncClient` |
+| `BlobServiceClientBuildService` | Storage account | `BlobServiceClient` |
+| `BlobServiceAsyncClientBuildService` | Storage account | `BlobServiceAsyncClient` |
+| `BlobContainerClientBuildService` | Single container | `BlobContainerClient` |
+| `BlobContainerAsyncClientBuildService` | Single container | `BlobContainerAsyncClient` |
 
-All four share a base interface `AzureBlobStorageClientInfo` providing `endpoint` and `credential` properties.
-Container-scoped types add a `containerName` property.
+Each build service has its own `Params` interface providing `endpoint` and `credential`. The container-scoped
+services add a `containerName` parameter.
 
 ### Account-level client
 
-Use `registerAzureBlobServiceClient` for operations spanning multiple containers:
-
 ```kotlin
-serviceClients.registerAzureBlobServiceClient("myAzureStorage") {
-    endpoint.set("https://myaccount.blob.core.windows.net")
-    credential.set(DefaultAzureCredentialBuilder().build())
+val blobService = gradle.sharedServices.registerIfAbsent("blob-service", BlobServiceClientBuildService::class) {
+    parameters.endpoint.set("https://myaccount.blob.core.windows.net")
+    parameters.credential.set(DefaultAzureCredentialBuilder().build())
 }
 ```
 
 ### Container-scoped client
 
-Use `registerAzureBlobContainerClient` when all operations target a single container:
-
 ```kotlin
-serviceClients.registerAzureBlobContainerClient("myContainer") {
-    endpoint.set("https://myaccount.blob.core.windows.net")
-    containerName.set("my-container")
-    credential.set(DefaultAzureCredentialBuilder().build())
+val container = gradle.sharedServices.registerIfAbsent("blob-container", BlobContainerClientBuildService::class) {
+    parameters.endpoint.set("https://myaccount.blob.core.windows.net")
+    parameters.containerName.set("my-container")
+    parameters.credential.set(DefaultAzureCredentialBuilder().build())
 }
 ```
 
-### `AzureBlobStorageClientInfo` properties
+### Parameter reference
 
-| Property | Type | Description |
+| Parameter | Type | Description |
 |---|---|---|
-| `endpoint` | `Property<String>` | Azure Storage account endpoint URL |
+| `endpoint` | `Property<String>` | Azure Storage account endpoint URL, e.g. `https://{accountName}.blob.core.windows.net` |
 | `credential` | `Property<TokenCredential>` | Azure credential. If absent, the client uses no authentication. Set to `DefaultAzureCredentialBuilder().build()` for the default credential chain. |
-
-Container-scoped types add:
-
-| Property | Type | Description |
-|---|---|---|
-| `containerName` | `Property<String>` | The name of the blob container |
+| `containerName` | `Property<String>` | (container-scoped services only) The name of the blob container |
 
 ## Task: `BatchDownloadFromAzureBlobStorage`
 
-Downloads a collection of blobs concurrently via `WorkerExecutor.noIsolation()`. Set `clientName` to a registered
-`BlobServiceClientInfo`:
+Downloads a collection of blobs concurrently via `WorkerExecutor.noIsolation()`. Set `service` to a registered
+`BlobServiceClientBuildService`:
 
 ```kotlin
 tasks.register<BatchDownloadFromAzureBlobStorage>("downloadBlobs") {
-    clientName.set("myAzureStorage")
+    service.set(blobService)
 
     registerArtifact("config") {
         containerName.set("my-container")
@@ -88,17 +79,14 @@ someTask.configure {
 }
 ```
 
-To use a `BlobServiceClient` from outside `ClientsBaseService`, use `AbstractBatchDownloadFromAzureBlobStorage`
-directly and set `service`/`clientName` manually.
-
 ## Task: `BatchUploadToAzureBlobStorage`
 
 Uploads a collection of artifacts to Azure Blob Storage, dispatching each upload via
-`WorkerExecutor.noIsolation()`. Set `clientName` to a registered `BlobServiceClientInfo`:
+`WorkerExecutor.noIsolation()`. Set `service` to a registered `BlobServiceClientBuildService`:
 
 ```kotlin
 tasks.register<BatchUploadToAzureBlobStorage>("uploadBlobs") {
-    clientName.set("myAzureStorage")
+    service.set(blobService)
 
     registerArtifact("output") {
         containerName.set("my-container")
@@ -110,12 +98,10 @@ tasks.register<BatchUploadToAzureBlobStorage>("uploadBlobs") {
 
 Each artifact is uploaded independently via `UploadBlobAction`. The task fails if any upload throws.
 
-To use a client from outside `ClientsBaseService`, use `AbstractBatchUploadToAzureBlobStorage` directly and set
-`service`/`clientName` on the abstract class.
-
 ## Work Actions
 
-Individual blob operations for use with `WorkerExecutor.noIsolation()`:
+Individual blob operations for use with `WorkerExecutor.noIsolation()`. Each takes a
+`Property<BlobServiceClientBuildService> service`:
 
 | Action | Description |
 |---|---|
@@ -141,8 +127,7 @@ Use it in task configuration:
 tasks.register("readFromAzure") {
     val content: Provider<String> = providers.of(MyBlobValueSource::class) {
         parameters {
-            service.set(serviceClients.service)
-            clientName.set("myAzureStorage")
+            service.set(blobService)
             containerName.set("my-container")
             blobName.set("path/to/object.txt")
         }
@@ -171,10 +156,9 @@ Parameters:
 
 | Parameter | Type | Description |
 |---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service (set from `serviceClients.service`) |
-| `clientName` | `Property<String>` | Registered name of a `BlobServiceClientInfo` |
+| `service` | `Property<BlobServiceClientBuildService>` | The build service supplying the account-scoped Blob Service client |
 | `containerName` | `Property<String>` | The blob container name |
-| `blobName` / `prefix` | `Property<String>` | Blob name or optional prefix filter |
+| `prefix` | `Property<String>` | Optional prefix filter |
 
 ## See Also
 

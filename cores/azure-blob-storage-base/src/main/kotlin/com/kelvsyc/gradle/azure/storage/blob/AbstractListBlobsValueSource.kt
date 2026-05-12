@@ -1,14 +1,10 @@
 package com.kelvsyc.gradle.azure.storage.blob
 
-import com.azure.storage.blob.BlobServiceClient
 import com.azure.storage.blob.models.BlobItem
 import com.azure.storage.blob.models.ListBlobsOptions
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import org.gradle.api.tasks.Internal
 
 /**
  * Base class for [ValueSource] implementations that produce a value by listing blobs in an Azure Blob Storage
@@ -25,30 +21,15 @@ abstract class AbstractListBlobsValueSource<T : Any, P : AbstractListBlobsValueS
      * Extend this interface if there is a need to supply additional parameters to the subclass.
      */
     interface Parameters : ValueSourceParameters {
-        /**
-         * The shared [ClientsBaseService] holding the registered Azure Blob Storage client.
-         */
-        @get:Internal
-        val service: Property<ClientsBaseService>
+        /** The build service managing the account-scoped Blob Service client. */
+        val service: Property<BlobServiceClientBuildService>
 
-        /**
-         * Registered name of a [BlobServiceClientInfo].
-         */
-        val clientName: Property<String>
-
-        /**
-         * The name of the blob container.
-         */
+        /** The name of the blob container. */
         val containerName: Property<String>
 
-        /**
-         * Optional blob name prefix used to filter the listing.
-         */
+        /** Optional blob name prefix used to filter the listing. */
         val prefix: Property<String>
     }
-
-    private val client: Provider<BlobServiceClient> =
-        parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     /**
      * Transforms the listed blobs into the target type.
@@ -62,8 +43,7 @@ abstract class AbstractListBlobsValueSource<T : Any, P : AbstractListBlobsValueS
         val options = ListBlobsOptions().apply {
             parameters.prefix.orNull?.let { setPrefix(it) }
         }
-
-        val blobs = client.get()
+        val blobs = parameters.service.get().getClient()
             .getBlobContainerClient(parameters.containerName.get())
             .listBlobs(options, null)
             .toList()

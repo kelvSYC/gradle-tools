@@ -3,19 +3,12 @@ import org.jetbrains.dokka.gradle.DokkaExtension
 plugins {
     id("com.kelvsyc.internal.dokka")
     id("com.kelvsyc.internal.jacoco")
-    id("com.kelvsyc.internal.kotlin-plugin")
+    id("com.kelvsyc.internal.kotlin-gradle-library")
     id("com.kelvsyc.internal.github-publishing")
 }
 
 configure<DokkaExtension> {
     moduleName.set("Azure Blob Storage Core")
-}
-
-gradlePlugin {
-    plugins.register("azure-blob-storage-base") {
-        id = "com.kelvsyc.gradle.azure-blob-storage-base"
-        implementationClass = "com.kelvsyc.gradle.plugins.AzureBlobStorageBasePlugin"
-    }
 }
 
 dependencies {
@@ -25,4 +18,9 @@ dependencies {
     api(libs.azure.storage.blob)
 
     testImplementation(libs.mockk)
+}
+
+tasks.test {
+    // FIXME https://github.com/gradle/gradle/issues/18647
+    jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
 }

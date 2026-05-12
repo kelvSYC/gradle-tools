@@ -1,17 +1,13 @@
 package com.kelvsyc.gradle.azure.storage.blob
 
-import com.azure.storage.blob.BlobServiceClient
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
-import org.gradle.api.tasks.Internal
 
 /**
  * A [WorkAction] that downloads a single blob from Azure Blob Storage to a local file using a synchronous
- * [BlobServiceClient].
+ * [BlobServiceClient][com.azure.storage.blob.BlobServiceClient].
  *
  * Submit through `WorkerExecutor.noIsolation()` to enable Gradle-managed parallel execution.
  */
@@ -20,38 +16,21 @@ abstract class DownloadBlobAction : WorkAction<DownloadBlobAction.Parameters> {
      * Parameters for [DownloadBlobAction].
      */
     interface Parameters : WorkParameters {
-        /**
-         * The shared [ClientsBaseService] holding the registered Azure Blob Storage client.
-         */
-        @get:Internal
-        val service: Property<ClientsBaseService>
+        /** The build service managing the account-scoped Blob Service client. */
+        val service: Property<BlobServiceClientBuildService>
 
-        /**
-         * Registered name of a [BlobServiceClientInfo].
-         */
-        val clientName: Property<String>
-
-        /**
-         * The name of the blob container.
-         */
+        /** The name of the blob container. */
         val containerName: Property<String>
 
-        /**
-         * The name of the blob within the container.
-         */
+        /** The name of the blob within the container. */
         val blobName: Property<String>
 
-        /**
-         * Destination file the blob is written to.
-         */
+        /** Destination file the blob is written to. */
         val outputFile: RegularFileProperty
     }
 
-    private val client: Provider<BlobServiceClient> =
-        parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
-        val blobClient = client.get()
+        val blobClient = parameters.service.get().getClient()
             .getBlobContainerClient(parameters.containerName.get())
             .getBlobClient(parameters.blobName.get())
 
