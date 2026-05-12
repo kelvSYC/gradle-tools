@@ -1,15 +1,11 @@
 package com.kelvsyc.gradle.aws.kotlin.ssm
 
-import aws.sdk.kotlin.services.ssm.SsmClient
 import aws.sdk.kotlin.services.ssm.model.ParameterType
 import aws.sdk.kotlin.services.ssm.model.PutParameterRequest
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
-import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation that creates or updates a parameter in SSM Parameter Store.
@@ -18,13 +14,12 @@ import org.gradle.api.tasks.Internal
  * required when creating a new parameter; for updates of an existing parameter the type may be omitted.
  */
 abstract class PutParameterAction : WorkAction<PutParameterAction.Parameters> {
+    /**
+     * Parameters for [PutParameterAction].
+     */
     interface Parameters : WorkParameters {
-        /** The shared build service managing SSM clients. */
-        @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of an [SsmClientInfo]. */
-        val clientName: Property<String>
+        /** The build service managing the SSM client. */
+        val service: Property<SsmClientBuildService>
 
         /** The name of the parameter to create or update. */
         val parameterName: Property<String>
@@ -39,8 +34,6 @@ abstract class PutParameterAction : WorkAction<PutParameterAction.Parameters> {
         val overwrite: Property<Boolean>
     }
 
-    private val client: Provider<SsmClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
         val request = PutParameterRequest {
             name = parameters.parameterName.get()
@@ -50,7 +43,7 @@ abstract class PutParameterAction : WorkAction<PutParameterAction.Parameters> {
         }
 
         runBlocking {
-            client.get().putParameter(request)
+            parameters.service.get().getClient().putParameter(request)
         }
     }
 }

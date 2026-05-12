@@ -5,29 +5,23 @@ import aws.sdk.kotlin.services.kms.model.KeyListEntry
 import aws.sdk.kotlin.services.kms.model.ListKeysRequest
 import aws.sdk.kotlin.services.kms.model.ListKeysResponse
 import aws.sdk.kotlin.services.kms.paginators.listKeysPaginated
-import com.kelvsyc.gradle.clients.ClientsBaseExtension
-import com.kelvsyc.gradle.internal.aws.kotlin.kms.MockKmsClientInfoInternal
-import com.kelvsyc.gradle.plugins.KmsKotlinBasePlugin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.maps.shouldContain
 import io.kotest.matchers.maps.shouldHaveSize
 import io.mockk.every
+import io.mockk.mockk
 import io.mockk.mockkStatic
 import kotlinx.coroutines.flow.flowOf
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.of
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 
 class ListKeysValueSourceSpec : FunSpec() {
     init {
         test("obtain - returns map of key IDs to ARNs") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(KmsKotlinBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockKmsClientInfo::class, MockKmsClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockKmsClientInfo>("mock") {}
-            val client = extension.getClient<KmsClient, MockKmsClientInfo>("mock").get()!!
+            val client = mockk<KmsClient>()
+            MockKmsClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent("kms", MockKmsClientBuildService::class)
 
             mockkStatic("aws.sdk.kotlin.services.kms.paginators.PaginatorsKt")
             every { client.listKeysPaginated(any<ListKeysRequest>()) } returns flowOf(
@@ -39,9 +33,8 @@ class ListKeysValueSourceSpec : FunSpec() {
                 }
             )
 
-            val provider = project.providers.of(ListKeysValueSource::class) {
-                parameters.service.set(extension.service)
-                parameters.clientName.set("mock")
+            val provider = project.providers.ofKt(ListKeysValueSource::class) {
+                parameters.service.set(service)
             }
             val result = provider.get()
 
