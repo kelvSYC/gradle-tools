@@ -1,32 +1,33 @@
 # AWS STS Java Base
 
-A Gradle plugin providing managed AWS Security Token Service (STS) client integration using the AWS SDK for
-Java.
+A Kotlin library providing a managed AWS Security Token Service (STS) client integration using the AWS SDK for
+Java, built on `clients-base`.
 
-## Applying the Plugin
+## Dependency
 
 ```kotlin
-plugins {
-    id("com.kelvsyc.gradle.aws-sts-java-base")
+dependencies {
+    implementation("com.kelvsyc.gradle:aws-sts-java-base")
 }
 ```
 
-## Client Type
+## Build Service
 
-One client info type is registered:
-
-| Client info type | Client type |
+| Class | Client type |
 |---|---|
-| `StsClientInfo` | `StsClient` (AWS SDK for Java) |
+| `StsClientBuildService` | `StsClient` (AWS SDK for Java) |
 
-`StsClientInfo` extends `AwsClientInfo` from `aws-java-extensions`. Register a client:
+Register the build service from a plugin or `build.gradle.kts`:
 
 ```kotlin
-serviceClients.service.get().registerIfAbsent<StsClientInfo>("sts") {
-    region.set(Region.US_EAST_1)
-    credentials.set(DefaultCredentialsProvider.create())
+val sts = gradle.sharedServices.registerIfAbsent("sts", StsClientBuildService::class) {
+    parameters.region.set(Region.US_EAST_1)
+    parameters.credentials.set(DefaultCredentialsProvider.create())
 }
 ```
+
+Leave `region` unset to fall back to `DefaultAwsRegionProviderChain`. Leave `credentials` unset to fall back to
+`AnonymousCredentialsProvider`.
 
 > [!NOTE]
 > For assume-role use cases, configure the AWS SDK's `StsAssumeRoleCredentialsProvider` and use it as the
@@ -45,8 +46,7 @@ AWS principal:
 ```kotlin
 val identity: Provider<Map<String, String>> = providers.of(GetCallerIdentityValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("sts")
+        service.set(sts)
     }
 }
 val arn: Provider<String> = identity.map { it.getValue("arn") }
@@ -60,8 +60,7 @@ produced the failure. Useful for surfacing IAM denial details in build logs:
 ```kotlin
 val decoded: Provider<String> = providers.of(DecodeAuthorizationMessageValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("sts")
+        service.set(sts)
         encodedMessage.set("…encoded blob from a previous denial…")
     }
 }
@@ -73,5 +72,4 @@ or the caller lacks `sts:DecodeAuthorizationMessage`).
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure
-- [aws-java-extensions](../aws-java-extensions) — `AwsClientInfo` base interface and credential adapters
 - [aws-sts-kotlin-base](../aws-sts-kotlin-base) — Kotlin SDK variant
