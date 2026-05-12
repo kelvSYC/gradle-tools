@@ -6,6 +6,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] that fetches a single pull request from the Bitbucket Data Center API.
@@ -19,6 +20,7 @@ abstract class GetPullRequestValueSource :
         /**
          * The shared build service managing Bitbucket Data Center clients.
          */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /**

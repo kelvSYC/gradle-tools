@@ -10,6 +10,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * Base class for [ValueSource] implementations that provide a value by reading an asset located in a CodeArtifact
@@ -28,6 +29,7 @@ abstract class AbstractGetGenericAssetValueSource<T : Any, P : AbstractGetGeneri
      */
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing CodeArtifact clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [CodeArtifactClientInfo]. */

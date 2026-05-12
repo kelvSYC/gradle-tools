@@ -8,6 +8,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation retrieving an authorization token from AWS ECR for the caller's default
@@ -19,6 +20,7 @@ import org.gradle.api.provider.ValueSourceParameters
 abstract class GetAuthorizationTokenValueSource : ValueSource<String, GetAuthorizationTokenValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing ECR clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of an [EcrClientInfo]. */

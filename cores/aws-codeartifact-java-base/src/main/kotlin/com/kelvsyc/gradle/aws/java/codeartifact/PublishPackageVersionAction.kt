@@ -10,6 +10,7 @@ import org.gradle.workers.WorkParameters
 import software.amazon.awssdk.services.codeartifact.CodeartifactClient
 import software.amazon.awssdk.services.codeartifact.model.PackageFormat
 import software.amazon.awssdk.services.codeartifact.model.PublishPackageVersionRequest
+import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation publishing an asset to a CodeArtifact generic package version.
@@ -20,6 +21,7 @@ abstract class PublishPackageVersionAction : WorkAction<PublishPackageVersionAct
      */
     interface Parameters : WorkParameters {
         /** The shared build service managing CodeArtifact clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [CodeArtifactClientInfo]. */

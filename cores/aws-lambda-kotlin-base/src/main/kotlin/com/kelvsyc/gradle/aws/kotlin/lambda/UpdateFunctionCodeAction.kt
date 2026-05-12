@@ -9,6 +9,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation that updates the deployment package (zip file) for a Lambda function.
@@ -19,6 +20,7 @@ import org.gradle.workers.WorkParameters
 abstract class UpdateFunctionCodeAction : WorkAction<UpdateFunctionCodeAction.Parameters> {
     interface Parameters : WorkParameters {
         /** The shared build service managing Lambda clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [LambdaClientInfo]. */

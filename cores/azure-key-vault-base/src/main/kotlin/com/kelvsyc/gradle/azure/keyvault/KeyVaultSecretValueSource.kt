@@ -8,6 +8,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation backed by retrieving a secret from Azure Key Vault.
@@ -17,6 +18,7 @@ import org.gradle.api.provider.ValueSourceParameters
 abstract class KeyVaultSecretValueSource : ValueSource<String, KeyVaultSecretValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing Key Vault clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [SecretClientInfo]. */

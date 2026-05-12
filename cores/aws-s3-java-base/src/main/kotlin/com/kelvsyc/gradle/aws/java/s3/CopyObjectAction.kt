@@ -7,6 +7,7 @@ import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.CopyObjectRequest
+import org.gradle.api.tasks.Internal
 
 /**
  * A [WorkAction] that copies a single S3 object from a source bucket/key pair to a destination bucket/key
@@ -20,6 +21,7 @@ abstract class CopyObjectAction : WorkAction<CopyObjectAction.Parameters> {
         /**
          * The shared [ClientsBaseService] holding the registered S3 client.
          */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /**

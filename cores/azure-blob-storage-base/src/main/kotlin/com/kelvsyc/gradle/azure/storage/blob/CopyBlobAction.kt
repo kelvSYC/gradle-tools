@@ -6,6 +6,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * A [WorkAction] that copies a single blob within the same Azure Storage account using a synchronous
@@ -22,6 +23,7 @@ abstract class CopyBlobAction : WorkAction<CopyBlobAction.Parameters> {
         /**
          * The shared [ClientsBaseService] holding the registered Azure Blob Storage client.
          */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /**

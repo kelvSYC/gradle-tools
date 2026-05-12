@@ -8,6 +8,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * A [WorkAction] that deletes a single S3 object.
@@ -20,6 +21,7 @@ abstract class DeleteObjectAction : WorkAction<DeleteObjectAction.Parameters> {
         /**
          * The shared [ClientsBaseService] holding the registered S3 client.
          */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /**

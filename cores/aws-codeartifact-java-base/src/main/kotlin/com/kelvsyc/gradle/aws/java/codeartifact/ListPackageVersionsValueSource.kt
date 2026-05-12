@@ -10,6 +10,7 @@ import software.amazon.awssdk.services.codeartifact.model.CodeartifactException
 import software.amazon.awssdk.services.codeartifact.model.ListPackageVersionsRequest
 import software.amazon.awssdk.services.codeartifact.model.ListPackageVersionsResponse
 import software.amazon.awssdk.services.codeartifact.model.PackageFormat
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation providing a list of package version strings from a CodeArtifact repository.
@@ -23,6 +24,7 @@ abstract class ListPackageVersionsValueSource :
      */
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing CodeArtifact clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [CodeArtifactClientInfo]. */

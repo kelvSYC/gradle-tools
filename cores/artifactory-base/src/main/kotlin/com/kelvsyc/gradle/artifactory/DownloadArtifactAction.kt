@@ -7,6 +7,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import org.jfrog.artifactory.client.Artifactory
+import org.gradle.api.tasks.Internal
 
 /**
  * Gradle [WorkAction] for downloading a single artifact from an Artifactory repository.
@@ -16,6 +17,7 @@ import org.jfrog.artifactory.client.Artifactory
  */
 abstract class DownloadArtifactAction : WorkAction<DownloadArtifactAction.Parameters> {
     interface Parameters : WorkParameters {
+        @get:Internal
         val service: Property<ClientsBaseService>
         val clientName: Property<String>
 

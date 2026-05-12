@@ -8,6 +8,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that returns the calling identity for the configured client as a [Map] with the
@@ -18,6 +19,7 @@ import org.gradle.api.provider.ValueSourceParameters
 abstract class GetCallerIdentityValueSource : ValueSource<Map<String, String>, GetCallerIdentityValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing STS clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of an [StsClientInfo]. */

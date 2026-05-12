@@ -9,6 +9,7 @@ import org.gradle.api.provider.ValueSourceParameters
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import software.amazon.awssdk.services.secretsmanager.model.BatchGetSecretValueRequest
 import kotlin.streams.asSequence
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that retrieves a set of credentials, by their IDs, from Secrets Manager.
@@ -18,6 +19,7 @@ import kotlin.streams.asSequence
 abstract class SecretBatchValueSource : ValueSource<Map<String, String>, SecretBatchValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing Secrets Manager clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [SecretsManagerClientInfo]. */

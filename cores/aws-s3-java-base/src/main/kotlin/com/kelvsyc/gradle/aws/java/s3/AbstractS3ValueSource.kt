@@ -9,6 +9,7 @@ import software.amazon.awssdk.core.ResponseBytes
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.GetObjectRequest
 import software.amazon.awssdk.services.s3.model.GetObjectResponse
+import org.gradle.api.tasks.Internal
 
 /**
  * Base class for [ValueSource] implementations that provide a value by reading a value from AWS.
@@ -26,6 +27,7 @@ abstract class AbstractS3ValueSource<T : Any, P : AbstractS3ValueSource.Paramete
      * subclass.
      */
     interface Parameters : ValueSourceParameters {
+        @get:Internal
         val service: Property<ClientsBaseService>
         val clientName: Property<String>
 

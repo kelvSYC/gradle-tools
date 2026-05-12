@@ -8,6 +8,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation providing a list of topic resource names within a GCP project.
@@ -22,6 +23,7 @@ abstract class ListTopicsValueSource : ValueSource<List<String>, ListTopicsValue
      */
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing Pub/Sub clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [PubSubClientInfo]. */

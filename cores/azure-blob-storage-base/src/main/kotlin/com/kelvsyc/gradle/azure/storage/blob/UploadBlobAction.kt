@@ -7,6 +7,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * A [WorkAction] that uploads a single local file to Azure Blob Storage using a synchronous [BlobServiceClient].
@@ -21,6 +22,7 @@ abstract class UploadBlobAction : WorkAction<UploadBlobAction.Parameters> {
         /**
          * The shared [ClientsBaseService] holding the registered Azure Blob Storage client.
          */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /**

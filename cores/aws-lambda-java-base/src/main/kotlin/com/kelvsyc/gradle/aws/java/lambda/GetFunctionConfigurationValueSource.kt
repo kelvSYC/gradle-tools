@@ -10,6 +10,7 @@ import org.gradle.api.provider.ValueSourceParameters
 import software.amazon.awssdk.services.lambda.LambdaClient
 import software.amazon.awssdk.services.lambda.model.GetFunctionConfigurationRequest
 import software.amazon.awssdk.services.lambda.model.LambdaException
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that retrieves the ARN of a Lambda function's published configuration.
@@ -24,6 +25,7 @@ abstract class GetFunctionConfigurationValueSource : ValueSource<String, GetFunc
 
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing Lambda clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [LambdaClientInfo]. */

@@ -9,6 +9,7 @@ import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.services.ses.SesClient
 import software.amazon.awssdk.services.ses.model.RawMessage
 import software.amazon.awssdk.services.ses.model.SendRawEmailRequest
+import org.gradle.api.tasks.Internal
 
 /**
  * Base [WorkAction] for sending a raw MIME email via SES.
@@ -18,6 +19,7 @@ import software.amazon.awssdk.services.ses.model.SendRawEmailRequest
 abstract class AbstractSendRawMailAction<P : AbstractSendRawMailAction.Parameters> : WorkAction<P> {
     interface Parameters : WorkParameters {
         /** The shared build service managing SES clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [SesClientInfo]. */

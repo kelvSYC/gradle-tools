@@ -12,6 +12,7 @@ import software.amazon.awssdk.services.ses.model.Content
 import software.amazon.awssdk.services.ses.model.Destination
 import software.amazon.awssdk.services.ses.model.Message
 import software.amazon.awssdk.services.ses.model.SendEmailRequest
+import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation sending a simple email via SES.
@@ -21,6 +22,7 @@ import software.amazon.awssdk.services.ses.model.SendEmailRequest
 abstract class SendMailAction : WorkAction<SendMailAction.Parameters> {
     interface Parameters : WorkParameters {
         /** The shared build service managing SES clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [SesClientInfo]. */

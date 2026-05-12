@@ -9,6 +9,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation that decrypts the ciphertext blob in [Parameters.ciphertextFile] using KMS and
@@ -20,6 +21,7 @@ import org.gradle.workers.WorkParameters
 abstract class DecryptAction : WorkAction<DecryptAction.Parameters> {
     interface Parameters : WorkParameters {
         /** The shared build service managing KMS clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [KmsClientInfo]. */

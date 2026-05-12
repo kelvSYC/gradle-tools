@@ -8,6 +8,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation providing a list of secret resource names within a GCP project.
@@ -22,6 +23,7 @@ abstract class ListSecretsValueSource : ValueSource<List<String>, ListSecretsVal
      */
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing Secret Manager clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [SecretManagerClientInfo]. */

@@ -10,6 +10,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation backed by retrieving a secret from Secrets Manager.
@@ -19,6 +20,7 @@ import org.gradle.api.provider.ValueSourceParameters
 abstract class SecretsManagerValueSource : ValueSource<String, SecretsManagerValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing Secrets Manager clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [SecretsManagerClientInfo]. */

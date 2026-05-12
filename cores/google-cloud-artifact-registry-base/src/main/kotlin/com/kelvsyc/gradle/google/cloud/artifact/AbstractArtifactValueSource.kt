@@ -13,6 +13,7 @@ import org.gradle.api.provider.ValueSourceParameters
 import java.io.InputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
+import org.gradle.api.tasks.Internal
 
 /**
  * Base class for [ValueSource] implementations that provide a value by reading a file from Google Artifact Registry.
@@ -21,6 +22,7 @@ import java.io.PipedOutputStream
  */
 abstract class AbstractArtifactValueSource<T : Any, P : AbstractArtifactValueSource.Parameters> : ValueSource<T, P> {
     interface Parameters : ValueSourceParameters {
+        @get:Internal
         val service: Property<ClientsBaseService>
         val clientName: Property<String>
 

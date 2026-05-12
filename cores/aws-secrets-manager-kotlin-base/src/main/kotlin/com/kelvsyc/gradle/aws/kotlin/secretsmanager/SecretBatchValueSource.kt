@@ -15,6 +15,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that retrieves a set of credentials, by their IDs, from Secrets Manager.
@@ -24,6 +25,7 @@ import org.gradle.api.provider.ValueSourceParameters
 abstract class SecretBatchValueSource : ValueSource<Map<String, String>, SecretBatchValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing Secrets Manager clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [SecretsManagerClientInfo]. */

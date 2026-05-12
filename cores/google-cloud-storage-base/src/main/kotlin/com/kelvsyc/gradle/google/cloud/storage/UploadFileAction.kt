@@ -10,6 +10,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import java.nio.ByteBuffer
+import org.gradle.api.tasks.Internal
 
 /**
  * Gradle [WorkAction] for uploading a file to Google Cloud Storage.
@@ -20,6 +21,7 @@ abstract class UploadFileAction : WorkAction<UploadFileAction.Parameters> {
     }
 
     interface Parameters : WorkParameters {
+        @get:Internal
         val service: Property<ClientsBaseService>
         val clientName: Property<String>
 

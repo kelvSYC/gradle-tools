@@ -8,6 +8,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation providing a list of package resource names within an Artifact Registry repository.
@@ -23,6 +24,7 @@ abstract class ListPackagesValueSource : ValueSource<List<String>, ListPackagesV
      */
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing Artifact Registry clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of an [ArtifactRegistryClientInfo]. */

@@ -8,6 +8,7 @@ import org.gradle.api.provider.ValueSourceParameters
 import software.amazon.awssdk.services.ecr.EcrClient
 import software.amazon.awssdk.services.ecr.model.DescribeRepositoriesRequest
 import kotlin.streams.asSequence
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that lists ECR repositories visible to the configured client, returned as a
@@ -18,6 +19,7 @@ import kotlin.streams.asSequence
 abstract class DescribeRepositoriesValueSource : ValueSource<Map<String, String>, DescribeRepositoriesValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing ECR clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of an [EcrClientInfo]. */

@@ -11,9 +11,11 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
+import org.gradle.api.tasks.Internal
 
 abstract class UploadFileAction : WorkAction<UploadFileAction.Parameters> {
     interface Parameters : WorkParameters {
+        @get:Internal
         val service: Property<ClientsBaseService>
         val clientName: Property<String>
 

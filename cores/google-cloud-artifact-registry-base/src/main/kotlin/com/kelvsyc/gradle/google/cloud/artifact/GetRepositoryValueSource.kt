@@ -9,6 +9,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation providing a Google Cloud Artifact Registry [Repository] resource.
@@ -22,6 +23,7 @@ abstract class GetRepositoryValueSource : ValueSource<Repository, GetRepositoryV
      */
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing Artifact Registry clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of an [ArtifactRegistryClientInfo]. */

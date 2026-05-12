@@ -9,6 +9,7 @@ import org.gradle.workers.WorkParameters
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
+import org.gradle.api.tasks.Internal
 
 /**
  * A [WorkAction] that uploads a single local file to S3 using a synchronous [S3Client].
@@ -24,6 +25,7 @@ abstract class UploadFileAction : WorkAction<UploadFileAction.Parameters> {
         /**
          * The shared [ClientsBaseService] holding the registered S3 client.
          */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /**

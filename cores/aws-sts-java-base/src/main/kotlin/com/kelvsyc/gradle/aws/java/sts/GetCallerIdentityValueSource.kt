@@ -7,6 +7,7 @@ import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import software.amazon.awssdk.services.sts.StsClient
 import software.amazon.awssdk.services.sts.model.GetCallerIdentityRequest
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that returns the calling identity for the configured client as a [Map] with the
@@ -17,6 +18,7 @@ import software.amazon.awssdk.services.sts.model.GetCallerIdentityRequest
 abstract class GetCallerIdentityValueSource : ValueSource<Map<String, String>, GetCallerIdentityValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing STS clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of an [StsClientInfo]. */

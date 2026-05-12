@@ -7,6 +7,7 @@ import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import org.jfrog.artifactory.client.Artifactory
 import java.io.InputStream
+import org.gradle.api.tasks.Internal
 
 /**
  * Base class for [ValueSource] implementations that provide a value from reading an artifact downloaded from
@@ -24,6 +25,7 @@ abstract class AbstractArtifactValueSource<T : Any, P : AbstractArtifactValueSou
      * subclass.
      */
     interface Parameters : ValueSourceParameters {
+        @get:Internal
         val service: Property<ClientsBaseService>
         val clientName: Property<String>
 

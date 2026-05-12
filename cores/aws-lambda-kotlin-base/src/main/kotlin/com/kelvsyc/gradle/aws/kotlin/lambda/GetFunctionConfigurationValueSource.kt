@@ -10,6 +10,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that retrieves the ARN of a Lambda function's published configuration.
@@ -20,6 +21,7 @@ import org.gradle.api.provider.ValueSourceParameters
 abstract class GetFunctionConfigurationValueSource : ValueSource<String, GetFunctionConfigurationValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing Lambda clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [LambdaClientInfo]. */

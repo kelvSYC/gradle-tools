@@ -6,6 +6,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation backed by retrieving a secret from an in-memory Secrets Manager cache.
@@ -15,6 +16,7 @@ import org.gradle.api.provider.ValueSourceParameters
 abstract class SecretFromCacheValueSource : ValueSource<String, SecretFromCacheValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing Secrets Manager clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [SecretCacheClientInfo]. */

@@ -7,6 +7,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import org.jfrog.artifactory.client.Artifactory
+import org.gradle.api.tasks.Internal
 
 /**
  * Gradle [WorkAction] for uploading a single artifact to an Artifactory repository.
@@ -16,6 +17,7 @@ import org.jfrog.artifactory.client.Artifactory
  */
 abstract class UploadArtifactAction : WorkAction<UploadArtifactAction.Parameters> {
     interface Parameters : WorkParameters {
+        @get:Internal
         val service: Property<ClientsBaseService>
         val clientName: Property<String>
 

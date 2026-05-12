@@ -11,6 +11,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation publishing an asset to a CodeArtifact generic package version.
@@ -21,6 +22,7 @@ abstract class PublishPackageVersionAction : WorkAction<PublishPackageVersionAct
      */
     interface Parameters : WorkParameters {
         /** The shared build service managing CodeArtifact clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [CodeArtifactClientInfo]. */

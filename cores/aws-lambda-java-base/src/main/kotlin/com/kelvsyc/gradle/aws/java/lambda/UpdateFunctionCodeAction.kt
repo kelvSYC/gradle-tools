@@ -9,6 +9,7 @@ import org.gradle.workers.WorkParameters
 import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.services.lambda.LambdaClient
 import software.amazon.awssdk.services.lambda.model.UpdateFunctionCodeRequest
+import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation that updates the deployment package (zip file) for a Lambda function.
@@ -19,6 +20,7 @@ import software.amazon.awssdk.services.lambda.model.UpdateFunctionCodeRequest
 abstract class UpdateFunctionCodeAction : WorkAction<UpdateFunctionCodeAction.Parameters> {
     interface Parameters : WorkParameters {
         /** The shared build service managing Lambda clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [LambdaClientInfo]. */

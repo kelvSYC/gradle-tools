@@ -10,6 +10,7 @@ import org.gradle.workers.WorkParameters
 import software.amazon.awssdk.services.codeartifact.CodeartifactClient
 import software.amazon.awssdk.services.codeartifact.model.GetPackageVersionAssetRequest
 import software.amazon.awssdk.services.codeartifact.model.PackageFormat
+import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation downloading an asset form a CodeArtifact generic repo.
@@ -20,6 +21,7 @@ abstract class GetGenericPackageVersionAssetAction : WorkAction<GetGenericPackag
      */
     interface Parameters : WorkParameters {
         /** The shared build service managing CodeArtifact clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [CodeArtifactClientInfo]. */

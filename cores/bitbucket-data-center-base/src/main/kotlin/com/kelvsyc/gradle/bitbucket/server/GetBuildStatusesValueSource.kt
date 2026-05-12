@@ -6,6 +6,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] that fetches all build statuses for a commit from the Bitbucket Data Center API.
@@ -21,6 +22,7 @@ abstract class GetBuildStatusesValueSource :
         /**
          * The shared build service managing Bitbucket Data Center clients.
          */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /**

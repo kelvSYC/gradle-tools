@@ -11,6 +11,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation backed by retrieving a secret version from Google Cloud Secret Manager.
@@ -23,6 +24,7 @@ abstract class SecretManagerValueSource : ValueSource<String, SecretManagerValue
     }
 
     interface Parameters : ValueSourceParameters {
+        @get:Internal
         val service: Property<ClientsBaseService>
         val clientName: Property<String>
 

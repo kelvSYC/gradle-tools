@@ -5,6 +5,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] that creates or updates a build status on a commit in Bitbucket Cloud.
@@ -19,6 +20,7 @@ abstract class PutCommitStatusAction : WorkAction<PutCommitStatusAction.Paramete
         /**
          * The shared [ClientsBaseService] holding the registered Bitbucket Cloud client.
          */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /**

@@ -8,6 +8,7 @@ import org.gradle.api.provider.ValueSourceParameters
 import software.amazon.awssdk.services.lambda.LambdaClient
 import software.amazon.awssdk.services.lambda.model.ListFunctionsRequest
 import kotlin.streams.asSequence
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that lists all Lambda functions visible to the configured client, returned as a
@@ -18,6 +19,7 @@ import kotlin.streams.asSequence
 abstract class ListFunctionsValueSource : ValueSource<Map<String, String>, ListFunctionsValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing Lambda clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [LambdaClientInfo]. */

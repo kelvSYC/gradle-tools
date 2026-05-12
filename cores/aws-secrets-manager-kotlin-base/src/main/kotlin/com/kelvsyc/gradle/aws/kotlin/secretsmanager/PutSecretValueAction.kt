@@ -8,6 +8,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation that stores a new secret value in an existing Secrets Manager secret.
@@ -17,6 +18,7 @@ import org.gradle.workers.WorkParameters
 abstract class PutSecretValueAction : WorkAction<PutSecretValueAction.Parameters> {
     interface Parameters : WorkParameters {
         /** The shared build service managing Secrets Manager clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [SecretsManagerClientInfo]. */

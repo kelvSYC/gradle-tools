@@ -10,6 +10,7 @@ import org.gradle.api.provider.ValueSourceParameters
 import software.amazon.awssdk.services.ssm.SsmClient
 import software.amazon.awssdk.services.ssm.model.GetParameterRequest
 import software.amazon.awssdk.services.ssm.model.SsmException
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation backed by retrieving a single parameter from SSM Parameter Store.
@@ -24,6 +25,7 @@ abstract class GetParameterValueSource : ValueSource<String, GetParameterValueSo
 
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing SSM clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of an [SsmClientInfo]. */

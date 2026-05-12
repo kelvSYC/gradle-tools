@@ -5,6 +5,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] that creates a comment on a pull request in Bitbucket Cloud.
@@ -18,6 +19,7 @@ abstract class CreatePullRequestCommentAction :
         /**
          * The shared [ClientsBaseService] holding the registered Bitbucket Cloud client.
          */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /**

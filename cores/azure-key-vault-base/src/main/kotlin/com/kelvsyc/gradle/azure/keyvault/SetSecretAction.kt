@@ -6,6 +6,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation that stores a secret in Azure Key Vault.
@@ -18,6 +19,7 @@ abstract class SetSecretAction : WorkAction<SetSecretAction.Parameters> {
      */
     interface Parameters : WorkParameters {
         /** The shared build service managing Key Vault clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [SecretClientInfo]. */

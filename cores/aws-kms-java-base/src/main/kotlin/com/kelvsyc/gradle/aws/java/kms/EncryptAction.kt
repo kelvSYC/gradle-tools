@@ -9,6 +9,7 @@ import org.gradle.workers.WorkParameters
 import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.services.kms.KmsClient
 import software.amazon.awssdk.services.kms.model.EncryptRequest
+import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation that encrypts the contents of [Parameters.plaintextFile] under a KMS key and
@@ -20,6 +21,7 @@ import software.amazon.awssdk.services.kms.model.EncryptRequest
 abstract class EncryptAction : WorkAction<EncryptAction.Parameters> {
     interface Parameters : WorkParameters {
         /** The shared build service managing KMS clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [KmsClientInfo]. */
