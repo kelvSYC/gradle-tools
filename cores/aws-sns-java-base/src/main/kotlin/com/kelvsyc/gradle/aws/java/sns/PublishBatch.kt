@@ -3,6 +3,7 @@ package com.kelvsyc.gradle.aws.java.sns
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
+import org.gradle.api.services.ServiceReference
 import org.gradle.work.DisableCachingByDefault
 import javax.inject.Inject
 
@@ -18,6 +19,7 @@ abstract class PublishBatch @Inject constructor(
     /**
      * Build service managing the SNS client to use.
      */
+    @get:ServiceReference
     abstract val service: Property<SnsClientBuildService>
 
     init {
