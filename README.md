@@ -20,28 +20,29 @@ Standalone Gradle plugins that solve a specific build problem. Apply them direct
 
 ### Bases
 
-Gradle plugins that provide managed SDK client infrastructure for a specific cloud service.
-These are building blocks for plugin developers: each registers a typed client configuration
-into the shared `clients-base` registry so that downstream plugins and tasks can access
-pre-configured SDK clients without managing their lifecycle.
+Bases provide managed SDK client infrastructure for a specific cloud service. Each ships an
+`AbstractClientBuildService` subclass (or a Gradle plugin that registers one) so that downstream
+plugins and tasks can access pre-configured SDK clients without managing their lifecycle. Bases
+that have completed the migration to `AbstractClientBuildService` are published as Kotlin
+libraries; bases still on the legacy `ClientsBaseService` registry are published as Gradle plugins.
 
 **AWS** bases come in **Java SDK** and **Kotlin SDK** variants with mirrored APIs, since
 the two AWS SDKs are distinct libraries:
 
-| AWS Service | Java plugin | Kotlin plugin |
-|-------------|-------------|---------------|
-| S3 | `aws-s3-java-base` | `aws-s3-kotlin-base` |
-| SQS | `aws-sqs-java-base` | `aws-sqs-kotlin-base` |
-| SNS | `aws-sns-java-base` | `aws-sns-kotlin-base` |
-| SES | `aws-ses-java-base` | `aws-ses-kotlin-base` |
-| Secrets Manager | `aws-secrets-manager-java-base` | `aws-secrets-manager-kotlin-base` |
-| CodeArtifact | `aws-codeartifact-java-base` | `aws-codeartifact-kotlin-base` |
-| ECR | `aws-ecr-java-base` | `aws-ecr-kotlin-base` |
-| IMDS | `aws-imds-java-base` | `aws-imds-kotlin-base` |
-| KMS | `aws-kms-java-base` | `aws-kms-kotlin-base` |
-| Lambda | `aws-lambda-java-base` | `aws-lambda-kotlin-base` |
-| SSM Parameter Store | `aws-ssm-java-base` | `aws-ssm-kotlin-base` |
-| STS | `aws-sts-java-base` | `aws-sts-kotlin-base` |
+| AWS Service | Java | Kotlin |
+|-------------|------|--------|
+| S3 | `aws-s3-java-base` (plugin) | `aws-s3-kotlin-base` (plugin) |
+| SQS | `aws-sqs-java-base` (plugin) | `aws-sqs-kotlin-base` (plugin) |
+| SNS | `aws-sns-java-base` (plugin) | `aws-sns-kotlin-base` (plugin) |
+| SES | `aws-ses-java-base` (plugin) | `aws-ses-kotlin-base` (plugin) |
+| Secrets Manager | `aws-secrets-manager-java-base` (plugin) | `aws-secrets-manager-kotlin-base` (plugin) |
+| CodeArtifact | `aws-codeartifact-java-base` (plugin) | `aws-codeartifact-kotlin-base` (plugin) |
+| ECR | `aws-ecr-java-base` (plugin) | `aws-ecr-kotlin-base` (plugin) |
+| IMDS | `aws-imds-java-base` (plugin) | `aws-imds-kotlin-base` (plugin) |
+| KMS | `aws-kms-java-base` (plugin) | `aws-kms-kotlin-base` (plugin) |
+| Lambda | `aws-lambda-java-base` (plugin) | `aws-lambda-kotlin-base` (plugin) |
+| SSM Parameter Store | `aws-ssm-java-base` (plugin) | `aws-ssm-kotlin-base` (plugin) |
+| STS | `aws-sts-java-base` (plugin) | `aws-sts-kotlin-base` (library) |
 
 **Other** bases have a single plugin each:
 
