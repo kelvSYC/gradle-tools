@@ -26,6 +26,7 @@ import kotlin.reflect.safeCast
  *
  * Client retrieval via [getClient] is safe to call concurrently during task execution.
  */
+@Deprecated("Use AbstractClientBuildService to define per-client build services instead")
 @Suppress("detekt:TooManyFunctions")
 abstract class ClientsBaseService : BuildService<BuildServiceParameters.None>, AutoCloseable {
     abstract val registrations: ExtensiblePolymorphicDomainObjectContainer<ServiceClientInfo<*>>
