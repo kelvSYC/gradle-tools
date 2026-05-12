@@ -6,6 +6,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * Base class for [ValueSource] implementations that provide a value by reading a value from GCS.
@@ -22,6 +23,7 @@ abstract class AbstractGCSValueSource<T : Any, P : AbstractGCSValueSource.Parame
      * subclass.
      */
     interface Parameters : ValueSourceParameters {
+        @get:Internal
         val service: Property<ClientsBaseService>
         val clientName: Property<String>
 

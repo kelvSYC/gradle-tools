@@ -10,6 +10,7 @@ import org.gradle.api.provider.ValueSourceParameters
 import software.amazon.awssdk.services.sts.StsClient
 import software.amazon.awssdk.services.sts.model.DecodeAuthorizationMessageRequest
 import software.amazon.awssdk.services.sts.model.StsException
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that decodes an STS-encoded authorization failure message into a JSON document
@@ -25,6 +26,7 @@ abstract class DecodeAuthorizationMessageValueSource : ValueSource<String, Decod
 
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing STS clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of an [StsClientInfo]. */

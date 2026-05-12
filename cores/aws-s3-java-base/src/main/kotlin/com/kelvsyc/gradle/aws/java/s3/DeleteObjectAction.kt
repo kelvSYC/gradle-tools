@@ -7,6 +7,7 @@ import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest
+import org.gradle.api.tasks.Internal
 
 /**
  * A [WorkAction] that deletes a single S3 object using a synchronous [S3Client].
@@ -22,6 +23,7 @@ abstract class DeleteObjectAction : WorkAction<DeleteObjectAction.Parameters> {
         /**
          * The shared [ClientsBaseService] holding the registered S3 client.
          */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /**

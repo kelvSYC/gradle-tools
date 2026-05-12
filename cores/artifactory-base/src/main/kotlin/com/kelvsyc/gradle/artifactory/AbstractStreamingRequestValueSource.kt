@@ -8,6 +8,7 @@ import org.gradle.api.provider.ValueSourceParameters
 import org.jfrog.artifactory.client.Artifactory
 import org.jfrog.artifactory.client.ArtifactoryRequest
 import org.jfrog.artifactory.client.ArtifactoryStreamingResponse
+import org.gradle.api.tasks.Internal
 
 /**
  * Base class for [ValueSource] implementations that provide a value from performing a streaming REST API call to
@@ -26,9 +27,11 @@ abstract class AbstractStreamingRequestValueSource<T : Any, P : AbstractStreamin
      * subclass.
      */
     interface Parameters : ValueSourceParameters {
+        @get:Internal
         val service: Property<ClientsBaseService>
         val clientName: Property<String>
 
+        @get:Internal
         val request: Property<ArtifactoryRequest>
     }
 

@@ -14,6 +14,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that lists all KMS keys visible to the configured client, returned as a [Map]
@@ -24,6 +25,7 @@ import org.gradle.api.provider.ValueSourceParameters
 abstract class ListKeysValueSource : ValueSource<Map<String, String>, ListKeysValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing KMS clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [KmsClientInfo]. */

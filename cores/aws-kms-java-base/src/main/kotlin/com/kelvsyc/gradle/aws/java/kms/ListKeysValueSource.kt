@@ -8,6 +8,7 @@ import org.gradle.api.provider.ValueSourceParameters
 import software.amazon.awssdk.services.kms.KmsClient
 import software.amazon.awssdk.services.kms.model.ListKeysRequest
 import kotlin.streams.asSequence
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that lists all KMS keys visible to the configured client, returned as a [Map]
@@ -18,6 +19,7 @@ import kotlin.streams.asSequence
 abstract class ListKeysValueSource : ValueSource<Map<String, String>, ListKeysValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing KMS clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [KmsClientInfo]. */

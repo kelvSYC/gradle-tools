@@ -8,6 +8,7 @@ import org.gradle.api.provider.ValueSourceParameters
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request
 import software.amazon.awssdk.services.s3.model.S3Object
+import org.gradle.api.tasks.Internal
 
 /**
  * Base class for [ValueSource] implementations that produce a value by listing objects in an S3 bucket.
@@ -26,6 +27,7 @@ abstract class AbstractListObjectsValueSource<T : Any, P : AbstractListObjectsVa
         /**
          * The shared [ClientsBaseService] holding the registered S3 client.
          */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /**

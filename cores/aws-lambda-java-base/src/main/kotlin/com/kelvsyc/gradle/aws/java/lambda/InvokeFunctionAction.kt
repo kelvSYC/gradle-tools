@@ -9,6 +9,7 @@ import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.services.lambda.LambdaClient
 import software.amazon.awssdk.services.lambda.model.InvocationType
 import software.amazon.awssdk.services.lambda.model.InvokeRequest
+import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation that invokes a Lambda function.
@@ -20,6 +21,7 @@ import software.amazon.awssdk.services.lambda.model.InvokeRequest
 abstract class InvokeFunctionAction : WorkAction<InvokeFunctionAction.Parameters> {
     interface Parameters : WorkParameters {
         /** The shared build service managing Lambda clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [LambdaClientInfo]. */

@@ -7,6 +7,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * Base class for [ValueSource] implementations that provide a value by reading a blob from Azure Blob Storage.
@@ -28,6 +29,7 @@ abstract class AbstractBlobStorageValueSource<T : Any, P : AbstractBlobStorageVa
         /**
          * The shared [ClientsBaseService] holding the registered Azure Blob Storage client.
          */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /**

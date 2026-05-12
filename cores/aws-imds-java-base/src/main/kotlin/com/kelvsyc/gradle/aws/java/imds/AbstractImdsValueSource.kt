@@ -7,6 +7,7 @@ import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import software.amazon.awssdk.imds.Ec2MetadataClient
 import software.amazon.awssdk.imds.Ec2MetadataResponse
+import org.gradle.api.tasks.Internal
 
 /**
  * Base class for [ValueSource]s providing values retrieved from the
@@ -24,6 +25,7 @@ abstract class AbstractImdsValueSource<T : Any, P : AbstractImdsValueSource.Para
      */
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing IMDS clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of an [ImdsClientInfo]. */

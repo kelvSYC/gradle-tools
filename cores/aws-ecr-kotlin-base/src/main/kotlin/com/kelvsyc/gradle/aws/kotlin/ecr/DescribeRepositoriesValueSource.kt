@@ -14,6 +14,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that lists ECR repositories visible to the configured client, returned as a
@@ -24,6 +25,7 @@ import org.gradle.api.provider.ValueSourceParameters
 abstract class DescribeRepositoriesValueSource : ValueSource<Map<String, String>, DescribeRepositoriesValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing ECR clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of an [EcrClientInfo]. */

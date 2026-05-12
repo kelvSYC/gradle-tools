@@ -10,6 +10,7 @@ import software.amazon.awssdk.services.codeartifact.model.CodeartifactException
 import software.amazon.awssdk.services.codeartifact.model.EndpointType
 import software.amazon.awssdk.services.codeartifact.model.GetRepositoryEndpointRequest
 import software.amazon.awssdk.services.codeartifact.model.PackageFormat
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation providing an AWS CodeArtifact repository endpoint URL.
@@ -22,6 +23,7 @@ abstract class GetRepositoryEndpointValueSource : ValueSource<String, GetReposit
      */
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing CodeArtifact clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [CodeArtifactClientInfo]. */

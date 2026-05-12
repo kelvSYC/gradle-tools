@@ -7,6 +7,7 @@ import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import software.amazon.awssdk.services.sns.SnsClient
 import software.amazon.awssdk.services.sns.model.PublishRequest
+import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation publishing a message to an SNS topic.
@@ -24,6 +25,7 @@ abstract class PublishAction : WorkAction<PublishAction.Parameters> {
         /**
          * The shared [ClientsBaseService] holding the registered SNS client.
          */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /**

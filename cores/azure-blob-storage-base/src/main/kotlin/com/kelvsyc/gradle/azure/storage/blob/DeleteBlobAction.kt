@@ -6,6 +6,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * A [WorkAction] that deletes a single blob from Azure Blob Storage using a synchronous [BlobServiceClient].
@@ -21,6 +22,7 @@ abstract class DeleteBlobAction : WorkAction<DeleteBlobAction.Parameters> {
         /**
          * The shared [ClientsBaseService] holding the registered Azure Blob Storage client.
          */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /**

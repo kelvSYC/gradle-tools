@@ -10,6 +10,7 @@ import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import org.gradle.api.tasks.Internal
 
 /**
  * A [WorkAction] that copies a single S3 object from a source bucket/key pair to a destination bucket/key
@@ -23,6 +24,7 @@ abstract class CopyObjectAction : WorkAction<CopyObjectAction.Parameters> {
         /**
          * The shared [ClientsBaseService] holding the registered S3 client.
          */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /**

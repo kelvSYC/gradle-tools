@@ -8,6 +8,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * Base class for [ValueSource]s providing values retrieved from the [IMDS Instance Identity Document](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-identity-documents.html).
@@ -28,6 +29,7 @@ abstract class AbstractInstanceIdentityValueSource<T : Any, P : AbstractInstance
      */
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing IMDS clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of an [ImdsClientInfo]. */

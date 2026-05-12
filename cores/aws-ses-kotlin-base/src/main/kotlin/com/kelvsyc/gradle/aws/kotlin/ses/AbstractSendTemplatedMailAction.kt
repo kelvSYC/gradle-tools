@@ -10,6 +10,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * Base [WorkAction] for sending a templated email via SES.
@@ -19,6 +20,7 @@ import org.gradle.workers.WorkParameters
 abstract class AbstractSendTemplatedMailAction<P : AbstractSendTemplatedMailAction.Parameters> : WorkAction<P> {
     interface Parameters : WorkParameters {
         /** The shared build service managing SES clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [SesClientInfo]. */

@@ -10,6 +10,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation that adds a new version to an existing Google Cloud Secret Manager secret.
@@ -22,6 +23,7 @@ abstract class AddSecretVersionAction : WorkAction<AddSecretVersionAction.Parame
      */
     interface Parameters : WorkParameters {
         /** The shared build service managing Secret Manager clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [SecretManagerClientInfo]. */

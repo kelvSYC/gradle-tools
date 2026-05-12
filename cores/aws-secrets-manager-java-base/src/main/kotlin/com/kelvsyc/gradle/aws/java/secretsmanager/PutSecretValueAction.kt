@@ -7,6 +7,7 @@ import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import software.amazon.awssdk.services.secretsmanager.model.PutSecretValueRequest
+import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation that stores a new secret value in an existing Secrets Manager secret.
@@ -16,6 +17,7 @@ import software.amazon.awssdk.services.secretsmanager.model.PutSecretValueReques
 abstract class PutSecretValueAction : WorkAction<PutSecretValueAction.Parameters> {
     interface Parameters : WorkParameters {
         /** The shared build service managing Secrets Manager clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [SecretsManagerClientInfo]. */

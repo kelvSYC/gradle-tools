@@ -10,6 +10,7 @@ import org.gradle.api.provider.ValueSourceParameters
 import software.amazon.awssdk.services.kms.KmsClient
 import software.amazon.awssdk.services.kms.model.DescribeKeyRequest
 import software.amazon.awssdk.services.kms.model.KmsException
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that retrieves the ARN of a KMS key from its ID, ARN, or alias name.
@@ -24,6 +25,7 @@ abstract class DescribeKeyValueSource : ValueSource<String, DescribeKeyValueSour
 
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing KMS clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [KmsClientInfo]. */

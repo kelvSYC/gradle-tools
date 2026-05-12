@@ -10,6 +10,7 @@ import org.gradle.api.provider.ValueSourceParameters
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest
 import software.amazon.awssdk.services.secretsmanager.model.SecretsManagerException
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation backed by retrieving a secret from Secrets Manager.
@@ -23,6 +24,7 @@ abstract class SecretsManagerValueSource : ValueSource<String, SecretsManagerVal
 
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing Secrets Manager clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [SecretsManagerClientInfo]. */

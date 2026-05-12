@@ -10,6 +10,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation backed by retrieving a single parameter from SSM Parameter Store.
@@ -20,6 +21,7 @@ import org.gradle.api.provider.ValueSourceParameters
 abstract class GetParameterValueSource : ValueSource<String, GetParameterValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing SSM clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of an [SsmClientInfo]. */

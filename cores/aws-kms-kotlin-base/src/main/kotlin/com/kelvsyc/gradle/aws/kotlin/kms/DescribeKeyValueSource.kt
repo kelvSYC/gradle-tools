@@ -10,6 +10,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that retrieves the ARN of a KMS key from its ID, ARN, or alias name.
@@ -20,6 +21,7 @@ import org.gradle.api.provider.ValueSourceParameters
 abstract class DescribeKeyValueSource : ValueSource<String, DescribeKeyValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing KMS clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of a [KmsClientInfo]. */

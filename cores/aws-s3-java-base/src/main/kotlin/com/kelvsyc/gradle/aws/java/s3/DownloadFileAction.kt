@@ -9,6 +9,7 @@ import org.gradle.workers.WorkParameters
 import software.amazon.awssdk.core.sync.ResponseTransformer
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.GetObjectRequest
+import org.gradle.api.tasks.Internal
 
 /**
  * A [WorkAction] that downloads a single S3 object to a local file using a synchronous [S3Client].
@@ -24,6 +25,7 @@ abstract class DownloadFileAction : WorkAction<DownloadFileAction.Parameters> {
         /**
          * The shared [ClientsBaseService] holding the registered S3 client.
          */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /**

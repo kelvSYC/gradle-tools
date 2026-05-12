@@ -10,6 +10,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation that deletes a set of images, by tag, from an ECR repository.
@@ -20,6 +21,7 @@ import org.gradle.workers.WorkParameters
 abstract class BatchDeleteImageAction : WorkAction<BatchDeleteImageAction.Parameters> {
     interface Parameters : WorkParameters {
         /** The shared build service managing ECR clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of an [EcrClientInfo]. */

@@ -8,6 +8,7 @@ import org.gradle.api.provider.ValueSourceParameters
 import software.amazon.awssdk.services.ssm.SsmClient
 import software.amazon.awssdk.services.ssm.model.GetParametersByPathRequest
 import kotlin.streams.asSequence
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that retrieves all SSM parameters under a given hierarchy [Parameters.path],
@@ -19,6 +20,7 @@ import kotlin.streams.asSequence
 abstract class GetParametersByPathValueSource : ValueSource<Map<String, String>, GetParametersByPathValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
         /** The shared build service managing SSM clients. */
+        @get:Internal
         val service: Property<ClientsBaseService>
 
         /** Registered name of an [SsmClientInfo]. */
