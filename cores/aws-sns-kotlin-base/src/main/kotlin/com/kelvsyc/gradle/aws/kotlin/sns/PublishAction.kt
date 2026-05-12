@@ -1,14 +1,11 @@
 package com.kelvsyc.gradle.aws.kotlin.sns
 
-import aws.sdk.kotlin.services.sns.SnsClient
 import aws.sdk.kotlin.services.sns.model.PublishRequest
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
-import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation publishing a message to an SNS topic.
@@ -24,15 +21,10 @@ abstract class PublishAction : WorkAction<PublishAction.Parameters> {
      */
     interface Parameters : WorkParameters {
         /**
-         * The shared [ClientsBaseService] holding the registered SNS client.
+         * The shared [SnsClientBuildService] managing the SNS client.
          */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /**
-         * Registered name of an [SnsClientInfo].
-         */
-        val clientName: Property<String>
+        val service: Property<SnsClientBuildService>
 
         /**
          * ARN of the target SNS topic.
@@ -60,8 +52,6 @@ abstract class PublishAction : WorkAction<PublishAction.Parameters> {
         val messageDeduplicationId: Property<String>
     }
 
-    private val client: Provider<SnsClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
         val request = PublishRequest {
             topicArn = parameters.topicArn.get()
@@ -72,7 +62,7 @@ abstract class PublishAction : WorkAction<PublishAction.Parameters> {
         }
 
         runBlocking {
-            client.get().publish(request)
+            parameters.service.get().getClient().publish(request)
         }
     }
 }
