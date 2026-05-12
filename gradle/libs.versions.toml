@@ -35,6 +35,7 @@ artifactory-client-api = "org.jfrog.artifactory.client:artifactory-java-client-a
 artifactory-client-impl = "org.jfrog.artifactory.client:artifactory-java-client-services:2.21.2"
 azure-core = { module = "com.azure:azure-core" } # version from BOM 'azure-sdk-bom'
 azure-storage-blob = { module = "com.azure:azure-storage-blob" } # version from BOM 'azure-sdk-bom'
+azure-security-keyvault-secrets = { module = "com.azure:azure-security-keyvault-secrets" } # version from BOM 'azure-sdk-bom'
 azure-storage-common = { module = "com.azure:azure-storage-common" } # version from BOM 'azure-sdk-bom'
 aws-auth-java = { module = "software.amazon.awssdk:auth" } # version from BOM 'aws-java-sdk-bom'
 aws-config-kotlin = { module = "aws.sdk.kotlin:aws-config" } # version from BOM 'aws-kotlin-sdk-bom'
