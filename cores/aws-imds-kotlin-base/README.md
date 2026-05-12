@@ -1,40 +1,36 @@
 # AWS IMDS Kotlin Base
 
-A Gradle plugin providing managed AWS EC2 Instance Metadata Service (IMDS) client integration using the AWS SDK for
-Kotlin.
+A Kotlin library providing managed AWS EC2 Instance Metadata Service (IMDS) client integration using the AWS
+SDK for Kotlin, built on `clients-base`.
 
-## Applying the Plugin
+## Dependency
 
 ```kotlin
-plugins {
-    id("com.kelvsyc.gradle.aws-imds-kotlin-base")
+dependencies {
+    implementation("com.kelvsyc.gradle:aws-imds-kotlin-base")
 }
 ```
 
-## Client Type
+## Build Service
 
-One client info type is registered:
-
-| Client info type | Client type |
+| Class | Client type |
 |---|---|
-| `ImdsClientInfo` | `ImdsClient` (AWS SDK for Kotlin) |
+| `ImdsClientBuildService` | `ImdsClient` (AWS SDK for Kotlin) |
 
-Register a client using `serviceClients`:
+Unlike most AWS service build services, IMDS has no region or credentials — only an optional endpoint
+override:
 
 ```kotlin
-serviceClients.service.get().registerIfAbsent<ImdsClientInfo>("imds") {
+val imds = gradle.sharedServices.registerIfAbsent("imds", ImdsClientBuildService::class) {
     // endpoint is optional; defaults to the AWS SDK default
 }
 ```
 
-### `ImdsClientInfo` properties
+### Parameters
 
-| Property | Type | Description |
+| Parameter | Type | Description |
 |---|---|---|
-| `endpoint` | `Property<String>` | Override the IMDS endpoint URI. Leave unset for the default. |
-
-Note: unlike the Java variant, the Kotlin SDK's `ImdsClient` does not expose a separate `endpointMode` property.
-The endpoint configuration is derived from `endpoint` via `EndpointConfiguration.Custom`.
+| `endpoint` | `Property<String>` | Override the IMDS endpoint URI. Leave unset for `EndpointConfiguration.Default`. |
 
 ## Value Source: `AbstractImdsValueSource`
 
@@ -51,8 +47,7 @@ abstract class UpperCaseImdsValueSource
 ```kotlin
 val instanceType: Provider<String> = providers.of(UpperCaseImdsValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("imds")
+        service.set(imds)
         path.set("/latest/meta-data/instance-type")
     }
 }
@@ -64,8 +59,7 @@ Parameters:
 
 | Parameter | Type | Description |
 |---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of an `ImdsClientInfo` |
+| `service` | `Property<ImdsClientBuildService>` | Build service supplying the IMDS client |
 | `path` | `Property<String>` | The IMDS metadata path to query |
 
 ## Value Source: `ImdsValueSource`
@@ -76,8 +70,7 @@ simple metadata lookups without writing a subclass:
 ```kotlin
 val instanceId: Provider<String> = providers.of(ImdsValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("imds")
+        service.set(imds)
         path.set("/latest/meta-data/instance-id")
     }
 }
@@ -100,31 +93,13 @@ abstract class MyImdsValueSource
 }
 ```
 
-Use it in task configuration:
-
-```kotlin
-tasks.register("readIdentityDoc") {
-    val doc: Provider<String> = providers.of(MyImdsValueSource::class) {
-        parameters {
-            service.set(serviceClients.service)
-            clientName.set("imds")
-        }
-    }
-
-    doLast {
-        println(doc.get())
-    }
-}
-```
-
 `obtain()` returns `null` if the IMDS call throws `EC2MetadataError` (e.g. when not running on EC2).
 
 Parameters:
 
 | Parameter | Type | Description |
 |---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service (set from `serviceClients.service`) |
-| `clientName` | `Property<String>` | Registered name of an `ImdsClientInfo` |
+| `service` | `Property<ImdsClientBuildService>` | Build service supplying the IMDS client |
 
 ## See Also
 
