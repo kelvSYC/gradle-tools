@@ -1,16 +1,12 @@
 package com.kelvsyc.gradle.aws.kotlin.kms
 
-import aws.sdk.kotlin.services.kms.KmsClient
 import aws.sdk.kotlin.services.kms.model.DescribeKeyRequest
 import aws.sdk.kotlin.services.kms.model.KmsException
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.logging.Logging
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that retrieves the ARN of a KMS key from its ID, ARN, or alias name.
@@ -19,19 +15,16 @@ import org.gradle.api.tasks.Internal
  * the key was not found or the caller lacks `kms:DescribeKey` permission).
  */
 abstract class DescribeKeyValueSource : ValueSource<String, DescribeKeyValueSource.Parameters> {
+    /**
+     * Parameters for [DescribeKeyValueSource].
+     */
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing KMS clients. */
-        @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [KmsClientInfo]. */
-        val clientName: Property<String>
+        /** The build service managing the KMS client. */
+        val service: Property<KmsClientBuildService>
 
         /** The key ID, ARN, or alias name (e.g. `alias/my-key`) to describe. */
         val keyId: Property<String>
     }
-
-    private val client: Provider<KmsClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     override fun obtain(): String? {
         val request = DescribeKeyRequest {
@@ -40,7 +33,7 @@ abstract class DescribeKeyValueSource : ValueSource<String, DescribeKeyValueSour
 
         return try {
             runBlocking {
-                client.get().describeKey(request).keyMetadata?.arn
+                parameters.service.get().getClient().describeKey(request).keyMetadata?.arn
             }
         } catch (e: KmsException) {
             logger.warn("Unable to describe KMS key '${parameters.keyId.get()}'", e)
