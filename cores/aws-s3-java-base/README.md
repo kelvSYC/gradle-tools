@@ -1,68 +1,58 @@
 # AWS S3 Java Base
 
-A Gradle plugin providing managed AWS S3 client integration using the AWS SDK for Java.
+A Kotlin library providing managed AWS S3 client integration using the AWS SDK for Java, built on
+`clients-base`.
 
-## Applying the Plugin
+## Dependency
 
 ```kotlin
-plugins {
-    id("com.kelvsyc.gradle.aws-s3-java-base")
+dependencies {
+    implementation("com.kelvsyc.gradle:aws-s3-java-base")
 }
 ```
 
-## Client Types
+## Build Services
 
-Three client info types are registered:
-
-| Client info type | Client type | Use case |
+| Class | Client type | Use case |
 |---|---|---|
-| `S3ClientInfo` | `S3Client` | Synchronous S3 operations |
-| `S3AsyncClientInfo` | `S3AsyncClient` | Asynchronous S3 operations |
-| `S3TransferManagerClientInfo` | `S3TransferManager` | High-throughput multipart transfers |
+| `S3ClientBuildService` | `S3Client` | Synchronous S3 operations |
+| `S3AsyncClientBuildService` | `S3AsyncClient` (CRT) | Asynchronous S3 operations; required input for `S3TransferManagerBuildService` |
+| `S3TransferManagerBuildService` | `S3TransferManager` | High-throughput multipart transfers |
 
-All three extend `AwsClientInfo` (except `S3TransferManagerClientInfo`). Use the convenience extensions on
-`ClientsBaseExtension` to register clients:
+### Direct clients
 
 ```kotlin
-serviceClients.registerAwsS3JavaClient("myS3Client") {
-    region.set(Region.US_EAST_1)
-    credentials.set(DefaultCredentialsProvider.create())
+val s3 = gradle.sharedServices.registerIfAbsent("s3", S3ClientBuildService::class) {
+    parameters.region.set(Region.US_EAST_1)
+    parameters.credentials.set(DefaultCredentialsProvider.create())
 }
 
-serviceClients.registerAwsS3AsyncJavaClient("myS3AsyncClient") {
-    region.set(Region.US_EAST_1)
-    credentials.set(DefaultCredentialsProvider.create())
+val s3Async = gradle.sharedServices.registerIfAbsent("s3-async", S3AsyncClientBuildService::class) {
+    parameters.region.set(Region.US_EAST_1)
+    parameters.credentials.set(DefaultCredentialsProvider.create())
 }
 ```
 
-When registering an `S3TransferManagerClientInfo`, pass the underlying `S3AsyncClient` as the `baseClient` so both
-clients share a lifecycle through `ClientsBaseService`:
+Leave `region` unset to fall back to `DefaultAwsRegionProviderChain`. Leave `credentials` unset to fall back to
+`AnonymousCredentialsProvider`.
+
+### Transfer manager (wraps an `S3AsyncClient`)
 
 ```kotlin
-// Register the async client first
-serviceClients.registerAwsS3AsyncJavaClient("myS3AsyncClient") {
-    region.set(Region.US_EAST_1)
-    credentials.set(DefaultCredentialsProvider.create())
-}
-
-// Wire it as the base client for the transfer manager
-serviceClients.registerAwsS3TransferManagerJavaClient("myTransferManager") {
-    baseClient.set(serviceClients.getClient<S3AsyncClient, S3AsyncClientInfo>("myS3AsyncClient").get())
+val s3TransferManager = gradle.sharedServices.registerIfAbsent("s3-tm", S3TransferManagerBuildService::class) {
+    parameters.baseService.set(s3Async)
+    parameters.uploadDirectoryFollowSymbolicLinks.set(false) // optional, defaults to false
 }
 ```
 
-### `AwsClientInfo` properties
+`baseService` must be set to a registered `S3AsyncClientBuildService`. The wrapped client is resolved lazily —
+the underlying async service is not instantiated until the transfer manager itself is first accessed. The
+underlying `S3AsyncClient` is not closed by the transfer manager; the `S3AsyncClientBuildService` owns its
+lifecycle.
 
-| Property | Type | Description |
+| Parameter | Type | Description |
 |---|---|---|
-| `region` | `Property<Region>` | AWS region. Leave unset to use `DefaultAwsRegionProviderChain`. |
-| `credentials` | `Property<AwsCredentialsProvider>` | Credentials. If absent, uses `AnonymousCredentialsProvider`. |
-
-### `S3TransferManagerClientInfo` properties
-
-| Property | Type | Description |
-|---|---|---|
-| `baseClient` | `Property<S3AsyncClient>` | The underlying async client powering the transfer manager |
+| `baseService` | `Property<S3AsyncClientBuildService>` | The build service supplying the underlying async client |
 | `uploadDirectoryFollowSymbolicLinks` | `Property<Boolean>` | Whether to follow symlinks during directory uploads. Defaults to `false`. |
 
 ## Value Source: `AbstractS3ValueSource`
@@ -82,8 +72,7 @@ Use it in task configuration:
 tasks.register("readFromS3") {
     val content: Provider<String> = providers.of(MyS3ValueSource::class) {
         parameters {
-            service.set(serviceClients.service)
-            clientName.set("myS3Client")
+            service.set(s3)
             bucket.set("my-bucket")
             key.set("path/to/object.txt")
         }
@@ -102,20 +91,18 @@ Parameters:
 
 | Parameter | Type | Description |
 |---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service (set from `serviceClients.service`) |
-| `clientName` | `Property<String>` | Registered name of a `S3ClientInfo` |
+| `service` | `Property<S3ClientBuildService>` | Build service supplying the synchronous S3 client |
 | `bucket` | `Property<String>` | S3 bucket name |
 | `key` | `Property<String>` | S3 object key |
 
 ## Tasks: `BatchDownloadFromS3` / `BatchUploadToS3`
 
-These tasks perform concurrent batch downloads/uploads using an `S3TransferManager` client. Register artifacts using
-`registerArtifact`, then set `clientName` to a registered `S3TransferManagerClientInfo`. The plugin auto-wires
-`client` from `clientsService` and `clientName`.
+These tasks perform concurrent batch downloads/uploads using an `S3TransferManager`. Register artifacts using
+`registerArtifact`, then set `service` to a registered `S3TransferManagerBuildService`.
 
 ```kotlin
 tasks.register<BatchDownloadFromS3>("downloadArtifacts") {
-    clientName.set("myTransferManager")
+    service.set(s3TransferManager)
 
     registerArtifact("config") {
         bucket.set("my-bucket")
@@ -142,8 +129,8 @@ tasks.register<MyProcessingTask>("process") {
 
 `BatchUploadToS3` works the same way, with `inputFile` in place of `outputFile` per artifact.
 
-To use a client from outside `ClientsBaseService`, use `AbstractBatchDownloadFromS3` / `AbstractBatchUploadToS3`
-directly and set `client` manually.
+To use a client from outside the build-service infrastructure, use `AbstractBatchDownloadFromS3` /
+`AbstractBatchUploadToS3` directly and set `client` manually.
 
 ## Value Source: `AbstractListObjectsValueSource`
 
@@ -158,8 +145,7 @@ abstract class AllKeysValueSource :
 
 val keys: Provider<List<String>> = providers.of(AllKeysValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("myS3Client")
+        service.set(s3)
         bucket.set("my-bucket")
         prefix.set("artifacts/")  // optional
     }
@@ -170,8 +156,7 @@ Parameters:
 
 | Parameter | Type | Description |
 |---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of an `S3ClientInfo` |
+| `service` | `Property<S3ClientBuildService>` | Build service supplying the synchronous S3 client |
 | `bucket` | `Property<String>` | S3 bucket name |
 | `prefix` | `Property<String>` | Optional key prefix filter |
 
@@ -188,20 +173,18 @@ Low-level `WorkAction` implementations using the synchronous `S3Client`. Submitt
 | `CopyObjectAction` | Server-side copy between bucket/key pairs | `sourceBucket`, `sourceKey`, `destinationBucket`, `destinationKey` |
 | `DeleteObjectAction` | Delete one object | `bucket`, `key` |
 
-All four also require `service` and `clientName` referencing a registered `S3ClientInfo`.
+All four also require `service` referencing a registered `S3ClientBuildService`.
 
 ```kotlin
 workerExecutor.noIsolation().submit(DownloadFileAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("myS3Client")
+    service.set(s3)
     bucket.set("my-bucket")
     key.set("config/settings.json")
     outputFile.set(layout.buildDirectory.file("settings.json"))
 }
 
 workerExecutor.noIsolation().submit(CopyObjectAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("myS3Client")
+    service.set(s3)
     sourceBucket.set("staging-bucket")
     sourceKey.set("artifact-1.0.0.jar")
     destinationBucket.set("release-bucket")
@@ -212,4 +195,4 @@ workerExecutor.noIsolation().submit(CopyObjectAction::class) {
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure
-- [aws-java-extensions](../aws-java-extensions) — `AwsClientInfo` base interface and Gradle credentials adapters
+- [aws-s3-kotlin-base](../aws-s3-kotlin-base) — Kotlin SDK variant

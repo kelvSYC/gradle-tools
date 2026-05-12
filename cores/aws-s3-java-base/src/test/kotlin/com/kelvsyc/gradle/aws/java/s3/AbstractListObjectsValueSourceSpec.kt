@@ -1,17 +1,12 @@
 package com.kelvsyc.gradle.aws.java.s3
 
-import com.kelvsyc.gradle.clients.ClientsBaseExtension
-import com.kelvsyc.gradle.internal.aws.java.s3.MockS3ClientInfoInternal
-import com.kelvsyc.gradle.plugins.S3JavaBasePlugin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.equals.shouldBeEqual
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.of
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request
@@ -28,12 +23,9 @@ class AbstractListObjectsValueSourceSpec : FunSpec() {
     init {
         test("get - aggregates contents across pages and forwards request fields") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(S3JavaBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockS3ClientInfo::class, MockS3ClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockS3ClientInfo>("mock") {}
-
-            val client = extension.getClient<S3Client, MockS3ClientInfo>("mock").get()
+            val client = mockk<S3Client>()
+            MockS3ClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent("s3", MockS3ClientBuildService::class)
             val requestSlot = slot<ListObjectsV2Request>()
 
             val page1 = ListObjectsV2Response.builder()
@@ -46,9 +38,8 @@ class AbstractListObjectsValueSourceSpec : FunSpec() {
             every { iterable.iterator() } answers { mutableListOf(page1, page2).iterator() }
             every { client.listObjectsV2Paginator(capture(requestSlot)) } returns iterable
 
-            val provider = project.providers.of(KeysValueSource::class) {
-                parameters.service.set(extension.service)
-                parameters.clientName.set("mock")
+            val provider = project.providers.ofKt(KeysValueSource::class) {
+                parameters.service.set(service)
                 parameters.bucket.set("my-bucket")
                 parameters.prefix.set("artifacts/")
             }
@@ -61,12 +52,9 @@ class AbstractListObjectsValueSourceSpec : FunSpec() {
 
         test("get - omits prefix when unset") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(S3JavaBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockS3ClientInfo::class, MockS3ClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockS3ClientInfo>("mock") {}
-
-            val client = extension.getClient<S3Client, MockS3ClientInfo>("mock").get()
+            val client = mockk<S3Client>()
+            MockS3ClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent("s3", MockS3ClientBuildService::class)
             val requestSlot = slot<ListObjectsV2Request>()
 
             val iterable = mockk<ListObjectsV2Iterable>()
@@ -75,9 +63,8 @@ class AbstractListObjectsValueSourceSpec : FunSpec() {
             }
             every { client.listObjectsV2Paginator(capture(requestSlot)) } returns iterable
 
-            val provider = project.providers.of(KeysValueSource::class) {
-                parameters.service.set(extension.service)
-                parameters.clientName.set("mock")
+            val provider = project.providers.ofKt(KeysValueSource::class) {
+                parameters.service.set(service)
                 parameters.bucket.set("my-bucket")
             }
             provider.get()

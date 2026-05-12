@@ -1,47 +1,33 @@
 package com.kelvsyc.gradle.aws.java.s3
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import software.amazon.awssdk.core.ResponseBytes
-import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.GetObjectRequest
 import software.amazon.awssdk.services.s3.model.GetObjectResponse
-import org.gradle.api.tasks.Internal
 
 /**
- * Base class for [ValueSource] implementations that provide a value by reading a value from AWS.
+ * Base class for [ValueSource] implementations that provide a value by reading an S3 object.
  *
  * Subclasses should implement the [doObtain] function, transforming a [ResponseBytes] object to an object of the
- * desired type.
- * This class should only be used on S3 objects for which the entire object can be kept in memory.
+ * desired type. This class should only be used on S3 objects for which the entire object can be kept in memory.
  */
 abstract class AbstractS3ValueSource<T : Any, P : AbstractS3ValueSource.Parameters> : ValueSource<T, P> {
     /**
-     * Base parameters interface for [AbstractS3ValueSource]. This contains the data needed to retrieve an object from
-     * AWS.
+     * Base parameters interface for [AbstractS3ValueSource].
      *
-     * Extend this interface if there is a need to supply additional parameters to the [AbstractS3ValueSource]
-     * subclass.
+     * Extend this interface if there is a need to supply additional parameters to the subclass.
      */
     interface Parameters : ValueSourceParameters {
-        @get:Internal
-        val service: Property<ClientsBaseService>
-        val clientName: Property<String>
+        /** The build service managing the S3 client. */
+        val service: Property<S3ClientBuildService>
 
+        /** S3 bucket name. */
         val bucket: Property<String>
+
+        /** S3 object key. */
         val key: Property<String>
-    }
-
-    private val client: Provider<S3Client> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
-    private val request = parameters.bucket.zip(parameters.key) { bucket, key ->
-        GetObjectRequest.builder().apply {
-            bucket(bucket)
-            key(key)
-        }.build()
     }
 
     /**
@@ -54,7 +40,11 @@ abstract class AbstractS3ValueSource<T : Any, P : AbstractS3ValueSource.Paramete
     abstract fun doObtain(content: ResponseBytes<GetObjectResponse>): T?
 
     override fun obtain(): T? {
-        val response = client.get().getObjectAsBytes(request.get())
+        val request = GetObjectRequest.builder()
+            .bucket(parameters.bucket.get())
+            .key(parameters.key.get())
+            .build()
+        val response = parameters.service.get().getClient().getObjectAsBytes(request)
         return doObtain(response)
     }
 }

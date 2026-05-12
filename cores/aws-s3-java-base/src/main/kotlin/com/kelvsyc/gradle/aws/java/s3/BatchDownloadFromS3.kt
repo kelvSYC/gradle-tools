@@ -1,26 +1,31 @@
 package com.kelvsyc.gradle.aws.java.s3
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
-import com.kelvsyc.gradle.plugins.ClientsBasePlugin
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.services.ServiceReference
-import org.gradle.api.tasks.Internal
 import org.gradle.work.DisableCachingByDefault
 import javax.inject.Inject
 
+/**
+ * An [AbstractBatchDownloadFromS3] task wired to an
+ * [S3TransferManager][software.amazon.awssdk.transfer.s3.S3TransferManager] supplied by an
+ * [S3TransferManagerBuildService].
+ */
 @DisableCachingByDefault(because = "Downloading from an external service is not cacheable")
 abstract class BatchDownloadFromS3 @Inject constructor(
     objects: ObjectFactory,
     providers: ProviderFactory
 ) : AbstractBatchDownloadFromS3(objects, providers) {
-    @get:ServiceReference(ClientsBasePlugin.SERVICE_NAME)
-    abstract val clientsService : Property<ClientsBaseService>
-
     /**
-     * Registered name of a [S3TransferManagerClientInfo]
+     * Build service managing the S3 transfer manager to use.
      */
-    @get:Internal
-    abstract val clientName: Property<String>
+    @get:ServiceReference
+    abstract val service: Property<S3TransferManagerBuildService>
+
+    init {
+        client.set(service.map { it.getClient() })
+        client.disallowChanges()
+        client.finalizeValueOnRead()
+    }
 }
