@@ -1,50 +1,41 @@
 package com.kelvsyc.gradle.aws.java.secretsmanager
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import software.amazon.awssdk.services.secretsmanager.model.BatchGetSecretValueRequest
 import kotlin.streams.asSequence
-import org.gradle.api.tasks.Internal
 
 /**
- * [ValueSource] implementation that retrieves a set of credentials, by their IDs, from Secrets Manager.
+ * [ValueSource] implementation that retrieves a set of secrets, by their IDs, from Secrets Manager.
  *
  * Only string secrets are supported.
  */
 abstract class SecretBatchValueSource : ValueSource<Map<String, String>, SecretBatchValueSource.Parameters> {
+    /**
+     * Parameters for [SecretBatchValueSource].
+     */
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing Secrets Manager clients. */
-        @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [SecretsManagerClientInfo]. */
-        val clientName: Property<String>
+        /** The build service managing the Secrets Manager client. */
+        val service: Property<SecretsManagerClientBuildService>
 
         /** Set of secret IDs (names or ARNs) to retrieve. */
         val secretIds: SetProperty<String>
     }
 
-    private val client: Provider<SecretsManagerClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun obtain(): Map<String, String>? {
-        val request = BatchGetSecretValueRequest.builder().apply {
-            secretIdList(parameters.secretIds.get())
-        }.build()
+        val request = BatchGetSecretValueRequest.builder()
+            .secretIdList(parameters.secretIds.get())
+            .build()
 
-        val response = client.get()
+        val response = parameters.service.get().getClient()
             .batchGetSecretValuePaginator(request)
             .stream()
             .asSequence()
 
         return response
             .flatMap { it.secretValues() }
-            .associate {
-                it.name() to it.secretString()
-            }
+            .associate { it.name() to it.secretString() }
     }
 }

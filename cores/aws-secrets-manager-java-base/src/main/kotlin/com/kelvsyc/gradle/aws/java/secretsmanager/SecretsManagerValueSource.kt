@@ -1,16 +1,12 @@
 package com.kelvsyc.gradle.aws.java.secretsmanager
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import com.kelvsyc.gradle.logging.GradleLoggerDelegate
 import com.kelvsyc.gradle.logging.warn
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest
 import software.amazon.awssdk.services.secretsmanager.model.SecretsManagerException
-import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation backed by retrieving a secret from Secrets Manager.
@@ -22,28 +18,24 @@ abstract class SecretsManagerValueSource : ValueSource<String, SecretsManagerVal
         val logger by GradleLoggerDelegate
     }
 
+    /**
+     * Parameters for [SecretsManagerValueSource].
+     */
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing Secrets Manager clients. */
-        @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [SecretsManagerClientInfo]. */
-        val clientName: Property<String>
+        /** The build service managing the Secrets Manager client. */
+        val service: Property<SecretsManagerClientBuildService>
 
         /** The name or ARN of the secret to retrieve. */
         val secretName: Property<String>
     }
 
-    private val client: Provider<SecretsManagerClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun obtain(): String? {
-        val request = GetSecretValueRequest.builder().apply {
-            secretId(parameters.secretName.get())
-        }.build()
+        val request = GetSecretValueRequest.builder()
+            .secretId(parameters.secretName.get())
+            .build()
 
         return try {
-            val response = client.get().getSecretValue(request)
-            response.secretString()
+            parameters.service.get().getClient().getSecretValue(request).secretString()
         } catch (e: SecretsManagerException) {
             logger.warn(e) { "Unable to retrieve secret '${parameters.secretName.get()}' from AWS" }
             null

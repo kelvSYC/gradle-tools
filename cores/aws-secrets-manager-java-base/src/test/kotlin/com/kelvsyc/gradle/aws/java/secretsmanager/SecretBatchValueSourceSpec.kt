@@ -1,8 +1,5 @@
 package com.kelvsyc.gradle.aws.java.secretsmanager
 
-import com.kelvsyc.gradle.clients.ClientsBaseExtension
-import com.kelvsyc.gradle.internal.aws.java.secretsmanager.MockSecretsManagerClientInfoInternal
-import com.kelvsyc.gradle.plugins.SecretsManagerJavaBasePlugin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContain as collectionShouldContain
 import io.kotest.matchers.maps.shouldContain
@@ -10,9 +7,7 @@ import io.kotest.matchers.maps.shouldHaveSize
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.of
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient
 import software.amazon.awssdk.services.secretsmanager.model.BatchGetSecretValueRequest
@@ -25,12 +20,13 @@ class SecretBatchValueSourceSpec : FunSpec() {
     init {
         test("obtain - returns map of secret names to values") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(SecretsManagerJavaBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockSecretsManagerClientInfo::class, MockSecretsManagerClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockSecretsManagerClientInfo>("mock") {}
+            val client = mockk<SecretsManagerClient>()
+            MockSecretsManagerClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent(
+                "sm",
+                MockSecretsManagerClientBuildService::class
+            )
             val requestSlot = slot<BatchGetSecretValueRequest>()
-            val client = extension.getClient<SecretsManagerClient, _>("mock").get()
 
             val entry1 = mockk<SecretValueEntry>()
             every { entry1.name() } returns "secret-one"
@@ -48,9 +44,8 @@ class SecretBatchValueSourceSpec : FunSpec() {
 
             every { client.batchGetSecretValuePaginator(capture(requestSlot)) } returns paginator
 
-            val provider = project.providers.of(SecretBatchValueSource::class) {
-                parameters.service.set(extension.service)
-                parameters.clientName.set("mock")
+            val provider = project.providers.ofKt(SecretBatchValueSource::class) {
+                parameters.service.set(service)
                 parameters.secretIds.set(setOf("secret-one", "secret-two"))
             }
             val result = provider.get()
@@ -63,4 +58,3 @@ class SecretBatchValueSourceSpec : FunSpec() {
         }
     }
 }
-
