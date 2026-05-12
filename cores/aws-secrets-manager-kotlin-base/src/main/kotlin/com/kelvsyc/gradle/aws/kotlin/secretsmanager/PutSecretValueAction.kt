@@ -1,14 +1,10 @@
 package com.kelvsyc.gradle.aws.kotlin.secretsmanager
 
-import aws.sdk.kotlin.services.secretsmanager.SecretsManagerClient
 import aws.sdk.kotlin.services.secretsmanager.model.PutSecretValueRequest
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
-import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation that stores a new secret value in an existing Secrets Manager secret.
@@ -16,13 +12,12 @@ import org.gradle.api.tasks.Internal
  * Only string secrets are supported.
  */
 abstract class PutSecretValueAction : WorkAction<PutSecretValueAction.Parameters> {
+    /**
+     * Parameters for [PutSecretValueAction].
+     */
     interface Parameters : WorkParameters {
-        /** The shared build service managing Secrets Manager clients. */
-        @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [SecretsManagerClientInfo]. */
-        val clientName: Property<String>
+        /** The build service managing the Secrets Manager client. */
+        val service: Property<SecretsManagerClientBuildService>
 
         /** The name or ARN of the secret to update. */
         val secretId: Property<String>
@@ -31,8 +26,6 @@ abstract class PutSecretValueAction : WorkAction<PutSecretValueAction.Parameters
         val secretString: Property<String>
     }
 
-    private val client: Provider<SecretsManagerClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
         val request = PutSecretValueRequest {
             secretId = parameters.secretId.get()
@@ -40,7 +33,7 @@ abstract class PutSecretValueAction : WorkAction<PutSecretValueAction.Parameters
         }
 
         runBlocking {
-            client.get().putSecretValue(request)
+            parameters.service.get().getClient().putSecretValue(request)
         }
     }
 }
