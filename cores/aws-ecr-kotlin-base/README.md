@@ -1,30 +1,26 @@
 # AWS ECR Kotlin Base
 
-A Gradle plugin providing managed AWS Elastic Container Registry (ECR) client integration using the AWS SDK for
-Kotlin.
+A Kotlin library providing managed AWS Elastic Container Registry (ECR) client integration using the AWS SDK
+for Kotlin, built on `clients-base`.
 
-## Applying the Plugin
+## Dependency
 
 ```kotlin
-plugins {
-    id("com.kelvsyc.gradle.aws-ecr-kotlin-base")
+dependencies {
+    implementation("com.kelvsyc.gradle:aws-ecr-kotlin-base")
 }
 ```
 
-## Client Type
+## Build Service
 
-One client info type is registered:
-
-| Client info type | Client type |
+| Class | Client type |
 |---|---|
-| `EcrClientInfo` | `EcrClient` (AWS SDK for Kotlin) |
-
-`EcrClientInfo` extends `AwsClientInfo` from `aws-kotlin-extensions`. Register a client:
+| `EcrClientBuildService` | `EcrClient` (AWS SDK for Kotlin) |
 
 ```kotlin
-serviceClients.service.get().registerIfAbsent<EcrClientInfo>("ecr") {
-    region.set("us-east-1")
-    credentials.set(providers.credentials(AwsCredentials::class.java, "ecr").asCredentialsProvider)
+val ecr = gradle.sharedServices.registerIfAbsent("ecr", EcrClientBuildService::class) {
+    parameters.region.set("us-east-1")
+    parameters.credentials.set(providers.credentials(AwsCredentials::class.java, "ecr").asCredentialsProvider)
 }
 ```
 
@@ -38,8 +34,7 @@ for `docker login`:
 ```kotlin
 val token: Provider<String> = providers.of(GetAuthorizationTokenValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("ecr")
+        service.set(ecr)
     }
 }
 ```
@@ -55,8 +50,7 @@ repository name with the repository URI as the value. Pagination is handled inte
 ```kotlin
 val repositories: Provider<Map<String, String>> = providers.of(DescribeRepositoriesValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("ecr")
+        service.set(ecr)
     }
 }
 ```
@@ -69,8 +63,7 @@ Deletes a set of images, by tag, from an ECR repository:
 
 ```kotlin
 workerExecutor.noIsolation().submit(BatchDeleteImageAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("ecr")
+    service.set(ecr)
     repositoryName.set("my-repo")
     imageTags.addAll("v1.0", "v1.1-rc1")
 }
@@ -78,8 +71,7 @@ workerExecutor.noIsolation().submit(BatchDeleteImageAction::class) {
 
 | Parameter | Type | Description |
 |---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of an `EcrClientInfo` |
+| `service` | `Property<EcrClientBuildService>` | Build service supplying the ECR client |
 | `repositoryName` | `Property<String>` | Repository to delete images from |
 | `imageTags` | `SetProperty<String>` | Set of image tags to delete |
 
@@ -88,5 +80,4 @@ To delete by digest instead of tag, use the SDK directly.
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure
-- [aws-kotlin-extensions](../aws-kotlin-extensions) — `AwsClientInfo` base interface and credential adapters
 - [aws-ecr-java-base](../aws-ecr-java-base) — Java SDK variant
