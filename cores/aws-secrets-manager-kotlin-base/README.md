@@ -1,29 +1,26 @@
 # AWS Secrets Manager Kotlin Base
 
-A Gradle plugin providing managed AWS Secrets Manager client integration using the AWS SDK for Kotlin.
+A Kotlin library providing managed AWS Secrets Manager client integration using the AWS SDK for Kotlin, built
+on `clients-base`.
 
-## Applying the Plugin
+## Dependency
 
 ```kotlin
-plugins {
-    id("com.kelvsyc.gradle.aws-secrets-manager-kotlin-base")
+dependencies {
+    implementation("com.kelvsyc.gradle:aws-secrets-manager-kotlin-base")
 }
 ```
 
-## Client Type
+## Build Service
 
-One client info type is registered:
-
-| Client info type | Client type |
+| Class | Client type |
 |---|---|
-| `SecretsManagerClientInfo` | `SecretsManagerClient` (AWS SDK for Kotlin) |
-
-`SecretsManagerClientInfo` extends `AwsClientInfo` from `aws-kotlin-extensions`. Register a client:
+| `SecretsManagerClientBuildService` | `SecretsManagerClient` (AWS SDK for Kotlin) |
 
 ```kotlin
-serviceClients.service.get().registerIfAbsent<SecretsManagerClientInfo>("secretsManager") {
-    region.set("us-east-1")
-    credentials.set(providers.credentials(AwsCredentials::class.java, "secretsManager").asCredentialsProvider)
+val sm = gradle.sharedServices.registerIfAbsent("sm", SecretsManagerClientBuildService::class) {
+    parameters.region.set("us-east-1")
+    parameters.credentials.set(providers.credentials(AwsCredentials::class.java, "sm").asCredentialsProvider)
 }
 ```
 
@@ -31,13 +28,12 @@ serviceClients.service.get().registerIfAbsent<SecretsManagerClientInfo>("secrets
 
 ### `SecretsManagerValueSource`
 
-Retrieves a single string secret from Secrets Manager using `runBlocking`:
+Retrieves a single string secret from Secrets Manager:
 
 ```kotlin
 val secret: Provider<String> = providers.of(SecretsManagerValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("secretsManager")
+        service.set(sm)
         secretName.set("my/secret/name")
     }
 }
@@ -52,15 +48,13 @@ Retrieves multiple secrets using the paginated batch API, returning a `Map<Strin
 ```kotlin
 val secrets: Provider<Map<String, String>> = providers.of(SecretBatchValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("secretsManager")
+        service.set(sm)
         secretIds.addAll("secret/one", "secret/two")
     }
 }
 ```
 
-Only string secrets are supported. Secrets with a `null` name or `null` `secretString` will cause a
-`NullPointerException` — ensure all requested secrets are string secrets.
+Only string secrets are supported.
 
 ## WorkActions
 
@@ -70,8 +64,7 @@ Stores a new value in an existing Secrets Manager secret:
 
 ```kotlin
 workerExecutor.noIsolation().submit(PutSecretValueAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("secretsManager")
+    service.set(sm)
     secretId.set("my/secret/name")
     secretString.set("{\"username\":\"admin\",\"password\":\"newPassword\"}")
 }
@@ -79,8 +72,7 @@ workerExecutor.noIsolation().submit(PutSecretValueAction::class) {
 
 | Parameter | Type | Description |
 |---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of a `SecretsManagerClientInfo` |
+| `service` | `Property<SecretsManagerClientBuildService>` | Build service supplying the Secrets Manager client |
 | `secretId` | `Property<String>` | Name or ARN of the secret to update |
 | `secretString` | `Property<String>` | New secret value (string) |
 
@@ -90,5 +82,4 @@ to create new secrets.
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure
-- [aws-kotlin-extensions](../aws-kotlin-extensions) — `AwsClientInfo` base interface and credential adapters
 - [aws-secrets-manager-java-base](../aws-secrets-manager-java-base) — Java SDK variant with async client and secret cache support
