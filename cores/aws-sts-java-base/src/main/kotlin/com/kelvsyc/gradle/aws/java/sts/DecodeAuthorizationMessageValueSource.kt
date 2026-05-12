@@ -1,6 +1,7 @@
 package com.kelvsyc.gradle.aws.java.sts
 
-import org.gradle.api.logging.Logging
+import com.kelvsyc.gradle.logging.GradleLoggerDelegate
+import com.kelvsyc.gradle.logging.warn
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
@@ -36,12 +37,12 @@ abstract class DecodeAuthorizationMessageValueSource :
         return try {
             client.decodeAuthorizationMessage(request).decodedMessage()
         } catch (e: StsException) {
-            logger.warn("Unable to decode STS authorization message", e)
+            logger.warn(e) { "Unable to decode STS authorization message" }
             null
         }
     }
 
-    private companion object {
-        private val logger = Logging.getLogger(DecodeAuthorizationMessageValueSource::class.java)
+    companion object {
+        val logger by GradleLoggerDelegate
     }
 }
