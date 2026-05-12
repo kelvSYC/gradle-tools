@@ -1,136 +1,97 @@
 # Clients Base
 
-A Gradle plugin providing a shared, polymorphic registry of named service clients for use across build scripts and
-custom Gradle plugins.
+A Gradle library providing base types for managing service client lifecycles as Gradle build services.
 
 ## Overview
 
-`clients-base` centralizes the lifecycle of SDK clients (Artifactory, AWS, GCP, etc.) in a Gradle build:
+`clients-base` provides `AbstractClientBuildService`, an abstract base class for build services that manage a single
+service client instance. Each subclass defines its client configuration as serializable `BuildServiceParameters`,
+ensuring full compatibility with Gradle's configuration cache.
 
-- **Named registry**: Register clients by name with a typed configuration object; retrieve them from anywhere in the build
-- **On-demand instantiation**: Clients are created only when first accessed and cached for the remainder of the build
-- **Polymorphic**: Multiple client types can coexist in the same registry, each with its own configuration interface
-- **Shared across the build**: Backed by a Gradle `BuildService`, so the same client instance is shared across all projects
+- **Per-client build service**: Each client registration is its own `BuildService`, allowing Gradle to serialize and
+  deserialize the service reference and its parameters natively
+- **Lazy instantiation**: Clients are created on first access and cached for the lifetime of the build service
+- **Configuration cache safe**: Client configuration lives in `BuildServiceParameters`, surviving configuration cache
+  hits. Consuming `ValueSource` and `WorkAction` parameters hold a `Property<BuildService>`, which Gradle serializes
+  natively
+- **Type-safe**: Each service returns its concrete client type directly
 
-This plugin is the foundation for other plugins in this suite (`artifactory-base`, AWS plugins, GCP plugins, etc.).
-End users typically do not apply or interact with this plugin directly.
+This library is the foundation for other plugins in this suite (`artifactory-base`, AWS plugins, GCP plugins, etc.).
 
-## Applying the Plugin
+## Defining a Client Service
 
-The plugin can be applied to a project, settings file, or init script.
-
-### Project or settings
-
-```kotlin
-plugins {
-    id("com.kelvsyc.gradle.clients-base")
-}
-```
-
-### Init script
+Subclass `AbstractClientBuildService` with the client type and a `BuildServiceParameters` interface containing the
+serializable configuration needed to create the client:
 
 ```kotlin
-initscript {
-    dependencies {
-        classpath("com.kelvsyc.gradle:clients-base:<version>")
+abstract class MyClientBuildService :
+    AbstractClientBuildService<MyClient, MyClientBuildService.Params>() {
+
+    interface Params : BuildServiceParameters {
+        val endpoint: Property<String>
     }
-}
-apply<com.kelvsyc.gradle.plugins.ClientsBasePlugin>()
-```
 
-When applied to a settings file, the `serviceClients` extension is also created on all projects in that build.
-When applied to an init script, the extension is created on all settings and projects. In both cases, clients
-registered before a project evaluates are visible to that project without it needing to apply the plugin itself.
-
-## Core Concepts
-
-### Client info types
-
-Each client type is represented by a pair of interfaces:
-
-- **`ServiceClientInfo<C>`** (`Named`) — the public configuration interface. Holds the data needed to create a client
-  of type `C`. This is what callers use to register and look up clients.
-- **`ServiceClientInfoInternal<C>`** — extends `ServiceClientInfo<C>` and adds `createClient(): C`. This is the
-  implementation type and is not part of the public API.
-
-Plugin authors define both interfaces, then register the binding so the service knows which implementation to
-instantiate:
-
-```kotlin
-// Public interface — callers configure this
-interface MyClientInfo : ServiceClientInfo<MyClient> {
-    val endpoint: Property<String>
-}
-
-// Internal implementation — creates the actual client
-abstract class MyClientInfoInternal : MyClientInfo, ServiceClientInfoInternal<MyClient> {
-    override fun createClient(): MyClient = MyClient(endpoint.get())
+    override fun createClient(): MyClient = MyClient(parameters.endpoint.get())
 }
 ```
 
-Register the binding once, typically in the plugin's `apply()` method:
+### Registering a Client
+
+Register the service using Gradle's `sharedServices`. Each named registration becomes an independent build service
+instance with its own configuration:
 
 ```kotlin
-serviceClients.service.get().registerBinding(MyClientInfo::class, MyClientInfoInternal::class)
-```
-
-### Registering a client
-
-Once a binding is registered, callers can register named client instances:
-
-```kotlin
-serviceClients.service.get().registerIfAbsent<MyClientInfo>("myClient") {
-    endpoint.set("https://example.com")
+val myClient = gradle.sharedServices.registerIfAbsent("my-client", MyClientBuildService::class) {
+    parameters.endpoint.set("https://example.com")
 }
 ```
 
-`registerIfAbsent` is idempotent: if a client with that name is already registered, the existing registration is
-returned and the configuration block is not applied.
-
-### Retrieving a client
-
-Retrieve a client as a lazy `Provider` via the `serviceClients` extension:
+Multiple clients of the same type can be registered with different names and configurations:
 
 ```kotlin
-val client: Provider<MyClient> = serviceClients.getClient<MyClient, MyClientInfo>("myClient")
+val prodClient = gradle.sharedServices.registerIfAbsent("my-client-prod", MyClientBuildService::class) {
+    parameters.endpoint.set("https://prod.example.com")
+}
+val devClient = gradle.sharedServices.registerIfAbsent("my-client-dev", MyClientBuildService::class) {
+    parameters.endpoint.set("https://dev.example.com")
+}
 ```
 
-The `Provider` has no value if no client with that name is registered, or if the registered client is of a
-different type. Client instances are created on first access and cached.
+### Using in ValueSources and WorkActions
 
-The provider is typically wired into a task at configuration time and resolved at execution time:
+Pass the service registration as a `Property<MyClientBuildService>` in the parameters interface. Gradle handles
+serialization of the `BuildService` reference natively:
 
 ```kotlin
-tasks.register("doSomething") {
-    val client: Provider<MyClient> = serviceClients.getClient<MyClient, MyClientInfo>("myClient")
+abstract class MyValueSource : ValueSource<String, MyValueSource.Parameters> {
+    interface Parameters : ValueSourceParameters {
+        val service: Property<MyClientBuildService>
+        val query: Property<String>
+    }
 
-    doLast {
-        val c = client.get()
-        // use c
+    override fun obtain(): String? {
+        val client = parameters.service.get().getClient()
+        return client.fetch(parameters.query.get())
     }
 }
 ```
 
-## Extension: `serviceClients`
-
-The `serviceClients` extension is a `ClientsBaseExtension` backed by a `ClientsBaseService` build service.
-
-### `ClientsBaseExtension`
+### `AbstractClientBuildService`
 
 | Member | Description |
 |---|---|
-| `service: Provider<ClientsBaseService>` | The underlying build service |
-| `getClient<C, T>(name)` | Returns a `Provider<C>` for the registered client named `name`, where `T : ServiceClientInfo<C>` |
+| `getClient()` | Returns the managed client instance, creating it lazily on first access |
+| `createClient()` | Abstract; subclasses implement to create the client from `parameters` |
+| `close()` | Closes the client if it implements `AutoCloseable` and was created |
 
-### `ClientsBaseService`
+## Deprecated: `ClientsBaseService`
 
-| Member | Description |
-|---|---|
-| `registrations` | The `ExtensiblePolymorphicDomainObjectContainer` holding all `ServiceClientInfo` registrations |
-| `registerBinding(infoType, implType)` | Registers an implementation type for a client info interface |
-| `registerIfAbsent(name, type) { }` | Registers a named client if not already registered |
-| `registrationsWithType(type)` | Returns a filtered view of registrations for a given info type |
-| `getClient(name, infoType, clientType)` | Returns the client instance (or `null`); creates and caches on first call |
+`ClientsBaseService` and its associated types (`ServiceClientInfo`, `ServiceClientInfoInternal`,
+`ClientsBaseExtension`, `ClientsBasePlugin`) are deprecated. They manage a monolithic polymorphic registry of
+clients in a single build service, which is incompatible with Gradle's configuration cache because the registry
+state is populated imperatively during the configuration phase and lost on cache hits.
+
+Existing consumers are being migrated to `AbstractClientBuildService` on a per-component basis.
 
 ## See Also
 
