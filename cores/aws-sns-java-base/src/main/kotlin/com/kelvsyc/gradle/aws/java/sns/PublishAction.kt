@@ -1,13 +1,9 @@
 package com.kelvsyc.gradle.aws.java.sns
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
-import software.amazon.awssdk.services.sns.SnsClient
 import software.amazon.awssdk.services.sns.model.PublishRequest
-import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation publishing a message to an SNS topic.
@@ -22,44 +18,24 @@ abstract class PublishAction : WorkAction<PublishAction.Parameters> {
      * Parameters for [PublishAction].
      */
     interface Parameters : WorkParameters {
-        /**
-         * The shared [ClientsBaseService] holding the registered SNS client.
-         */
-        @get:Internal
-        val service: Property<ClientsBaseService>
+        /** The build service managing the SNS client. */
+        val service: Property<SnsClientBuildService>
 
-        /**
-         * Registered name of an [SnsClientInfo].
-         */
-        val clientName: Property<String>
-
-        /**
-         * ARN of the target SNS topic.
-         */
+        /** ARN of the target SNS topic. */
         val topicArn: Property<String>
 
-        /**
-         * Optional subject for the message (used by SNS email transport).
-         */
+        /** Optional subject for the message (used by SNS email transport). */
         val subject: Property<String>
 
-        /**
-         * Body of the message.
-         */
+        /** Body of the message. */
         val message: Property<String>
 
-        /**
-         * Message group id; required for FIFO topics, must be unset for standard topics.
-         */
+        /** Message group id; required for FIFO topics, must be unset for standard topics. */
         val messageGroupId: Property<String>
 
-        /**
-         * Message deduplication id; used by FIFO topics without content-based deduplication.
-         */
+        /** Message deduplication id; used by FIFO topics without content-based deduplication. */
         val messageDeduplicationId: Property<String>
     }
-
-    private val client: Provider<SnsClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     override fun execute() {
         val request = PublishRequest.builder().apply {
@@ -72,6 +48,6 @@ abstract class PublishAction : WorkAction<PublishAction.Parameters> {
             parameters.messageDeduplicationId.orNull?.let { messageDeduplicationId(it) }
         }.build()
 
-        client.get().publish(request)
+        parameters.service.get().getClient().publish(request)
     }
 }

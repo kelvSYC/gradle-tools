@@ -33,7 +33,7 @@ the two AWS SDKs are distinct libraries:
 |-------------|------|--------|
 | S3 | `aws-s3-java-base` (plugin) | `aws-s3-kotlin-base` (plugin) |
 | SQS | `aws-sqs-java-base` (plugin) | `aws-sqs-kotlin-base` (plugin) |
-| SNS | `aws-sns-java-base` (plugin) | `aws-sns-kotlin-base` (plugin) |
+| SNS | `aws-sns-java-base` (library) | `aws-sns-kotlin-base` (plugin) |
 | SES | `aws-ses-java-base` (plugin) | `aws-ses-kotlin-base` (plugin) |
 | Secrets Manager | `aws-secrets-manager-java-base` (plugin) | `aws-secrets-manager-kotlin-base` (plugin) |
 | CodeArtifact | `aws-codeartifact-java-base` (plugin) | `aws-codeartifact-kotlin-base` (plugin) |

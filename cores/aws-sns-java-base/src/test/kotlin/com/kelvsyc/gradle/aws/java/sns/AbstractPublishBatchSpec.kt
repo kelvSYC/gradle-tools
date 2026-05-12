@@ -30,13 +30,13 @@ class AbstractPublishBatchSpec : FunSpec() {
             val task = project.tasks.register<AbstractPublishBatch>("publishBatch") {
                 client.set(sns)
                 topicArn.set("arn:aws:sns:us-east-1:123456789012:MyTopic")
-                registerEntry("e1") {
-                    message.set("msg 1")
-                    subject.set("sub 1")
-                    attributes.put("attr", attribute)
+                registerEntry("e1") { entry ->
+                    entry.message.set("msg 1")
+                    entry.subject.set("sub 1")
+                    entry.attributes.put("attr", attribute)
                 }
-                registerEntry("e2") {
-                    message.set("msg 2")
+                registerEntry("e2") { entry ->
+                    entry.message.set("msg 2")
                 }
             }
             task.get().run()
@@ -61,8 +61,8 @@ class AbstractPublishBatchSpec : FunSpec() {
                 client.set(sns)
                 topicArn.set("arn:aws:sns:us-east-1:123456789012:MyTopic")
                 repeat(25) { i ->
-                    registerEntry("e$i") {
-                        message.set("msg-$i")
+                    registerEntry("e$i") { entry ->
+                        entry.message.set("msg-$i")
                     }
                 }
             }
@@ -84,10 +84,10 @@ class AbstractPublishBatchSpec : FunSpec() {
             val task = project.tasks.register<AbstractPublishBatch>("publishBatch") {
                 client.set(sns)
                 topicArn.set("arn:aws:sns:us-east-1:123456789012:MyTopic.fifo")
-                registerEntry("e1") {
-                    message.set("msg 1")
-                    messageGroupId.set("group-a")
-                    messageDeduplicationId.set("dedup-1")
+                registerEntry("e1") { entry ->
+                    entry.message.set("msg 1")
+                    entry.messageGroupId.set("group-a")
+                    entry.messageDeduplicationId.set("dedup-1")
                 }
             }
             task.get().run()
@@ -114,7 +114,7 @@ class AbstractPublishBatchSpec : FunSpec() {
             val task = project.tasks.register<AbstractPublishBatch>("publishBatch") {
                 client.set(sns)
                 topicArn.set("arn:aws:sns:us-east-1:123456789012:MyTopic")
-                registerEntry("e1") { message.set("msg 1") }
+                registerEntry("e1") { entry -> entry.message.set("msg 1") }
             }
 
             val ex = runCatching { task.get().run() }.exceptionOrNull()!!
