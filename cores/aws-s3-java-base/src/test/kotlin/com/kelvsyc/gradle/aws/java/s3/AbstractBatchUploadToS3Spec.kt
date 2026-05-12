@@ -30,10 +30,10 @@ class AbstractBatchUploadToS3Spec : FunSpec() {
 
             val task = project.tasks.register<AbstractBatchUploadToS3>("myTask") {
                 client.set(transferManager)
-                registerArtifact("artifact1") {
-                    bucket.set("bucket")
-                    key.set("key")
-                    inputFile.fileValue(file)
+                registerArtifact("artifact1") { artifact ->
+                    artifact.bucket.set("bucket")
+                    artifact.key.set("key")
+                    artifact.inputFile.fileValue(file)
                 }
             }
             // Simulate running the task
@@ -57,10 +57,10 @@ class AbstractBatchUploadToS3Spec : FunSpec() {
 
             val task = project.tasks.register<AbstractBatchUploadToS3>("myTask") {
                 client.set(transferManager)
-                registerArtifact("artifact1") {
-                    bucket.set("bucket")
-                    key.set("key")
-                    inputFile.fileValue(file)
+                registerArtifact("artifact1") { artifact ->
+                    artifact.bucket.set("bucket")
+                    artifact.key.set("key")
+                    artifact.inputFile.fileValue(file)
                 }
             }
             // Simulate running the task

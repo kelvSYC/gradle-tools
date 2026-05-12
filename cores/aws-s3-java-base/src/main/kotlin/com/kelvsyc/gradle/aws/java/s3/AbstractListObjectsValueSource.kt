@@ -1,14 +1,10 @@
 package com.kelvsyc.gradle.aws.java.s3
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request
 import software.amazon.awssdk.services.s3.model.S3Object
-import org.gradle.api.tasks.Internal
 
 /**
  * Base class for [ValueSource] implementations that produce a value by listing objects in an S3 bucket.
@@ -24,29 +20,15 @@ abstract class AbstractListObjectsValueSource<T : Any, P : AbstractListObjectsVa
      * Extend this interface if there is a need to supply additional parameters to the subclass.
      */
     interface Parameters : ValueSourceParameters {
-        /**
-         * The shared [ClientsBaseService] holding the registered S3 client.
-         */
-        @get:Internal
-        val service: Property<ClientsBaseService>
+        /** The build service managing the S3 client. */
+        val service: Property<S3ClientBuildService>
 
-        /**
-         * Registered name of an [S3ClientInfo].
-         */
-        val clientName: Property<String>
-
-        /**
-         * S3 bucket name.
-         */
+        /** S3 bucket name. */
         val bucket: Property<String>
 
-        /**
-         * Optional key prefix used to filter the listing.
-         */
+        /** Optional key prefix used to filter the listing. */
         val prefix: Property<String>
     }
-
-    private val client: Provider<S3Client> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     /**
      * Transforms the listed objects into the target type.
@@ -62,7 +44,7 @@ abstract class AbstractListObjectsValueSource<T : Any, P : AbstractListObjectsVa
             parameters.prefix.orNull?.let { prefix(it) }
         }.build()
 
-        val objects = client.get().listObjectsV2Paginator(request).flatMap { it.contents() }
+        val objects = parameters.service.get().getClient().listObjectsV2Paginator(request).flatMap { it.contents() }
         return doObtain(objects)
     }
 }
