@@ -14,7 +14,7 @@ google-cloud-libraries-bom = "com.google.cloud:libraries-bom:26.80.0"
 jackson-bom = "com.fasterxml.jackson:jackson-bom:2.21.3"
 kotlin-gradle-plugins-bom = { module = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom", version.ref = "kotlin" }
 kotlin-tools-bom = { module = "com.kelvsyc.kotlin:bom", version.ref = "kotlin-tools" }
-kotlinx-coroutines-bom = "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.10.2"
+kotlinx-coroutines-bom = "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.11.0"
 kotest-bom = "io.kotest:kotest-bom:6.1.11"
 netty-bom = "io.netty:netty-bom:4.2.13.Final"
 okhttp-bom = "com.squareup.okhttp3:okhttp-bom:5.3.2"
