@@ -23,4 +23,6 @@ dependencies {
 
     api(libs.artifactory.client.api)
     implementation(libs.artifactory.client.impl)
+
+    testImplementation(libs.mockk)
 }
