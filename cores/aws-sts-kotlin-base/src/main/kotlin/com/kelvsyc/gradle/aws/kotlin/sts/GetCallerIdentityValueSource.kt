@@ -1,14 +1,10 @@
 package com.kelvsyc.gradle.aws.kotlin.sts
 
-import aws.sdk.kotlin.services.sts.StsClient
 import aws.sdk.kotlin.services.sts.model.GetCallerIdentityRequest
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that returns the calling identity for the configured client as a [Map] with the
@@ -16,23 +12,22 @@ import org.gradle.api.tasks.Internal
  *
  * Useful for diagnostics and for asserting that a build is running under the expected AWS principal.
  */
-abstract class GetCallerIdentityValueSource : ValueSource<Map<String, String>, GetCallerIdentityValueSource.Parameters> {
+abstract class GetCallerIdentityValueSource :
+    ValueSource<Map<String, String>, GetCallerIdentityValueSource.Parameters> {
+    /**
+     * Parameters for [GetCallerIdentityValueSource].
+     */
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing STS clients. */
-        @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of an [StsClientInfo]. */
-        val clientName: Property<String>
+        /** The build service managing the STS client. */
+        val service: Property<StsClientBuildService>
     }
-
-    private val client: Provider<StsClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     override fun obtain(): Map<String, String>? {
         val request = GetCallerIdentityRequest {}
+        val client = parameters.service.get().getClient()
 
         return runBlocking {
-            val response = client.get().getCallerIdentity(request)
+            val response = client.getCallerIdentity(request)
             buildMap {
                 response.account?.let { put("account", it) }
                 response.arn?.let { put("arn", it) }

@@ -1,38 +1,39 @@
 # AWS STS Kotlin Base
 
-A Gradle plugin providing managed AWS Security Token Service (STS) client integration using the AWS SDK for
-Kotlin.
+A Kotlin library providing a managed AWS Security Token Service (STS) client integration using the AWS SDK for
+Kotlin, built on `clients-base`.
 
-## Applying the Plugin
+## Dependency
 
 ```kotlin
-plugins {
-    id("com.kelvsyc.gradle.aws-sts-kotlin-base")
+dependencies {
+    implementation("com.kelvsyc.gradle:aws-sts-kotlin-base")
 }
 ```
 
-## Client Type
+## Build Service
 
-One client info type is registered:
-
-| Client info type | Client type |
+| Class | Client type |
 |---|---|
-| `StsClientInfo` | `StsClient` (AWS SDK for Kotlin) |
+| `StsClientBuildService` | `StsClient` (AWS SDK for Kotlin) |
 
-`StsClientInfo` extends `AwsClientInfo` from `aws-kotlin-extensions`. Register a client:
+Register the build service from a plugin or `build.gradle.kts`:
 
 ```kotlin
-serviceClients.service.get().registerIfAbsent<StsClientInfo>("sts") {
-    region.set("us-east-1")
-    credentials.set(providers.credentials(AwsCredentials::class.java, "sts").asCredentialsProvider)
+val sts = gradle.sharedServices.registerIfAbsent("sts", StsClientBuildService::class) {
+    parameters.region.set("us-east-1")
+    parameters.credentials.set(providers.credentials(AwsCredentials::class.java, "sts").asCredentialsProvider)
 }
 ```
+
+Both parameters are optional. Leave `region` unset to fall back to the AWS SDK for Kotlin default region provider
+chain, and leave `credentials` unset to fall back to the default credentials provider chain.
 
 > [!NOTE]
 > For assume-role use cases, configure the AWS SDK's `StsAssumeRoleCredentialsProvider` and use it as the
-> `credentials` of the *target* client (e.g. an `S3ClientInfo`) rather than going through this plugin. Exposing
-> raw temporary credentials via a `ValueSource` is not supported, since `ValueSource` results may be cached or
-> logged.
+> `credentials` of the *target* client (e.g. an `S3ClientBuildService`) rather than going through this plugin.
+> Exposing raw temporary credentials via a `ValueSource` is not supported, since `ValueSource` results may be
+> cached or logged.
 
 ## Value Sources
 
@@ -45,8 +46,7 @@ AWS principal:
 ```kotlin
 val identity: Provider<Map<String, String>> = providers.of(GetCallerIdentityValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("sts")
+        service.set(sts)
     }
 }
 val arn: Provider<String> = identity.map { it.getValue("arn") }
@@ -60,8 +60,7 @@ produced the failure. Useful for surfacing IAM denial details in build logs:
 ```kotlin
 val decoded: Provider<String> = providers.of(DecodeAuthorizationMessageValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("sts")
+        service.set(sts)
         encodedMessage.set("…encoded blob from a previous denial…")
     }
 }
@@ -73,5 +72,4 @@ or the caller lacks `sts:DecodeAuthorizationMessage`).
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure
-- [aws-kotlin-extensions](../aws-kotlin-extensions) — `AwsClientInfo` base interface and credential adapters
 - [aws-sts-java-base](../aws-sts-java-base) — Java SDK variant
