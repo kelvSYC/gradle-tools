@@ -22,4 +22,5 @@ dependencies {
     implementation(libs.gson)
 
     testImplementation(libs.mockk)
+    testImplementation(libs.sqlite.jdbc)
 }
