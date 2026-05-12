@@ -1,16 +1,12 @@
 package com.kelvsyc.gradle.aws.kotlin.codeartifact
 
-import aws.sdk.kotlin.services.codeartifact.CodeartifactClient
 import aws.sdk.kotlin.services.codeartifact.model.GetPackageVersionAssetRequest
 import aws.sdk.kotlin.services.codeartifact.model.GetPackageVersionAssetResponse
 import aws.sdk.kotlin.services.codeartifact.model.PackageFormat
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import org.gradle.api.tasks.Internal
 
 /**
  * Base class for [ValueSource] implementations that provide a value by reading an asset located in a CodeArtifact
@@ -19,21 +15,17 @@ import org.gradle.api.tasks.Internal
  * Subclasses should implement the [doObtain] function, transforming the supplied parameters to an object of the
  * desired type.
  */
-abstract class AbstractGetGenericAssetValueSource<T : Any, P : AbstractGetGenericAssetValueSource.Parameters> : ValueSource<T, P> {
+abstract class AbstractGetGenericAssetValueSource<T : Any, P : AbstractGetGenericAssetValueSource.Parameters> :
+    ValueSource<T, P> {
     /**
-     * Base parameters interface for [AbstractGetGenericAssetValueSource]. This contains the data needed to retrieve an
-     * asset from a CodeArtifact generic info.
+     * Base parameters interface for [AbstractGetGenericAssetValueSource].
      *
      * Extend this interface if there is a need to supply additional parameters to the
      * [AbstractGetGenericAssetValueSource] subclass.
      */
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing CodeArtifact clients. */
-        @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [CodeArtifactClientInfo]. */
-        val clientName: Property<String>
+        /** The build service managing the CodeArtifact client. */
+        val service: Property<CodeArtifactClientBuildService>
 
         /** The CodeArtifact domain name. */
         val domain: Property<String>
@@ -57,8 +49,6 @@ abstract class AbstractGetGenericAssetValueSource<T : Any, P : AbstractGetGeneri
         val asset: Property<String>
     }
 
-    private val client: Provider<CodeartifactClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     abstract fun doObtain(response: GetPackageVersionAssetResponse): T?
 
     override fun obtain(): T? {
@@ -75,7 +65,7 @@ abstract class AbstractGetGenericAssetValueSource<T : Any, P : AbstractGetGeneri
         }
 
         return runBlocking {
-            client.get().getPackageVersionAsset(request, ::doObtain)
+            parameters.service.get().getClient().getPackageVersionAsset(request, ::doObtain)
         }
     }
 }

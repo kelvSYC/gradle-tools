@@ -3,16 +3,13 @@ package com.kelvsyc.gradle.aws.kotlin.codeartifact
 import aws.sdk.kotlin.services.codeartifact.CodeartifactClient
 import aws.sdk.kotlin.services.codeartifact.model.GetPackageVersionAssetRequest
 import aws.sdk.kotlin.services.codeartifact.model.PackageFormat
-import com.kelvsyc.gradle.clients.ClientsBaseExtension
-import com.kelvsyc.gradle.internal.aws.kotlin.codeartifact.MockCodeArtifactClientInfoInternal
-import com.kelvsyc.gradle.plugins.CodeArtifactKotlinBasePlugin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
+import io.mockk.mockk
 import io.mockk.slot
-import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.newInstance
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 import java.nio.file.Files
 
@@ -20,20 +17,17 @@ class GetGenericPackageVersionAssetActionSpec : FunSpec() {
     init {
         test("execute - passes correct request parameters to CodeArtifact") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(CodeArtifactKotlinBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockCodeArtifactClientInfo::class, MockCodeArtifactClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockCodeArtifactClientInfo>("mock") {}
-
-            val client = extension.getClient<CodeartifactClient, MockCodeArtifactClientInfo>("mock").get()!!
+            val client = mockk<CodeartifactClient>()
+            MockCodeArtifactClientBuildService.mockClient = client
+            val service =
+                project.gradle.sharedServices.registerIfAbsent("ca", MockCodeArtifactClientBuildService::class)
             val requestSlot = slot<GetPackageVersionAssetRequest>()
             coEvery { client.getPackageVersionAsset<Unit>(capture(requestSlot), any()) } returns Unit
 
             val outputFile = Files.createTempFile("asset-test", ".zip")
 
             val params = project.objects.newInstance<GetGenericPackageVersionAssetAction.Parameters>()
-            params.service.set(extension.service.get())
-            params.clientName.set("mock")
+            params.service.set(service)
             params.domain.set("my-domain")
             params.domainOwner.set("123456789012")
             params.repository.set("my-repo")

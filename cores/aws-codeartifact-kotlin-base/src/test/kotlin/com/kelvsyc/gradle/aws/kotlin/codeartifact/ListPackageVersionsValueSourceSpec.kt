@@ -6,28 +6,22 @@ import aws.sdk.kotlin.services.codeartifact.model.ListPackageVersionsResponse
 import aws.sdk.kotlin.services.codeartifact.model.PackageFormat
 import aws.sdk.kotlin.services.codeartifact.model.PackageVersionStatus
 import aws.sdk.kotlin.services.codeartifact.model.PackageVersionSummary
-import com.kelvsyc.gradle.clients.ClientsBaseExtension
-import com.kelvsyc.gradle.internal.aws.kotlin.codeartifact.MockCodeArtifactClientInfoInternal
-import com.kelvsyc.gradle.plugins.CodeArtifactKotlinBasePlugin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
+import io.mockk.mockk
 import io.mockk.slot
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.of
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 
 class ListPackageVersionsValueSourceSpec : FunSpec() {
     init {
         test("obtain - returns list of version strings") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(CodeArtifactKotlinBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockCodeArtifactClientInfo::class, MockCodeArtifactClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockCodeArtifactClientInfo>("mock") {}
-
-            val client = extension.getClient<CodeartifactClient, MockCodeArtifactClientInfo>("mock").get()!!
+            val client = mockk<CodeartifactClient>()
+            MockCodeArtifactClientBuildService.mockClient = client
+            val service =
+                project.gradle.sharedServices.registerIfAbsent("ca", MockCodeArtifactClientBuildService::class)
             val slot = slot<ListPackageVersionsRequest>()
             coEvery { client.listPackageVersions(capture(slot)) } returns ListPackageVersionsResponse {
                 versions = listOf(
@@ -36,9 +30,8 @@ class ListPackageVersionsValueSourceSpec : FunSpec() {
                 )
             }
 
-            val provider = project.providers.of(ListPackageVersionsValueSource::class) {
-                parameters.service.set(extension.service)
-                parameters.clientName.set("mock")
+            val provider = project.providers.ofKt(ListPackageVersionsValueSource::class) {
+                parameters.service.set(service)
                 parameters.domain.set("my-domain")
                 parameters.domainOwner.set("123456789012")
                 parameters.repository.set("my-repo")

@@ -1,15 +1,11 @@
 package com.kelvsyc.gradle.aws.kotlin.codeartifact
 
-import aws.sdk.kotlin.services.codeartifact.CodeartifactClient
 import aws.sdk.kotlin.services.codeartifact.model.ListPackageVersionsRequest
 import aws.sdk.kotlin.services.codeartifact.model.PackageFormat
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation providing a list of package version strings from a CodeArtifact repository.
@@ -22,12 +18,8 @@ abstract class ListPackageVersionsValueSource :
      * Parameters for [ListPackageVersionsValueSource].
      */
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing CodeArtifact clients. */
-        @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [CodeArtifactClientInfo]. */
-        val clientName: Property<String>
+        /** The build service managing the CodeArtifact client. */
+        val service: Property<CodeArtifactClientBuildService>
 
         /** The CodeArtifact domain name. */
         val domain: Property<String>
@@ -48,8 +40,6 @@ abstract class ListPackageVersionsValueSource :
         val packageValue: Property<String>
     }
 
-    private val client: Provider<CodeartifactClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun obtain(): List<String>? {
         val request = ListPackageVersionsRequest {
             domain = parameters.domain.get()
@@ -59,13 +49,14 @@ abstract class ListPackageVersionsValueSource :
             namespace = parameters.namespace.get()
             `package` = parameters.packageValue.get()
         }
+        val client = parameters.service.get().getClient()
 
         return runBlocking {
             val versions = mutableListOf<String>()
             var nextToken: String? = null
             do {
                 val pageRequest = request.copy { this.nextToken = nextToken }
-                val response = client.get().listPackageVersions(pageRequest)
+                val response = client.listPackageVersions(pageRequest)
                 response.versions?.forEach { summary -> summary.version?.let { versions.add(it) } }
                 nextToken = response.nextToken
             } while (nextToken != null)
