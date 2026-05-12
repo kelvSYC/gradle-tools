@@ -1,16 +1,12 @@
 package com.kelvsyc.gradle.aws.java.sts
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import com.kelvsyc.gradle.logging.GradleLoggerDelegate
 import com.kelvsyc.gradle.logging.warn
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import software.amazon.awssdk.services.sts.StsClient
 import software.amazon.awssdk.services.sts.model.DecodeAuthorizationMessageRequest
 import software.amazon.awssdk.services.sts.model.StsException
-import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that decodes an STS-encoded authorization failure message into a JSON document
@@ -19,35 +15,34 @@ import org.gradle.api.tasks.Internal
  * Useful for surfacing IAM denial details in build logs. Returns `null` and logs a warning when the call throws
  * [StsException] (typically because the message has expired or the caller lacks `sts:DecodeAuthorizationMessage`).
  */
-abstract class DecodeAuthorizationMessageValueSource : ValueSource<String, DecodeAuthorizationMessageValueSource.Parameters> {
-    companion object {
-        val logger by GradleLoggerDelegate
-    }
-
+abstract class DecodeAuthorizationMessageValueSource :
+    ValueSource<String, DecodeAuthorizationMessageValueSource.Parameters> {
+    /**
+     * Parameters for [DecodeAuthorizationMessageValueSource].
+     */
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing STS clients. */
-        @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of an [StsClientInfo]. */
-        val clientName: Property<String>
+        /** The build service managing the STS client. */
+        val service: Property<StsClientBuildService>
 
         /** The encoded authorization message to decode. */
         val encodedMessage: Property<String>
     }
 
-    private val client: Provider<StsClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun obtain(): String? {
-        val request = DecodeAuthorizationMessageRequest.builder().apply {
-            encodedMessage(parameters.encodedMessage.get())
-        }.build()
+        val request = DecodeAuthorizationMessageRequest.builder()
+            .encodedMessage(parameters.encodedMessage.get())
+            .build()
+        val client = parameters.service.get().getClient()
 
         return try {
-            client.get().decodeAuthorizationMessage(request).decodedMessage()
+            client.decodeAuthorizationMessage(request).decodedMessage()
         } catch (e: StsException) {
             logger.warn(e) { "Unable to decode STS authorization message" }
             null
         }
+    }
+
+    companion object {
+        val logger by GradleLoggerDelegate
     }
 }

@@ -42,7 +42,7 @@ the two AWS SDKs are distinct libraries:
 | KMS | `aws-kms-java-base` (plugin) | `aws-kms-kotlin-base` (plugin) |
 | Lambda | `aws-lambda-java-base` (plugin) | `aws-lambda-kotlin-base` (plugin) |
 | SSM Parameter Store | `aws-ssm-java-base` (plugin) | `aws-ssm-kotlin-base` (plugin) |
-| STS | `aws-sts-java-base` (plugin) | `aws-sts-kotlin-base` (library) |
+| STS | `aws-sts-java-base` (library) | `aws-sts-kotlin-base` (library) |
 
 **Other** bases have a single plugin each:
 
