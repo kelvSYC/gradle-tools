@@ -1,9 +1,7 @@
 package com.kelvsyc.gradle.aws.kotlin.ssm
 
-import aws.sdk.kotlin.services.ssm.SsmClient
 import aws.sdk.kotlin.services.ssm.model.GetParametersByPathRequest
 import aws.sdk.kotlin.services.ssm.paginators.getParametersByPathPaginated
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emptyFlow
@@ -11,10 +9,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.fold
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that retrieves all SSM parameters under a given hierarchy [Parameters.path],
@@ -23,14 +19,14 @@ import org.gradle.api.tasks.Internal
  * Pagination is handled internally via the SDK Kotlin paginated flow. For `SecureString` parameters, set
  * [Parameters.withDecryption] to `true` to decrypt the values.
  */
-abstract class GetParametersByPathValueSource : ValueSource<Map<String, String>, GetParametersByPathValueSource.Parameters> {
+abstract class GetParametersByPathValueSource :
+    ValueSource<Map<String, String>, GetParametersByPathValueSource.Parameters> {
+    /**
+     * Parameters for [GetParametersByPathValueSource].
+     */
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing SSM clients. */
-        @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of an [SsmClientInfo]. */
-        val clientName: Property<String>
+        /** The build service managing the SSM client. */
+        val service: Property<SsmClientBuildService>
 
         /** The hierarchy path under which parameters are retrieved (e.g. `/my/app/`). */
         val path: Property<String>
@@ -42,8 +38,6 @@ abstract class GetParametersByPathValueSource : ValueSource<Map<String, String>,
         val withDecryption: Property<Boolean>
     }
 
-    private val client: Provider<SsmClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun obtain(): Map<String, String>? {
         val request = GetParametersByPathRequest {
@@ -51,9 +45,10 @@ abstract class GetParametersByPathValueSource : ValueSource<Map<String, String>,
             recursive = parameters.recursive.orNull
             withDecryption = parameters.withDecryption.orNull
         }
+        val client = parameters.service.get().getClient()
 
         return runBlocking {
-            client.get().getParametersByPathPaginated(request)
+            client.getParametersByPathPaginated(request)
                 .flatMapLatest { it.parameters?.asFlow() ?: emptyFlow() }
                 .fold(mutableMapOf()) { acc, value ->
                     acc.also {
