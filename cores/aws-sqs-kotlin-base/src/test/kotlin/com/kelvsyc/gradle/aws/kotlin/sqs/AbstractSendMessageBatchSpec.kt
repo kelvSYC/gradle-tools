@@ -30,12 +30,12 @@ class AbstractSendMessageBatchSpec : FunSpec() {
             val task = project.tasks.register<AbstractSendMessageBatch>("sendBatch") {
                 client.set(sqs)
                 queueUrl.set("https://sqs.us-east-1.amazonaws.com/123456789012/MyQueue")
-                registerEntry("e1") {
-                    messageBody.set("body 1")
-                    attributes.put("attr", attribute)
+                registerEntry("e1") { entry ->
+                    entry.messageBody.set("body 1")
+                    entry.attributes.put("attr", attribute)
                 }
-                registerEntry("e2") {
-                    messageBody.set("body 2")
+                registerEntry("e2") { entry ->
+                    entry.messageBody.set("body 2")
                 }
             }
             task.get().run()
@@ -58,8 +58,8 @@ class AbstractSendMessageBatchSpec : FunSpec() {
                 client.set(sqs)
                 queueUrl.set("https://sqs.us-east-1.amazonaws.com/123456789012/MyQueue")
                 repeat(25) { i ->
-                    registerEntry("e$i") {
-                        messageBody.set("body-$i")
+                    registerEntry("e$i") { entry ->
+                        entry.messageBody.set("body-$i")
                     }
                 }
             }
@@ -80,10 +80,10 @@ class AbstractSendMessageBatchSpec : FunSpec() {
             val task = project.tasks.register<AbstractSendMessageBatch>("sendBatch") {
                 client.set(sqs)
                 queueUrl.set("https://sqs.us-east-1.amazonaws.com/123456789012/MyQueue.fifo")
-                registerEntry("e1") {
-                    messageBody.set("body 1")
-                    messageGroupId.set("group-a")
-                    messageDeduplicationId.set("dedup-1")
+                registerEntry("e1") { entry ->
+                    entry.messageBody.set("body 1")
+                    entry.messageGroupId.set("group-a")
+                    entry.messageDeduplicationId.set("dedup-1")
                 }
             }
             task.get().run()
@@ -110,7 +110,7 @@ class AbstractSendMessageBatchSpec : FunSpec() {
             val task = project.tasks.register<AbstractSendMessageBatch>("sendBatch") {
                 client.set(sqs)
                 queueUrl.set("https://sqs.us-east-1.amazonaws.com/123456789012/MyQueue")
-                registerEntry("e1") { messageBody.set("body 1") }
+                registerEntry("e1") { entry -> entry.messageBody.set("body 1") }
             }
 
             val ex = runCatching { task.get().run() }.exceptionOrNull()!!

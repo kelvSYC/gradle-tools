@@ -4,37 +4,29 @@ import aws.sdk.kotlin.services.sqs.SqsClient
 import aws.sdk.kotlin.services.sqs.model.MessageAttributeValue
 import aws.sdk.kotlin.services.sqs.model.SendMessageRequest
 import aws.sdk.kotlin.services.sqs.model.SendMessageResponse
-import com.kelvsyc.gradle.clients.ClientsBaseExtension
-import com.kelvsyc.gradle.internal.aws.kotlin.sqs.MockSqsClientInfoInternal
-import com.kelvsyc.gradle.plugins.SqsKotlinBasePlugin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.slot
-import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.newInstance
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 
 class SendMessageActionSpec : FunSpec() {
     init {
         test("execute - passes correct request parameters to SQS") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(SqsKotlinBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockSqsClientInfo::class, MockSqsClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockSqsClientInfo>("mock") {}
-
-            val client = extension.getClient<SqsClient, MockSqsClientInfo>("mock").get()!!
+            val client = mockk<SqsClient>()
+            MockSqsClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent("sqs", MockSqsClientBuildService::class)
             val requestSlot = slot<SendMessageRequest>()
             coEvery { client.sendMessage(capture(requestSlot)) } returns mockk<SendMessageResponse>()
 
             val attribute = MessageAttributeValue { dataType = "String"; stringValue = "value" }
 
             val params = project.objects.newInstance<SendMessageAction.Parameters>()
-            params.service.set(extension.service.get())
-            params.clientName.set("mock")
+            params.service.set(service)
             params.queueUrl.set("https://sqs.us-east-1.amazonaws.com/123456789012/test-queue")
             params.messageBody.set("Hello, SQS!")
             params.attributes.put("key", attribute)
@@ -52,18 +44,14 @@ class SendMessageActionSpec : FunSpec() {
 
         test("execute - forwards FIFO message group id and deduplication id") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(SqsKotlinBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockSqsClientInfo::class, MockSqsClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockSqsClientInfo>("mock") {}
-
-            val client = extension.getClient<SqsClient, MockSqsClientInfo>("mock").get()!!
+            val client = mockk<SqsClient>()
+            MockSqsClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent("sqs", MockSqsClientBuildService::class)
             val requestSlot = slot<SendMessageRequest>()
             coEvery { client.sendMessage(capture(requestSlot)) } returns mockk<SendMessageResponse>()
 
             val params = project.objects.newInstance<SendMessageAction.Parameters>()
-            params.service.set(extension.service.get())
-            params.clientName.set("mock")
+            params.service.set(service)
             params.queueUrl.set("https://sqs.us-east-1.amazonaws.com/123456789012/test-queue.fifo")
             params.messageBody.set("Hello, FIFO!")
             params.messageGroupId.set("group-1")
@@ -81,18 +69,14 @@ class SendMessageActionSpec : FunSpec() {
 
         test("execute - sends message with empty attributes") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(SqsKotlinBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockSqsClientInfo::class, MockSqsClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockSqsClientInfo>("mock") {}
-
-            val client = extension.getClient<SqsClient, MockSqsClientInfo>("mock").get()!!
+            val client = mockk<SqsClient>()
+            MockSqsClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent("sqs", MockSqsClientBuildService::class)
             val requestSlot = slot<SendMessageRequest>()
             coEvery { client.sendMessage(capture(requestSlot)) } returns mockk<SendMessageResponse>()
 
             val params = project.objects.newInstance<SendMessageAction.Parameters>()
-            params.service.set(extension.service.get())
-            params.clientName.set("mock")
+            params.service.set(service)
             params.queueUrl.set("https://sqs.us-east-1.amazonaws.com/123456789012/test-queue")
             params.messageBody.set("Simple message")
 
@@ -108,4 +92,3 @@ class SendMessageActionSpec : FunSpec() {
         }
     }
 }
-

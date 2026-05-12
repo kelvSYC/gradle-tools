@@ -1,16 +1,13 @@
 package com.kelvsyc.gradle.aws.kotlin.sqs
 
-import aws.sdk.kotlin.services.sqs.SqsClient
 import aws.sdk.kotlin.services.sqs.model.MessageAttributeValue
 import aws.sdk.kotlin.services.sqs.model.SendMessageRequest
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
-import org.gradle.api.tasks.Internal
 
 /**
  * A [WorkAction] that sends a single message to an SQS queue.
@@ -24,15 +21,10 @@ abstract class SendMessageAction : WorkAction<SendMessageAction.Parameters> {
      */
     interface Parameters : WorkParameters {
         /**
-         * The shared [ClientsBaseService] holding the registered SQS client.
+         * The shared [SqsClientBuildService] managing the SQS client.
          */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /**
-         * Registered name of an [SqsClientInfo].
-         */
-        val clientName: Property<String>
+        val service: Property<SqsClientBuildService>
 
         /**
          * URL of the target SQS queue.
@@ -60,8 +52,6 @@ abstract class SendMessageAction : WorkAction<SendMessageAction.Parameters> {
         val messageDeduplicationId: Property<String>
     }
 
-    private val client: Provider<SqsClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
         val request = SendMessageRequest {
             queueUrl = parameters.queueUrl.get()
@@ -72,7 +62,7 @@ abstract class SendMessageAction : WorkAction<SendMessageAction.Parameters> {
         }
 
         runBlocking {
-            client.get().sendMessage(request)
+            parameters.service.get().getClient().sendMessage(request)
         }
     }
 }
