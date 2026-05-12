@@ -15,10 +15,10 @@ class ArtifactRegistrationSpec : FunSpec() {
                 val task =
                     project.tasks.register<BatchDownloadFromAzureBlobStorage>("download").get()
 
-                task.registerArtifact("foo") {
-                    containerName.set("my-container")
-                    blobName.set("path/to/blob")
-                    outputFile.set(project.layout.buildDirectory.file("out/foo"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.containerName.set("my-container")
+                    artifact.blobName.set("path/to/blob")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("out/foo"))
                 }
 
                 val artifacts = task.artifacts.get()
@@ -32,15 +32,15 @@ class ArtifactRegistrationSpec : FunSpec() {
                 val task =
                     project.tasks.register<BatchDownloadFromAzureBlobStorage>("download").get()
 
-                task.registerArtifact("foo") {
-                    containerName.set("container-a")
-                    blobName.set("blob-a")
-                    outputFile.set(project.layout.buildDirectory.file("out/foo"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.containerName.set("container-a")
+                    artifact.blobName.set("blob-a")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("out/foo"))
                 }
-                task.registerArtifact("bar") {
-                    containerName.set("container-b")
-                    blobName.set("blob-b")
-                    outputFile.set(project.layout.buildDirectory.file("out/bar"))
+                task.registerArtifact("bar") { artifact ->
+                    artifact.containerName.set("container-b")
+                    artifact.blobName.set("blob-b")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("out/bar"))
                 }
 
                 val artifacts = task.artifacts.get()
@@ -55,15 +55,15 @@ class ArtifactRegistrationSpec : FunSpec() {
                 val task =
                     project.tasks.register<BatchDownloadFromAzureBlobStorage>("download").get()
 
-                task.registerArtifact("foo") {
-                    containerName.set("original-container")
-                    blobName.set("original-blob")
-                    outputFile.set(project.layout.buildDirectory.file("out/foo"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.containerName.set("original-container")
+                    artifact.blobName.set("original-blob")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("out/foo"))
                 }
-                task.registerArtifact("foo") {
-                    containerName.set("new-container")
-                    blobName.set("new-blob")
-                    outputFile.set(project.layout.buildDirectory.file("out/foo2"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.containerName.set("new-container")
+                    artifact.blobName.set("new-blob")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("out/foo2"))
                 }
 
                 val artifacts = task.artifacts.get()
@@ -84,10 +84,10 @@ class ArtifactRegistrationSpec : FunSpec() {
                     project.tasks.register<BatchDownloadFromAzureBlobStorage>("download").get()
                 val expectedFile = project.layout.buildDirectory.file("out/foo").get()
 
-                task.registerArtifact("foo") {
-                    containerName.set("my-container")
-                    blobName.set("path/to/blob")
-                    outputFile.set(expectedFile)
+                task.registerArtifact("foo") { artifact ->
+                    artifact.containerName.set("my-container")
+                    artifact.blobName.set("path/to/blob")
+                    artifact.outputFile.set(expectedFile)
                 }
 
                 val outputFiles = task.outputFiles.get()
@@ -102,10 +102,10 @@ class ArtifactRegistrationSpec : FunSpec() {
                 val task =
                     project.tasks.register<BatchUploadToAzureBlobStorage>("upload").get()
 
-                task.registerArtifact("foo") {
-                    containerName.set("my-container")
-                    blobName.set("path/to/blob")
-                    inputFile.set(project.layout.projectDirectory.file("src/foo.txt"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.containerName.set("my-container")
+                    artifact.blobName.set("path/to/blob")
+                    artifact.inputFile.set(project.layout.projectDirectory.file("src/foo.txt"))
                 }
 
                 val artifacts = task.artifacts.get()
@@ -119,15 +119,15 @@ class ArtifactRegistrationSpec : FunSpec() {
                 val task =
                     project.tasks.register<BatchUploadToAzureBlobStorage>("upload").get()
 
-                task.registerArtifact("foo") {
-                    containerName.set("container-a")
-                    blobName.set("blob-a")
-                    inputFile.set(project.layout.projectDirectory.file("src/foo.txt"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.containerName.set("container-a")
+                    artifact.blobName.set("blob-a")
+                    artifact.inputFile.set(project.layout.projectDirectory.file("src/foo.txt"))
                 }
-                task.registerArtifact("bar") {
-                    containerName.set("container-b")
-                    blobName.set("blob-b")
-                    inputFile.set(project.layout.projectDirectory.file("src/bar.txt"))
+                task.registerArtifact("bar") { artifact ->
+                    artifact.containerName.set("container-b")
+                    artifact.blobName.set("blob-b")
+                    artifact.inputFile.set(project.layout.projectDirectory.file("src/bar.txt"))
                 }
 
                 val artifacts = task.artifacts.get()
@@ -140,15 +140,15 @@ class ArtifactRegistrationSpec : FunSpec() {
                 val task =
                     project.tasks.register<BatchUploadToAzureBlobStorage>("upload").get()
 
-                task.registerArtifact("foo") {
-                    containerName.set("original-container")
-                    blobName.set("original-blob")
-                    inputFile.set(project.layout.projectDirectory.file("src/foo.txt"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.containerName.set("original-container")
+                    artifact.blobName.set("original-blob")
+                    artifact.inputFile.set(project.layout.projectDirectory.file("src/foo.txt"))
                 }
-                task.registerArtifact("foo") {
-                    containerName.set("new-container")
-                    blobName.set("new-blob")
-                    inputFile.set(project.layout.projectDirectory.file("src/foo2.txt"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.containerName.set("new-container")
+                    artifact.blobName.set("new-blob")
+                    artifact.inputFile.set(project.layout.projectDirectory.file("src/foo2.txt"))
                 }
 
                 val artifacts = task.artifacts.get()
@@ -168,10 +168,10 @@ class ArtifactRegistrationSpec : FunSpec() {
                 val task =
                     project.tasks.register<BatchUploadToAzureBlobStorage>("upload").get()
 
-                task.registerArtifact("foo") {
-                    containerName.set("my-container")
-                    blobName.set("blob")
-                    inputFile.set(project.layout.projectDirectory.file("src/foo.txt"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.containerName.set("my-container")
+                    artifact.blobName.set("blob")
+                    artifact.inputFile.set(project.layout.projectDirectory.file("src/foo.txt"))
                 }
 
                 task.artifacts.get() shouldNotContainKey "bar"
