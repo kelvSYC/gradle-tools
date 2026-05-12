@@ -1,16 +1,12 @@
 package com.kelvsyc.gradle.aws.java.ssm
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import com.kelvsyc.gradle.logging.GradleLoggerDelegate
 import com.kelvsyc.gradle.logging.warn
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import software.amazon.awssdk.services.ssm.SsmClient
 import software.amazon.awssdk.services.ssm.model.GetParameterRequest
 import software.amazon.awssdk.services.ssm.model.SsmException
-import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation backed by retrieving a single parameter from SSM Parameter Store.
@@ -23,13 +19,12 @@ abstract class GetParameterValueSource : ValueSource<String, GetParameterValueSo
         val logger by GradleLoggerDelegate
     }
 
+    /**
+     * Parameters for [GetParameterValueSource].
+     */
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing SSM clients. */
-        @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of an [SsmClientInfo]. */
-        val clientName: Property<String>
+        /** The build service managing the SSM client. */
+        val service: Property<SsmClientBuildService>
 
         /** The name (or ARN) of the parameter to retrieve. */
         val parameterName: Property<String>
@@ -37,8 +32,6 @@ abstract class GetParameterValueSource : ValueSource<String, GetParameterValueSo
         /** Whether to decrypt `SecureString` parameter values. Defaults to `false`. */
         val withDecryption: Property<Boolean>
     }
-
-    private val client: Provider<SsmClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     override fun obtain(): String? {
         val request = GetParameterRequest.builder().apply {
@@ -49,8 +42,7 @@ abstract class GetParameterValueSource : ValueSource<String, GetParameterValueSo
         }.build()
 
         return try {
-            val response = client.get().getParameter(request)
-            response.parameter()?.value()
+            parameters.service.get().getClient().getParameter(request).parameter()?.value()
         } catch (e: SsmException) {
             logger.warn(e) { "Unable to retrieve parameter '${parameters.parameterName.get()}' from AWS" }
             null
