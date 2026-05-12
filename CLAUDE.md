@@ -7,6 +7,7 @@ Architectural reference for this Gradle composite build. See `AGENTS.md` for bui
 - **Tests and detekt must pass** before any task is complete: `./gradlew :test` and `./gradlew :detekt`.
 - **KDocs are required** on every `DefaultTask` subclass, `WorkAction` implementation, and `ValueSource` implementation, including their individual properties and parameters.
 - **README must stay current** when adding or modifying public-facing components (tasks, `WorkAction`/`ValueSource` implementations, extensions, plugin behaviour).
+- **Root README must stay current** when adding a new component — add it to the appropriate table in `README.md` (cores, bases, or extensions).
 
 ## Build Commands
 

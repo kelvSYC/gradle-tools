@@ -6,6 +6,7 @@ Critical gotchas and quick reference for automated agents (OpenCode, etc.) worki
 
 - **Tests and detekt must pass.** All code changes must pass `./gradlew :test` and `./gradlew :detekt` before completing a task. Breaking either check is not acceptable.
 - **README must stay current.** Any change that adds or significantly modifies a public-facing component — including Gradle tasks, `WorkAction` implementations, `ValueSource` implementations, extensions, or plugin behaviour — must include a corresponding update to the component's `README.md`.
+- **Root README must stay current.** When adding a new component, add it to the appropriate table in the root `README.md` (cores, bases, or extensions).
 - **Be concise.** Avoid unnecessary explanation or narrative.
 - **No unsolicited explanations.** Only explain what you're doing if explicitly asked.
 
