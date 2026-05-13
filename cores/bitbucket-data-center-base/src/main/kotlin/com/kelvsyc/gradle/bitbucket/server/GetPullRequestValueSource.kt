@@ -1,9 +1,7 @@
 package com.kelvsyc.gradle.bitbucket.server
 
 import com.kelvsyc.gradle.bitbucket.server.model.PullRequest
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import org.gradle.api.tasks.Internal
@@ -21,12 +19,7 @@ abstract class GetPullRequestValueSource :
          * The shared build service managing Bitbucket Data Center clients.
          */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /**
-         * Registered name of a [BitbucketServerClientInfo].
-         */
-        val clientName: Property<String>
+        val service: Property<BitbucketServerClientBuildService>
 
         /**
          * The Bitbucket project key.
@@ -44,11 +37,8 @@ abstract class GetPullRequestValueSource :
         val pullRequestId: Property<Long>
     }
 
-    private val client: Provider<BitbucketServerService> =
-        parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun obtain(): PullRequest? {
-        val response = client.get().getPullRequest(
+        val response = parameters.service.get().getClient().getPullRequest(
             projectKey = parameters.projectKey.get(),
             repoSlug = parameters.repoSlug.get(),
             pullRequestId = parameters.pullRequestId.get(),

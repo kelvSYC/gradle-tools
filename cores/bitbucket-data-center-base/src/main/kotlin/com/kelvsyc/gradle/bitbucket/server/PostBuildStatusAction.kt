@@ -1,8 +1,6 @@
 package com.kelvsyc.gradle.bitbucket.server
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import org.gradle.api.tasks.Internal
@@ -21,12 +19,7 @@ abstract class PostBuildStatusAction : WorkAction<PostBuildStatusAction.Paramete
          * The shared [ClientsBaseService] holding the registered Bitbucket Data Center client.
          */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /**
-         * Registered name of a [BitbucketServerClientInfo].
-         */
-        val clientName: Property<String>
+        val service: Property<BitbucketServerClientBuildService>
 
         /**
          * The full commit hash to attach the status to.
@@ -59,9 +52,6 @@ abstract class PostBuildStatusAction : WorkAction<PostBuildStatusAction.Paramete
         val description: Property<String>
     }
 
-    private val client: Provider<BitbucketServerService> =
-        parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
         val body = buildMap<String, Any> {
             put("state", parameters.state.get())
@@ -71,7 +61,7 @@ abstract class PostBuildStatusAction : WorkAction<PostBuildStatusAction.Paramete
             parameters.description.orNull?.let { put("description", it) }
         }
 
-        val response = client.get().postBuildStatus(
+        val response = parameters.service.get().getClient().postBuildStatus(
             commitId = parameters.commitId.get(),
             body = body,
         ).execute()
