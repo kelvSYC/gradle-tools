@@ -49,13 +49,13 @@ the two AWS SDKs are distinct libraries:
 | Component | Description | Form |
 |-----------|-------------|------|
 | `google-cloud-artifact-registry-base` | GCP Artifact Registry | library |
-| `google-cloud-storage-base` | GCP Cloud Storage | plugin |
+| `google-cloud-storage-base` | GCP Cloud Storage | library |
 | `google-cloud-secret-manager-base` | GCP Secret Manager | library |
 | `google-cloud-pubsub-base` | GCP Pub/Sub | library |
 | `azure-blob-storage-base` | Azure Blob Storage | library |
-| `azure-key-vault-base` | Azure Key Vault | plugin |
+| `azure-key-vault-base` | Azure Key Vault | library |
 | `artifactory-base` | JFrog Artifactory | plugin |
-| `bitbucket-cloud-base` | Bitbucket Cloud REST API | plugin |
+| `bitbucket-cloud-base` | Bitbucket Cloud REST API | library |
 | `bitbucket-data-center-base` | Bitbucket Data Center REST API | library |
 
 All plugin IDs are prefixed with `com.kelvsyc.gradle.`.

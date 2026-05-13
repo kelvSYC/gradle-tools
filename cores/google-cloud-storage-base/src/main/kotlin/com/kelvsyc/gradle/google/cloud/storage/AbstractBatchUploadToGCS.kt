@@ -1,6 +1,5 @@
 package com.kelvsyc.gradle.google.cloud.storage
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.Named
@@ -34,16 +33,10 @@ abstract class AbstractBatchUploadToGCS @Inject constructor(
     private val workerExecutor: WorkerExecutor
 ) : DefaultTask() {
     /**
-     * The [ClientsBaseService] used to obtain the GCS client.
+     * The build service managing the GCS client to use.
      */
     @get:Internal
-    abstract val service: Property<ClientsBaseService>
-
-    /**
-     * Registered name of a [StorageClientInfo].
-     */
-    @get:Internal
-    abstract val clientName: Property<String>
+    abstract val service: Property<StorageClientBuildService>
 
     /**
      * Information about an artifact to be uploaded to GCS.
@@ -84,12 +77,11 @@ abstract class AbstractBatchUploadToGCS @Inject constructor(
     fun run() {
         val queue = workerExecutor.noIsolation()
         artifacts.get().forEach { (_, artifact) ->
-            queue.submit(UploadFileAction::class.java) {
-                service.set(this@AbstractBatchUploadToGCS.service)
-                clientName.set(this@AbstractBatchUploadToGCS.clientName)
-                bucket.set(artifact.bucket)
-                blobName.set(artifact.blobName)
-                inputFile.set(artifact.inputFile)
+            queue.submit(UploadFileAction::class.java) { params ->
+                params.service.set(this@AbstractBatchUploadToGCS.service)
+                params.bucket.set(artifact.bucket)
+                params.blobName.set(artifact.blobName)
+                params.inputFile.set(artifact.inputFile)
             }
         }
     }
