@@ -3,19 +3,12 @@ import org.jetbrains.dokka.gradle.DokkaExtension
 plugins {
     id("com.kelvsyc.internal.dokka")
     id("com.kelvsyc.internal.jacoco")
-    id("com.kelvsyc.internal.kotlin-plugin")
+    id("com.kelvsyc.internal.kotlin-gradle-library")
     id("com.kelvsyc.internal.github-publishing")
 }
 
 configure<DokkaExtension> {
     moduleName.set("Google Cloud Storage Core")
-}
-
-gradlePlugin {
-    plugins.register("google-cloud-storage-base") {
-        id = "com.kelvsyc.gradle.google-cloud-storage-base"
-        implementationClass = "com.kelvsyc.gradle.plugins.GoogleCloudStorageBasePlugin"
-    }
 }
 
 dependencies {
@@ -24,7 +17,12 @@ dependencies {
     api(libs.google.auth.library.credentials)
     api(libs.google.auth.library.oauth2.http)
     api(libs.google.cloud.storage)
-    implementation(libs.google.cloud.core)
+    api(libs.google.cloud.core)
 
     testImplementation(libs.mockk)
+}
+
+tasks.test {
+    // FIXME https://github.com/gradle/gradle/issues/18647
+    jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
 }

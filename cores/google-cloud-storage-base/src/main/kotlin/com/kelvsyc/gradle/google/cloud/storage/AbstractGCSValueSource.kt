@@ -1,9 +1,6 @@
 package com.kelvsyc.gradle.google.cloud.storage
 
-import com.google.cloud.storage.Storage
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import org.gradle.api.tasks.Internal
@@ -24,14 +21,11 @@ abstract class AbstractGCSValueSource<T : Any, P : AbstractGCSValueSource.Parame
      */
     interface Parameters : ValueSourceParameters {
         @get:Internal
-        val service: Property<ClientsBaseService>
-        val clientName: Property<String>
+        val service: Property<StorageClientBuildService>
 
         val bucket: Property<String>
         val blobName: Property<String>
     }
-
-    private val client: Provider<Storage> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     /**
      * Transforms the data retrieved from GCS.
@@ -43,7 +37,8 @@ abstract class AbstractGCSValueSource<T : Any, P : AbstractGCSValueSource.Parame
     abstract fun doObtain(content: ByteArray): T?
 
     override fun obtain(): T? {
-        val content = client.get().readAllBytes(parameters.bucket.get(), parameters.blobName.get())
+        val content = parameters.service.get().getClient()
+            .readAllBytes(parameters.bucket.get(), parameters.blobName.get())
         return doObtain(content)
     }
 }
