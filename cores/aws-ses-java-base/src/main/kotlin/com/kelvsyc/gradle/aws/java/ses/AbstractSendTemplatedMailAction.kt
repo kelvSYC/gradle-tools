@@ -1,15 +1,12 @@
 package com.kelvsyc.gradle.aws.java.ses
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
-import software.amazon.awssdk.services.ses.SesClient
 import software.amazon.awssdk.services.ses.model.Destination
 import software.amazon.awssdk.services.ses.model.SendTemplatedEmailRequest
-import org.gradle.api.tasks.Internal
 
 /**
  * Base [WorkAction] for sending a templated email via SES.
@@ -18,12 +15,9 @@ import org.gradle.api.tasks.Internal
  */
 abstract class AbstractSendTemplatedMailAction<P : AbstractSendTemplatedMailAction.Parameters> : WorkAction<P> {
     interface Parameters : WorkParameters {
-        /** The shared build service managing SES clients. */
+        /** The build service managing the SES client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [SesClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<SesClientBuildService>
 
         /** The sender (From) email address. */
         val sender: Property<String>
@@ -48,8 +42,6 @@ abstract class AbstractSendTemplatedMailAction<P : AbstractSendTemplatedMailActi
         val templateJson: Property<String>
     }
 
-    private val client: Provider<SesClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
         val destination = Destination.builder().apply {
             toAddresses(parameters.recipients.getOrElse(emptyList()))
@@ -64,6 +56,6 @@ abstract class AbstractSendTemplatedMailAction<P : AbstractSendTemplatedMailActi
             templateData(parameters.templateJson.get())
         }.build()
 
-        client.get().sendTemplatedEmail(request)
+        parameters.service.get().getClient().sendTemplatedEmail(request)
     }
 }
