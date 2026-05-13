@@ -1,16 +1,14 @@
 package com.kelvsyc.gradle.aws.java.imds
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import software.amazon.awssdk.core.document.Document
-import software.amazon.awssdk.imds.Ec2MetadataClient
 import org.gradle.api.tasks.Internal
+import software.amazon.awssdk.core.document.Document
 
 /**
- * Base class for [ValueSource]s providing values retrieved from the [IMDS Instance Identity Document](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-identity-documents.html).
+ * Base class for [ValueSource]s providing values retrieved from the
+ * [IMDS Instance Identity Document](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-identity-documents.html).
  *
  * Subclasses should implement the [doObtain] function, transforming a [Document] object to an object of the desired
  * type.
@@ -29,15 +27,10 @@ abstract class AbstractInstanceIdentityValueSource<T : Any, P : AbstractInstance
      * subclass.
      */
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing IMDS clients. */
+        /** The build service managing the IMDS client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of an [ImdsClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<ImdsClientBuildService>
     }
-
-    private val client: Provider<Ec2MetadataClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     /**
      * Transforms the data retrieved from the IMDS Instance Identity document.
@@ -49,7 +42,7 @@ abstract class AbstractInstanceIdentityValueSource<T : Any, P : AbstractInstance
     abstract fun doObtain(document: Document): T?
 
     override fun obtain(): T? {
-        val response = client.get().get(DOCUMENT_REQUEST_PATH)
+        val response = parameters.service.get().getClient().get(DOCUMENT_REQUEST_PATH)
         return doObtain(response.asDocument())
     }
 }
