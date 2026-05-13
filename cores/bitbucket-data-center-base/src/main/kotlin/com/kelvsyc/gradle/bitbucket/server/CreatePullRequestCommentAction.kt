@@ -1,8 +1,6 @@
 package com.kelvsyc.gradle.bitbucket.server
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import org.gradle.api.tasks.Internal
@@ -20,12 +18,7 @@ abstract class CreatePullRequestCommentAction :
          * The shared [ClientsBaseService] holding the registered Bitbucket Data Center client.
          */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /**
-         * Registered name of a [BitbucketServerClientInfo].
-         */
-        val clientName: Property<String>
+        val service: Property<BitbucketServerClientBuildService>
 
         /**
          * The Bitbucket project key.
@@ -48,13 +41,10 @@ abstract class CreatePullRequestCommentAction :
         val text: Property<String>
     }
 
-    private val client: Provider<BitbucketServerService> =
-        parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
         val body = mapOf<String, Any>("text" to parameters.text.get())
 
-        val response = client.get().createPullRequestComment(
+        val response = parameters.service.get().getClient().createPullRequestComment(
             projectKey = parameters.projectKey.get(),
             repoSlug = parameters.repoSlug.get(),
             pullRequestId = parameters.pullRequestId.get(),

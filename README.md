@@ -56,7 +56,7 @@ the two AWS SDKs are distinct libraries:
 | `azure-key-vault-base` | Azure Key Vault | plugin |
 | `artifactory-base` | JFrog Artifactory | plugin |
 | `bitbucket-cloud-base` | Bitbucket Cloud REST API | plugin |
-| `bitbucket-data-center-base` | Bitbucket Data Center REST API | plugin |
+| `bitbucket-data-center-base` | Bitbucket Data Center REST API | library |
 
 All plugin IDs are prefixed with `com.kelvsyc.gradle.`.
 
