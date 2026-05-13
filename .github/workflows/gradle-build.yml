@@ -89,6 +89,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           artifact-ids: ${{needs.build.outputs.aggregate-jacoco-id}}
+          path: jacoco-aggregate
       - name: Report JaCoCo
         uses: madrapps/jacoco-report@v1.7.2
         with:
