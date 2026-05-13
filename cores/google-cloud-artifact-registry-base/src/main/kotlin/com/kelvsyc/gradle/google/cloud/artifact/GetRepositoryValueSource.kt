@@ -1,12 +1,9 @@
 package com.kelvsyc.gradle.google.cloud.artifact
 
-import com.google.devtools.artifactregistry.v1.ArtifactRegistryClient
 import com.google.devtools.artifactregistry.v1.GetRepositoryRequest
 import com.google.devtools.artifactregistry.v1.Repository
 import com.google.devtools.artifactregistry.v1.RepositoryName
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import org.gradle.api.tasks.Internal
@@ -22,12 +19,9 @@ abstract class GetRepositoryValueSource : ValueSource<Repository, GetRepositoryV
      * Parameters for [GetRepositoryValueSource].
      */
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing Artifact Registry clients. */
+        /** The build service managing the Artifact Registry client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of an [ArtifactRegistryClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<ArtifactRegistryClientBuildService>
 
         /** GCP project ID. */
         val projectName: Property<String>
@@ -39,8 +33,6 @@ abstract class GetRepositoryValueSource : ValueSource<Repository, GetRepositoryV
         val repository: Property<String>
     }
 
-    private val client: Provider<ArtifactRegistryClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun obtain(): Repository? {
         val name = RepositoryName.of(
             parameters.projectName.get(),
@@ -50,6 +42,6 @@ abstract class GetRepositoryValueSource : ValueSource<Repository, GetRepositoryV
         val request = GetRepositoryRequest.newBuilder().apply {
             this.name = name
         }.build()
-        return client.get().getRepository(request)
+        return parameters.service.get().getClient().getRepository(request)
     }
 }

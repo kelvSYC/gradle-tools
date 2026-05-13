@@ -1,11 +1,8 @@
 package com.kelvsyc.gradle.google.cloud.artifact
 
-import com.google.devtools.artifactregistry.v1.ArtifactRegistryClient
 import com.google.devtools.artifactregistry.v1.ListFilesRequest
 import com.google.devtools.artifactregistry.v1.RepositoryName
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import org.gradle.api.tasks.Internal
@@ -26,12 +23,9 @@ abstract class ListFilesValueSource : ValueSource<List<String>, ListFilesValueSo
      * Parameters for [ListFilesValueSource].
      */
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing Artifact Registry clients. */
+        /** The build service managing the Artifact Registry client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of an [ArtifactRegistryClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<ArtifactRegistryClientBuildService>
 
         /** GCP project ID. */
         val projectName: Property<String>
@@ -46,8 +40,6 @@ abstract class ListFilesValueSource : ValueSource<List<String>, ListFilesValueSo
         val filter: Property<String>
     }
 
-    private val client: Provider<ArtifactRegistryClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun obtain(): List<String>? {
         val parent = RepositoryName.of(
             parameters.projectName.get(),
@@ -60,6 +52,6 @@ abstract class ListFilesValueSource : ValueSource<List<String>, ListFilesValueSo
                 filter = parameters.filter.get()
             }
         }.build()
-        return client.get().listFiles(request).iterateAll().map { it.name }
+        return parameters.service.get().getClient().listFiles(request).iterateAll().map { it.name }
     }
 }
