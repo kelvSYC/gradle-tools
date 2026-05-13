@@ -40,7 +40,7 @@ the two AWS SDKs are distinct libraries:
 | ECR | `aws-ecr-java-base` (library) | `aws-ecr-kotlin-base` (library) |
 | IMDS | `aws-imds-java-base` (library) | `aws-imds-kotlin-base` (library) |
 | KMS | `aws-kms-java-base` (library) | `aws-kms-kotlin-base` (library) |
-| Lambda | `aws-lambda-java-base` (plugin) | `aws-lambda-kotlin-base` (library) |
+| Lambda | `aws-lambda-java-base` (library) | `aws-lambda-kotlin-base` (library) |
 | SSM Parameter Store | `aws-ssm-java-base` (library) | `aws-ssm-kotlin-base` (library) |
 | STS | `aws-sts-java-base` (library) | `aws-sts-kotlin-base` (library) |
 
