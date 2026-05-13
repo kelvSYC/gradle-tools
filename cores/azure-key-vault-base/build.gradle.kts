@@ -3,19 +3,12 @@ import org.jetbrains.dokka.gradle.DokkaExtension
 plugins {
     id("com.kelvsyc.internal.dokka")
     id("com.kelvsyc.internal.jacoco")
-    id("com.kelvsyc.internal.kotlin-plugin")
+    id("com.kelvsyc.internal.kotlin-gradle-library")
     id("com.kelvsyc.internal.github-publishing")
 }
 
 configure<DokkaExtension> {
     moduleName.set("Azure Key Vault Base")
-}
-
-gradlePlugin {
-    plugins.register("azure-key-vault-base") {
-        id = "com.kelvsyc.gradle.azure-key-vault-base"
-        implementationClass = "com.kelvsyc.gradle.plugins.AzureKeyVaultBasePlugin"
-    }
 }
 
 dependencies {
@@ -25,4 +18,9 @@ dependencies {
     api(libs.azure.security.keyvault.secrets)
 
     testImplementation(libs.mockk)
+}
+
+tasks.test {
+    // FIXME https://github.com/gradle/gradle/issues/18647
+    jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
 }

@@ -53,7 +53,7 @@ the two AWS SDKs are distinct libraries:
 | `google-cloud-secret-manager-base` | GCP Secret Manager | library |
 | `google-cloud-pubsub-base` | GCP Pub/Sub | library |
 | `azure-blob-storage-base` | Azure Blob Storage | library |
-| `azure-key-vault-base` | Azure Key Vault | plugin |
+| `azure-key-vault-base` | Azure Key Vault | library |
 | `artifactory-base` | JFrog Artifactory | plugin |
 | `bitbucket-cloud-base` | Bitbucket Cloud REST API | plugin |
 | `bitbucket-data-center-base` | Bitbucket Data Center REST API | plugin |
