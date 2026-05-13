@@ -4,36 +4,30 @@ import com.google.cloud.pubsub.v1.TopicAdminClient
 import com.google.pubsub.v1.PublishResponse
 import com.google.pubsub.v1.PubsubMessage
 import com.google.pubsub.v1.TopicName
-import com.kelvsyc.gradle.clients.ClientsBaseExtension
-import com.kelvsyc.gradle.internal.google.cloud.pubsub.MockPubSubClientInfoInternal
-import com.kelvsyc.gradle.plugins.GoogleCloudPubSubBasePlugin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
+import io.mockk.mockk
 import io.mockk.slot
-import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.newInstance
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 
 class PublishActionSpec : FunSpec() {
     init {
         test("execute - publishes message with correct topic and data") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(GoogleCloudPubSubBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockPubSubClientInfo::class, MockPubSubClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockPubSubClientInfo>("mock") {}
+            val client = mockk<TopicAdminClient>()
+            MockTopicAdminClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent("pubsub", MockTopicAdminClientBuildService::class)
 
-            val client = extension.getClient<TopicAdminClient, MockPubSubClientInfo>("mock").get()!!
             val topicSlot = slot<TopicName>()
             val messagesSlot = slot<List<PubsubMessage>>()
             every { client.publish(capture(topicSlot), capture(messagesSlot)) } returns
                 PublishResponse.newBuilder().addMessageIds("1").build()
 
             val params = project.objects.newInstance<PublishAction.Parameters>()
-            params.service.set(extension.service.get())
-            params.clientName.set("mock")
+            params.service.set(service)
             params.projectId.set("my-project")
             params.topicId.set("my-topic")
             params.data.set("Hello, Pub/Sub!")
@@ -49,19 +43,16 @@ class PublishActionSpec : FunSpec() {
 
         test("execute - includes attributes when present") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(GoogleCloudPubSubBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockPubSubClientInfo::class, MockPubSubClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockPubSubClientInfo>("mock") {}
+            val client = mockk<TopicAdminClient>()
+            MockTopicAdminClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent("pubsub", MockTopicAdminClientBuildService::class)
 
-            val client = extension.getClient<TopicAdminClient, MockPubSubClientInfo>("mock").get()!!
             val messagesSlot = slot<List<PubsubMessage>>()
             every { client.publish(any<TopicName>(), capture(messagesSlot)) } returns
                 PublishResponse.newBuilder().addMessageIds("1").build()
 
             val params = project.objects.newInstance<PublishAction.Parameters>()
-            params.service.set(extension.service.get())
-            params.clientName.set("mock")
+            params.service.set(service)
             params.projectId.set("my-project")
             params.topicId.set("my-topic")
             params.data.set("msg")
@@ -77,19 +68,16 @@ class PublishActionSpec : FunSpec() {
 
         test("execute - forwards ordering key when present") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(GoogleCloudPubSubBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockPubSubClientInfo::class, MockPubSubClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockPubSubClientInfo>("mock") {}
+            val client = mockk<TopicAdminClient>()
+            MockTopicAdminClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent("pubsub", MockTopicAdminClientBuildService::class)
 
-            val client = extension.getClient<TopicAdminClient, MockPubSubClientInfo>("mock").get()!!
             val messagesSlot = slot<List<PubsubMessage>>()
             every { client.publish(any<TopicName>(), capture(messagesSlot)) } returns
                 PublishResponse.newBuilder().addMessageIds("1").build()
 
             val params = project.objects.newInstance<PublishAction.Parameters>()
-            params.service.set(extension.service.get())
-            params.clientName.set("mock")
+            params.service.set(service)
             params.projectId.set("my-project")
             params.topicId.set("my-topic")
             params.data.set("ordered msg")

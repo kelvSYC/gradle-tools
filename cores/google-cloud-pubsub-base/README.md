@@ -1,41 +1,48 @@
 # Google Cloud Pub/Sub Base
 
-A Gradle plugin providing managed Google Cloud Pub/Sub client integration.
+A Kotlin library providing managed Google Cloud Pub/Sub client integration, built on `clients-base`.
 
-## Applying the Plugin
+## Dependency
 
 ```kotlin
-plugins {
-    id("com.kelvsyc.gradle.google-cloud-pubsub-base")
+dependencies {
+    implementation("com.kelvsyc.gradle:google-cloud-pubsub-base")
 }
 ```
 
-## Client Registration
+## Build Service
 
-The client info type is `PubSubClientInfo`. The registered client is a `TopicAdminClient`, which supports
-both topic administration and message publishing.
+| Class | Client type |
+|---|---|
+| `TopicAdminClientBuildService` | `TopicAdminClient` |
+
+`TopicAdminClient` supports both topic administration and message publishing.
 
 ```kotlin
-the<ClientsBaseExtension>().service.get()
-    .registerIfAbsent<PubSubClientInfo>("myPubSub") {
-        credentials.set(FixedCredentialsProvider.create(GoogleCredentials.getApplicationDefault()))
-    }
+val pubsub = gradle.sharedServices.registerIfAbsent("pubsub", TopicAdminClientBuildService::class) {
+    parameters.credentials.set(FixedCredentialsProvider.create(GoogleCredentials.getApplicationDefault()))
+    // credentials is optional; omit to use application default credentials
+}
 ```
 
-### `PubSubClientInfo` properties
-
-| Property | Type | Description |
-|---|---|---|
-| `credentials` | `Property<CredentialsProvider>` | Google API `CredentialsProvider` for authentication. Required. |
-
-## Work Action: `PublishAction`
+## WorkAction: `PublishAction`
 
 Publishes a single message to a Pub/Sub topic.
 
+```kotlin
+workerExecutor.noIsolation().submit(PublishAction::class) {
+    service.set(pubsub)
+    projectId.set("my-project")
+    topicId.set("my-topic")
+    data.set("Hello, Pub/Sub!")
+    attributes.put("env", "ci")                // optional
+    orderingKey.set("partition-1")             // optional
+}
+```
+
 | Parameter | Type | Description |
 |---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of a `PubSubClientInfo` |
+| `service` | `Property<TopicAdminClientBuildService>` | The shared build service |
 | `projectId` | `Property<String>` | GCP project ID |
 | `topicId` | `Property<String>` | Topic ID (short name) |
 | `data` | `Property<String>` | Message data (UTF-8 string) |
@@ -49,15 +56,17 @@ Publishes an arbitrary number of messages to a topic. Entries are chunked to the
 
 ```kotlin
 tasks.register<PublishBatch>("notify") {
-    clientName.set("myPubSub")
+    service.set(pubsub)
     projectId.set("my-project")
     topicId.set("my-topic")
-    registerEntry("build-complete") {
-        data.set("""{"status":"success"}""")
-        attributes.put("env", "ci")
+    registerEntry("build-complete") { entry ->
+        entry.data.set("""{"status":"success"}""")
+        entry.attributes.put("env", "ci")
     }
 }
 ```
+
+Use `AbstractPublishBatch` directly to wire `client` from outside `TopicAdminClientBuildService`.
 
 ## Value Source: `ListTopicsValueSource`
 
@@ -65,8 +74,7 @@ Returns the fully-qualified resource names of every topic in a project. Paginati
 
 | Parameter | Type | Description |
 |---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of a `PubSubClientInfo` |
+| `service` | `Property<TopicAdminClientBuildService>` | The shared build service |
 | `projectId` | `Property<String>` | GCP project ID |
 
 ## Value Source: `ListTopicSubscriptionsValueSource`
@@ -75,8 +83,7 @@ Returns the fully-qualified subscription resource names attached to a given topi
 
 | Parameter | Type | Description |
 |---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of a `PubSubClientInfo` |
+| `service` | `Property<TopicAdminClientBuildService>` | The shared build service |
 | `projectId` | `Property<String>` | GCP project ID |
 | `topicId` | `Property<String>` | Topic ID (short name) |
 
