@@ -1,16 +1,12 @@
 package com.kelvsyc.gradle.aws.kotlin.codeartifact
 
-import aws.sdk.kotlin.services.codeartifact.CodeartifactClient
 import aws.sdk.kotlin.services.codeartifact.model.EndpointType
 import aws.sdk.kotlin.services.codeartifact.model.GetRepositoryEndpointRequest
 import aws.sdk.kotlin.services.codeartifact.model.PackageFormat
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation providing an AWS CodeArtifact repository endpoint URL.
@@ -22,12 +18,8 @@ abstract class GetRepositoryEndpointValueSource : ValueSource<String, GetReposit
      * Parameters for [GetRepositoryEndpointValueSource].
      */
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing CodeArtifact clients. */
-        @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [CodeArtifactClientInfo]. */
-        val clientName: Property<String>
+        /** The build service managing the CodeArtifact client. */
+        val service: Property<CodeArtifactClientBuildService>
 
         /** The CodeArtifact domain name. */
         val domain: Property<String>
@@ -53,8 +45,6 @@ abstract class GetRepositoryEndpointValueSource : ValueSource<String, GetReposit
         val format: Property<String>
     }
 
-    private val client: Provider<CodeartifactClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun obtain(): String? {
         val request = GetRepositoryEndpointRequest {
             domain = parameters.domain.get()
@@ -66,7 +56,7 @@ abstract class GetRepositoryEndpointValueSource : ValueSource<String, GetReposit
         }
 
         return runBlocking {
-            client.get().getRepositoryEndpoint(request).repositoryEndpoint
+            parameters.service.get().getClient().getRepositoryEndpoint(request).repositoryEndpoint
         }
     }
 }

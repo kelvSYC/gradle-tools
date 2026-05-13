@@ -1,41 +1,37 @@
 # AWS CodeArtifact Kotlin Base
 
-A Gradle plugin providing managed AWS CodeArtifact client integration using the AWS SDK for Kotlin.
+A Kotlin library providing managed AWS CodeArtifact client integration using the AWS SDK for Kotlin, built on
+`clients-base`.
 
-## Applying the Plugin
+## Dependency
 
 ```kotlin
-plugins {
-    id("com.kelvsyc.gradle.aws-codeartifact-kotlin-base")
+dependencies {
+    implementation("com.kelvsyc.gradle:aws-codeartifact-kotlin-base")
 }
 ```
 
-## Client Type
+## Build Service
 
-One client info type is registered:
-
-| Client info type | Client type |
+| Class | Client type |
 |---|---|
-| `CodeArtifactClientInfo` | `CodeartifactClient` (AWS SDK for Kotlin) |
-
-`CodeArtifactClientInfo` extends `AwsClientInfo` from `aws-kotlin-extensions`. Register a client:
+| `CodeArtifactClientBuildService` | `CodeartifactClient` (AWS SDK for Kotlin) |
 
 ```kotlin
-serviceClients.service.get().registerIfAbsent<CodeArtifactClientInfo>("myCodeArtifact") {
-    region.set("us-east-1")
-    credentials.set(providers.credentials(AwsCredentials::class.java, "myCodeArtifact").asCredentialsProvider)
+val codeArtifact = gradle.sharedServices.registerIfAbsent("ca", CodeArtifactClientBuildService::class) {
+    parameters.region.set("us-east-1")
+    parameters.credentials.set(providers.credentials(AwsCredentials::class.java, "ca").asCredentialsProvider)
 }
 ```
 
 ## Value Source: `GetAuthorizationTokenValueSource`
 
-Retrieves an AWS CodeArtifact authorization token using `runBlocking`:
+Retrieves an AWS CodeArtifact authorization token:
 
 ```kotlin
 val token: Provider<String> = providers.of(GetAuthorizationTokenValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("myCodeArtifact")
+        service.set(codeArtifact)
         domain.set("my-domain")
         domainOwner.set("111122223333")
         duration.set(3600L)
@@ -47,8 +43,7 @@ Parameters:
 
 | Parameter | Type | Description |
 |---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of a `CodeArtifactClientInfo` |
+| `service` | `Property<CodeArtifactClientBuildService>` | Build service supplying the CodeArtifact client |
 | `domain` | `Property<String>` | CodeArtifact domain name |
 | `domainOwner` | `Property<String>` | AWS account ID owning the domain |
 | `duration` | `Property<Long>` | Token validity in seconds |
@@ -60,13 +55,12 @@ Retrieves the endpoint URL for a CodeArtifact repository:
 ```kotlin
 val endpoint: Provider<String> = providers.of(GetRepositoryEndpointValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("myCodeArtifact")
+        service.set(codeArtifact)
         domain.set("my-domain")
         domainOwner.set("111122223333")
         repository.set("my-repo")
-        endpointType.set(EndpointType.Ipv4)       // optional, defaults to Ipv4
-        format.set(PackageFormat.Maven)           // optional, defaults to Generic
+        endpointType.set(EndpointType.Ipv4.value)       // optional, defaults to Ipv4
+        format.set(PackageFormat.Maven.value)           // optional, defaults to Generic
     }
 }
 ```
@@ -84,8 +78,6 @@ abstract class MyAssetValueSource
 }
 ```
 
-Parameters mirror those of the Java variant (see [aws-codeartifact-java-base](../aws-codeartifact-java-base)).
-
 ## Value Source: `ListPackageVersionsValueSource`
 
 Lists all version strings for a package in a CodeArtifact repository, paginating automatically:
@@ -93,8 +85,7 @@ Lists all version strings for a package in a CodeArtifact repository, paginating
 ```kotlin
 val versions: Provider<List<String>> = providers.of(ListPackageVersionsValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("myCodeArtifact")
+        service.set(codeArtifact)
         domain.set("my-domain")
         domainOwner.set("111122223333")
         repository.set("my-repo")
@@ -105,16 +96,13 @@ val versions: Provider<List<String>> = providers.of(ListPackageVersionsValueSour
 }
 ```
 
-Parameters mirror the Java variant, except `format` is `Property<String>` (resolved to `PackageFormat` via `PackageFormat.fromValue()`).
-
 ## WorkAction: `GetGenericPackageVersionAssetAction`
 
 Downloads a CodeArtifact generic repository asset to a file:
 
 ```kotlin
 workerExecutor.noIsolation().submit(GetGenericPackageVersionAssetAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("myCodeArtifact")
+    service.set(codeArtifact)
     domain.set("my-domain")
     domainOwner.set("111122223333")
     repository.set("my-repo")
@@ -132,8 +120,7 @@ Publishes an asset to a CodeArtifact generic package version:
 
 ```kotlin
 workerExecutor.noIsolation().submit(PublishPackageVersionAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("myCodeArtifact")
+    service.set(codeArtifact)
     domain.set("my-domain")
     domainOwner.set("111122223333")
     repository.set("my-repo")
@@ -150,5 +137,4 @@ workerExecutor.noIsolation().submit(PublishPackageVersionAction::class) {
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure
-- [aws-kotlin-extensions](../aws-kotlin-extensions) — `AwsClientInfo` base interface and credential adapters
 - [aws-codeartifact-java-base](../aws-codeartifact-java-base) — Java SDK variant with async client and structured asset access

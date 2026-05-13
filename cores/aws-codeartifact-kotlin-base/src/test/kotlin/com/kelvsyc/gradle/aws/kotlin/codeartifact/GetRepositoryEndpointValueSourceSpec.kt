@@ -5,38 +5,30 @@ import aws.sdk.kotlin.services.codeartifact.model.EndpointType
 import aws.sdk.kotlin.services.codeartifact.model.GetRepositoryEndpointRequest
 import aws.sdk.kotlin.services.codeartifact.model.GetRepositoryEndpointResponse
 import aws.sdk.kotlin.services.codeartifact.model.PackageFormat
-import com.kelvsyc.gradle.clients.ClientsBaseExtension
-import com.kelvsyc.gradle.internal.aws.kotlin.codeartifact.MockCodeArtifactClientInfoInternal
-import com.kelvsyc.gradle.plugins.CodeArtifactKotlinBasePlugin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.slot
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.of
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 
 class GetRepositoryEndpointValueSourceSpec : FunSpec() {
     init {
         test("obtain - returns repository endpoint with default format and endpointType") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(CodeArtifactKotlinBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockCodeArtifactClientInfo::class, MockCodeArtifactClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockCodeArtifactClientInfo>("mock") {}
-
-            val client = extension.getClient<CodeartifactClient, MockCodeArtifactClientInfo>("mock").get()!!
+            val client = mockk<CodeartifactClient>()
+            MockCodeArtifactClientBuildService.mockClient = client
+            val service =
+                project.gradle.sharedServices.registerIfAbsent("ca", MockCodeArtifactClientBuildService::class)
             val slot = slot<GetRepositoryEndpointRequest>()
             val response = mockk<GetRepositoryEndpointResponse>()
             coEvery { response.repositoryEndpoint } returns "https://example.codeartifact.amazonaws.com/"
             coEvery { client.getRepositoryEndpoint(capture(slot)) } returns response
 
-            val provider = project.providers.of(GetRepositoryEndpointValueSource::class) {
-                parameters.service.set(extension.service)
-                parameters.clientName.set("mock")
+            val provider = project.providers.ofKt(GetRepositoryEndpointValueSource::class) {
+                parameters.service.set(service)
                 parameters.domain.set("my-domain")
                 parameters.domainOwner.set("123456789012")
                 parameters.repository.set("my-repo")
@@ -52,20 +44,17 @@ class GetRepositoryEndpointValueSourceSpec : FunSpec() {
 
         test("obtain - uses provided endpointType and format") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(CodeArtifactKotlinBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockCodeArtifactClientInfo::class, MockCodeArtifactClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockCodeArtifactClientInfo>("mock") {}
-
-            val client = extension.getClient<CodeartifactClient, MockCodeArtifactClientInfo>("mock").get()!!
+            val client = mockk<CodeartifactClient>()
+            MockCodeArtifactClientBuildService.mockClient = client
+            val service =
+                project.gradle.sharedServices.registerIfAbsent("ca", MockCodeArtifactClientBuildService::class)
             val slot = slot<GetRepositoryEndpointRequest>()
             val response = mockk<GetRepositoryEndpointResponse>()
             coEvery { response.repositoryEndpoint } returns "https://example.codeartifact.amazonaws.com/"
             coEvery { client.getRepositoryEndpoint(capture(slot)) } returns response
 
-            val provider = project.providers.of(GetRepositoryEndpointValueSource::class) {
-                parameters.service.set(extension.service)
-                parameters.clientName.set("mock")
+            val provider = project.providers.ofKt(GetRepositoryEndpointValueSource::class) {
+                parameters.service.set(service)
                 parameters.domain.set("my-domain")
                 parameters.domainOwner.set("123456789012")
                 parameters.repository.set("my-repo")
@@ -80,19 +69,16 @@ class GetRepositoryEndpointValueSourceSpec : FunSpec() {
 
         test("obtain - returns null when repositoryEndpoint is null") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(CodeArtifactKotlinBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockCodeArtifactClientInfo::class, MockCodeArtifactClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockCodeArtifactClientInfo>("mock") {}
-
-            val client = extension.getClient<CodeartifactClient, MockCodeArtifactClientInfo>("mock").get()!!
+            val client = mockk<CodeartifactClient>()
+            MockCodeArtifactClientBuildService.mockClient = client
+            val service =
+                project.gradle.sharedServices.registerIfAbsent("ca", MockCodeArtifactClientBuildService::class)
             val response = mockk<GetRepositoryEndpointResponse>()
             coEvery { response.repositoryEndpoint } returns null
             coEvery { client.getRepositoryEndpoint(any()) } returns response
 
-            val provider = project.providers.of(GetRepositoryEndpointValueSource::class) {
-                parameters.service.set(extension.service)
-                parameters.clientName.set("mock")
+            val provider = project.providers.ofKt(GetRepositoryEndpointValueSource::class) {
+                parameters.service.set(service)
                 parameters.domain.set("my-domain")
                 parameters.domainOwner.set("123456789012")
                 parameters.repository.set("my-repo")
