@@ -36,7 +36,7 @@ the two AWS SDKs are distinct libraries:
 | SNS | `aws-sns-java-base` (library) | `aws-sns-kotlin-base` (library) |
 | SES | `aws-ses-java-base` (library) | `aws-ses-kotlin-base` (plugin) |
 | Secrets Manager | `aws-secrets-manager-java-base` (library) | `aws-secrets-manager-kotlin-base` (library) |
-| CodeArtifact | `aws-codeartifact-java-base` (plugin) | `aws-codeartifact-kotlin-base` (library) |
+| CodeArtifact | `aws-codeartifact-java-base` (library) | `aws-codeartifact-kotlin-base` (library) |
 | ECR | `aws-ecr-java-base` (plugin) | `aws-ecr-kotlin-base` (library) |
 | IMDS | `aws-imds-java-base` (plugin) | `aws-imds-kotlin-base` (plugin) |
 | KMS | `aws-kms-java-base` (library) | `aws-kms-kotlin-base` (library) |
