@@ -1,15 +1,12 @@
 package com.kelvsyc.gradle.aws.java.lambda
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import software.amazon.awssdk.core.SdkBytes
-import software.amazon.awssdk.services.lambda.LambdaClient
 import software.amazon.awssdk.services.lambda.model.UpdateFunctionCodeRequest
-import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation that updates the deployment package (zip file) for a Lambda function.
@@ -19,12 +16,9 @@ import org.gradle.api.tasks.Internal
  */
 abstract class UpdateFunctionCodeAction : WorkAction<UpdateFunctionCodeAction.Parameters> {
     interface Parameters : WorkParameters {
-        /** The shared build service managing Lambda clients. */
+        /** The build service managing the Lambda client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [LambdaClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<LambdaClientBuildService>
 
         /** The function name, ARN, or partial ARN to update. */
         val functionName: Property<String>
@@ -36,8 +30,6 @@ abstract class UpdateFunctionCodeAction : WorkAction<UpdateFunctionCodeAction.Pa
         val publish: Property<Boolean>
     }
 
-    private val client: Provider<LambdaClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
         val bytes = parameters.zipFile.get().asFile.readBytes()
         val request = UpdateFunctionCodeRequest.builder().apply {
@@ -48,6 +40,6 @@ abstract class UpdateFunctionCodeAction : WorkAction<UpdateFunctionCodeAction.Pa
             }
         }.build()
 
-        client.get().updateFunctionCode(request)
+        parameters.service.get().getClient().updateFunctionCode(request)
     }
 }

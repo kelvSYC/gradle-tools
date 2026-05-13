@@ -1,16 +1,13 @@
 package com.kelvsyc.gradle.aws.java.lambda
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import com.kelvsyc.gradle.logging.GradleLoggerDelegate
 import com.kelvsyc.gradle.logging.warn
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import software.amazon.awssdk.services.lambda.LambdaClient
+import org.gradle.api.tasks.Internal
 import software.amazon.awssdk.services.lambda.model.GetFunctionConfigurationRequest
 import software.amazon.awssdk.services.lambda.model.LambdaException
-import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that retrieves the ARN of a Lambda function's published configuration.
@@ -24,12 +21,9 @@ abstract class GetFunctionConfigurationValueSource : ValueSource<String, GetFunc
     }
 
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing Lambda clients. */
+        /** The build service managing the Lambda client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [LambdaClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<LambdaClientBuildService>
 
         /** The function name, ARN, or partial ARN. */
         val functionName: Property<String>
@@ -37,8 +31,6 @@ abstract class GetFunctionConfigurationValueSource : ValueSource<String, GetFunc
         /** Optional version or alias qualifier. */
         val qualifier: Property<String>
     }
-
-    private val client: Provider<LambdaClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     override fun obtain(): String? {
         val request = GetFunctionConfigurationRequest.builder().apply {
@@ -49,7 +41,7 @@ abstract class GetFunctionConfigurationValueSource : ValueSource<String, GetFunc
         }.build()
 
         return try {
-            val response = client.get().getFunctionConfiguration(request)
+            val response = parameters.service.get().getClient().getFunctionConfiguration(request)
             response.functionArn()
         } catch (e: LambdaException) {
             logger.warn(e) { "Unable to retrieve configuration for Lambda function '${parameters.functionName.get()}'" }
