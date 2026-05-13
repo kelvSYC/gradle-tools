@@ -1,14 +1,11 @@
 package com.kelvsyc.gradle.aws.kotlin.s3
 
-import aws.sdk.kotlin.services.s3.S3Client
 import aws.sdk.kotlin.services.s3.model.ListObjectsV2Request
 import aws.sdk.kotlin.services.s3.model.Object as S3Object
 import aws.sdk.kotlin.services.s3.paginators.listObjectsV2Paginated
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import org.gradle.api.tasks.Internal
@@ -28,15 +25,10 @@ abstract class AbstractListObjectsValueSource<T : Any, P : AbstractListObjectsVa
      */
     interface Parameters : ValueSourceParameters {
         /**
-         * The shared [ClientsBaseService] holding the registered S3 client.
+         * The shared build service managing the S3 client.
          */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /**
-         * Registered name of an [S3ClientInfo].
-         */
-        val clientName: Property<String>
+        val service: Property<S3ClientBuildService>
 
         /**
          * S3 bucket name.
@@ -48,8 +40,6 @@ abstract class AbstractListObjectsValueSource<T : Any, P : AbstractListObjectsVa
          */
         val prefix: Property<String>
     }
-
-    private val client: Provider<S3Client> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     /**
      * Transforms the listed objects into the target type.
@@ -66,7 +56,7 @@ abstract class AbstractListObjectsValueSource<T : Any, P : AbstractListObjectsVa
         }
 
         return runBlocking {
-            val objects = client.get().listObjectsV2Paginated(request)
+            val objects = parameters.service.get().getClient().listObjectsV2Paginated(request)
                 .toList()
                 .flatMap { it.contents.orEmpty() }
             doObtain(objects)

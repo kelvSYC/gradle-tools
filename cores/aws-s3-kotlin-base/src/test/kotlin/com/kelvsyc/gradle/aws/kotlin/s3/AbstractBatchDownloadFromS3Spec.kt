@@ -16,10 +16,10 @@ class AbstractBatchDownloadFromS3Spec : FunSpec() {
 
             val task = project.tasks.register<AbstractBatchDownloadFromS3>("myTask") {
                 client.set(mockk<S3Client>())
-                registerArtifact("artifact1") {
-                    bucket.set("bucket")
-                    key.set("key")
-                    outputFile.set(project.layout.buildDirectory.file("filename"))
+                registerArtifact("artifact1") { artifact ->
+                    artifact.bucket.set("bucket")
+                    artifact.key.set("key")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("filename"))
                 }
             }
 
@@ -34,15 +34,15 @@ class AbstractBatchDownloadFromS3Spec : FunSpec() {
 
             val task = project.tasks.register<AbstractBatchDownloadFromS3>("myTask") {
                 client.set(mockk<S3Client>())
-                registerArtifact("artifact1") {
-                    bucket.set("bucket1")
-                    key.set("key1")
-                    outputFile.set(project.layout.buildDirectory.file("filename1"))
+                registerArtifact("artifact1") { artifact ->
+                    artifact.bucket.set("bucket1")
+                    artifact.key.set("key1")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("filename1"))
                 }
-                registerArtifact("artifact2") {
-                    bucket.set("bucket2")
-                    key.set("key2")
-                    outputFile.set(project.layout.buildDirectory.file("filename2"))
+                registerArtifact("artifact2") { artifact ->
+                    artifact.bucket.set("bucket2")
+                    artifact.key.set("key2")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("filename2"))
                 }
             }
 
