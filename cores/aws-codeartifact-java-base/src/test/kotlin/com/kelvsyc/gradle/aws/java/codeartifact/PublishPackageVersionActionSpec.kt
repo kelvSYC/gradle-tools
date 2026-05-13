@@ -1,16 +1,12 @@
 package com.kelvsyc.gradle.aws.java.codeartifact
 
-import com.kelvsyc.gradle.clients.ClientsBaseExtension
-import com.kelvsyc.gradle.internal.aws.java.codeartifact.MockCodeArtifactClientInfoInternal
-import com.kelvsyc.gradle.plugins.CodeArtifactJavaBasePlugin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.newInstance
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 import software.amazon.awssdk.services.codeartifact.CodeartifactClient
 import software.amazon.awssdk.services.codeartifact.model.PackageFormat
@@ -23,12 +19,9 @@ class PublishPackageVersionActionSpec : FunSpec() {
     init {
         test("execute - passes correct request parameters to CodeArtifact") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(CodeArtifactJavaBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockCodeArtifactClientInfo::class, MockCodeArtifactClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockCodeArtifactClientInfo>("mock") {}
-
-            val client = extension.getClient<CodeartifactClient, MockCodeArtifactClientInfo>("mock").get()!!
+            val client = mockk<CodeartifactClient>()
+            MockCodeArtifactClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent("codeartifact", MockCodeArtifactClientBuildService::class)
             val requestSlot = slot<PublishPackageVersionRequest>()
             every { client.publishPackageVersion(capture(requestSlot), any<Path>()) } returns mockk<PublishPackageVersionResponse>()
 
@@ -36,8 +29,7 @@ class PublishPackageVersionActionSpec : FunSpec() {
             Files.writeString(assetFile, "test-content")
 
             val params = project.objects.newInstance<PublishPackageVersionAction.Parameters>()
-            params.service.set(extension.service.get())
-            params.clientName.set("mock")
+            params.service.set(service)
             params.domain.set("my-domain")
             params.domainOwner.set("123456789012")
             params.repository.set("my-repo")

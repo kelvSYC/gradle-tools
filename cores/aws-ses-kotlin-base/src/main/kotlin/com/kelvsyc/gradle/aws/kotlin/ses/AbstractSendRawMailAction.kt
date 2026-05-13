@@ -1,15 +1,12 @@
 package com.kelvsyc.gradle.aws.kotlin.ses
 
-import aws.sdk.kotlin.services.ses.SesClient
 import aws.sdk.kotlin.services.ses.model.RawMessage
 import aws.sdk.kotlin.services.ses.model.SendRawEmailRequest
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
-import org.gradle.api.tasks.Internal
 
 /**
  * Base [WorkAction] for sending a raw MIME email via SES.
@@ -18,12 +15,9 @@ import org.gradle.api.tasks.Internal
  */
 abstract class AbstractSendRawMailAction<P : AbstractSendRawMailAction.Parameters> : WorkAction<P> {
     interface Parameters : WorkParameters {
-        /** The shared build service managing SES clients. */
+        /** The shared build service managing the SES client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [SesClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<SesClientBuildService>
 
         /** The sender (From) email address. */
         val sender: Property<String>
@@ -31,8 +25,6 @@ abstract class AbstractSendRawMailAction<P : AbstractSendRawMailAction.Parameter
         /** Raw MIME message bytes. */
         val message: Property<ByteArray>
     }
-
-    private val client: Provider<SesClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     private val messageInternal = parameters.message.map {
         RawMessage {
@@ -47,7 +39,7 @@ abstract class AbstractSendRawMailAction<P : AbstractSendRawMailAction.Parameter
         }
 
         runBlocking {
-            client.get().sendRawEmail(request)
+            parameters.service.get().getClient().sendRawEmail(request)
         }
     }
 }

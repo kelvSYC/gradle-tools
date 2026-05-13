@@ -1,16 +1,12 @@
 package com.kelvsyc.gradle.aws.java.codeartifact
 
-import com.kelvsyc.gradle.clients.ClientsBaseExtension
-import com.kelvsyc.gradle.internal.aws.java.codeartifact.MockCodeArtifactClientInfoInternal
-import com.kelvsyc.gradle.plugins.CodeArtifactJavaBasePlugin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import io.mockk.every
+import io.mockk.mockk
 import io.mockk.slot
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.of
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 import software.amazon.awssdk.services.codeartifact.CodeartifactClient
 import software.amazon.awssdk.services.codeartifact.model.CodeartifactException
@@ -23,12 +19,9 @@ class ListPackageVersionsValueSourceSpec : FunSpec() {
     init {
         test("obtain - returns list of version strings") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(CodeArtifactJavaBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockCodeArtifactClientInfo::class, MockCodeArtifactClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockCodeArtifactClientInfo>("mock") {}
-
-            val client = extension.getClient<CodeartifactClient, MockCodeArtifactClientInfo>("mock").get()!!
+            val client = mockk<CodeartifactClient>()
+            MockCodeArtifactClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent("codeartifact", MockCodeArtifactClientBuildService::class)
             val slot = slot<ListPackageVersionsRequest>()
             val response = ListPackageVersionsResponse.builder()
                 .versions(
@@ -38,9 +31,8 @@ class ListPackageVersionsValueSourceSpec : FunSpec() {
                 .build()
             every { client.listPackageVersions(capture(slot)) } returns response
 
-            val provider = project.providers.of(ListPackageVersionsValueSource::class) {
-                parameters.service.set(extension.service)
-                parameters.clientName.set("mock")
+            val provider = project.providers.ofKt(ListPackageVersionsValueSource::class) {
+                parameters.service.set(service)
                 parameters.domain.set("my-domain")
                 parameters.domainOwner.set("123456789012")
                 parameters.repository.set("my-repo")
@@ -60,18 +52,14 @@ class ListPackageVersionsValueSourceSpec : FunSpec() {
 
         test("obtain - returns null on CodeartifactException") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(CodeArtifactJavaBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockCodeArtifactClientInfo::class, MockCodeArtifactClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockCodeArtifactClientInfo>("mock") {}
-
-            val client = extension.getClient<CodeartifactClient, MockCodeArtifactClientInfo>("mock").get()!!
+            val client = mockk<CodeartifactClient>()
+            MockCodeArtifactClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent("codeartifact", MockCodeArtifactClientBuildService::class)
             every { client.listPackageVersions(any<ListPackageVersionsRequest>()) } throws
                 CodeartifactException.builder().message("Not Found").build()
 
-            val provider = project.providers.of(ListPackageVersionsValueSource::class) {
-                parameters.service.set(extension.service)
-                parameters.clientName.set("mock")
+            val provider = project.providers.ofKt(ListPackageVersionsValueSource::class) {
+                parameters.service.set(service)
                 parameters.domain.set("my-domain")
                 parameters.domainOwner.set("123456789012")
                 parameters.repository.set("my-repo")

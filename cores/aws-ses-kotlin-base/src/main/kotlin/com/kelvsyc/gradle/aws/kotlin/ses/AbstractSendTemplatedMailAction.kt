@@ -1,16 +1,13 @@
 package com.kelvsyc.gradle.aws.kotlin.ses
 
-import aws.sdk.kotlin.services.ses.SesClient
 import aws.sdk.kotlin.services.ses.model.Destination
 import aws.sdk.kotlin.services.ses.model.SendTemplatedEmailRequest
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
-import org.gradle.api.tasks.Internal
 
 /**
  * Base [WorkAction] for sending a templated email via SES.
@@ -19,12 +16,9 @@ import org.gradle.api.tasks.Internal
  */
 abstract class AbstractSendTemplatedMailAction<P : AbstractSendTemplatedMailAction.Parameters> : WorkAction<P> {
     interface Parameters : WorkParameters {
-        /** The shared build service managing SES clients. */
+        /** The shared build service managing the SES client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [SesClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<SesClientBuildService>
 
         /** The sender (From) email address. */
         val sender: Property<String>
@@ -49,8 +43,6 @@ abstract class AbstractSendTemplatedMailAction<P : AbstractSendTemplatedMailActi
         val templateJson: Property<String>
     }
 
-    private val client: Provider<SesClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
         val destination = Destination {
             toAddresses = parameters.recipients.getOrElse(emptyList())
@@ -66,7 +58,7 @@ abstract class AbstractSendTemplatedMailAction<P : AbstractSendTemplatedMailActi
         }
 
         runBlocking {
-            client.get().sendTemplatedEmail(request)
+            parameters.service.get().getClient().sendTemplatedEmail(request)
         }
     }
 }

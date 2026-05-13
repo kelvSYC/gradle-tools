@@ -1,15 +1,12 @@
 package com.kelvsyc.gradle.aws.java.sqs
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
-import software.amazon.awssdk.services.sqs.SqsClient
 import software.amazon.awssdk.services.sqs.model.MessageAttributeValue
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest
-import org.gradle.api.tasks.Internal
 
 /**
  * A [WorkAction] that sends a single message to an SQS queue.
@@ -22,16 +19,9 @@ abstract class SendMessageAction : WorkAction<SendMessageAction.Parameters> {
      * Parameters for [SendMessageAction].
      */
     interface Parameters : WorkParameters {
-        /**
-         * The shared [ClientsBaseService] holding the registered SQS client.
-         */
+        /** The build service managing the SQS client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /**
-         * Registered name of an [SqsClientInfo].
-         */
-        val clientName: Property<String>
+        val service: Property<SqsClientBuildService>
 
         /**
          * URL of the target SQS queue.
@@ -59,8 +49,6 @@ abstract class SendMessageAction : WorkAction<SendMessageAction.Parameters> {
         val messageDeduplicationId: Property<String>
     }
 
-    private val client: Provider<SqsClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
         val request = SendMessageRequest.builder().apply {
             queueUrl(parameters.queueUrl.get())
@@ -72,6 +60,6 @@ abstract class SendMessageAction : WorkAction<SendMessageAction.Parameters> {
             parameters.messageDeduplicationId.orNull?.let { messageDeduplicationId(it) }
         }.build()
 
-        client.get().sendMessage(request)
+        parameters.service.get().getClient().sendMessage(request)
     }
 }

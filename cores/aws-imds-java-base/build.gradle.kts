@@ -3,19 +3,12 @@ import org.jetbrains.dokka.gradle.DokkaExtension
 plugins {
     id("com.kelvsyc.internal.dokka")
     id("com.kelvsyc.internal.jacoco")
-    id("com.kelvsyc.internal.kotlin-plugin")
+    id("com.kelvsyc.internal.kotlin-gradle-library")
     id("com.kelvsyc.internal.github-publishing")
 }
 
 configure<DokkaExtension> {
     moduleName.set("IMDS Java Base")
-}
-
-gradlePlugin {
-    plugins.register("aws-imds-java-base") {
-        id = "com.kelvsyc.gradle.aws-imds-java-base"
-        implementationClass = "com.kelvsyc.gradle.plugins.ImdsJavaBasePlugin"
-    }
 }
 
 dependencies {
@@ -25,4 +18,9 @@ dependencies {
     api(libs.aws.sdk.core.java)
 
     testImplementation(libs.mockk)
+}
+
+tasks.test {
+    // FIXME https://github.com/gradle/gradle/issues/18647
+    jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
 }

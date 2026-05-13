@@ -1,7 +1,6 @@
 package com.kelvsyc.gradle.aws.java.ses
 
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
@@ -35,13 +34,13 @@ class AbstractSendBulkTemplatedMailSpec : FunSpec() {
                 sender.set("sender@example.com")
                 templateName.set("my-template")
                 defaultTemplateData.set("{\"key\":\"default\"}")
-                registerEntry("e1") {
-                    recipients.set(listOf("to1@example.com"))
-                    templateData.set("{\"key\":\"value1\"}")
+                registerEntry("e1") { entry ->
+                    entry.recipients.set(listOf("to1@example.com"))
+                    entry.templateData.set("{\"key\":\"value1\"}")
                 }
-                registerEntry("e2") {
-                    recipients.set(listOf("to2@example.com"))
-                    ccAddresses.set(listOf("cc@example.com"))
+                registerEntry("e2") { entry ->
+                    entry.recipients.set(listOf("to2@example.com"))
+                    entry.ccAddresses.set(listOf("cc@example.com"))
                 }
             }
             task.get().run()
@@ -79,8 +78,8 @@ class AbstractSendBulkTemplatedMailSpec : FunSpec() {
                 sender.set("sender@example.com")
                 templateName.set("my-template")
                 repeat(120) { i ->
-                    registerEntry("e$i") {
-                        recipients.set(listOf("to$i@example.com"))
+                    registerEntry("e$i") { entry ->
+                        entry.recipients.set(listOf("to$i@example.com"))
                     }
                 }
             }
@@ -110,11 +109,11 @@ class AbstractSendBulkTemplatedMailSpec : FunSpec() {
                 client.set(ses)
                 sender.set("sender@example.com")
                 templateName.set("my-template")
-                registerEntry("e1") {
-                    recipients.set(listOf("good@example.com"))
+                registerEntry("e1") { entry ->
+                    entry.recipients.set(listOf("good@example.com"))
                 }
-                registerEntry("e2") {
-                    recipients.set(listOf("bad@example.com"))
+                registerEntry("e2") { entry ->
+                    entry.recipients.set(listOf("bad@example.com"))
                 }
             }
 
@@ -138,9 +137,9 @@ class AbstractSendBulkTemplatedMailSpec : FunSpec() {
                 client.set(ses)
                 sender.set("sender@example.com")
                 templateName.set("my-template")
-                registerEntry("e1") {
-                    recipients.set(listOf("to@example.com"))
-                    templateData.set("{\"key\":\"value\"}")
+                registerEntry("e1") { entry ->
+                    entry.recipients.set(listOf("to@example.com"))
+                    entry.templateData.set("{\"key\":\"value\"}")
                 }
             }
             task.get().run()

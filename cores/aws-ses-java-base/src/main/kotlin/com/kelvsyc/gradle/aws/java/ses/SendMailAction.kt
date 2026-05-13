@@ -1,18 +1,15 @@
 package com.kelvsyc.gradle.aws.java.ses
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
-import software.amazon.awssdk.services.ses.SesClient
 import software.amazon.awssdk.services.ses.model.Body
 import software.amazon.awssdk.services.ses.model.Content
 import software.amazon.awssdk.services.ses.model.Destination
 import software.amazon.awssdk.services.ses.model.Message
 import software.amazon.awssdk.services.ses.model.SendEmailRequest
-import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation sending a simple email via SES.
@@ -21,12 +18,9 @@ import org.gradle.api.tasks.Internal
  */
 abstract class SendMailAction : WorkAction<SendMailAction.Parameters> {
     interface Parameters : WorkParameters {
-        /** The shared build service managing SES clients. */
+        /** The build service managing the SES client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [SesClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<SesClientBuildService>
 
         /** The sender (From) email address. */
         val sender: Property<String>
@@ -49,8 +43,6 @@ abstract class SendMailAction : WorkAction<SendMailAction.Parameters> {
         /** Plain-text body content. */
         val textMessage: Property<String>
     }
-
-    private val client: Provider<SesClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     private val subjectContent = parameters.subject.map {
         Content.builder().apply {
@@ -93,6 +85,6 @@ abstract class SendMailAction : WorkAction<SendMailAction.Parameters> {
             message(message)
         }.build()
 
-        client.get().sendEmail(request)
+        parameters.service.get().getClient().sendEmail(request)
     }
 }

@@ -1,14 +1,11 @@
 package com.kelvsyc.gradle.aws.java.codeartifact
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import software.amazon.awssdk.services.codeartifact.CodeartifactClient
+import org.gradle.api.tasks.Internal
 import software.amazon.awssdk.services.codeartifact.model.CodeartifactException
 import software.amazon.awssdk.services.codeartifact.model.GetAuthorizationTokenRequest
-import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation retrieving an authorization token from AWS CodeArtifact.
@@ -20,12 +17,9 @@ abstract class GetAuthorizationTokenValueSource : ValueSource<String, GetAuthori
      * Parameters for [GetAuthorizationTokenValueSource].
      */
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing CodeArtifact clients. */
+        /** The build service managing the CodeArtifact client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [CodeArtifactClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<CodeArtifactClientBuildService>
 
         /** The CodeArtifact domain name. */
         val domain: Property<String>
@@ -41,8 +35,6 @@ abstract class GetAuthorizationTokenValueSource : ValueSource<String, GetAuthori
         val duration: Property<Long>
     }
 
-    private val client: Provider<CodeartifactClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun obtain(): String? {
         val request = GetAuthorizationTokenRequest.builder().apply {
             domain(parameters.domain.get())
@@ -52,7 +44,7 @@ abstract class GetAuthorizationTokenValueSource : ValueSource<String, GetAuthori
         }.build()
 
         return try {
-            val response = client.get().getAuthorizationToken(request)
+            val response = parameters.service.get().getClient().getAuthorizationToken(request)
             response.authorizationToken()
         } catch (_: CodeartifactException) {
             null

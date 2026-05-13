@@ -1,16 +1,13 @@
 package com.kelvsyc.gradle.aws.java.codeartifact
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import com.kelvsyc.gradle.providers.asPath
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
-import software.amazon.awssdk.services.codeartifact.CodeartifactClient
 import software.amazon.awssdk.services.codeartifact.model.PackageFormat
 import software.amazon.awssdk.services.codeartifact.model.PublishPackageVersionRequest
-import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation publishing an asset to a CodeArtifact generic package version.
@@ -20,12 +17,9 @@ abstract class PublishPackageVersionAction : WorkAction<PublishPackageVersionAct
      * Parameters for [PublishPackageVersionAction].
      */
     interface Parameters : WorkParameters {
-        /** The shared build service managing CodeArtifact clients. */
+        /** The build service managing the CodeArtifact client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [CodeArtifactClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<CodeArtifactClientBuildService>
 
         /** The CodeArtifact domain name. */
         val domain: Property<String>
@@ -62,8 +56,6 @@ abstract class PublishPackageVersionAction : WorkAction<PublishPackageVersionAct
         val unfinished: Property<Boolean>
     }
 
-    private val client: Provider<CodeartifactClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
         val request = PublishPackageVersionRequest.builder().apply {
             domain(parameters.domain.get())
@@ -82,6 +74,6 @@ abstract class PublishPackageVersionAction : WorkAction<PublishPackageVersionAct
             }
         }.build()
 
-        client.get().publishPackageVersion(request, parameters.assetContent.asPath.get())
+        parameters.service.get().getClient().publishPackageVersion(request, parameters.assetContent.asPath.get())
     }
 }

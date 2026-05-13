@@ -1,16 +1,13 @@
 package com.kelvsyc.gradle.aws.java.codeartifact
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import software.amazon.awssdk.services.codeartifact.CodeartifactClient
+import org.gradle.api.tasks.Internal
 import software.amazon.awssdk.services.codeartifact.model.CodeartifactException
 import software.amazon.awssdk.services.codeartifact.model.ListPackageVersionsRequest
 import software.amazon.awssdk.services.codeartifact.model.ListPackageVersionsResponse
 import software.amazon.awssdk.services.codeartifact.model.PackageFormat
-import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation providing a list of package version strings from a CodeArtifact repository.
@@ -23,12 +20,9 @@ abstract class ListPackageVersionsValueSource :
      * Parameters for [ListPackageVersionsValueSource].
      */
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing CodeArtifact clients. */
+        /** The build service managing the CodeArtifact client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [CodeArtifactClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<CodeArtifactClientBuildService>
 
         /** The CodeArtifact domain name. */
         val domain: Property<String>
@@ -49,9 +43,8 @@ abstract class ListPackageVersionsValueSource :
         val packageValue: Property<String>
     }
 
-    private val client: Provider<CodeartifactClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun obtain(): List<String>? {
+        val client = parameters.service.get().getClient()
         val baseRequest = ListPackageVersionsRequest.builder().apply {
             domain(parameters.domain.get())
             domainOwner(parameters.domainOwner.get())
@@ -66,7 +59,7 @@ abstract class ListPackageVersionsValueSource :
             var nextToken: String? = null
             do {
                 val request = baseRequest.nextToken(nextToken).build()
-                val response: ListPackageVersionsResponse = client.get().listPackageVersions(request)
+                val response: ListPackageVersionsResponse = client.listPackageVersions(request)
                 response.versions().forEach { versions.add(it.version()) }
                 nextToken = response.nextToken()
             } while (nextToken != null)

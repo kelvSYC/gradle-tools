@@ -1,41 +1,42 @@
 # AWS SQS Java Base
 
-A Gradle plugin providing managed AWS Simple Queue Service (SQS) client integration using the AWS SDK for Java.
+A Kotlin library providing managed AWS Simple Queue Service (SQS) client integration using the AWS SDK for Java,
+built on `clients-base`.
 
-## Applying the Plugin
+## Dependency
 
 ```kotlin
-plugins {
-    id("com.kelvsyc.gradle.aws-sqs-java-base")
+dependencies {
+    implementation("com.kelvsyc.gradle:aws-sqs-java-base")
 }
 ```
 
-## Client Types
+## Build Services
 
-Two client info types are registered:
-
-| Client info type | Client type | Use case |
+| Class | Client type | Use case |
 |---|---|---|
-| `SqsClientInfo` | `SqsClient` | Synchronous SQS operations |
-| `SqsAsyncClientInfo` | `SqsAsyncClient` | Asynchronous SQS operations |
+| `SqsClientBuildService` | `SqsClient` | Synchronous SQS operations |
+| `SqsAsyncClientBuildService` | `SqsAsyncClient` | Asynchronous SQS operations |
 
-Both extend `AwsClientInfo` from `aws-java-extensions`. Register a client:
+Register a build service from a plugin or `build.gradle.kts`:
 
 ```kotlin
-serviceClients.service.get().registerIfAbsent<SqsClientInfo>("sqs") {
-    region.set(Region.US_EAST_1)
-    credentials.set(DefaultCredentialsProvider.create())
+val sqs = gradle.sharedServices.registerIfAbsent("sqs", SqsClientBuildService::class) {
+    parameters.region.set(Region.US_EAST_1)
+    parameters.credentials.set(DefaultCredentialsProvider.create())
 }
 ```
+
+Both parameters are optional. Leave `region` unset to fall back to the SDK's `DefaultAwsRegionProviderChain`,
+and leave `credentials` unset to fall back to anonymous credentials.
 
 ## WorkAction: `SendMessageAction`
 
-Sends a message to an SQS queue:
+Sends a single message to an SQS queue:
 
 ```kotlin
 workerExecutor.noIsolation().submit(SendMessageAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("sqs")
+    service.set(sqs)
     queueUrl.set("https://sqs.us-east-1.amazonaws.com/111122223333/my-queue")
     messageBody.set("Hello from Gradle")
     attributes.put("EventType", MessageAttributeValue.builder()
@@ -47,8 +48,7 @@ workerExecutor.noIsolation().submit(SendMessageAction::class) {
 
 | Parameter | Type | Description |
 |---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of a `SqsClientInfo` |
+| `service` | `Property<SqsClientBuildService>` | The shared build service |
 | `queueUrl` | `Property<String>` | SQS queue URL |
 | `messageBody` | `Property<String>` | Message body |
 | `attributes` | `MapProperty<String, MessageAttributeValue>` | Optional message attributes |
@@ -60,8 +60,7 @@ deduplication disabled):
 
 ```kotlin
 workerExecutor.noIsolation().submit(SendMessageAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("sqs")
+    service.set(sqs)
     queueUrl.set("https://sqs.us-east-1.amazonaws.com/111122223333/my-queue.fifo")
     messageBody.set("Hello from Gradle")
     messageGroupId.set("build-events")
@@ -77,15 +76,15 @@ callers may register any number of entries.
 
 ```kotlin
 tasks.register<SendMessageBatch>("notify") {
-    clientName.set("sqs")
+    service.set(sqs)
     queueUrl.set("https://sqs.us-east-1.amazonaws.com/111122223333/my-queue")
 
-    registerEntry("module-a") {
-        messageBody.set("Module A built")
+    registerEntry("module-a") { entry ->
+        entry.messageBody.set("Module A built")
     }
-    registerEntry("module-b") {
-        messageBody.set("Module B built")
-        attributes.put("Severity", MessageAttributeValue.builder()
+    registerEntry("module-b") { entry ->
+        entry.messageBody.set("Module B built")
+        entry.attributes.put("Severity", MessageAttributeValue.builder()
             .dataType("String").stringValue("info").build())
     }
 }
@@ -96,11 +95,11 @@ any chunk's API call fails or if SQS reports per-entry failures (the failure mes
 entry ids).
 
 For FIFO queues, set `messageGroupId` (and `messageDeduplicationId` if needed) on each entry. Use
-`AbstractSendMessageBatch` directly to wire `client` from outside `ClientsBaseService`.
+`AbstractSendMessageBatch` directly to wire `client` from outside `SqsClientBuildService`.
 
 | Property | Type | Description |
 |---|---|---|
-| `clientName` | `Property<String>` | Registered name of a `SqsClientInfo` |
+| `service` | `Property<SqsClientBuildService>` | The shared build service |
 | `queueUrl` | `Property<String>` | SQS queue URL |
 | Entry: `messageBody` | `Property<String>` | Message body |
 | Entry: `attributes` | `MapProperty<String, MessageAttributeValue>` | Optional message attributes |
@@ -110,5 +109,4 @@ For FIFO queues, set `messageGroupId` (and `messageDeduplicationId` if needed) o
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure
-- [aws-java-extensions](../aws-java-extensions) — `AwsClientInfo` base interface and credential adapters
 - [aws-sqs-kotlin-base](../aws-sqs-kotlin-base) — Kotlin SDK variant

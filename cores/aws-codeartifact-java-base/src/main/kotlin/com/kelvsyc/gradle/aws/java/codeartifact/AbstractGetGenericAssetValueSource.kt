@@ -1,16 +1,13 @@
 package com.kelvsyc.gradle.aws.java.codeartifact
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 import software.amazon.awssdk.http.AbortableInputStream
-import software.amazon.awssdk.services.codeartifact.CodeartifactClient
 import software.amazon.awssdk.services.codeartifact.model.GetPackageVersionAssetRequest
 import software.amazon.awssdk.services.codeartifact.model.GetPackageVersionAssetResponse
 import software.amazon.awssdk.services.codeartifact.model.PackageFormat
-import org.gradle.api.tasks.Internal
 
 /**
  * Base class for [ValueSource] implementations that provide a value by reading an asset located in a CodeArtifact
@@ -29,12 +26,9 @@ abstract class AbstractGetGenericAssetValueSource<T : Any, P : AbstractGetGeneri
      * [AbstractGetGenericAssetValueSource] subclass.
      */
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing CodeArtifact clients. */
+        /** The build service managing the CodeArtifact client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [CodeArtifactClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<CodeArtifactClientBuildService>
 
         /** The CodeArtifact domain name. */
         val domain: Property<String>
@@ -58,8 +52,6 @@ abstract class AbstractGetGenericAssetValueSource<T : Any, P : AbstractGetGeneri
         val asset: Property<String>
     }
 
-    private val client: Provider<CodeartifactClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     abstract fun doObtain(response: GetPackageVersionAssetResponse, input: AbortableInputStream): T?
 
     override fun obtain(): T? {
@@ -75,6 +67,6 @@ abstract class AbstractGetGenericAssetValueSource<T : Any, P : AbstractGetGeneri
             asset(parameters.asset.get())
         }.build()
 
-        return client.get().getPackageVersionAsset(request, ::doObtain)
+        return parameters.service.get().getClient().getPackageVersionAsset(request, ::doObtain)
     }
 }

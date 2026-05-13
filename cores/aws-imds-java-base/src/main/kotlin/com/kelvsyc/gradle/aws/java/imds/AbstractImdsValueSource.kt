@@ -1,13 +1,10 @@
 package com.kelvsyc.gradle.aws.java.imds
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import software.amazon.awssdk.imds.Ec2MetadataClient
-import software.amazon.awssdk.imds.Ec2MetadataResponse
 import org.gradle.api.tasks.Internal
+import software.amazon.awssdk.imds.Ec2MetadataResponse
 
 /**
  * Base class for [ValueSource]s providing values retrieved from the
@@ -24,18 +21,13 @@ abstract class AbstractImdsValueSource<T : Any, P : AbstractImdsValueSource.Para
      * subclass.
      */
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing IMDS clients. */
+        /** The build service managing the IMDS client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of an [ImdsClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<ImdsClientBuildService>
 
         /** The IMDS metadata path to query. */
         val path: Property<String>
     }
-
-    private val client: Provider<Ec2MetadataClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     /**
      * Transforms the IMDS response into the desired type.
@@ -47,7 +39,7 @@ abstract class AbstractImdsValueSource<T : Any, P : AbstractImdsValueSource.Para
     abstract fun doObtain(response: Ec2MetadataResponse): T?
 
     override fun obtain(): T? {
-        val response = client.get().get(parameters.path.get())
+        val response = parameters.service.get().getClient().get(parameters.path.get())
         return doObtain(response)
     }
 }
