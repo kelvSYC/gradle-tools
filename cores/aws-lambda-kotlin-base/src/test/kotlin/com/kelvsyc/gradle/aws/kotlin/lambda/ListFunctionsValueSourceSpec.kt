@@ -5,29 +5,24 @@ import aws.sdk.kotlin.services.lambda.model.FunctionConfiguration
 import aws.sdk.kotlin.services.lambda.model.ListFunctionsRequest
 import aws.sdk.kotlin.services.lambda.model.ListFunctionsResponse
 import aws.sdk.kotlin.services.lambda.paginators.listFunctionsPaginated
-import com.kelvsyc.gradle.clients.ClientsBaseExtension
-import com.kelvsyc.gradle.internal.aws.kotlin.lambda.MockLambdaClientInfoInternal
-import com.kelvsyc.gradle.plugins.LambdaKotlinBasePlugin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.maps.shouldContain
 import io.kotest.matchers.maps.shouldHaveSize
 import io.mockk.every
+import io.mockk.mockk
 import io.mockk.mockkStatic
 import kotlinx.coroutines.flow.flowOf
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.of
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 
 class ListFunctionsValueSourceSpec : FunSpec() {
     init {
         test("obtain - returns map of function names to ARNs") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(LambdaKotlinBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockLambdaClientInfo::class, MockLambdaClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockLambdaClientInfo>("mock") {}
-            val client = extension.getClient<LambdaClient, MockLambdaClientInfo>("mock").get()!!
+            val client = mockk<LambdaClient>()
+            MockLambdaClientBuildService.mockClient = client
+            val service =
+                project.gradle.sharedServices.registerIfAbsent("lambda", MockLambdaClientBuildService::class)
 
             mockkStatic("aws.sdk.kotlin.services.lambda.paginators.PaginatorsKt")
             every { client.listFunctionsPaginated(any<ListFunctionsRequest>()) } returns flowOf(
@@ -45,9 +40,8 @@ class ListFunctionsValueSourceSpec : FunSpec() {
                 }
             )
 
-            val provider = project.providers.of(ListFunctionsValueSource::class) {
-                parameters.service.set(extension.service)
-                parameters.clientName.set("mock")
+            val provider = project.providers.ofKt(ListFunctionsValueSource::class) {
+                parameters.service.set(service)
             }
             val result = provider.get()
 

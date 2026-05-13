@@ -1,15 +1,11 @@
 package com.kelvsyc.gradle.aws.kotlin.lambda
 
-import aws.sdk.kotlin.services.lambda.LambdaClient
 import aws.sdk.kotlin.services.lambda.model.UpdateFunctionCodeRequest
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
-import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation that updates the deployment package (zip file) for a Lambda function.
@@ -18,13 +14,12 @@ import org.gradle.api.tasks.Internal
  * is `true`, AWS publishes a new function version after the update.
  */
 abstract class UpdateFunctionCodeAction : WorkAction<UpdateFunctionCodeAction.Parameters> {
+    /**
+     * Parameters for [UpdateFunctionCodeAction].
+     */
     interface Parameters : WorkParameters {
-        /** The shared build service managing Lambda clients. */
-        @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [LambdaClientInfo]. */
-        val clientName: Property<String>
+        /** The build service managing the Lambda client. */
+        val service: Property<LambdaClientBuildService>
 
         /** The function name, ARN, or partial ARN to update. */
         val functionName: Property<String>
@@ -36,8 +31,6 @@ abstract class UpdateFunctionCodeAction : WorkAction<UpdateFunctionCodeAction.Pa
         val publish: Property<Boolean>
     }
 
-    private val client: Provider<LambdaClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
         val bytes = parameters.zipFile.get().asFile.readBytes()
         val request = UpdateFunctionCodeRequest {
@@ -47,7 +40,7 @@ abstract class UpdateFunctionCodeAction : WorkAction<UpdateFunctionCodeAction.Pa
         }
 
         runBlocking {
-            client.get().updateFunctionCode(request)
+            parameters.service.get().getClient().updateFunctionCode(request)
         }
     }
 }
