@@ -1,9 +1,7 @@
 package com.kelvsyc.gradle.bitbucket.cloud
 
 import com.kelvsyc.gradle.bitbucket.cloud.model.CommitStatus
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import org.gradle.api.tasks.Internal
@@ -19,38 +17,22 @@ abstract class GetCommitStatusesValueSource :
      * Parameters for [GetCommitStatusesValueSource].
      */
     interface Parameters : ValueSourceParameters {
-        /**
-         * The shared build service managing Bitbucket Cloud clients.
-         */
+        /** The build service managing the Bitbucket Cloud client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
+        val service: Property<BitbucketCloudClientBuildService>
 
-        /**
-         * Registered name of a [BitbucketCloudClientInfo].
-         */
-        val clientName: Property<String>
-
-        /**
-         * The Bitbucket workspace slug or UUID.
-         */
+        /** The Bitbucket workspace slug or UUID. */
         val workspace: Property<String>
 
-        /**
-         * The repository slug.
-         */
+        /** The repository slug. */
         val repoSlug: Property<String>
 
-        /**
-         * The full commit hash.
-         */
+        /** The full commit hash. */
         val commit: Property<String>
     }
 
-    private val client: Provider<BitbucketCloudService> =
-        parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun obtain(): List<CommitStatus> {
-        val service = client.get()
+        val service = parameters.service.get().getClient()
         return fetchAllPages(
             firstPage = service.getCommitStatuses(
                 workspace = parameters.workspace.get(),
