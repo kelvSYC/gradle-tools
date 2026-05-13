@@ -1,123 +1,81 @@
 # AWS CodeArtifact Java Base
 
-A Gradle plugin providing managed AWS CodeArtifact client integration using the AWS SDK for Java.
+A Kotlin library providing managed AWS CodeArtifact client integration using the AWS SDK for Java, built on
+`clients-base`.
 
-## Applying the Plugin
+## Dependency
 
 ```kotlin
-plugins {
-    id("com.kelvsyc.gradle.aws-codeartifact-java-base")
+dependencies {
+    implementation("com.kelvsyc.gradle:aws-codeartifact-java-base")
 }
 ```
 
-## Client Types
+## Build Services
 
-Two client info types are registered:
-
-| Client info type | Client type | Use case |
+| Class | Client type | Use case |
 |---|---|---|
-| `CodeArtifactClientInfo` | `CodeartifactClient` | Synchronous CodeArtifact operations |
-| `CodeArtifactAsyncClientInfo` | `CodeartifactAsyncClient` | Asynchronous CodeArtifact operations |
+| `CodeArtifactClientBuildService` | `CodeartifactClient` | Synchronous CodeArtifact operations |
+| `CodeArtifactAsyncClientBuildService` | `CodeartifactAsyncClient` | Asynchronous CodeArtifact operations |
 
-`CodeArtifactClientInfo` extends `AwsClientInfo` from `aws-java-extensions`.
-`CodeArtifactAsyncClientInfo` declares `region: Property<Region>` and `credentials: Property<AwsCredentialsProvider>`
-directly. Both default to `AnonymousCredentialsProvider` if credentials are absent.
-
-Use the convenience extensions to register clients:
+Register a build service from a plugin or `build.gradle.kts`:
 
 ```kotlin
-serviceClients.registerAwsCodeArtifactJavaClient("myCodeArtifact") {
-    region.set(Region.US_EAST_1)
-    credentials.set(DefaultCredentialsProvider.create())
+val codeartifact = gradle.sharedServices.registerIfAbsent("codeartifact", CodeArtifactClientBuildService::class) {
+    parameters.region.set(Region.US_EAST_1)
+    parameters.credentials.set(DefaultCredentialsProvider.create())
 }
 ```
 
-## Value Source: `GetAuthorizationTokenValueSource`
+Both parameters are optional. Leave `region` unset to fall back to the SDK's `DefaultAwsRegionProviderChain`,
+and leave `credentials` unset to fall back to anonymous credentials.
 
-Retrieves an AWS CodeArtifact authorization token:
+## Value Sources
+
+### `GetAuthorizationTokenValueSource`
+
+Retrieves a temporary authorization token for a CodeArtifact domain:
 
 ```kotlin
 val token: Provider<String> = providers.of(GetAuthorizationTokenValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("myCodeArtifact")
+        service.set(codeartifact)
         domain.set("my-domain")
-        domainOwner.set("111122223333")
-        duration.set(3600L)   // seconds; required
+        domainOwner.set("123456789012")
+        duration.set(900L)
     }
 }
 ```
 
 Returns `null` if the call throws `CodeartifactException`.
 
-Parameters:
+### `GetRepositoryEndpointValueSource`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of a `CodeArtifactClientInfo` |
-| `domain` | `Property<String>` | CodeArtifact domain name |
-| `domainOwner` | `Property<String>` | AWS account ID owning the domain |
-| `duration` | `Property<Long>` | Token validity in seconds |
-
-## Value Source: `GetRepositoryEndpointValueSource`
-
-Retrieves the endpoint URL for a CodeArtifact repository:
+Returns the endpoint URL for a CodeArtifact repository (defaults to `EndpointType.IPV4` / `PackageFormat.GENERIC`):
 
 ```kotlin
 val endpoint: Provider<String> = providers.of(GetRepositoryEndpointValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("myCodeArtifact")
+        service.set(codeartifact)
         domain.set("my-domain")
-        domainOwner.set("111122223333")
+        domainOwner.set("123456789012")
         repository.set("my-repo")
-        endpointType.set(EndpointType.IPV4)    // optional, defaults to IPV4
-        format.set(PackageFormat.MAVEN)        // optional, defaults to GENERIC
     }
 }
 ```
 
 Returns `null` if the call throws `CodeartifactException`.
 
-## Value Source: `AbstractGetGenericAssetValueSource`
+### `ListPackageVersionsValueSource`
 
-Extend this class to read an asset from a CodeArtifact generic repository into memory:
-
-```kotlin
-abstract class MyAssetValueSource
-    : AbstractGetGenericAssetValueSource<String, AbstractGetGenericAssetValueSource.Parameters>() {
-
-    override fun doObtain(response: GetPackageVersionAssetResponse, input: AbortableInputStream): String? =
-        input.bufferedReader().use { it.readText() }
-}
-```
-
-Parameters extend `AbstractGetGenericAssetValueSource.Parameters`:
-
-| Parameter | Type | Description |
-|---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of a `CodeArtifactClientInfo` |
-| `domain` | `Property<String>` | CodeArtifact domain name |
-| `domainOwner` | `Property<String>` | AWS account ID owning the domain |
-| `repository` | `Property<String>` | Repository name |
-| `namespace` | `Property<String>` | Package namespace |
-| `packageValue` | `Property<String>` | Package name |
-| `packageVersion` | `Property<String>` | Package version |
-| `asset` | `Property<String>` | Asset name |
-
-## Value Source: `ListPackageVersionsValueSource`
-
-Lists all version strings for a package in a CodeArtifact repository, paginating automatically:
+Returns all version strings for a CodeArtifact package, paginating internally:
 
 ```kotlin
 val versions: Provider<List<String>> = providers.of(ListPackageVersionsValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("myCodeArtifact")
+        service.set(codeartifact)
         domain.set("my-domain")
-        domainOwner.set("111122223333")
+        domainOwner.set("123456789012")
         repository.set("my-repo")
         format.set(PackageFormat.GENERIC)
         namespace.set("my-namespace")
@@ -128,61 +86,61 @@ val versions: Provider<List<String>> = providers.of(ListPackageVersionsValueSour
 
 Returns `null` if the call throws `CodeartifactException`.
 
-Parameters:
+### `AbstractGetGenericAssetValueSource`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of a `CodeArtifactClientInfo` |
-| `domain` | `Property<String>` | CodeArtifact domain name |
-| `domainOwner` | `Property<String>` | AWS account ID owning the domain |
-| `repository` | `Property<String>` | Repository name |
-| `format` | `Property<PackageFormat>` | Package format |
-| `namespace` | `Property<String>` | Package namespace |
-| `packageValue` | `Property<String>` | Package name |
+Extend to read a single asset from a CodeArtifact generic repository and transform the response:
 
-## WorkAction: `GetGenericPackageVersionAssetAction`
+```kotlin
+abstract class MyAssetValueSource :
+    AbstractGetGenericAssetValueSource<String, AbstractGetGenericAssetValueSource.Parameters>() {
+    override fun doObtain(response: GetPackageVersionAssetResponse, input: AbortableInputStream): String =
+        input.bufferedReader().readText()
+}
+```
 
-Downloads a CodeArtifact generic repository asset to a file. Submit via `WorkerExecutor`:
+Parameters: `service`, `domain`, `domainOwner`, `repository`, `namespace`, `packageValue`, `packageVersion`, `asset`.
+
+## WorkActions
+
+### `GetGenericPackageVersionAssetAction`
+
+Downloads a single CodeArtifact generic-repo asset to a file:
 
 ```kotlin
 workerExecutor.noIsolation().submit(GetGenericPackageVersionAssetAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("myCodeArtifact")
+    service.set(codeartifact)
     domain.set("my-domain")
-    domainOwner.set("111122223333")
+    domainOwner.set("123456789012")
     repository.set("my-repo")
     namespace.set("my-namespace")
     packageValue.set("my-package")
     packageVersion.set("1.0.0")
-    asset.set("my-package-1.0.0.jar")
-    outputFile.set(layout.buildDirectory.file("downloads/my-package-1.0.0.jar"))
+    asset.set("my-asset.zip")
+    outputFile.set(layout.buildDirectory.file("downloads/my-asset.zip"))
 }
 ```
 
-## WorkAction: `PublishPackageVersionAction`
+### `PublishPackageVersionAction`
 
-Publishes an asset to a CodeArtifact generic package version. Submit via `WorkerExecutor`:
+Uploads a file as a CodeArtifact generic package version asset:
 
 ```kotlin
 workerExecutor.noIsolation().submit(PublishPackageVersionAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("myCodeArtifact")
+    service.set(codeartifact)
     domain.set("my-domain")
-    domainOwner.set("111122223333")
+    domainOwner.set("123456789012")
     repository.set("my-repo")
     namespace.set("my-namespace")
     packageValue.set("my-package")
     packageVersion.set("1.0.0")
     assetName.set("my-asset.jar")
-    assetSHA256.set("abc123...")
-    assetContent.set(layout.buildDirectory.file("artifacts/my-asset.jar"))
-    unfinished.set(false) // optional; set true when uploading multiple assets
+    assetSHA256.set("…sha256 hex…")
+    assetContent.set(layout.buildDirectory.file("dist/my-asset.jar"))
+    unfinished.set(false)   // optional; set to true when uploading multiple assets to the same version
 }
 ```
 
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure
-- [aws-java-extensions](../aws-java-extensions) — `AwsClientInfo` base interface and credential adapters
 - [aws-codeartifact-kotlin-base](../aws-codeartifact-kotlin-base) — Kotlin SDK variant
