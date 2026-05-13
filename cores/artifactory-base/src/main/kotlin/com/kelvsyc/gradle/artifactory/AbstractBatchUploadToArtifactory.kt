@@ -1,6 +1,5 @@
 package com.kelvsyc.gradle.artifactory
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.Named
@@ -38,16 +37,10 @@ abstract class AbstractBatchUploadToArtifactory @Inject constructor(
     private val workerExecutor: WorkerExecutor
 ) : DefaultTask() {
     /**
-     * The [ClientsBaseService] used to obtain the Artifactory client.
+     * The build service managing the Artifactory client to use.
      */
     @get:Internal
-    abstract val service: Property<ClientsBaseService>
-
-    /**
-     * Registered name of an [ArtifactoryClientInfo].
-     */
-    @get:Internal
-    abstract val clientName: Property<String>
+    abstract val service: Property<ArtifactoryClientBuildService>
 
     /**
      * Information about an artifact to be uploaded to Artifactory.
@@ -97,12 +90,11 @@ abstract class AbstractBatchUploadToArtifactory @Inject constructor(
     fun run() {
         val queue = workerExecutor.noIsolation()
         artifacts.get().forEach { (_, artifact) ->
-            queue.submit(UploadArtifactAction::class.java) {
-                service.set(this@AbstractBatchUploadToArtifactory.service)
-                clientName.set(this@AbstractBatchUploadToArtifactory.clientName)
-                repository.set(artifact.repository)
-                path.set(artifact.path)
-                inputFile.set(artifact.inputFile)
+            queue.submit(UploadArtifactAction::class.java) { params ->
+                params.service.set(this@AbstractBatchUploadToArtifactory.service)
+                params.repository.set(artifact.repository)
+                params.path.set(artifact.path)
+                params.inputFile.set(artifact.inputFile)
             }
         }
     }
