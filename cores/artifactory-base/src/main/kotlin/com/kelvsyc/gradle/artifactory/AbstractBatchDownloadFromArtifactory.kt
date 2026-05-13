@@ -1,6 +1,5 @@
 package com.kelvsyc.gradle.artifactory
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.Named
@@ -35,16 +34,10 @@ abstract class AbstractBatchDownloadFromArtifactory @Inject constructor(
     private val workerExecutor: WorkerExecutor
 ) : DefaultTask() {
     /**
-     * The [ClientsBaseService] used to obtain the Artifactory client.
+     * The build service managing the Artifactory client to use.
      */
     @get:Internal
-    abstract val service: Property<ClientsBaseService>
-
-    /**
-     * Registered name of an [ArtifactoryClientInfo].
-     */
-    @get:Internal
-    abstract val clientName: Property<String>
+    abstract val service: Property<ArtifactoryClientBuildService>
 
     /**
      * Information about an artifact to be retrieved from Artifactory.
@@ -98,12 +91,11 @@ abstract class AbstractBatchDownloadFromArtifactory @Inject constructor(
     fun run() {
         val queue = workerExecutor.noIsolation()
         artifacts.get().forEach { (_, artifact) ->
-            queue.submit(DownloadArtifactAction::class.java) {
-                service.set(this@AbstractBatchDownloadFromArtifactory.service)
-                clientName.set(this@AbstractBatchDownloadFromArtifactory.clientName)
-                repository.set(artifact.repository)
-                path.set(artifact.path)
-                outputFile.set(artifact.outputFile)
+            queue.submit(DownloadArtifactAction::class.java) { params ->
+                params.service.set(this@AbstractBatchDownloadFromArtifactory.service)
+                params.repository.set(artifact.repository)
+                params.path.set(artifact.path)
+                params.outputFile.set(artifact.outputFile)
             }
         }
     }

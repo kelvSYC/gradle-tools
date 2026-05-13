@@ -15,10 +15,10 @@ class AbstractBatchUploadToArtifactorySpec : FunSpec() {
             val file = tempfile()
 
             val task = project.tasks.register<AbstractBatchUploadToArtifactory>("myTask") {
-                registerArtifact("artifact1") {
-                    repository.set("my-repo")
-                    path.set("my/path")
-                    inputFile.set(file)
+                registerArtifact("artifact1") { artifact ->
+                    artifact.repository.set("my-repo")
+                    artifact.path.set("my/path")
+                    artifact.inputFile.set(file)
                 }
             }
 
@@ -34,15 +34,15 @@ class AbstractBatchUploadToArtifactorySpec : FunSpec() {
             val file2 = tempfile()
 
             val task = project.tasks.register<AbstractBatchUploadToArtifactory>("myTask") {
-                registerArtifact("first") {
-                    repository.set("repo-a")
-                    path.set("path/a")
-                    inputFile.set(file1)
+                registerArtifact("first") { artifact ->
+                    artifact.repository.set("repo-a")
+                    artifact.path.set("path/a")
+                    artifact.inputFile.set(file1)
                 }
-                registerArtifact("second") {
-                    repository.set("repo-b")
-                    path.set("path/b")
-                    inputFile.set(file2)
+                registerArtifact("second") { artifact ->
+                    artifact.repository.set("repo-b")
+                    artifact.path.set("path/b")
+                    artifact.inputFile.set(file2)
                 }
             }
 
@@ -56,10 +56,10 @@ class AbstractBatchUploadToArtifactorySpec : FunSpec() {
             val file = tempfile()
 
             val task = project.tasks.register<AbstractBatchUploadToArtifactory>("myTask") {
-                registerArtifact("artifact1") {
-                    repository.set("my-repo")
-                    path.set("my/path")
-                    inputFile.set(file)
+                registerArtifact("artifact1") { artifact ->
+                    artifact.repository.set("my-repo")
+                    artifact.path.set("my/path")
+                    artifact.inputFile.set(file)
                 }
             }
 

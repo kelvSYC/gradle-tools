@@ -1,13 +1,10 @@
 package com.kelvsyc.gradle.artifactory
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
-import org.jfrog.artifactory.client.Artifactory
-import org.gradle.api.tasks.Internal
 
 /**
  * Gradle [WorkAction] for downloading a single artifact from an Artifactory repository.
@@ -18,8 +15,7 @@ import org.gradle.api.tasks.Internal
 abstract class DownloadArtifactAction : WorkAction<DownloadArtifactAction.Parameters> {
     interface Parameters : WorkParameters {
         @get:Internal
-        val service: Property<ClientsBaseService>
-        val clientName: Property<String>
+        val service: Property<ArtifactoryClientBuildService>
 
         val repository: Property<String>
         val path: Property<String>
@@ -27,10 +23,8 @@ abstract class DownloadArtifactAction : WorkAction<DownloadArtifactAction.Parame
         val outputFile: RegularFileProperty
     }
 
-    private val client: Provider<Artifactory> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
-        val inputStream = client.get()
+        val inputStream = parameters.service.get().getClient()
             .repository(parameters.repository.get())
             .download(parameters.path.get())
             .doDownload()

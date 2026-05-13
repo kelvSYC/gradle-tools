@@ -13,10 +13,10 @@ class AbstractBatchDownloadFromArtifactorySpec : FunSpec() {
             val project = ProjectBuilder.builder().build()
 
             val task = project.tasks.register<AbstractBatchDownloadFromArtifactory>("myTask") {
-                registerArtifact("artifact1") {
-                    repository.set("my-repo")
-                    path.set("my/path")
-                    outputFile.set(project.layout.buildDirectory.file("output.bin"))
+                registerArtifact("artifact1") { artifact ->
+                    artifact.repository.set("my-repo")
+                    artifact.path.set("my/path")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("output.bin"))
                 }
             }
 
@@ -30,15 +30,15 @@ class AbstractBatchDownloadFromArtifactorySpec : FunSpec() {
             val project = ProjectBuilder.builder().build()
 
             val task = project.tasks.register<AbstractBatchDownloadFromArtifactory>("myTask") {
-                registerArtifact("first") {
-                    repository.set("repo-a")
-                    path.set("path/a")
-                    outputFile.set(project.layout.buildDirectory.file("a.bin"))
+                registerArtifact("first") { artifact ->
+                    artifact.repository.set("repo-a")
+                    artifact.path.set("path/a")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("a.bin"))
                 }
-                registerArtifact("second") {
-                    repository.set("repo-b")
-                    path.set("path/b")
-                    outputFile.set(project.layout.buildDirectory.file("b.bin"))
+                registerArtifact("second") { artifact ->
+                    artifact.repository.set("repo-b")
+                    artifact.path.set("path/b")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("b.bin"))
                 }
             }
 
@@ -51,10 +51,10 @@ class AbstractBatchDownloadFromArtifactorySpec : FunSpec() {
             val project = ProjectBuilder.builder().build()
 
             val task = project.tasks.register<AbstractBatchDownloadFromArtifactory>("myTask") {
-                registerArtifact("artifact1") {
-                    repository.set("my-repo")
-                    path.set("my/path")
-                    outputFile.set(project.layout.buildDirectory.file("output.bin"))
+                registerArtifact("artifact1") { artifact ->
+                    artifact.repository.set("my-repo")
+                    artifact.path.set("my/path")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("output.bin"))
                 }
             }
 
