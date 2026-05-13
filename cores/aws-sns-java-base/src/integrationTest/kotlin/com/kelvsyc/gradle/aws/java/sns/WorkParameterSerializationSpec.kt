@@ -17,10 +17,10 @@ import java.io.File
  * client via `Property<SnsClient>` — the asymmetric shape mirroring the task-level BYO pattern. The probe
  * records the observed outcome so the deferred BYO question stays answered.
  *
- * Note: no `BuildServiceParameters` properties are set on the SNS service here. The config-cache probe
- * already documents that explicit `region` or `credentials` values currently break BuildService
- * parameter isolation; this spec is about the WorkerExecutor boundary, so we use the params-unset path to
- * isolate that boundary from the BuildService isolation failure mode.
+ * Note: no `BuildServiceParameters` properties are set on the SNS service here. The sibling
+ * [BuildServiceConfigurationCacheSpec] covers the BuildService parameter-isolation boundary in depth;
+ * this spec is focused on the `WorkerExecutor.submit()` boundary, so we use the params-unset path to keep
+ * those concerns isolated.
  */
 class WorkParameterSerializationSpec : FunSpec({
     test("Variant A baseline - Property<SnsClientBuildService> on WorkParameters succeeds") {
