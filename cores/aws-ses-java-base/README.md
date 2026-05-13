@@ -1,32 +1,34 @@
 # AWS SES Java Base
 
-A Gradle plugin providing managed AWS Simple Email Service (SES) client integration using the AWS SDK for Java.
+A Kotlin library providing managed AWS Simple Email Service (SES) client integration using the AWS SDK for Java,
+built on `clients-base`.
 
-## Applying the Plugin
+## Dependency
 
 ```kotlin
-plugins {
-    id("com.kelvsyc.gradle.aws-ses-java-base")
+dependencies {
+    implementation("com.kelvsyc.gradle:aws-ses-java-base")
 }
 ```
 
-## Client Types
+## Build Services
 
-Two client info types are registered:
-
-| Client info type | Client type | Use case |
+| Class | Client type | Use case |
 |---|---|---|
-| `SesClientInfo` | `SesClient` | Synchronous SES operations |
-| `SesAsyncClientInfo` | `SesAsyncClient` | Asynchronous SES operations |
+| `SesClientBuildService` | `SesClient` | Synchronous SES operations |
+| `SesAsyncClientBuildService` | `SesAsyncClient` | Asynchronous SES operations |
 
-Both extend `AwsClientInfo` from `aws-java-extensions`. Register a client:
+Register a build service from a plugin or `build.gradle.kts`:
 
 ```kotlin
-serviceClients.service.get().registerIfAbsent<SesClientInfo>("ses") {
-    region.set(Region.US_EAST_1)
-    credentials.set(DefaultCredentialsProvider.create())
+val ses = gradle.sharedServices.registerIfAbsent("ses", SesClientBuildService::class) {
+    parameters.region.set(Region.US_EAST_1)
+    parameters.credentials.set(DefaultCredentialsProvider.create())
 }
 ```
+
+Both parameters are optional. Leave `region` unset to fall back to the SDK's `DefaultAwsRegionProviderChain`,
+and leave `credentials` unset to fall back to anonymous credentials.
 
 ## WorkActions
 
@@ -36,8 +38,7 @@ Sends a plain and/or HTML email via SES:
 
 ```kotlin
 workerExecutor.noIsolation().submit(SendMailAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("ses")
+    service.set(ses)
     sender.set("no-reply@example.com")
     recipients.add("user@example.com")
     ccAddresses.add("cc@example.com")     // optional
@@ -48,16 +49,6 @@ workerExecutor.noIsolation().submit(SendMailAction::class) {
 }
 ```
 
-| Parameter | Type | Description |
-|---|---|---|
-| `sender` | `Property<String>` | From address |
-| `recipients` | `ListProperty<String>` | To addresses |
-| `ccAddresses` | `ListProperty<String>` | CC addresses (optional) |
-| `bccAddresses` | `ListProperty<String>` | BCC addresses (optional) |
-| `subject` | `Property<String>` | Email subject |
-| `htmlMessage` | `Property<String>` | HTML body (optional) |
-| `textMessage` | `Property<String>` | Plain-text body (optional) |
-
 ### `AbstractSendTemplatedMailAction`
 
 Extend this class to send a templated SES email. Subclasses must define a concrete `Parameters` interface extending
@@ -65,6 +56,7 @@ Extend this class to send a templated SES email. Subclasses must define a concre
 
 | Parameter | Type | Description |
 |---|---|---|
+| `service` | `Property<SesClientBuildService>` | The shared build service |
 | `sender` | `Property<String>` | From address |
 | `recipients` | `ListProperty<String>` | To addresses |
 | `ccAddresses` | `ListProperty<String>` | CC addresses (optional) |
@@ -79,6 +71,7 @@ Extend this class to send a raw MIME email. Subclasses must define a concrete `P
 
 | Parameter | Type | Description |
 |---|---|---|
+| `service` | `Property<SesClientBuildService>` | The shared build service |
 | `sender` | `Property<String>` | From address |
 | `message` | `Property<ByteArray>` | Raw MIME message bytes |
 
@@ -91,24 +84,24 @@ entries into the maximum batch size (50) supported by SES:
 
 ```kotlin
 tasks.register<SendBulkTemplatedMail>("notifyAll") {
-    clientName.set("ses")
+    service.set(ses)
     sender.set("no-reply@example.com")
     templateName.set("build-report")
     defaultTemplateData.set("{\"project\":\"my-project\"}")   // optional fallback
-    registerEntry("user1") {
-        recipients.set(listOf("user1@example.com"))
-        templateData.set("{\"project\":\"my-project\",\"status\":\"success\"}")
+    registerEntry("user1") { entry ->
+        entry.recipients.set(listOf("user1@example.com"))
+        entry.templateData.set("{\"project\":\"my-project\",\"status\":\"success\"}")
     }
-    registerEntry("user2") {
-        recipients.set(listOf("user2@example.com"))
-        ccAddresses.set(listOf("manager@example.com"))
+    registerEntry("user2") { entry ->
+        entry.recipients.set(listOf("user2@example.com"))
+        entry.ccAddresses.set(listOf("manager@example.com"))
     }
 }
 ```
 
 | Parameter | Type | Description |
 |---|---|---|
-| `clientName` | `Property<String>` | Registered name of a `SesClientInfo` |
+| `service` | `Property<SesClientBuildService>` | The shared build service |
 | `sender` | `Property<String>` | From address |
 | `templateName` | `Property<String>` | SES template name |
 | `defaultTemplateData` | `Property<String>` | Default template data JSON (optional) |
@@ -122,8 +115,9 @@ Each entry accepts:
 | `bccAddresses` | `ListProperty<String>` | BCC addresses (optional) |
 | `templateData` | `Property<String>` | Per-destination replacement template data JSON (optional) |
 
+Use `AbstractSendBulkTemplatedMail` directly to wire `client` from outside `SesClientBuildService`.
+
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure
-- [aws-java-extensions](../aws-java-extensions) — `AwsClientInfo` base interface and credential adapters
 - [aws-ses-kotlin-base](../aws-ses-kotlin-base) — Kotlin SDK variant
