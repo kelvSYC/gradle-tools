@@ -8,80 +8,121 @@ import org.gradle.testkit.runner.TaskOutcome
 import java.io.File
 
 /**
- * Probe #1: configuration-cache round-trip of `SnsClientBuildService.Params`.
+ * Probe #1: configuration-cache round-trip of `SnsClientBuildService.Params` (a.k.a. `AwsBuildServiceParams`).
  *
- * Each test encodes the **observed** current behavior. A failing test means the underlying Gradle/SDK
- * behavior has shifted in either direction — investigate before "fixing" the test.
+ * Each test pins down the **observed** behavior of the parameter shape — `regionId: Property<String>`,
+ * `credentialSource: Property<AwsCredentialSource>`, `accessKeyId/secretAccessKey/sessionToken: Property<String>`,
+ * `credentialsProfile: Property<String>`. A failing test means either Gradle's config-cache serializer or the
+ * AWS Java extensions have regressed; investigate before "fixing" the test.
  *
- * ### Findings (as of the integration-test introduction)
+ * ### What this characterizes
  *
- * - With no `BuildServiceParameters` properties set, the BuildService isolation round-trip succeeds and the
- *   stored configuration cache entry is reused on a second invocation.
- * - Setting `Property<Region>` to `Region.US_EAST_1` makes parameter isolation fail with
- *   `Could not serialize value of type Region` — the AWS SDK's `Region` value type is not handled by
- *   Gradle's config-cache serializer.
- * - Setting `Property<AwsCredentialsProvider>` to a `StaticCredentialsProvider` fails with
- *   `Could not serialize value of type StaticCredentialsProvider`.
- *
- * Together these say: **the current production shape (`Property<Region>` + `Property<AwsCredentialsProvider>`
- * on `BuildServiceParameters`) is not configuration-cache compatible.** Resolving it requires refactoring
- * the BuildService to hold serializable raw values (region name string, access-key/secret-key strings) and
- * constructing the SDK types lazily inside `createClient()`.
+ * The AWS Java SDK's `Region` and `AwsCredentialsProvider` types are not serializable by Gradle's
+ * configuration-cache codec, so `AwsBuildServiceParams` exposes only serializable primitives and the SDK
+ * types are reconstructed inside `createClient()`. These tests exercise that contract: each branch of
+ * [com.kelvsyc.gradle.aws.java.AwsCredentialSource] survives the BuildService parameter-isolation round-trip,
+ * region names round-trip, and a second invocation reuses the stored configuration cache entry rather than
+ * rebuilding it.
  */
 class BuildServiceConfigurationCacheSpec : FunSpec({
     test("BuildService with no parameter values survives config-cache round-trip") {
-        val projectDir = writeConfigCacheProbeProject(parametersBlock = "")
-
-        val first = IntegrationTestSupport.runProbe(
-            projectDir, "probe", "--configuration-cache", "--stacktrace"
-        )
-        val firstSucceeded = first.shouldBeInstanceOf<ProbeOutcome.Succeeded>()
-        firstSucceeded.result.task(":probe")?.outcome shouldBe TaskOutcome.SUCCESS
-
-        val second = IntegrationTestSupport.runProbe(
-            projectDir, "probe", "--configuration-cache", "--stacktrace"
-        )
-        val secondSucceeded = second.shouldBeInstanceOf<ProbeOutcome.Succeeded>()
-        secondSucceeded.result.task(":probe")?.outcome shouldBe TaskOutcome.SUCCESS
-        secondSucceeded.result.output shouldContain "Configuration cache entry reused"
+        assertParamsRoundTripCleanly(name = "no-params", parametersBlock = "")
     }
 
-    test("BuildService with Region property currently fails config-cache isolation") {
-        val projectDir = writeConfigCacheProbeProject(
-            parametersBlock = "region.set(Region.US_EAST_1)"
+    test("BuildService with regionId set survives config-cache round-trip") {
+        assertParamsRoundTripCleanly(
+            name = "regionId",
+            parametersBlock = """regionId.set("us-east-1")"""
         )
-        val outcome = IntegrationTestSupport.runProbe(
-            projectDir, "probe", "--configuration-cache", "--stacktrace"
-        )
-        val failed = outcome.shouldBeInstanceOf<ProbeOutcome.Failed>()
-        failed.message shouldContain "Could not serialize value of type Region"
     }
 
-    test("BuildService with StaticCredentialsProvider currently fails config-cache isolation") {
-        val projectDir = writeConfigCacheProbeProject(
-            parametersBlock =
-                "credentials.set(StaticCredentialsProvider.create(AwsBasicCredentials.create(\"ak\", \"sk\")))"
+    test("BuildService with anonymous credentialSource survives config-cache round-trip") {
+        assertParamsRoundTripCleanly(
+            name = "anonymous",
+            parametersBlock = "credentialSource.set(AwsCredentialSource.ANONYMOUS)"
         )
-        val outcome = IntegrationTestSupport.runProbe(
-            projectDir, "probe", "--configuration-cache", "--stacktrace"
+    }
+
+    test("BuildService with static credentials survives config-cache round-trip") {
+        assertParamsRoundTripCleanly(
+            name = "static-credentials",
+            parametersBlock = """
+                credentialSource.set(AwsCredentialSource.STATIC)
+                accessKeyId.set("ak")
+                secretAccessKey.set("sk")
+            """.trimIndent()
         )
-        val failed = outcome.shouldBeInstanceOf<ProbeOutcome.Failed>()
-        failed.message shouldContain "Could not serialize value of type StaticCredentialsProvider"
+    }
+
+    test("BuildService with session credentials survives config-cache round-trip") {
+        assertParamsRoundTripCleanly(
+            name = "session-credentials",
+            parametersBlock = """
+                credentialSource.set(AwsCredentialSource.STATIC)
+                accessKeyId.set("ak")
+                secretAccessKey.set("sk")
+                sessionToken.set("tok")
+            """.trimIndent()
+        )
+    }
+
+    test("BuildService with profile credentials survives config-cache round-trip") {
+        assertParamsRoundTripCleanly(
+            name = "profile-credentials",
+            parametersBlock = """
+                credentialSource.set(AwsCredentialSource.PROFILE)
+                credentialsProfile.set("default")
+            """.trimIndent()
+        )
+    }
+
+    test("BuildService with default credentials chain survives config-cache round-trip") {
+        assertParamsRoundTripCleanly(
+            name = "default-chain",
+            parametersBlock = "credentialSource.set(AwsCredentialSource.DEFAULT_CHAIN)"
+        )
+    }
+
+    test("BuildService with regionId and static credentials together survives config-cache round-trip") {
+        assertParamsRoundTripCleanly(
+            name = "region-and-static",
+            parametersBlock = """
+                regionId.set("us-east-1")
+                credentialSource.set(AwsCredentialSource.STATIC)
+                accessKeyId.set("ak")
+                secretAccessKey.set("sk")
+            """.trimIndent()
+        )
     }
 })
 
-private fun writeConfigCacheProbeProject(parametersBlock: String): File {
-    val projectDir = IntegrationTestSupport.newProjectDir("sns-config-cache-probe")
+private fun assertParamsRoundTripCleanly(name: String, parametersBlock: String) {
+    val projectDir = writeConfigCacheProbeProject(name = name, parametersBlock = parametersBlock)
+
+    val first = IntegrationTestSupport.runProbe(
+        projectDir, "probe", "--configuration-cache", "--stacktrace"
+    )
+    val firstSucceeded = first.shouldBeInstanceOf<ProbeOutcome.Succeeded>()
+    firstSucceeded.result.task(":probe")?.outcome shouldBe TaskOutcome.SUCCESS
+
+    val second = IntegrationTestSupport.runProbe(
+        projectDir, "probe", "--configuration-cache", "--stacktrace"
+    )
+    val secondSucceeded = second.shouldBeInstanceOf<ProbeOutcome.Succeeded>()
+    secondSucceeded.result.task(":probe")?.outcome shouldBe TaskOutcome.SUCCESS
+    secondSucceeded.result.output shouldContain "Configuration cache entry reused"
+}
+
+private fun writeConfigCacheProbeProject(name: String, parametersBlock: String): File {
+    val projectDir = IntegrationTestSupport.newProjectDir("sns-config-cache-$name")
     File(projectDir, "settings.gradle.kts").writeText("")
     File(projectDir, "build.gradle.kts").writeText(
         """
         ${IntegrationTestSupport.buildscriptBlock()}
 
+        import com.kelvsyc.gradle.aws.java.AwsCredentialSource
         import com.kelvsyc.gradle.aws.java.sns.SnsClientBuildService
         import com.kelvsyc.gradle.aws.java.sns.fixtures.SnsBuildServiceProbeTask
-        import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
-        import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
-        import software.amazon.awssdk.regions.Region
 
         val snsService = gradle.sharedServices.registerIfAbsent(
             "sns",
