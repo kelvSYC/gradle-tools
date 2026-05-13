@@ -2,13 +2,10 @@ package com.kelvsyc.gradle.google.cloud.secretmanager
 
 import com.google.api.gax.rpc.ApiException
 import com.google.cloud.secretmanager.v1.AccessSecretVersionRequest
-import com.google.cloud.secretmanager.v1.SecretManagerServiceClient
 import com.google.cloud.secretmanager.v1.SecretVersionName
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import com.kelvsyc.gradle.logging.GradleLoggerDelegate
 import com.kelvsyc.gradle.logging.warn
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import org.gradle.api.tasks.Internal
@@ -24,9 +21,9 @@ abstract class SecretManagerValueSource : ValueSource<String, SecretManagerValue
     }
 
     interface Parameters : ValueSourceParameters {
+        /** The build service managing the Secret Manager client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-        val clientName: Property<String>
+        val service: Property<SecretManagerServiceClientBuildService>
 
         val projectId: Property<String>
         val secretId: Property<String>
@@ -37,15 +34,13 @@ abstract class SecretManagerValueSource : ValueSource<String, SecretManagerValue
         val versionId: Property<String>
     }
 
-    private val client: Provider<SecretManagerServiceClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun obtain(): String? {
         val version = if (parameters.versionId.isPresent) parameters.versionId.get() else "latest"
         val name = SecretVersionName.of(parameters.projectId.get(), parameters.secretId.get(), version)
         val request = AccessSecretVersionRequest.newBuilder().setName(name.toString()).build()
 
         return try {
-            val response = client.get().accessSecretVersion(request)
+            val response = parameters.service.get().getClient().accessSecretVersion(request)
             response.payload.data.toStringUtf8()
         } catch (e: ApiException) {
             logger.warn(e) { "Unable to retrieve secret '${parameters.secretId.get()}' from Google Cloud Secret Manager" }

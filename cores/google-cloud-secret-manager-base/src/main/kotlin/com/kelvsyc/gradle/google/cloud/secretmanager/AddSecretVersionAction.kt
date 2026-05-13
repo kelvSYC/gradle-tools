@@ -1,16 +1,13 @@
 package com.kelvsyc.gradle.google.cloud.secretmanager
 
 import com.google.cloud.secretmanager.v1.AddSecretVersionRequest
-import com.google.cloud.secretmanager.v1.SecretManagerServiceClient
 import com.google.cloud.secretmanager.v1.SecretName
 import com.google.cloud.secretmanager.v1.SecretPayload
 import com.google.protobuf.ByteString
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
-import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation that adds a new version to an existing Google Cloud Secret Manager secret.
@@ -22,12 +19,9 @@ abstract class AddSecretVersionAction : WorkAction<AddSecretVersionAction.Parame
      * Parameters for [AddSecretVersionAction].
      */
     interface Parameters : WorkParameters {
-        /** The shared build service managing Secret Manager clients. */
+        /** The build service managing the Secret Manager client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [SecretManagerClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<SecretManagerServiceClientBuildService>
 
         /** GCP project ID. */
         val projectId: Property<String>
@@ -39,8 +33,6 @@ abstract class AddSecretVersionAction : WorkAction<AddSecretVersionAction.Parame
         val payload: Property<String>
     }
 
-    private val client: Provider<SecretManagerServiceClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
         val parent = SecretName.of(parameters.projectId.get(), parameters.secretId.get())
         val secretPayload = SecretPayload.newBuilder()
@@ -51,6 +43,6 @@ abstract class AddSecretVersionAction : WorkAction<AddSecretVersionAction.Parame
             .setPayload(secretPayload)
             .build()
 
-        client.get().addSecretVersion(request)
+        parameters.service.get().getClient().addSecretVersion(request)
     }
 }
