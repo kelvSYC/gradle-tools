@@ -2,15 +2,12 @@ package com.kelvsyc.gradle.google.cloud.storage
 
 import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
-import com.google.cloud.storage.Storage
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import java.nio.ByteBuffer
-import org.gradle.api.tasks.Internal
 
 /**
  * Gradle [WorkAction] for uploading a file to Google Cloud Storage.
@@ -22,8 +19,7 @@ abstract class UploadFileAction : WorkAction<UploadFileAction.Parameters> {
 
     interface Parameters : WorkParameters {
         @get:Internal
-        val service: Property<ClientsBaseService>
-        val clientName: Property<String>
+        val service: Property<StorageClientBuildService>
 
         val bucket: Property<String>
         val blobName: Property<String>
@@ -31,14 +27,12 @@ abstract class UploadFileAction : WorkAction<UploadFileAction.Parameters> {
         val inputFile: RegularFileProperty
     }
 
-    private val client: Provider<Storage> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
         val blobId = BlobId.of(parameters.bucket.get(), parameters.blobName.get())
         val blobInfo = BlobInfo.newBuilder(blobId).build()
 
         parameters.inputFile.get().asFile.inputStream().use { inputStream ->
-            client.get().writer(blobInfo).use { writer ->
+            parameters.service.get().getClient().writer(blobInfo).use { writer ->
                 val buffer = ByteArray(BUFFER_SIZE)
                 var bytesRead: Int
                 while (inputStream.read(buffer).also { bytesRead = it } != -1) {
