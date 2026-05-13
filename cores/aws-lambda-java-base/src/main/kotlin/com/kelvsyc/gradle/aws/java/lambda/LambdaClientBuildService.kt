@@ -1,50 +1,16 @@
 package com.kelvsyc.gradle.aws.java.lambda
 
-import com.kelvsyc.gradle.clients.AbstractClientBuildService
-import org.gradle.api.provider.Property
-import org.gradle.api.services.BuildServiceParameters
-import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider
-import software.amazon.awssdk.regions.Region
+import com.kelvsyc.gradle.aws.java.AbstractAwsJavaClientBuildService
+import com.kelvsyc.gradle.aws.java.AwsBuildServiceParams
 import software.amazon.awssdk.services.lambda.LambdaClient
 
 /**
  * Build service managing a synchronous [LambdaClient] instance.
  *
  * Register an instance via [org.gradle.api.services.BuildServiceRegistry.registerIfAbsent], configuring
- * [Params.region] and [Params.credentials] as needed. The same registration can then be shared with
- * value sources and work actions via a `Property<LambdaClientBuildService>` parameter.
+ * parameters via the [AwsBuildServiceParams] extension functions as needed. The same registration can then
+ * be shared with value sources and work actions via a `Property<LambdaClientBuildService>` parameter.
  */
-abstract class LambdaClientBuildService :
-    AbstractClientBuildService<LambdaClient, LambdaClientBuildService.Params>() {
-    /**
-     * Configuration parameters for [LambdaClientBuildService].
-     */
-    interface Params : BuildServiceParameters {
-        /**
-         * The AWS region that the client communicates with.
-         *
-         * Leave unset to fall back to
-         * [DefaultAwsRegionProviderChain][software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain].
-         */
-        val region: Property<Region>
-
-        /**
-         * The credentials provider used to authenticate with AWS.
-         *
-         * If unset, the client uses [AnonymousCredentialsProvider].
-         */
-        val credentials: Property<AwsCredentialsProvider>
-    }
-
-    override fun createClient(): LambdaClient = LambdaClient.builder().apply {
-        if (parameters.region.isPresent) {
-            region(parameters.region.get())
-        }
-        if (parameters.credentials.isPresent) {
-            credentialsProvider(parameters.credentials.get())
-        } else {
-            credentialsProvider(AnonymousCredentialsProvider.create())
-        }
-    }.build()
+abstract class LambdaClientBuildService : AbstractAwsJavaClientBuildService<LambdaClient, AwsBuildServiceParams>() {
+    override fun createClient(): LambdaClient = configureBuilder(LambdaClient.builder()).build()
 }

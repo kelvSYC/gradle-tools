@@ -78,7 +78,7 @@ dependencies {
 | Library | Description |
 |---------|-------------|
 | `gradle-extensions` | Kotlin DSL extensions and utility types for Gradle plugin development |
-| `aws-java-extensions` | Base client info interface and credential adapters for the AWS SDK for Java |
+| `aws-java-extensions` | Config-cache-safe BuildService base class, `AwsBuildServiceParams`, and credential adapters for the AWS SDK for Java |
 | `aws-kotlin-extensions` | Base client info interface and credential extensions for the AWS SDK for Kotlin |
 | `moshi-extensions` | `ValueSource` implementations and `Provider` extensions for Moshi JSON parsing |
 | `pkl-extensions` | `ValueSource` implementations for evaluating Pkl configuration files |
