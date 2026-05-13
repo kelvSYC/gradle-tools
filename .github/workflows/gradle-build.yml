@@ -23,6 +23,7 @@ jobs:
       aggregate-jacoco-id: ${{ steps.upload-aggregate-jacoco.outputs.artifact-id }}
       aggregate-kdoc-id: ${{ steps.upload-aggregate-kdoc.outputs.artifact-id }}
       aggregate-test-id: ${{ steps.upload-aggregate-test.outputs.artifact-id }}
+      integration-test-id: ${{ steps.upload-integration-test.outputs.artifact-id }}
 
     steps:
       - name: Checkout
@@ -51,6 +52,13 @@ jobs:
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Integration Tests
+        # Blocking step: TestKit probes for configuration-cache and WorkerExecutor serialization
+        # boundaries. Runs after :build so unit-test feedback comes first.
+        run: ./gradlew :aws-sns-java-base:integrationTest :google-cloud-storage-base:integrationTest :azure-blob-storage-base:integrationTest :aggregation:testing:collectIntegrationTestReports
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish Test Results
         uses: mikepenz/action-junit-report@v6
         if: always()
@@ -64,6 +72,13 @@ jobs:
         with:
           name: test-aggregate
           path: aggregation/testing/build/reports/tests/test/aggregated-results
+      - name: Upload Integration Test Reports
+        id: upload-integration-test
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: integration-test
+          path: aggregation/testing/build/reports/tests/integrationTest/raw
       - name: Upload Aggregate KDoc
         id: upload-aggregate-kdoc
         uses: actions/upload-artifact@v7
