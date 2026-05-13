@@ -1,29 +1,26 @@
 # AWS Lambda Kotlin Base
 
-A Gradle plugin providing managed AWS Lambda client integration using the AWS SDK for Kotlin.
+A Kotlin library providing managed AWS Lambda client integration using the AWS SDK for Kotlin, built on
+`clients-base`.
 
-## Applying the Plugin
+## Dependency
 
 ```kotlin
-plugins {
-    id("com.kelvsyc.gradle.aws-lambda-kotlin-base")
+dependencies {
+    implementation("com.kelvsyc.gradle:aws-lambda-kotlin-base")
 }
 ```
 
-## Client Type
+## Build Service
 
-One client info type is registered:
-
-| Client info type | Client type |
+| Class | Client type |
 |---|---|
-| `LambdaClientInfo` | `LambdaClient` (AWS SDK for Kotlin) |
-
-`LambdaClientInfo` extends `AwsClientInfo` from `aws-kotlin-extensions`. Register a client:
+| `LambdaClientBuildService` | `LambdaClient` (AWS SDK for Kotlin) |
 
 ```kotlin
-serviceClients.service.get().registerIfAbsent<LambdaClientInfo>("lambda") {
-    region.set("us-east-1")
-    credentials.set(providers.credentials(AwsCredentials::class.java, "lambda").asCredentialsProvider)
+val lambda = gradle.sharedServices.registerIfAbsent("lambda", LambdaClientBuildService::class) {
+    parameters.region.set("us-east-1")
+    parameters.credentials.set(providers.credentials(AwsCredentials::class.java, "lambda").asCredentialsProvider)
 }
 ```
 
@@ -36,8 +33,7 @@ Retrieves a Lambda function's ARN (qualified by version or alias when set):
 ```kotlin
 val functionArn: Provider<String> = providers.of(GetFunctionConfigurationValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("lambda")
+        service.set(lambda)
         functionName.set("my-fn")
         qualifier.set("prod") // optional
     }
@@ -54,8 +50,7 @@ name with the function ARN as the value. Pagination is handled internally:
 ```kotlin
 val functions: Provider<Map<String, String>> = providers.of(ListFunctionsValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("lambda")
+        service.set(lambda)
     }
 }
 ```
@@ -68,8 +63,7 @@ Invokes a Lambda function (fire-and-forget — the response payload is discarded
 
 ```kotlin
 workerExecutor.noIsolation().submit(InvokeFunctionAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("lambda")
+    service.set(lambda)
     functionName.set("my-fn")
     qualifier.set("prod")          // optional
     payload.set("{\"hello\":\"world\"}") // optional UTF-8 payload
@@ -79,8 +73,7 @@ workerExecutor.noIsolation().submit(InvokeFunctionAction::class) {
 
 | Parameter | Type | Description |
 |---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of a `LambdaClientInfo` |
+| `service` | `Property<LambdaClientBuildService>` | Build service supplying the Lambda client |
 | `functionName` | `Property<String>` | Function name, ARN, or partial ARN |
 | `qualifier` | `Property<String>` | Optional version or alias |
 | `payload` | `Property<String>` | Optional UTF-8 payload |
@@ -92,8 +85,7 @@ Uploads a new deployment package zip to an existing Lambda function:
 
 ```kotlin
 workerExecutor.noIsolation().submit(UpdateFunctionCodeAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("lambda")
+    service.set(lambda)
     functionName.set("my-fn")
     zipFile.set(layout.buildDirectory.file("dist/my-fn.zip"))
     publish.set(true)
@@ -102,8 +94,7 @@ workerExecutor.noIsolation().submit(UpdateFunctionCodeAction::class) {
 
 | Parameter | Type | Description |
 |---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of a `LambdaClientInfo` |
+| `service` | `Property<LambdaClientBuildService>` | Build service supplying the Lambda client |
 | `functionName` | `Property<String>` | Function name, ARN, or partial ARN |
 | `zipFile` | `RegularFileProperty` | Path to the zip file to upload |
 | `publish` | `Property<Boolean>` | Whether to publish a new version after update (defaults to `false`) |
@@ -111,5 +102,4 @@ workerExecutor.noIsolation().submit(UpdateFunctionCodeAction::class) {
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure
-- [aws-kotlin-extensions](../aws-kotlin-extensions) — `AwsClientInfo` base interface and credential adapters
 - [aws-lambda-java-base](../aws-lambda-java-base) — Java SDK variant

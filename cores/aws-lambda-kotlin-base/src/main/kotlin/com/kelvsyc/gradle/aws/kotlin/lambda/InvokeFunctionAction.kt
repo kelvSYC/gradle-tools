@@ -1,15 +1,11 @@
 package com.kelvsyc.gradle.aws.kotlin.lambda
 
-import aws.sdk.kotlin.services.lambda.LambdaClient
 import aws.sdk.kotlin.services.lambda.model.InvocationType
 import aws.sdk.kotlin.services.lambda.model.InvokeRequest
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
-import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation that invokes a Lambda function.
@@ -19,13 +15,12 @@ import org.gradle.api.tasks.Internal
  * `RequestResponse` is used. This action is fire-and-forget — the response payload is discarded.
  */
 abstract class InvokeFunctionAction : WorkAction<InvokeFunctionAction.Parameters> {
+    /**
+     * Parameters for [InvokeFunctionAction].
+     */
     interface Parameters : WorkParameters {
-        /** The shared build service managing Lambda clients. */
-        @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [LambdaClientInfo]. */
-        val clientName: Property<String>
+        /** The build service managing the Lambda client. */
+        val service: Property<LambdaClientBuildService>
 
         /** The function name, ARN, or partial ARN to invoke. */
         val functionName: Property<String>
@@ -40,8 +35,6 @@ abstract class InvokeFunctionAction : WorkAction<InvokeFunctionAction.Parameters
         val invocationType: Property<String>
     }
 
-    private val client: Provider<LambdaClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
         val request = InvokeRequest {
             functionName = parameters.functionName.get()
@@ -51,7 +44,7 @@ abstract class InvokeFunctionAction : WorkAction<InvokeFunctionAction.Parameters
         }
 
         runBlocking {
-            client.get().invoke(request)
+            parameters.service.get().getClient().invoke(request)
         }
     }
 }
