@@ -19,10 +19,17 @@ dependencies {
 
 ```kotlin
 val kms = gradle.sharedServices.registerIfAbsent("kms", KmsClientBuildService::class) {
-    parameters.region.set("us-east-1")
-    parameters.credentials.set(providers.credentials(AwsCredentials::class.java, "kms").asCredentialsProvider)
+    parameters {
+        region.set("us-east-1")
+        from(providers.credentials(AwsCredentials::class.java, "kms"))
+    }
 }
 ```
+
+Both `region` and the credentials extension call are optional. Leave `region` unset to use the AWS SDK for Kotlin
+default region provider chain. Omit the credentials call to skip the `credentialsProvider` assignment, in which
+case the SDK applies its own default behavior. See [aws-kotlin-extensions](../aws-kotlin-extensions) for the full
+set of credential configuration functions.
 
 ## Value Sources
 

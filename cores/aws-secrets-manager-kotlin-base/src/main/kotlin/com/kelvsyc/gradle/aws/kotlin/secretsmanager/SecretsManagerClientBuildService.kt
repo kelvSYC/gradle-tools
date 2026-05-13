@@ -1,33 +1,22 @@
 package com.kelvsyc.gradle.aws.kotlin.secretsmanager
 
 import aws.sdk.kotlin.services.secretsmanager.SecretsManagerClient
-import aws.smithy.kotlin.runtime.auth.awscredentials.CredentialsProvider
-import com.kelvsyc.gradle.clients.AbstractClientBuildService
-import org.gradle.api.provider.Property
-import org.gradle.api.services.BuildServiceParameters
+import com.kelvsyc.gradle.aws.kotlin.AbstractAwsKotlinClientBuildService
+import com.kelvsyc.gradle.aws.kotlin.AwsBuildServiceParams
 
 /**
  * Build service managing a [SecretsManagerClient] instance.
+ *
+ * Register an instance via [org.gradle.api.services.BuildServiceRegistry.registerIfAbsent], configuring
+ * the inherited [AwsBuildServiceParams] using the supplied extension functions
+ * (e.g. [com.kelvsyc.gradle.aws.kotlin.defaultCredentials],
+ * [com.kelvsyc.gradle.aws.kotlin.staticCredentials]). The same registration can then be shared with
+ * tasks, work actions and value sources via a `Property<SecretsManagerClientBuildService>` parameter.
  */
 abstract class SecretsManagerClientBuildService :
-    AbstractClientBuildService<SecretsManagerClient, SecretsManagerClientBuildService.Params>() {
-    /**
-     * Configuration parameters for [SecretsManagerClientBuildService].
-     */
-    interface Params : BuildServiceParameters {
-        /** The AWS region that the client communicates with. */
-        val region: Property<String>
-
-        /** The credentials provider used to authenticate with AWS. */
-        val credentials: Property<CredentialsProvider>
-    }
-
+    AbstractAwsKotlinClientBuildService<SecretsManagerClient, AwsBuildServiceParams>() {
     override fun createClient(): SecretsManagerClient = SecretsManagerClient {
-        if (parameters.region.isPresent) {
-            region = parameters.region.get()
-        }
-        if (parameters.credentials.isPresent) {
-            credentialsProvider = parameters.credentials.get()
-        }
+        resolveRegion()?.let { region = it }
+        resolveCredentialsProvider()?.let { credentialsProvider = it }
     }
 }
