@@ -14,10 +14,9 @@ configure<DokkaExtension> {
 
 dependencies {
     api("com.kelvsyc.gradle:clients-base")
+    api("com.kelvsyc.gradle:aws-java-extensions")
 
     api(libs.aws.sns.java)
-    api(libs.aws.auth.java)
-    api(libs.aws.regions.java)
 
     testImplementation(libs.mockk)
 }

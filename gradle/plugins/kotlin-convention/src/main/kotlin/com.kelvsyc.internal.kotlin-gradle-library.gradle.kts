@@ -97,4 +97,6 @@ tasks.withType<Test>().configureEach {
             ?.let { listOf("-javaagent:$it") }
             ?: emptyList()
     })
+    // Gradle's ProjectBuilder needs java.lang open for class-loader injection on JDK 25+
+    jvmArgs("--add-opens=java.base/java.lang=ALL-UNNAMED")
 }
