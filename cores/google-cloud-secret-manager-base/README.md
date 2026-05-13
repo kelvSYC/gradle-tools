@@ -1,62 +1,84 @@
 # google-cloud-secret-manager-base
 
-Gradle plugin providing base support for Google Cloud Secret Manager.
+A Kotlin library providing managed Google Cloud Secret Manager client integration, built on `clients-base`.
 
-Plugin ID: `com.kelvsyc.gradle.google-cloud-secret-manager-base`
-
-## Prerequisites
-
-Apply the `clients-base` plugin (applied automatically by this plugin).
-
-## Client Registration
-
-Register a Secret Manager client via `ClientsBaseExtension`:
+## Dependency
 
 ```kotlin
-the<ClientsBaseExtension>().service.get()
-    .registerIfAbsent<SecretManagerClientInfo>("myClient") {
-        projectId.set("my-gcp-project")
-        // credentials.set(...) // optional; omit to use application default credentials
-    }
+dependencies {
+    implementation("com.kelvsyc.gradle:google-cloud-secret-manager-base")
+}
 ```
 
-## ValueSource
+## Build Service
 
-### `SecretManagerValueSource`
+| Class | Client type |
+|---|---|
+| `SecretManagerServiceClientBuildService` | `SecretManagerServiceClient` |
+
+Register the build service from a plugin or `build.gradle.kts`:
+
+```kotlin
+val sm = gradle.sharedServices.registerIfAbsent("sm", SecretManagerServiceClientBuildService::class) {
+    // credentials is optional; omit to use application default credentials
+    parameters.credentials.set(GoogleCredentials.getApplicationDefault())
+}
+```
+
+The GCP project ID is not part of the build service — each value source and action takes its own `projectId`
+parameter, so a single client can serve calls against multiple projects.
+
+## Value Source: `SecretManagerValueSource`
 
 Retrieves a secret version payload as a UTF-8 string.
 
-| Parameter    | Type                | Description                                              |
-|--------------|---------------------|----------------------------------------------------------|
-| `service`    | `ClientsBaseService`| The clients-base service instance.                       |
-| `clientName` | `String`            | Name of the registered `SecretManagerClientInfo` client. |
-| `projectId`  | `String`            | GCP project ID.                                          |
-| `secretId`   | `String`            | Secret ID.                                               |
-| `versionId`  | `String` (optional) | Secret version. Defaults to `"latest"`.                  |
+```kotlin
+val secret: Provider<String> = providers.of(SecretManagerValueSource::class) {
+    parameters {
+        service.set(sm)
+        projectId.set("my-gcp-project")
+        secretId.set("my-secret")
+        versionId.set("1")   // optional; defaults to "latest"
+    }
+}
+```
 
-Returns `null` if the secret cannot be retrieved.
+Returns `null` (and logs a warning) if the call throws `ApiException`.
 
-### `ListSecretsValueSource`
+| Parameter | Type | Description |
+|---|---|---|
+| `service` | `Property<SecretManagerServiceClientBuildService>` | The shared build service |
+| `projectId` | `Property<String>` | GCP project ID |
+| `secretId` | `Property<String>` | Secret ID |
+| `versionId` | `Property<String>` | Secret version; defaults to `"latest"` |
 
-Returns the fully-qualified resource names of every secret in a project (`projects/{project}/secrets/{secret}`).
-Pagination is handled internally.
+## Value Source: `ListSecretsValueSource`
 
-| Parameter    | Type                | Description                                              |
-|--------------|---------------------|----------------------------------------------------------|
-| `service`    | `ClientsBaseService`| The clients-base service instance.                       |
-| `clientName` | `String`            | Name of the registered `SecretManagerClientInfo` client. |
-| `projectId`  | `String`            | GCP project ID.                                          |
+Returns the fully-qualified resource names of every secret in a project
+(`projects/{project}/secrets/{secret}`). Pagination is handled internally.
 
-## Work Action
+```kotlin
+val secretNames: Provider<List<String>> = providers.of(ListSecretsValueSource::class) {
+    parameters {
+        service.set(sm)
+        projectId.set("my-gcp-project")
+    }
+}
+```
 
-### `AddSecretVersionAction`
+## WorkAction: `AddSecretVersionAction`
 
 Adds a new version to an existing secret. Only string (UTF-8) payloads are supported.
 
-| Parameter    | Type                | Description                                              |
-|--------------|---------------------|----------------------------------------------------------|
-| `service`    | `ClientsBaseService`| The clients-base service instance.                       |
-| `clientName` | `String`            | Name of the registered `SecretManagerClientInfo` client. |
-| `projectId`  | `String`            | GCP project ID.                                          |
-| `secretId`   | `String`            | The secret to add a version to.                          |
-| `payload`    | `String`            | The new secret value.                                    |
+```kotlin
+workerExecutor.noIsolation().submit(AddSecretVersionAction::class) {
+    service.set(sm)
+    projectId.set("my-gcp-project")
+    secretId.set("my-secret")
+    payload.set("new-secret-value")
+}
+```
+
+## See Also
+
+- [clients-base](../clients-base) — The underlying service client infrastructure
