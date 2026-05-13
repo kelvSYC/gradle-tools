@@ -1,13 +1,10 @@
 package com.kelvsyc.gradle.aws.java.ecr
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import software.amazon.awssdk.services.ecr.EcrClient
-import software.amazon.awssdk.services.ecr.model.GetAuthorizationTokenRequest
 import org.gradle.api.tasks.Internal
+import software.amazon.awssdk.services.ecr.model.GetAuthorizationTokenRequest
 
 /**
  * [ValueSource] implementation retrieving an authorization token from AWS ECR for the caller's default
@@ -18,20 +15,15 @@ import org.gradle.api.tasks.Internal
  */
 abstract class GetAuthorizationTokenValueSource : ValueSource<String, GetAuthorizationTokenValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing ECR clients. */
+        /** The build service managing the ECR client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of an [EcrClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<EcrClientBuildService>
     }
-
-    private val client: Provider<EcrClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     override fun obtain(): String? {
         val request = GetAuthorizationTokenRequest.builder().build()
 
-        return client.get()
+        return parameters.service.get().getClient()
             .getAuthorizationToken(request)
             .authorizationData()
             .firstOrNull()

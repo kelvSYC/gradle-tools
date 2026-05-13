@@ -1,14 +1,11 @@
 package com.kelvsyc.gradle.aws.java.ecr
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import software.amazon.awssdk.services.ecr.EcrClient
+import org.gradle.api.tasks.Internal
 import software.amazon.awssdk.services.ecr.model.DescribeRepositoriesRequest
 import kotlin.streams.asSequence
-import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that lists ECR repositories visible to the configured client, returned as a
@@ -18,20 +15,15 @@ import org.gradle.api.tasks.Internal
  */
 abstract class DescribeRepositoriesValueSource : ValueSource<Map<String, String>, DescribeRepositoriesValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing ECR clients. */
+        /** The build service managing the ECR client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of an [EcrClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<EcrClientBuildService>
     }
-
-    private val client: Provider<EcrClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     override fun obtain(): Map<String, String>? {
         val request = DescribeRepositoriesRequest.builder().build()
 
-        val response = client.get()
+        val response = parameters.service.get().getClient()
             .describeRepositoriesPaginator(request)
             .stream()
             .asSequence()

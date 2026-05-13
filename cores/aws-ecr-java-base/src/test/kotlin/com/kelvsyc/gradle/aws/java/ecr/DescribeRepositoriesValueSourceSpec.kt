@@ -1,16 +1,11 @@
 package com.kelvsyc.gradle.aws.java.ecr
 
-import com.kelvsyc.gradle.clients.ClientsBaseExtension
-import com.kelvsyc.gradle.internal.aws.java.ecr.MockEcrClientInfoInternal
-import com.kelvsyc.gradle.plugins.EcrJavaBasePlugin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.maps.shouldContain
 import io.kotest.matchers.maps.shouldHaveSize
 import io.mockk.every
 import io.mockk.mockk
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.of
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 import software.amazon.awssdk.services.ecr.EcrClient
 import software.amazon.awssdk.services.ecr.model.DescribeRepositoriesRequest
@@ -23,11 +18,9 @@ class DescribeRepositoriesValueSourceSpec : FunSpec() {
     init {
         test("obtain - returns map of repository names to URIs") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(EcrJavaBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockEcrClientInfo::class, MockEcrClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockEcrClientInfo>("mock") {}
-            val client = extension.getClient<EcrClient, _>("mock").get()
+            val client = mockk<EcrClient>()
+            MockEcrClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent("ecr", MockEcrClientBuildService::class)
 
             val repo1 = mockk<Repository>()
             every { repo1.repositoryName() } returns "repo-one"
@@ -45,9 +38,8 @@ class DescribeRepositoriesValueSourceSpec : FunSpec() {
 
             every { client.describeRepositoriesPaginator(any<DescribeRepositoriesRequest>()) } returns paginator
 
-            val provider = project.providers.of(DescribeRepositoriesValueSource::class) {
-                parameters.service.set(extension.service)
-                parameters.clientName.set("mock")
+            val provider = project.providers.ofKt(DescribeRepositoriesValueSource::class) {
+                parameters.service.set(service)
             }
             val result = provider.get()
 
