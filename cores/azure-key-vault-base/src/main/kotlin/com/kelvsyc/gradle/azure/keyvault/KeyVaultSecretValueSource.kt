@@ -1,11 +1,8 @@
 package com.kelvsyc.gradle.azure.keyvault
 
 import com.azure.core.exception.HttpResponseException
-import com.azure.security.keyvault.secrets.SecretClient
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.logging.Logging
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import org.gradle.api.tasks.Internal
@@ -17,12 +14,9 @@ import org.gradle.api.tasks.Internal
  */
 abstract class KeyVaultSecretValueSource : ValueSource<String, KeyVaultSecretValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing Key Vault clients. */
+        /** The build service managing the Key Vault secret client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [SecretClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<SecretClientBuildService>
 
         /** The name of the secret to retrieve. */
         val secretName: Property<String>
@@ -31,14 +25,13 @@ abstract class KeyVaultSecretValueSource : ValueSource<String, KeyVaultSecretVal
         val version: Property<String>
     }
 
-    private val client: Provider<SecretClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun obtain(): String? {
         return try {
+            val client = parameters.service.get().getClient()
             val secret = if (parameters.version.isPresent) {
-                client.get().getSecret(parameters.secretName.get(), parameters.version.get())
+                client.getSecret(parameters.secretName.get(), parameters.version.get())
             } else {
-                client.get().getSecret(parameters.secretName.get())
+                client.getSecret(parameters.secretName.get())
             }
             secret.value
         } catch (e: HttpResponseException) {

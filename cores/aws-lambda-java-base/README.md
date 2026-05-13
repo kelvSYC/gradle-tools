@@ -1,115 +1,95 @@
 # AWS Lambda Java Base
 
-A Gradle plugin providing managed AWS Lambda client integration using the AWS SDK for Java.
+A Kotlin library providing managed AWS Lambda client integration using the AWS SDK for Java, built on
+`clients-base`.
 
-## Applying the Plugin
+## Dependency
 
 ```kotlin
-plugins {
-    id("com.kelvsyc.gradle.aws-lambda-java-base")
+dependencies {
+    implementation("com.kelvsyc.gradle:aws-lambda-java-base")
 }
 ```
 
-## Client Type
+## Build Service
 
-One client info type is registered:
-
-| Client info type | Client type |
+| Class | Client type |
 |---|---|
-| `LambdaClientInfo` | `LambdaClient` (AWS SDK for Java) |
+| `LambdaClientBuildService` | `LambdaClient` (AWS SDK for Java) |
 
-`LambdaClientInfo` extends `AwsClientInfo` from `aws-java-extensions`. Register a client:
+Register the build service from a plugin or `build.gradle.kts`:
 
 ```kotlin
-serviceClients.service.get().registerIfAbsent<LambdaClientInfo>("lambda") {
-    region.set(Region.US_EAST_1)
-    credentials.set(DefaultCredentialsProvider.create())
+val lambda = gradle.sharedServices.registerIfAbsent("lambda", LambdaClientBuildService::class) {
+    parameters.region.set(Region.US_EAST_1)
+    parameters.credentials.set(DefaultCredentialsProvider.create())
 }
 ```
+
+Both parameters are optional. Leave `region` unset to fall back to the SDK's `DefaultAwsRegionProviderChain`,
+and leave `credentials` unset to fall back to anonymous credentials.
 
 ## Value Sources
 
-### `GetFunctionConfigurationValueSource`
-
-Retrieves a Lambda function's ARN (qualified by version or alias when set):
-
-```kotlin
-val functionArn: Provider<String> = providers.of(GetFunctionConfigurationValueSource::class) {
-    parameters {
-        service.set(serviceClients.service)
-        clientName.set("lambda")
-        functionName.set("my-fn")
-        qualifier.set("prod") // optional
-    }
-}
-```
-
-Returns `null` and logs a warning if the call throws `LambdaException`.
-
 ### `ListFunctionsValueSource`
 
-Lists all Lambda functions visible to the configured client, returning a `Map<String, String>` keyed by function
-name with the function ARN as the value. Pagination is handled internally:
+Lists all Lambda functions visible to the configured client, returned as a `Map<String, String>` keyed by
+function name with the function ARN as the value. Pagination is handled internally:
 
 ```kotlin
 val functions: Provider<Map<String, String>> = providers.of(ListFunctionsValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("lambda")
+        service.set(lambda)
     }
 }
 ```
+
+### `GetFunctionConfigurationValueSource`
+
+Retrieves the ARN of a Lambda function's published configuration (qualified by version or alias when set):
+
+```kotlin
+val arn: Provider<String> = providers.of(GetFunctionConfigurationValueSource::class) {
+    parameters {
+        service.set(lambda)
+        functionName.set("my-fn")
+        qualifier.set("prod")   // optional version or alias
+    }
+}
+```
+
+Returns `null` and logs a warning if the call throws `LambdaException` (e.g. function not found).
 
 ## WorkActions
 
 ### `InvokeFunctionAction`
 
-Invokes a Lambda function (fire-and-forget — the response payload is discarded):
+Invokes a Lambda function. Fire-and-forget — the response payload is discarded:
 
 ```kotlin
 workerExecutor.noIsolation().submit(InvokeFunctionAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("lambda")
+    service.set(lambda)
     functionName.set("my-fn")
-    qualifier.set("prod")
-    payload.set("{\"hello\":\"world\"}")
-    invocationType.set("Event")
+    qualifier.set("prod")                       // optional
+    payload.set("{\"hello\":\"world\"}")        // optional UTF-8 input
+    invocationType.set("Event")                 // optional: RequestResponse | Event | DryRun
 }
 ```
-
-| Parameter | Type | Description |
-|---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of a `LambdaClientInfo` |
-| `functionName` | `Property<String>` | Function name, ARN, or partial ARN |
-| `qualifier` | `Property<String>` | Optional version or alias |
-| `payload` | `Property<String>` | Optional UTF-8 payload |
-| `invocationType` | `Property<String>` | One of `RequestResponse`, `Event`, `DryRun` |
 
 ### `UpdateFunctionCodeAction`
 
-Uploads a new deployment package zip to an existing Lambda function:
+Updates the deployment package (zip file) for a Lambda function:
 
 ```kotlin
 workerExecutor.noIsolation().submit(UpdateFunctionCodeAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("lambda")
+    service.set(lambda)
     functionName.set("my-fn")
     zipFile.set(layout.buildDirectory.file("dist/my-fn.zip"))
-    publish.set(true)
+    publish.set(true)   // optional; defaults to false
 }
 ```
-
-| Parameter | Type | Description |
-|---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of a `LambdaClientInfo` |
-| `functionName` | `Property<String>` | Function name, ARN, or partial ARN |
-| `zipFile` | `RegularFileProperty` | Path to the zip file to upload |
-| `publish` | `Property<Boolean>` | Whether to publish a new version after update (defaults to `false`) |
 
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure
-- [aws-java-extensions](../aws-java-extensions) — `AwsClientInfo` base interface and credential adapters
 - [aws-lambda-kotlin-base](../aws-lambda-kotlin-base) — Kotlin SDK variant

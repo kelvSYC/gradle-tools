@@ -3,19 +3,12 @@ import org.jetbrains.dokka.gradle.DokkaExtension
 plugins {
     id("com.kelvsyc.internal.dokka")
     id("com.kelvsyc.internal.jacoco")
-    id("com.kelvsyc.internal.kotlin-plugin")
+    id("com.kelvsyc.internal.kotlin-gradle-library")
     id("com.kelvsyc.internal.github-publishing")
 }
 
 configure<DokkaExtension> {
     moduleName.set("Google Cloud Artifact Registry Base")
-}
-
-gradlePlugin {
-    plugins.register("google-cloud-artifact-registry-base") {
-        id = "com.kelvsyc.gradle.google-cloud-artifact-registry-base"
-        implementationClass = "com.kelvsyc.gradle.plugins.GoogleCloudArtifactRegistryBasePlugin"
-    }
 }
 
 dependencies {
@@ -27,4 +20,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
 
     testImplementation(libs.mockk)
+}
+
+tasks.test {
+    // FIXME https://github.com/gradle/gradle/issues/18647
+    jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
 }

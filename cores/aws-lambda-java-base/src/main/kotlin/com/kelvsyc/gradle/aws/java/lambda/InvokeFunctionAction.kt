@@ -1,15 +1,12 @@
 package com.kelvsyc.gradle.aws.java.lambda
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import software.amazon.awssdk.core.SdkBytes
-import software.amazon.awssdk.services.lambda.LambdaClient
 import software.amazon.awssdk.services.lambda.model.InvocationType
 import software.amazon.awssdk.services.lambda.model.InvokeRequest
-import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation that invokes a Lambda function.
@@ -20,12 +17,9 @@ import org.gradle.api.tasks.Internal
  */
 abstract class InvokeFunctionAction : WorkAction<InvokeFunctionAction.Parameters> {
     interface Parameters : WorkParameters {
-        /** The shared build service managing Lambda clients. */
+        /** The build service managing the Lambda client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [LambdaClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<LambdaClientBuildService>
 
         /** The function name, ARN, or partial ARN to invoke. */
         val functionName: Property<String>
@@ -39,8 +33,6 @@ abstract class InvokeFunctionAction : WorkAction<InvokeFunctionAction.Parameters
         /** Optional invocation type (one of `RequestResponse`, `Event`, `DryRun`). */
         val invocationType: Property<String>
     }
-
-    private val client: Provider<LambdaClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     override fun execute() {
         val request = InvokeRequest.builder().apply {
@@ -56,6 +48,6 @@ abstract class InvokeFunctionAction : WorkAction<InvokeFunctionAction.Parameters
             }
         }.build()
 
-        client.get().invoke(request)
+        parameters.service.get().getClient().invoke(request)
     }
 }

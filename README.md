@@ -37,10 +37,10 @@ the two AWS SDKs are distinct libraries:
 | SES | `aws-ses-java-base` (library) | `aws-ses-kotlin-base` (library) |
 | Secrets Manager | `aws-secrets-manager-java-base` (library) | `aws-secrets-manager-kotlin-base` (library) |
 | CodeArtifact | `aws-codeartifact-java-base` (library) | `aws-codeartifact-kotlin-base` (library) |
-| ECR | `aws-ecr-java-base` (plugin) | `aws-ecr-kotlin-base` (library) |
+| ECR | `aws-ecr-java-base` (library) | `aws-ecr-kotlin-base` (library) |
 | IMDS | `aws-imds-java-base` (library) | `aws-imds-kotlin-base` (library) |
 | KMS | `aws-kms-java-base` (library) | `aws-kms-kotlin-base` (library) |
-| Lambda | `aws-lambda-java-base` (plugin) | `aws-lambda-kotlin-base` (library) |
+| Lambda | `aws-lambda-java-base` (library) | `aws-lambda-kotlin-base` (library) |
 | SSM Parameter Store | `aws-ssm-java-base` (library) | `aws-ssm-kotlin-base` (library) |
 | STS | `aws-sts-java-base` (library) | `aws-sts-kotlin-base` (library) |
 
@@ -48,12 +48,12 @@ the two AWS SDKs are distinct libraries:
 
 | Component | Description | Form |
 |-----------|-------------|------|
-| `google-cloud-artifact-registry-base` | GCP Artifact Registry | plugin |
+| `google-cloud-artifact-registry-base` | GCP Artifact Registry | library |
 | `google-cloud-storage-base` | GCP Cloud Storage | library |
 | `google-cloud-secret-manager-base` | GCP Secret Manager | library |
-| `google-cloud-pubsub-base` | GCP Pub/Sub | plugin |
+| `google-cloud-pubsub-base` | GCP Pub/Sub | library |
 | `azure-blob-storage-base` | Azure Blob Storage | library |
-| `azure-key-vault-base` | Azure Key Vault | plugin |
+| `azure-key-vault-base` | Azure Key Vault | library |
 | `artifactory-base` | JFrog Artifactory | plugin |
 | `bitbucket-cloud-base` | Bitbucket Cloud REST API | plugin |
 | `bitbucket-data-center-base` | Bitbucket Data Center REST API | plugin |

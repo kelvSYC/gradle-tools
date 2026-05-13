@@ -1,16 +1,13 @@
 package com.kelvsyc.gradle.google.cloud.pubsub
 
-import com.google.cloud.pubsub.v1.TopicAdminClient
 import com.google.protobuf.ByteString
 import com.google.pubsub.v1.PubsubMessage
 import com.google.pubsub.v1.TopicName
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
-import org.gradle.api.tasks.Internal
 
 /**
  * [WorkAction] implementation publishing a single message to a Google Cloud Pub/Sub topic.
@@ -22,12 +19,9 @@ abstract class PublishAction : WorkAction<PublishAction.Parameters> {
      * Parameters for [PublishAction].
      */
     interface Parameters : WorkParameters {
-        /** The shared build service managing Pub/Sub clients. */
+        /** The build service managing the Pub/Sub client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [PubSubClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<TopicAdminClientBuildService>
 
         /** GCP project ID containing the topic. */
         val projectId: Property<String>
@@ -45,8 +39,6 @@ abstract class PublishAction : WorkAction<PublishAction.Parameters> {
         val orderingKey: Property<String>
     }
 
-    private val client: Provider<TopicAdminClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun execute() {
         val topicName = TopicName.of(parameters.projectId.get(), parameters.topicId.get())
         val message = PubsubMessage.newBuilder().apply {
@@ -57,6 +49,6 @@ abstract class PublishAction : WorkAction<PublishAction.Parameters> {
             }
         }.build()
 
-        client.get().publish(topicName, listOf(message))
+        parameters.service.get().getClient().publish(topicName, listOf(message))
     }
 }

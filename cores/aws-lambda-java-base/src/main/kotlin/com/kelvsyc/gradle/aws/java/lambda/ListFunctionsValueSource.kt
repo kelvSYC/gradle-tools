@@ -1,14 +1,11 @@
 package com.kelvsyc.gradle.aws.java.lambda
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
-import software.amazon.awssdk.services.lambda.LambdaClient
+import org.gradle.api.tasks.Internal
 import software.amazon.awssdk.services.lambda.model.ListFunctionsRequest
 import kotlin.streams.asSequence
-import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that lists all Lambda functions visible to the configured client, returned as a
@@ -18,20 +15,15 @@ import org.gradle.api.tasks.Internal
  */
 abstract class ListFunctionsValueSource : ValueSource<Map<String, String>, ListFunctionsValueSource.Parameters> {
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing Lambda clients. */
+        /** The build service managing the Lambda client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [LambdaClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<LambdaClientBuildService>
     }
-
-    private val client: Provider<LambdaClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
 
     override fun obtain(): Map<String, String>? {
         val request = ListFunctionsRequest.builder().build()
 
-        val response = client.get()
+        val response = parameters.service.get().getClient()
             .listFunctionsPaginator(request)
             .stream()
             .asSequence()

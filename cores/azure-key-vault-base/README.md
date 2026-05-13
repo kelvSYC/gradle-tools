@@ -1,100 +1,67 @@
 # Azure Key Vault Base
 
-A Gradle plugin providing managed Azure Key Vault client integration using the Azure SDK for Java.
+A Kotlin library providing managed Azure Key Vault client integration using the Azure SDK for Java, built on
+`clients-base`.
 
-## Applying the Plugin
+## Dependency
 
 ```kotlin
-plugins {
-    id("com.kelvsyc.gradle.azure-key-vault-base")
+dependencies {
+    implementation("com.kelvsyc.gradle:azure-key-vault-base")
 }
 ```
 
-## Client Types
+## Build Services
 
-Two client info types are registered:
-
-| Client info type | Client type |
-|---|---|
-| `SecretClientInfo` | `SecretClient` (synchronous) |
-| `SecretAsyncClientInfo` | `SecretAsyncClient` (asynchronous) |
-
-Both extend `AzureKeyVaultClientInfo`, which exposes the following properties:
-
-| Property | Type | Description |
+| Class | Client type | Use case |
 |---|---|---|
-| `vaultUrl` | `Property<String>` | The vault URL, e.g. `https://{vaultName}.vault.azure.net` |
-| `credential` | `Property<TokenCredential>` | Azure credentials (optional) |
+| `SecretClientBuildService` | `SecretClient` | Synchronous Key Vault secret operations |
+| `SecretAsyncClientBuildService` | `SecretAsyncClient` | Asynchronous Key Vault secret operations |
 
-Register a client:
+Register a build service from a plugin or `build.gradle.kts`:
 
 ```kotlin
-serviceClients.registerAzureKeyVaultSecretClient("keyVault") {
-    vaultUrl.set("https://my-vault.vault.azure.net")
-    credential.set(DefaultAzureCredentialBuilder().build())
+val kv = gradle.sharedServices.registerIfAbsent("kv", SecretClientBuildService::class) {
+    parameters.vaultUrl.set("https://my-vault.vault.azure.net")
+    parameters.credential.set(DefaultAzureCredentialBuilder().build())
+    // credential is optional; omit for no authentication
 }
 ```
 
-Or using the service directly:
+| Parameter | Type | Description |
+|---|---|---|
+| `vaultUrl` | `Property<String>` | Vault URL, e.g. `https://{vaultName}.vault.azure.net` |
+| `credential` | `Property<TokenCredential>` | Azure `TokenCredential`. If unset, the client uses no authentication. |
 
-```kotlin
-serviceClients.service.get().registerIfAbsent<SecretClientInfo>("keyVault") {
-    vaultUrl.set("https://my-vault.vault.azure.net")
-    credential.set(DefaultAzureCredentialBuilder().build())
-}
-```
+## Value Source: `KeyVaultSecretValueSource`
 
-## Value Sources
-
-### `KeyVaultSecretValueSource`
-
-Retrieves a single secret from Azure Key Vault:
+Retrieves a secret from Azure Key Vault as a string.
 
 ```kotlin
 val secret: Provider<String> = providers.of(KeyVaultSecretValueSource::class) {
     parameters {
-        service.set(serviceClients.service)
-        clientName.set("keyVault")
+        service.set(kv)
         secretName.set("my-secret")
+        version.set("abc123")   // optional; defaults to latest
     }
 }
 ```
 
-An optional `version` parameter can be set to retrieve a specific secret version. If omitted,
-the latest version is returned.
+Returns `null` (and logs a warning) if the call throws `HttpResponseException`.
 
-Returns `null` and logs a warning if the call throws `HttpResponseException`.
+## WorkAction: `SetSecretAction`
 
-| Parameter | Type | Description |
-|---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of a `SecretClientInfo` |
-| `secretName` | `Property<String>` | The name of the secret to retrieve |
-| `version` | `Property<String>` | The secret version (optional; defaults to latest) |
-
-## WorkActions
-
-### `SetSecretAction`
-
-Stores a secret in Azure Key Vault. If the secret already exists, a new version is created:
+Stores a secret in Azure Key Vault. If the secret already exists, a new version is created.
 
 ```kotlin
 workerExecutor.noIsolation().submit(SetSecretAction::class) {
-    service.set(serviceClients.service)
-    clientName.set("keyVault")
+    service.set(kv)
     secretName.set("my-secret")
-    secretValue.set("{\"username\":\"admin\",\"password\":\"newPassword\"}")
+    secretValue.set("new-value")
 }
 ```
-
-| Parameter | Type | Description |
-|---|---|---|
-| `service` | `Property<ClientsBaseService>` | The shared build service |
-| `clientName` | `Property<String>` | Registered name of a `SecretClientInfo` |
-| `secretName` | `Property<String>` | The name of the secret to set |
-| `secretValue` | `Property<String>` | The secret value to store |
 
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure
-- [azure-blob-storage-base](../azure-blob-storage-base) — Azure Blob Storage integration
+- [azure-blob-storage-base](../azure-blob-storage-base) — Azure Blob Storage variant

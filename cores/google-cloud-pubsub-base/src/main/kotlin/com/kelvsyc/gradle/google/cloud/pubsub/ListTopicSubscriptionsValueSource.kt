@@ -1,11 +1,8 @@
 package com.kelvsyc.gradle.google.cloud.pubsub
 
-import com.google.cloud.pubsub.v1.TopicAdminClient
 import com.google.pubsub.v1.ListTopicSubscriptionsRequest
 import com.google.pubsub.v1.TopicName
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import org.gradle.api.tasks.Internal
@@ -24,12 +21,9 @@ abstract class ListTopicSubscriptionsValueSource :
      * Parameters for [ListTopicSubscriptionsValueSource].
      */
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing Pub/Sub clients. */
+        /** The build service managing the Pub/Sub client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of a [PubSubClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<TopicAdminClientBuildService>
 
         /** GCP project ID containing the topic. */
         val projectId: Property<String>
@@ -38,13 +32,11 @@ abstract class ListTopicSubscriptionsValueSource :
         val topicId: Property<String>
     }
 
-    private val client: Provider<TopicAdminClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun obtain(): List<String>? {
         val topicName = TopicName.of(parameters.projectId.get(), parameters.topicId.get()).toString()
         val request = ListTopicSubscriptionsRequest.newBuilder().apply {
             topic = topicName
         }.build()
-        return client.get().listTopicSubscriptions(request).iterateAll().toList()
+        return parameters.service.get().getClient().listTopicSubscriptions(request).iterateAll().toList()
     }
 }
