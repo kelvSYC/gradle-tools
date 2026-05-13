@@ -3,29 +3,22 @@ package com.kelvsyc.gradle.google.cloud.pubsub
 import com.google.cloud.pubsub.v1.TopicAdminClient
 import com.google.pubsub.v1.ListTopicsRequest
 import com.google.pubsub.v1.Topic
-import com.kelvsyc.gradle.clients.ClientsBaseExtension
-import com.kelvsyc.gradle.internal.google.cloud.pubsub.MockPubSubClientInfoInternal
-import com.kelvsyc.gradle.plugins.GoogleCloudPubSubBasePlugin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.of
-import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 
 class ListTopicsValueSourceSpec : FunSpec() {
     init {
         test("obtain - returns topic resource names from paginated response") {
             val project = ProjectBuilder.builder().build()
-            project.pluginManager.apply(GoogleCloudPubSubBasePlugin::class)
-            val extension = project.the<ClientsBaseExtension>()
-            extension.service.get().registerBinding(MockPubSubClientInfo::class, MockPubSubClientInfoInternal::class)
-            extension.service.get().registerIfAbsent<MockPubSubClientInfo>("mock") {}
+            val client = mockk<TopicAdminClient>()
+            MockTopicAdminClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent("pubsub", MockTopicAdminClientBuildService::class)
 
-            val client = extension.getClient<TopicAdminClient, MockPubSubClientInfo>("mock").get()!!
             val topics = listOf(
                 Topic.newBuilder().setName("projects/p/topics/alpha").build(),
                 Topic.newBuilder().setName("projects/p/topics/bravo").build(),
@@ -36,9 +29,8 @@ class ListTopicsValueSourceSpec : FunSpec() {
             val slot = slot<ListTopicsRequest>()
             every { client.listTopics(capture(slot)) } returns paged
 
-            val provider = project.providers.of(ListTopicsValueSource::class) {
-                parameters.service.set(extension.service)
-                parameters.clientName.set("mock")
+            val provider = project.providers.ofKt(ListTopicsValueSource::class) {
+                parameters.service.set(service)
                 parameters.projectId.set("p")
             }
 

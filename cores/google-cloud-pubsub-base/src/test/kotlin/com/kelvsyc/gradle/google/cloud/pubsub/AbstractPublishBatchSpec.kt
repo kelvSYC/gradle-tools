@@ -26,10 +26,10 @@ class AbstractPublishBatchSpec : FunSpec() {
                 client.set(topicAdmin)
                 projectId.set("my-project")
                 topicId.set("my-topic")
-                registerEntry("e1") { data.set("msg 1") }
-                registerEntry("e2") {
-                    data.set("msg 2")
-                    attributes.put("k", "v")
+                registerEntry("e1") { entry -> entry.data.set("msg 1") }
+                registerEntry("e2") { entry ->
+                    entry.data.set("msg 2")
+                    entry.attributes.put("k", "v")
                 }
             }
             task.get().run()
@@ -51,9 +51,9 @@ class AbstractPublishBatchSpec : FunSpec() {
                 client.set(topicAdmin)
                 projectId.set("my-project")
                 topicId.set("my-topic")
-                registerEntry("e1") {
-                    data.set("ordered")
-                    orderingKey.set("key-a")
+                registerEntry("e1") { entry ->
+                    entry.data.set("ordered")
+                    entry.orderingKey.set("key-a")
                 }
             }
             task.get().run()
