@@ -1,18 +1,15 @@
 package com.kelvsyc.gradle.aws.java.sqs
 
-import com.kelvsyc.gradle.clients.ClientsBaseService
-import com.kelvsyc.gradle.plugins.ClientsBasePlugin
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.services.ServiceReference
-import org.gradle.api.tasks.Internal
 import org.gradle.work.DisableCachingByDefault
 import javax.inject.Inject
 
 /**
  * A [AbstractSendMessageBatch] task wired to an [SqsClient][software.amazon.awssdk.services.sqs.SqsClient]
- * registered in [ClientsBaseService].
+ * supplied by a [SqsClientBuildService].
  */
 @DisableCachingByDefault(because = "Sending to an external service is not cacheable")
 abstract class SendMessageBatch @Inject constructor(
@@ -20,14 +17,14 @@ abstract class SendMessageBatch @Inject constructor(
     providers: ProviderFactory
 ) : AbstractSendMessageBatch(objects, providers) {
     /**
-     * The shared [ClientsBaseService] holding the registered SQS client.
+     * Build service managing the SQS client to use.
      */
-    @get:ServiceReference(ClientsBasePlugin.SERVICE_NAME)
-    abstract val clientsService: Property<ClientsBaseService>
+    @get:ServiceReference
+    abstract val service: Property<SqsClientBuildService>
 
-    /**
-     * Registered name of an [SqsClientInfo].
-     */
-    @get:Internal
-    abstract val clientName: Property<String>
+    init {
+        client.set(service.map { it.getClient() })
+        client.disallowChanges()
+        client.finalizeValueOnRead()
+    }
 }
