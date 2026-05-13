@@ -1,11 +1,8 @@
 package com.kelvsyc.gradle.google.cloud.artifact
 
-import com.google.devtools.artifactregistry.v1.ArtifactRegistryClient
 import com.google.devtools.artifactregistry.v1.ListVersionsRequest
 import com.google.devtools.artifactregistry.v1.PackageName
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import org.gradle.api.tasks.Internal
@@ -23,12 +20,9 @@ abstract class ListVersionsValueSource : ValueSource<List<String>, ListVersionsV
      * Parameters for [ListVersionsValueSource].
      */
     interface Parameters : ValueSourceParameters {
-        /** The shared build service managing Artifact Registry clients. */
+        /** The build service managing the Artifact Registry client. */
         @get:Internal
-        val service: Property<ClientsBaseService>
-
-        /** Registered name of an [ArtifactRegistryClientInfo]. */
-        val clientName: Property<String>
+        val service: Property<ArtifactRegistryClientBuildService>
 
         /** GCP project ID. */
         val projectName: Property<String>
@@ -43,8 +37,6 @@ abstract class ListVersionsValueSource : ValueSource<List<String>, ListVersionsV
         val packageName: Property<String>
     }
 
-    private val client: Provider<ArtifactRegistryClient> = parameters.service.zip(parameters.clientName, ClientsBaseService::getClient)
-
     override fun obtain(): List<String>? {
         val parent = PackageName.of(
             parameters.projectName.get(),
@@ -55,6 +47,6 @@ abstract class ListVersionsValueSource : ValueSource<List<String>, ListVersionsV
         val request = ListVersionsRequest.newBuilder().apply {
             this.parent = parent
         }.build()
-        return client.get().listVersions(request).iterateAll().map { it.name }
+        return parameters.service.get().getClient().listVersions(request).iterateAll().map { it.name }
     }
 }

@@ -48,7 +48,7 @@ the two AWS SDKs are distinct libraries:
 
 | Component | Description | Form |
 |-----------|-------------|------|
-| `google-cloud-artifact-registry-base` | GCP Artifact Registry | plugin |
+| `google-cloud-artifact-registry-base` | GCP Artifact Registry | library |
 | `google-cloud-storage-base` | GCP Cloud Storage | plugin |
 | `google-cloud-secret-manager-base` | GCP Secret Manager | plugin |
 | `google-cloud-pubsub-base` | GCP Pub/Sub | plugin |
