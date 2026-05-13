@@ -14,10 +14,10 @@ class ArtifactRegistrationSpec : FunSpec() {
                 val project = ProjectBuilder.builder().build()
                 val task = project.tasks.register<BatchDownloadFromGCS>("download").get()
 
-                task.registerArtifact("foo") {
-                    bucket.set("my-bucket")
-                    blobName.set("path/to/blob")
-                    outputFile.set(project.layout.buildDirectory.file("out/foo"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.bucket.set("my-bucket")
+                    artifact.blobName.set("path/to/blob")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("out/foo"))
                 }
 
                 val artifacts = task.artifacts.get()
@@ -30,15 +30,15 @@ class ArtifactRegistrationSpec : FunSpec() {
                 val project = ProjectBuilder.builder().build()
                 val task = project.tasks.register<BatchDownloadFromGCS>("download").get()
 
-                task.registerArtifact("foo") {
-                    bucket.set("bucket-a")
-                    blobName.set("blob-a")
-                    outputFile.set(project.layout.buildDirectory.file("out/foo"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.bucket.set("bucket-a")
+                    artifact.blobName.set("blob-a")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("out/foo"))
                 }
-                task.registerArtifact("bar") {
-                    bucket.set("bucket-b")
-                    blobName.set("blob-b")
-                    outputFile.set(project.layout.buildDirectory.file("out/bar"))
+                task.registerArtifact("bar") { artifact ->
+                    artifact.bucket.set("bucket-b")
+                    artifact.blobName.set("blob-b")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("out/bar"))
                 }
 
                 val artifacts = task.artifacts.get()
@@ -52,15 +52,15 @@ class ArtifactRegistrationSpec : FunSpec() {
                 val project = ProjectBuilder.builder().build()
                 val task = project.tasks.register<BatchDownloadFromGCS>("download").get()
 
-                task.registerArtifact("foo") {
-                    bucket.set("original-bucket")
-                    blobName.set("original-blob")
-                    outputFile.set(project.layout.buildDirectory.file("out/foo"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.bucket.set("original-bucket")
+                    artifact.blobName.set("original-blob")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("out/foo"))
                 }
-                task.registerArtifact("foo") {
-                    bucket.set("new-bucket")
-                    blobName.set("new-blob")
-                    outputFile.set(project.layout.buildDirectory.file("out/foo2"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.bucket.set("new-bucket")
+                    artifact.blobName.set("new-blob")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("out/foo2"))
                 }
 
                 val artifacts = task.artifacts.get()
@@ -79,10 +79,10 @@ class ArtifactRegistrationSpec : FunSpec() {
                 val task = project.tasks.register<BatchDownloadFromGCS>("download").get()
                 val expectedFile = project.layout.buildDirectory.file("out/foo").get()
 
-                task.registerArtifact("foo") {
-                    bucket.set("my-bucket")
-                    blobName.set("path/to/blob")
-                    outputFile.set(expectedFile)
+                task.registerArtifact("foo") { artifact ->
+                    artifact.bucket.set("my-bucket")
+                    artifact.blobName.set("path/to/blob")
+                    artifact.outputFile.set(expectedFile)
                 }
 
                 val outputFiles = task.outputFiles.get()
@@ -94,15 +94,15 @@ class ArtifactRegistrationSpec : FunSpec() {
                 val project = ProjectBuilder.builder().build()
                 val task = project.tasks.register<BatchDownloadFromGCS>("download").get()
 
-                task.registerArtifact("foo") {
-                    bucket.set("bucket-a")
-                    blobName.set("blob-a")
-                    outputFile.set(project.layout.buildDirectory.file("out/foo"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.bucket.set("bucket-a")
+                    artifact.blobName.set("blob-a")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("out/foo"))
                 }
-                task.registerArtifact("bar") {
-                    bucket.set("bucket-b")
-                    blobName.set("blob-b")
-                    outputFile.set(project.layout.buildDirectory.file("out/bar"))
+                task.registerArtifact("bar") { artifact ->
+                    artifact.bucket.set("bucket-b")
+                    artifact.blobName.set("blob-b")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("out/bar"))
                 }
 
                 val outputFiles = task.outputFiles.get()
@@ -116,10 +116,10 @@ class ArtifactRegistrationSpec : FunSpec() {
                 val project = ProjectBuilder.builder().build()
                 val task = project.tasks.register<BatchUploadToGCS>("upload").get()
 
-                task.registerArtifact("foo") {
-                    bucket.set("my-bucket")
-                    blobName.set("path/to/blob")
-                    inputFile.set(project.layout.projectDirectory.file("src/foo.txt"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.bucket.set("my-bucket")
+                    artifact.blobName.set("path/to/blob")
+                    artifact.inputFile.set(project.layout.projectDirectory.file("src/foo.txt"))
                 }
 
                 val artifacts = task.artifacts.get()
@@ -132,15 +132,15 @@ class ArtifactRegistrationSpec : FunSpec() {
                 val project = ProjectBuilder.builder().build()
                 val task = project.tasks.register<BatchUploadToGCS>("upload").get()
 
-                task.registerArtifact("foo") {
-                    bucket.set("bucket-a")
-                    blobName.set("blob-a")
-                    inputFile.set(project.layout.projectDirectory.file("src/foo.txt"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.bucket.set("bucket-a")
+                    artifact.blobName.set("blob-a")
+                    artifact.inputFile.set(project.layout.projectDirectory.file("src/foo.txt"))
                 }
-                task.registerArtifact("bar") {
-                    bucket.set("bucket-b")
-                    blobName.set("blob-b")
-                    inputFile.set(project.layout.projectDirectory.file("src/bar.txt"))
+                task.registerArtifact("bar") { artifact ->
+                    artifact.bucket.set("bucket-b")
+                    artifact.blobName.set("blob-b")
+                    artifact.inputFile.set(project.layout.projectDirectory.file("src/bar.txt"))
                 }
 
                 val artifacts = task.artifacts.get()
@@ -152,15 +152,15 @@ class ArtifactRegistrationSpec : FunSpec() {
                 val project = ProjectBuilder.builder().build()
                 val task = project.tasks.register<BatchUploadToGCS>("upload").get()
 
-                task.registerArtifact("foo") {
-                    bucket.set("original-bucket")
-                    blobName.set("original-blob")
-                    inputFile.set(project.layout.projectDirectory.file("src/foo.txt"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.bucket.set("original-bucket")
+                    artifact.blobName.set("original-blob")
+                    artifact.inputFile.set(project.layout.projectDirectory.file("src/foo.txt"))
                 }
-                task.registerArtifact("foo") {
-                    bucket.set("new-bucket")
-                    blobName.set("new-blob")
-                    inputFile.set(project.layout.projectDirectory.file("src/foo2.txt"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.bucket.set("new-bucket")
+                    artifact.blobName.set("new-blob")
+                    artifact.inputFile.set(project.layout.projectDirectory.file("src/foo2.txt"))
                 }
 
                 val artifacts = task.artifacts.get()
@@ -178,10 +178,10 @@ class ArtifactRegistrationSpec : FunSpec() {
                 val project = ProjectBuilder.builder().build()
                 val task = project.tasks.register<BatchUploadToGCS>("upload").get()
 
-                task.registerArtifact("foo") {
-                    bucket.set("my-bucket")
-                    blobName.set("blob")
-                    inputFile.set(project.layout.projectDirectory.file("src/foo.txt"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.bucket.set("my-bucket")
+                    artifact.blobName.set("blob")
+                    artifact.inputFile.set(project.layout.projectDirectory.file("src/foo.txt"))
                 }
 
                 task.artifacts.get() shouldNotContainKey "bar"

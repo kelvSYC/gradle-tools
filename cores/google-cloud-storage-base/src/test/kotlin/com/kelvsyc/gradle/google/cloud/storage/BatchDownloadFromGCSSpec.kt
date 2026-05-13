@@ -32,15 +32,14 @@ class BatchDownloadFromGCSSpec : FunSpec() {
                 every { storage.batch() } returns storageBatch
                 every { storageBatch.get(any<BlobId>()) } returns batchResult
 
-                val task = project.tasks.register<BatchDownloadFromGCS>("download").get()
+                val task = project.tasks.register<AbstractBatchDownloadFromGCS>("download").get()
                 task.client.set(storage)
-                task.registerArtifact("foo") {
-                    bucket.set("my-bucket")
-                    blobName.set("path/to/blob")
-                    this.outputFile.set(outputFile)
+                task.registerArtifact("foo") { artifact ->
+                    artifact.bucket.set("my-bucket")
+                    artifact.blobName.set("path/to/blob")
+                    artifact.outputFile.set(outputFile)
                 }
 
-                // Simulate the batch submit by triggering the callback synchronously
                 every { storageBatch.submit() } answers {
                     batchResult.success(blob)
                 }
@@ -62,12 +61,12 @@ class BatchDownloadFromGCSSpec : FunSpec() {
                 every { storageBatch.get(any<BlobId>()) } returns batchResult
                 every { storageBatch.submit() } answers { batchResult.success(null) }
 
-                val task = project.tasks.register<BatchDownloadFromGCS>("download").get()
+                val task = project.tasks.register<AbstractBatchDownloadFromGCS>("download").get()
                 task.client.set(storage)
-                task.registerArtifact("foo") {
-                    bucket.set("my-bucket")
-                    blobName.set("path/to/blob")
-                    this.outputFile.set(outputFile)
+                task.registerArtifact("foo") { artifact ->
+                    artifact.bucket.set("my-bucket")
+                    artifact.blobName.set("path/to/blob")
+                    artifact.outputFile.set(outputFile)
                 }
 
                 shouldThrow<GradleException> { task.run() }
@@ -87,12 +86,12 @@ class BatchDownloadFromGCSSpec : FunSpec() {
                     batchResult.error(StorageException(500, "Internal Server Error"))
                 }
 
-                val task = project.tasks.register<BatchDownloadFromGCS>("download").get()
+                val task = project.tasks.register<AbstractBatchDownloadFromGCS>("download").get()
                 task.client.set(storage)
-                task.registerArtifact("foo") {
-                    bucket.set("my-bucket")
-                    blobName.set("path/to/blob")
-                    this.outputFile.set(outputFile)
+                task.registerArtifact("foo") { artifact ->
+                    artifact.bucket.set("my-bucket")
+                    artifact.blobName.set("path/to/blob")
+                    artifact.outputFile.set(outputFile)
                 }
 
                 shouldThrow<GradleException> { task.run() }
@@ -118,17 +117,17 @@ class BatchDownloadFromGCSSpec : FunSpec() {
                     batchResultBar.error(StorageException(404, "Not Found"))
                 }
 
-                val task = project.tasks.register<BatchDownloadFromGCS>("download").get()
+                val task = project.tasks.register<AbstractBatchDownloadFromGCS>("download").get()
                 task.client.set(storage)
-                task.registerArtifact("foo") {
-                    bucket.set("bucket-a")
-                    blobName.set("blob-a")
-                    outputFile.set(project.layout.buildDirectory.file("out/foo"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.bucket.set("bucket-a")
+                    artifact.blobName.set("blob-a")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("out/foo"))
                 }
-                task.registerArtifact("bar") {
-                    bucket.set("bucket-b")
-                    blobName.set("blob-b")
-                    outputFile.set(project.layout.buildDirectory.file("out/bar"))
+                task.registerArtifact("bar") { artifact ->
+                    artifact.bucket.set("bucket-b")
+                    artifact.blobName.set("blob-b")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("out/bar"))
                 }
 
                 shouldThrow<GradleException> { task.run() }
@@ -154,17 +153,17 @@ class BatchDownloadFromGCSSpec : FunSpec() {
                     batchResultBar.success(blob)
                 }
 
-                val task = project.tasks.register<BatchDownloadFromGCS>("download").get()
+                val task = project.tasks.register<AbstractBatchDownloadFromGCS>("download").get()
                 task.client.set(storage)
-                task.registerArtifact("foo") {
-                    bucket.set("bucket-a")
-                    blobName.set("blob-a")
-                    outputFile.set(project.layout.buildDirectory.file("out/foo"))
+                task.registerArtifact("foo") { artifact ->
+                    artifact.bucket.set("bucket-a")
+                    artifact.blobName.set("blob-a")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("out/foo"))
                 }
-                task.registerArtifact("bar") {
-                    bucket.set("bucket-b")
-                    blobName.set("blob-b")
-                    outputFile.set(project.layout.buildDirectory.file("out/bar"))
+                task.registerArtifact("bar") { artifact ->
+                    artifact.bucket.set("bucket-b")
+                    artifact.blobName.set("blob-b")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("out/bar"))
                 }
 
                 task.run() // should not throw
@@ -180,15 +179,14 @@ class BatchDownloadFromGCSSpec : FunSpec() {
 
                 every { storage.batch() } returns storageBatch
                 every { storageBatch.get(any<BlobId>()) } returns batchResult
-                // submit does NOT fire any callback — simulates a timeout scenario
                 every { storageBatch.submit() } answers { /* no-op */ }
 
-                val task = project.tasks.register<BatchDownloadFromGCS>("download").get()
+                val task = project.tasks.register<AbstractBatchDownloadFromGCS>("download").get()
                 task.client.set(storage)
-                task.registerArtifact("foo") {
-                    bucket.set("my-bucket")
-                    blobName.set("path/to/blob")
-                    this.outputFile.set(outputFile)
+                task.registerArtifact("foo") { artifact ->
+                    artifact.bucket.set("my-bucket")
+                    artifact.blobName.set("path/to/blob")
+                    artifact.outputFile.set(outputFile)
                 }
 
                 val ex = shouldThrow<GradleException> { task.run() }

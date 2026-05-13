@@ -4,7 +4,6 @@ import com.google.cloud.WriteChannel
 import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.Storage
-import com.kelvsyc.gradle.clients.ClientsBaseService
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.every
@@ -12,10 +11,10 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.gradle.kotlin.dsl.newInstance
+import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 import java.nio.ByteBuffer
 import java.nio.file.Files
-import kotlin.reflect.KClass
 
 class UploadFileActionSpec : FunSpec() {
     init {
@@ -28,16 +27,14 @@ class UploadFileActionSpec : FunSpec() {
 
                 val writer = mockk<WriteChannel>(relaxed = true)
                 val storage = mockk<Storage>(relaxed = true)
-                val service = mockk<ClientsBaseService>(relaxed = true)
-
-                every { service.getClient(any(), any<KClass<StorageClientInfo>>(), any<KClass<Storage>>()) } returns storage
+                MockStorageClientBuildService.mockClient = storage
+                val service = project.gradle.sharedServices.registerIfAbsent("gcs", MockStorageClientBuildService::class)
 
                 val blobInfoSlot = slot<BlobInfo>()
                 every { storage.writer(capture(blobInfoSlot)) } returns writer
 
                 val params = project.objects.newInstance<UploadFileAction.Parameters>()
                 params.service.set(service)
-                params.clientName.set("my-client")
                 params.bucket.set("my-bucket")
                 params.blobName.set("path/to/blob")
                 params.inputFile.set(tempFile.toFile())
@@ -62,9 +59,9 @@ class UploadFileActionSpec : FunSpec() {
                 val writtenBuffers = mutableListOf<ByteBuffer>()
                 val writer = mockk<WriteChannel>(relaxed = true)
                 val storage = mockk<Storage>(relaxed = true)
-                val service = mockk<ClientsBaseService>(relaxed = true)
+                MockStorageClientBuildService.mockClient = storage
+                val service = project.gradle.sharedServices.registerIfAbsent("gcs", MockStorageClientBuildService::class)
 
-                every { service.getClient(any(), any<KClass<StorageClientInfo>>(), any<KClass<Storage>>()) } returns storage
                 every { storage.writer(any<BlobInfo>()) } returns writer
                 every { writer.write(capture(writtenBuffers)) } answers {
                     writtenBuffers.last().remaining()
@@ -72,7 +69,6 @@ class UploadFileActionSpec : FunSpec() {
 
                 val params = project.objects.newInstance<UploadFileAction.Parameters>()
                 params.service.set(service)
-                params.clientName.set("my-client")
                 params.bucket.set("my-bucket")
                 params.blobName.set("path/to/blob")
                 params.inputFile.set(tempFile.toFile())
@@ -102,14 +98,13 @@ class UploadFileActionSpec : FunSpec() {
 
                 val writer = mockk<WriteChannel>(relaxed = true)
                 val storage = mockk<Storage>(relaxed = true)
-                val service = mockk<ClientsBaseService>(relaxed = true)
+                MockStorageClientBuildService.mockClient = storage
+                val service = project.gradle.sharedServices.registerIfAbsent("gcs", MockStorageClientBuildService::class)
 
-                every { service.getClient(any(), any<KClass<StorageClientInfo>>(), any<KClass<Storage>>()) } returns storage
                 every { storage.writer(any<BlobInfo>()) } returns writer
 
                 val params = project.objects.newInstance<UploadFileAction.Parameters>()
                 params.service.set(service)
-                params.clientName.set("my-client")
                 params.bucket.set("my-bucket")
                 params.blobName.set("path/to/blob")
                 params.inputFile.set(tempFile.toFile())
@@ -130,14 +125,13 @@ class UploadFileActionSpec : FunSpec() {
 
                 val writer = mockk<WriteChannel>(relaxed = true)
                 val storage = mockk<Storage>(relaxed = true)
-                val service = mockk<ClientsBaseService>(relaxed = true)
+                MockStorageClientBuildService.mockClient = storage
+                val service = project.gradle.sharedServices.registerIfAbsent("gcs", MockStorageClientBuildService::class)
 
-                every { service.getClient(any(), any<KClass<StorageClientInfo>>(), any<KClass<Storage>>()) } returns storage
                 every { storage.writer(any<BlobInfo>()) } returns writer
 
                 val params = project.objects.newInstance<UploadFileAction.Parameters>()
                 params.service.set(service)
-                params.clientName.set("my-client")
                 params.bucket.set("my-bucket")
                 params.blobName.set("path/to/blob")
                 params.inputFile.set(tempFile.toFile())
@@ -165,9 +159,9 @@ class UploadFileActionSpec : FunSpec() {
                 val writtenBuffers = mutableListOf<ByteBuffer>()
                 val writer = mockk<WriteChannel>(relaxed = true)
                 val storage = mockk<Storage>(relaxed = true)
-                val service = mockk<ClientsBaseService>(relaxed = true)
+                MockStorageClientBuildService.mockClient = storage
+                val service = project.gradle.sharedServices.registerIfAbsent("gcs", MockStorageClientBuildService::class)
 
-                every { service.getClient(any(), any<KClass<StorageClientInfo>>(), any<KClass<Storage>>()) } returns storage
                 every { storage.writer(any<BlobInfo>()) } returns writer
                 every { writer.write(capture(writtenBuffers)) } answers {
                     writtenBuffers.last().remaining()
@@ -175,7 +169,6 @@ class UploadFileActionSpec : FunSpec() {
 
                 val params = project.objects.newInstance<UploadFileAction.Parameters>()
                 params.service.set(service)
-                params.clientName.set("my-client")
                 params.bucket.set("my-bucket")
                 params.blobName.set("path/to/blob")
                 params.inputFile.set(tempFile.toFile())
