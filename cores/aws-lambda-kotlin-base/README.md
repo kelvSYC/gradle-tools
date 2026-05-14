@@ -19,10 +19,17 @@ dependencies {
 
 ```kotlin
 val lambda = gradle.sharedServices.registerIfAbsent("lambda", LambdaClientBuildService::class) {
-    parameters.region.set("us-east-1")
-    parameters.credentials.set(providers.credentials(AwsCredentials::class.java, "lambda").asCredentialsProvider)
+    parameters {
+        region.set("us-east-1")
+        from(providers.credentials(AwsCredentials::class.java, "lambda"))
+    }
 }
 ```
+
+Both `region` and the credentials extension call are optional. Leave `region` unset to use the AWS SDK for Kotlin
+default region provider chain. Omit the credentials call to skip the `credentialsProvider` assignment, in which
+case the SDK applies its own default behavior. See [aws-kotlin-extensions](../aws-kotlin-extensions) for the full
+set of credential configuration functions.
 
 ## Value Sources
 

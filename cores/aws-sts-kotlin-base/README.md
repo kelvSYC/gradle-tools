@@ -21,19 +21,23 @@ Register the build service from a plugin or `build.gradle.kts`:
 
 ```kotlin
 val sts = gradle.sharedServices.registerIfAbsent("sts", StsClientBuildService::class) {
-    parameters.region.set("us-east-1")
-    parameters.credentials.set(providers.credentials(AwsCredentials::class.java, "sts").asCredentialsProvider)
+    parameters {
+        region.set("us-east-1")
+        from(providers.credentials(AwsCredentials::class.java, "sts"))
+    }
 }
 ```
 
-Both parameters are optional. Leave `region` unset to fall back to the AWS SDK for Kotlin default region provider
-chain, and leave `credentials` unset to fall back to the default credentials provider chain.
+Both `region` and the credentials extension call are optional. Leave `region` unset to use the AWS SDK for Kotlin
+default region provider chain. Omit the credentials call to skip the `credentialsProvider` assignment, in which
+case the SDK applies its own default behavior. See [aws-kotlin-extensions](../aws-kotlin-extensions) for the full
+set of credential configuration functions.
 
 > [!NOTE]
 > For assume-role use cases, configure the AWS SDK's `StsAssumeRoleCredentialsProvider` and use it as the
-> `credentials` of the *target* client (e.g. an `S3ClientBuildService`) rather than going through this plugin.
-> Exposing raw temporary credentials via a `ValueSource` is not supported, since `ValueSource` results may be
-> cached or logged.
+> credentials provider of the *target* client (e.g. an `S3ClientBuildService`) rather than going through this
+> plugin. Exposing raw temporary credentials via a `ValueSource` is not supported, since `ValueSource` results
+> may be cached or logged.
 
 ## Value Sources
 

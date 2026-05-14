@@ -7,4 +7,5 @@ plugins {
 }
 
 includeBuild("../clients-base")
+includeBuild("../aws-kotlin-extensions")
 includeBuild("../gradle-extensions")

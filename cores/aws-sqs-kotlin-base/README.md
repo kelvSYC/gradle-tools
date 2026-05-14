@@ -21,13 +21,17 @@ Register the build service from a plugin or `build.gradle.kts`:
 
 ```kotlin
 val sqs = gradle.sharedServices.registerIfAbsent("sqs", SqsClientBuildService::class) {
-    parameters.region.set("us-east-1")
-    parameters.credentials.set(providers.credentials(AwsCredentials::class.java, "sqs").asCredentialsProvider)
+    parameters {
+        region.set("us-east-1")
+        from(providers.credentials(AwsCredentials::class.java, "sqs"))
+    }
 }
 ```
 
-Both parameters are optional. Leave `region` unset to fall back to the AWS SDK for Kotlin default region provider
-chain, and leave `credentials` unset to fall back to the default credentials provider chain.
+Both `region` and the credentials extension call are optional. Leave `region` unset to use the AWS SDK for Kotlin
+default region provider chain. Omit the credentials call to skip the `credentialsProvider` assignment, in which
+case the SDK applies its own default behavior. See [aws-kotlin-extensions](../aws-kotlin-extensions) for the full
+set of credential configuration functions.
 
 ## WorkAction: `SendMessageAction`
 

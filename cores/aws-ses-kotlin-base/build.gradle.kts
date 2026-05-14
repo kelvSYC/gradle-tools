@@ -13,9 +13,9 @@ configure<DokkaExtension> {
 
 dependencies {
     api("com.kelvsyc.gradle:clients-base")
+    api("com.kelvsyc.gradle:aws-kotlin-extensions")
 
     api(libs.aws.ses.kotlin)
-    api(libs.aws.smithy.credentials)
     implementation(libs.kotlinx.coroutines.core)
 
     testImplementation(libs.mockk)
