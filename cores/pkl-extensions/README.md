@@ -4,25 +4,22 @@ Gradle integration layer for [Pkl](https://pkl-lang.org/), Apple's configuration
 Unlike the JSON and XML extensions which wrap kotlin-tools libraries, this module depends
 directly on Pkl's native Kotlin API (`org.pkl-lang:pkl-core`).
 
-This module provides Gradle-specific utilities: `ValueSource` implementations for evaluating Pkl
-files and extracting configuration values, `Provider` extensions for lazy Pkl evaluation, and
-convenience `ProviderFactory` extensions.
+This module provides `ValueSource` implementations for evaluating Pkl files and extracting
+configuration values, and convenience `ProviderFactory` extensions.
 
 ---
 
 ## ValueSources
 
-### `PklValueSource`
+### `AbstractPklValueSource` (abstract base)
 
-Evaluates a Pkl file and provides the resulting `PModule`.
+Abstract base class for `ValueSource` implementations that evaluate a Pkl file. Subclasses
+implement `doObtain(PModule)` to transform the evaluated module into a value of type `T`.
 
-```kotlin
-val config = providers.pklFile(layout.projectDirectory.file("config.pkl"))
-val appName = config.map { it.properties["name"] as String }
-```
-
-The evaluator is preconfigured with default security settings, allowing local file imports
-and the Pkl standard library. Evaluated modules remain valid after the evaluator closes.
+> **Configuration cache compatibility is incomplete.** For a subclass to be compatible with
+> Gradle's configuration cache, the return type `T` must implement `java.io.Serializable`.
+> `PModule` itself does not, so subclasses that return `PModule` directly will fail under
+> `--configuration-cache`. Use `PklPathValueSource` for a config-cache-safe alternative.
 
 ### `PklPathValueSource`
 
@@ -54,27 +51,12 @@ Scalar values are coerced to strings: strings are returned directly, numbers (`I
 and booleans are converted via `toString()`. Non-scalar values (objects, listings, mappings, null)
 result in an absent provider.
 
-Both ValueSources return an absent provider if the file is missing, the Pkl content is malformed,
-or (for `PklPathValueSource`) the path does not resolve to a scalar value.
-
-## Provider Extensions
-
-### `Provider<String>.parsePkl()`
-
-Lazily evaluates a string provider's value as a Pkl `PModule`.
-
-```kotlin
-val pklContent = providers.provider { "name = \"my-app\"" }
-val module = pklContent.parsePkl()
-```
-
-**Note:** Each call creates a fresh evaluator. Since text-based modules have no base path,
-relative imports within the Pkl content will not resolve.
+Returns an absent provider if the file is missing, the Pkl content is malformed, or the path
+does not resolve to a scalar value.
 
 ## ProviderFactory Extensions
 
 Convenience functions on `ProviderFactory` for creating ValueSource-backed providers:
 
-- `pklFile(file)` / `pklFile(fileProvider)` — returns `Provider<PModule>`
 - `pklPath(file, path)` — returns `Provider<String>` with all combinations of
   `RegularFile`/`Provider<RegularFile>` and `String`/`Provider<String>`

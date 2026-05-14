@@ -7,33 +7,12 @@ import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import org.gradle.api.provider.ValueSourceSpec
 import org.gradle.kotlin.dsl.of
-import org.pkl.core.PModule
 import kotlin.reflect.KClass
 
 private fun <T : Any, P : ValueSourceParameters> ProviderFactory.ofKt(
     valueSourceType: KClass<out ValueSource<T, P>>,
     configuration: ValueSourceSpec<P>.() -> Unit,
 ) = of(valueSourceType, configuration)
-
-/**
- * Returns a [Provider] providing a [PModule] evaluated from a Pkl file.
- *
- * @param file the Pkl file to evaluate
- * @see PklValueSource
- */
-fun ProviderFactory.pklFile(file: RegularFile): Provider<PModule> = ofKt(PklValueSource::class) {
-    parameters.inputFile.set(file)
-}
-
-/**
- * Returns a [Provider] providing a [PModule] evaluated from a Pkl file.
- *
- * @param file a provider for the Pkl file to evaluate
- * @see PklValueSource
- */
-fun ProviderFactory.pklFile(file: Provider<RegularFile>): Provider<PModule> = ofKt(PklValueSource::class) {
-    parameters.inputFile.set(file)
-}
 
 /**
  * Returns a [Provider] providing a string value extracted from a Pkl file using a
