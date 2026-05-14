@@ -8,15 +8,14 @@ plugins {
 }
 
 configure<DokkaExtension> {
-    moduleName.set("Azure Key Vault Base")
+    moduleName.set("Azure Gradle Extensions")
 }
 
 dependencies {
     api("com.kelvsyc.gradle:clients-base")
-    api("com.kelvsyc.gradle:azure-extensions")
 
     api(libs.azure.core)
-    api(libs.azure.security.keyvault.secrets)
+    api(libs.azure.identity)
 
     testImplementation(libs.mockk)
 }

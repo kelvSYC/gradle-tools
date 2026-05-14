@@ -8,40 +8,105 @@ import org.gradle.testkit.runner.TaskOutcome
 import java.io.File
 
 /**
- * Probe #1: configuration-cache round-trip of `BlobServiceClientBuildService.Params`.
+ * Probe #1: configuration-cache round-trip of `BlobServiceClientBuildService.Params`
+ * (a.k.a. `AzureBuildServiceParams`).
  *
- * Tests encode the **observed** current behavior. A failing test means the underlying Gradle/SDK
- * behavior has shifted — investigate before "fixing" the test.
+ * Each test pins down the **observed** behavior of the parameter shape — `endpoint: Property<String>`,
+ * `credentialSource: Property<AzureCredentialSource>`, plus the supporting credential strings on
+ * `AzureBuildServiceParams`. A failing test means either Gradle's config-cache serializer or the
+ * Azure extensions have regressed; investigate before "fixing" the test.
  *
- * ### Findings (as of the integration-test introduction)
+ * ### What this characterizes
  *
- * - `endpoint` (`Property<String>`) round-trips cleanly — `String` is natively `Serializable`.
- * - `credential` (`Property<TokenCredential>`) is now exercised — this is expected to fail until
- *   the `credential` parameter shape is decomposed into serializable primitives (credential source
- *   enum + companion strings), with SDK credential objects reconstructed inside `createClient()`.
+ * Azure SDK `TokenCredential` implementations (`DefaultAzureCredential`, `ManagedIdentityCredential`,
+ * `ClientSecretCredential`) carry non-`Serializable` state and cannot survive Gradle's
+ * configuration-cache codec. `AzureBuildServiceParams` exposes only serializable primitives and the
+ * SDK credential is reconstructed inside `createClient()` via `resolveCredential()` /
+ * `resolveTokenCredential()`. These tests exercise every branch of
+ * [com.kelvsyc.gradle.azure.AzureCredentialSource] across the configuration-cache boundary and a
+ * second invocation that should reuse the stored entry.
  */
 class BuildServiceConfigurationCacheSpec : FunSpec({
     test("BuildService with no parameter values survives config-cache round-trip") {
-        assertParamsRoundTripCleanly(
-            name = "no-params",
-            parametersBlock = ""
-        )
+        assertParamsRoundTripCleanly(name = "no-params", parametersBlock = "")
     }
 
     test("BuildService with endpoint String property survives config-cache round-trip") {
         assertParamsRoundTripCleanly(
             name = "endpoint-string",
-            parametersBlock = "endpoint.set(\"https://example.blob.core.windows.net\")"
+            parametersBlock = """endpoint.set("https://example.blob.core.windows.net")"""
         )
     }
 
-    test("BuildService with TokenCredential survives config-cache round-trip") {
+    test("BuildService with NONE credentialSource survives config-cache round-trip") {
         assertParamsRoundTripCleanly(
-            name = "token-credential",
-            parametersBlock = "credential.set(TokenCredential { _ -> Mono.empty() })"
+            name = "no-credentials",
+            parametersBlock = "credentialSource.set(AzureCredentialSource.NONE)"
         )
     }
 
+    test("BuildService with DEFAULT credentialSource survives config-cache round-trip") {
+        assertParamsRoundTripCleanly(
+            name = "default-credential",
+            parametersBlock = "credentialSource.set(AzureCredentialSource.DEFAULT)"
+        )
+    }
+
+    test("BuildService with MANAGED_IDENTITY credentialSource survives config-cache round-trip") {
+        assertParamsRoundTripCleanly(
+            name = "managed-identity",
+            parametersBlock = """
+                credentialSource.set(AzureCredentialSource.MANAGED_IDENTITY)
+                clientId.set("00000000-0000-0000-0000-000000000000")
+            """.trimIndent()
+        )
+    }
+
+    test("BuildService with CLIENT_SECRET credentialSource survives config-cache round-trip") {
+        assertParamsRoundTripCleanly(
+            name = "client-secret",
+            parametersBlock = """
+                credentialSource.set(AzureCredentialSource.CLIENT_SECRET)
+                tenantId.set("00000000-0000-0000-0000-000000000001")
+                clientId.set("00000000-0000-0000-0000-000000000002")
+                clientSecret.set("fake-secret")
+            """.trimIndent()
+        )
+    }
+
+    test("BuildService with SAS_TOKEN credentialSource survives config-cache round-trip") {
+        assertParamsRoundTripCleanly(
+            name = "sas-token",
+            parametersBlock = """
+                credentialSource.set(AzureCredentialSource.SAS_TOKEN)
+                sasToken.set("sv=2020-10-02&fake")
+            """.trimIndent()
+        )
+    }
+
+    test("BuildService with STORAGE_ACCOUNT_KEY credentialSource survives config-cache round-trip") {
+        assertParamsRoundTripCleanly(
+            name = "storage-account-key",
+            parametersBlock = """
+                credentialSource.set(AzureCredentialSource.STORAGE_ACCOUNT_KEY)
+                accountName.set("myaccount")
+                accountKey.set("ZmFrZS1rZXk=")
+            """.trimIndent()
+        )
+    }
+
+    test("BuildService with endpoint and CLIENT_SECRET together survives config-cache round-trip") {
+        assertParamsRoundTripCleanly(
+            name = "endpoint-and-secret",
+            parametersBlock = """
+                endpoint.set("https://example.blob.core.windows.net")
+                credentialSource.set(AzureCredentialSource.CLIENT_SECRET)
+                tenantId.set("00000000-0000-0000-0000-000000000001")
+                clientId.set("00000000-0000-0000-0000-000000000002")
+                clientSecret.set("fake-secret")
+            """.trimIndent()
+        )
+    }
 })
 
 private fun assertParamsRoundTripCleanly(name: String, parametersBlock: String) {
@@ -68,10 +133,9 @@ private fun writeConfigCacheProbeProject(name: String, parametersBlock: String):
         """
         ${IntegrationTestSupport.buildscriptBlock()}
 
+        import com.kelvsyc.gradle.azure.AzureCredentialSource
         import com.kelvsyc.gradle.azure.storage.blob.BlobServiceClientBuildService
         import com.kelvsyc.gradle.azure.storage.blob.fixtures.BlobBuildServiceProbeTask
-        import com.azure.core.credential.TokenCredential
-        import reactor.core.publisher.Mono
 
         val blobService = gradle.sharedServices.registerIfAbsent(
             "blob",
@@ -90,4 +154,3 @@ private fun writeConfigCacheProbeProject(name: String, parametersBlock: String):
     )
     return projectDir
 }
-

@@ -81,6 +81,7 @@ dependencies {
 | `aws-java-extensions` | Config-cache-safe BuildService base class, `AwsBuildServiceParams`, and credential adapters for the AWS SDK for Java |
 | `aws-kotlin-extensions` | Base client info interface and credential extensions for the AWS SDK for Kotlin |
 | `google-cloud-extensions` | Config-cache-safe BuildService base class and `GcpBuildServiceParams` for the Google Cloud SDK |
+| `azure-extensions` | Config-cache-safe BuildService base class and `AzureBuildServiceParams` for the Azure SDK |
 | `moshi-extensions` | `ValueSource` implementations and `Provider` extensions for Moshi JSON parsing |
 | `pkl-extensions` | `ValueSource` implementations for evaluating Pkl configuration files |
 | `xml-extensions` | XPath query engine, `ValueSource` implementations, and migration helpers for XML |

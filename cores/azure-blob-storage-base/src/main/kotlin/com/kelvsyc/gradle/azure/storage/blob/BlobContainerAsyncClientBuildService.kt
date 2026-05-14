@@ -1,26 +1,26 @@
 package com.kelvsyc.gradle.azure.storage.blob
 
-import com.azure.core.credential.TokenCredential
 import com.azure.storage.blob.BlobContainerAsyncClient
 import com.azure.storage.blob.BlobContainerClientBuilder
-import com.kelvsyc.gradle.clients.AbstractClientBuildService
+import com.kelvsyc.gradle.azure.AbstractAzureClientBuildService
+import com.kelvsyc.gradle.azure.AzureBuildServiceParams
+import com.kelvsyc.gradle.azure.ResolvedAzureCredential
 import org.gradle.api.provider.Property
-import org.gradle.api.services.BuildServiceParameters
 
 /**
  * Build service managing an asynchronous [BlobContainerAsyncClient] scoped to a single container.
+ *
+ * See [BlobContainerClientBuildService] for the synchronous equivalent and credential
+ * configuration.
  */
 abstract class BlobContainerAsyncClientBuildService :
-    AbstractClientBuildService<BlobContainerAsyncClient, BlobContainerAsyncClientBuildService.Params>() {
+    AbstractAzureClientBuildService<BlobContainerAsyncClient, BlobContainerAsyncClientBuildService.Params>() {
     /**
      * Configuration parameters for [BlobContainerAsyncClientBuildService].
      */
-    interface Params : BuildServiceParameters {
+    interface Params : AzureBuildServiceParams {
         /** The Azure Storage account endpoint URL. */
         val endpoint: Property<String>
-
-        /** The credential used to authenticate with Azure Blob Storage. */
-        val credential: Property<TokenCredential>
 
         /** The name of the blob container. */
         val containerName: Property<String>
@@ -29,8 +29,11 @@ abstract class BlobContainerAsyncClientBuildService :
     override fun createClient(): BlobContainerAsyncClient = BlobContainerClientBuilder().apply {
         endpoint(parameters.endpoint.get())
         containerName(parameters.containerName.get())
-        if (parameters.credential.isPresent) {
-            credential(parameters.credential.get())
+        when (val credential = resolveCredential()) {
+            null -> {}
+            is ResolvedAzureCredential.Token -> credential(credential.credential)
+            is ResolvedAzureCredential.Sas -> credential(credential.credential)
+            is ResolvedAzureCredential.NamedKey -> credential(credential.credential)
         }
     }.buildAsyncClient()
 }

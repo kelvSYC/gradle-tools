@@ -1,35 +1,38 @@
 package com.kelvsyc.gradle.azure.storage.blob
 
-import com.azure.core.credential.TokenCredential
 import com.azure.storage.blob.BlobServiceClient
 import com.azure.storage.blob.BlobServiceClientBuilder
-import com.kelvsyc.gradle.clients.AbstractClientBuildService
+import com.kelvsyc.gradle.azure.AbstractAzureClientBuildService
+import com.kelvsyc.gradle.azure.AzureBuildServiceParams
+import com.kelvsyc.gradle.azure.ResolvedAzureCredential
 import org.gradle.api.provider.Property
-import org.gradle.api.services.BuildServiceParameters
 
 /**
  * Build service managing a synchronous [BlobServiceClient] scoped to an entire storage account.
+ *
+ * Configure the service at registration time using the extension functions on
+ * [AzureBuildServiceParams] ([defaultCredential][com.kelvsyc.gradle.azure.defaultCredential],
+ * [clientSecret][com.kelvsyc.gradle.azure.clientSecret],
+ * [sasToken][com.kelvsyc.gradle.azure.sasToken],
+ * [sharedKey][com.kelvsyc.gradle.azure.sharedKey], etc.) plus a per-service [Params.endpoint].
  */
 abstract class BlobServiceClientBuildService :
-    AbstractClientBuildService<BlobServiceClient, BlobServiceClientBuildService.Params>() {
+    AbstractAzureClientBuildService<BlobServiceClient, BlobServiceClientBuildService.Params>() {
     /**
      * Configuration parameters for [BlobServiceClientBuildService].
      */
-    interface Params : BuildServiceParameters {
+    interface Params : AzureBuildServiceParams {
         /** The Azure Storage account endpoint URL, e.g. `https://{accountName}.blob.core.windows.net`. */
         val endpoint: Property<String>
-
-        /**
-         * The credential used to authenticate with Azure Blob Storage. If absent, the underlying client uses no
-         * authentication.
-         */
-        val credential: Property<TokenCredential>
     }
 
     override fun createClient(): BlobServiceClient = BlobServiceClientBuilder().apply {
         endpoint(parameters.endpoint.get())
-        if (parameters.credential.isPresent) {
-            credential(parameters.credential.get())
+        when (val credential = resolveCredential()) {
+            null -> {}
+            is ResolvedAzureCredential.Token -> credential(credential.credential)
+            is ResolvedAzureCredential.Sas -> credential(credential.credential)
+            is ResolvedAzureCredential.NamedKey -> credential(credential.credential)
         }
     }.buildClient()
 }

@@ -22,16 +22,25 @@ Register a build service from a plugin or `build.gradle.kts`:
 
 ```kotlin
 val kv = gradle.sharedServices.registerIfAbsent("kv", SecretClientBuildService::class) {
-    parameters.vaultUrl.set("https://my-vault.vault.azure.net")
-    parameters.credential.set(DefaultAzureCredentialBuilder().build())
-    // credential is optional; omit for no authentication
+    parameters {
+        vaultUrl.set("https://my-vault.vault.azure.net")
+        defaultCredential()
+        // managedIdentity()
+        // clientSecret(tenantId, clientId, clientSecret)
+    }
 }
 ```
+
+The parameter shape extends `AzureBuildServiceParams` from
+[azure-extensions](../azure-extensions); use the extension functions on `AzureBuildServiceParams`
+to configure credentials atomically. Key Vault only accepts `TokenCredential`-shaped credentials —
+attempting to configure with `sasToken()` or `sharedKey()` throws `IllegalArgumentException` at
+client construction time.
 
 | Parameter | Type | Description |
 |---|---|---|
 | `vaultUrl` | `Property<String>` | Vault URL, e.g. `https://{vaultName}.vault.azure.net` |
-| `credential` | `Property<TokenCredential>` | Azure `TokenCredential`. If unset, the client uses no authentication. |
+| `credentialSource` | `Property<AzureCredentialSource>` | Which credential to construct. Set via the extension functions. Leave unset to skip credential configuration. |
 
 ## Value Source: `KeyVaultSecretValueSource`
 
