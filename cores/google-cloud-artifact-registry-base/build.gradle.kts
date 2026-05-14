@@ -13,6 +13,7 @@ configure<DokkaExtension> {
 
 dependencies {
     api("com.kelvsyc.gradle:clients-base")
+    api("com.kelvsyc.gradle:google-cloud-extensions")
 
     api(libs.google.cloud.artifact.registry)
     api(libs.google.cloud.artifact.registry.proto)

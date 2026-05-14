@@ -8,20 +8,24 @@ import org.gradle.testkit.runner.TaskOutcome
 import java.io.File
 
 /**
- * Probe #1: configuration-cache round-trip of `StorageClientBuildService.Params`.
+ * Probe #1: configuration-cache round-trip of `StorageClientBuildService.Params`
+ * (a.k.a. `GcpBuildServiceParams`).
  *
- * Tests encode the **observed** current behavior. A failing test means the underlying Gradle/SDK
- * behavior has shifted — investigate before "fixing" the test.
+ * Each test pins down the **observed** behavior of the parameter shape — `projectId: Property<String>`,
+ * `credentialSource: Property<GcpCredentialSource>`, `credentialsFile: RegularFileProperty`,
+ * `credentialsJson: Property<String>`, `accessToken: Property<String>`. A failing test means either
+ * Gradle's config-cache serializer or the Google Cloud extensions have regressed; investigate before
+ * "fixing" the test.
  *
- * ### Findings (as of the integration-test introduction)
+ * ### What this characterizes
  *
- * - `projectId` (`Property<String>`) round-trips cleanly — `String` is natively `Serializable`.
- * - `credentials` (`Property<Credentials>`) set to `NoCredentials.getInstance()` also round-trips. Unlike
- *   AWS SDK's `Region` and `StaticCredentialsProvider`, Google's auth library appears to use
- *   `Serializable`-friendly types in this case.
- * - `GoogleCredentials.create(AccessToken)` is now exercised — this is expected to fail until the
- *   `credentials` parameter shape is decomposed into serializable primitives (credential source enum
- *   + companion strings), with SDK credential objects reconstructed inside `createClient()`.
+ * The Google Cloud SDK's `Credentials` (and `CredentialsProvider`) types are not, in the general
+ * case, serializable by Gradle's configuration-cache codec — `GoogleCredentials.create(AccessToken(...))`
+ * and `ServiceAccountCredentials.fromStream(...)` carry non-`Serializable` state. So
+ * `GcpBuildServiceParams` exposes only serializable primitives and the SDK credential is reconstructed
+ * inside `createClient()` via `resolveCredentials()` / `resolveCredentialsProvider()`. These tests
+ * exercise every branch of [com.kelvsyc.gradle.google.cloud.GcpCredentialSource] across the
+ * configuration-cache boundary and a second invocation that should reuse the stored entry.
  */
 class BuildServiceConfigurationCacheSpec : FunSpec({
     test("BuildService with no parameter values survives config-cache round-trip") {
@@ -31,22 +35,61 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
     test("BuildService with projectId String property survives config-cache round-trip") {
         assertParamsRoundTripCleanly(
             name = "projectid",
-            parametersBlock = "projectId.set(\"test-project\")"
+            parametersBlock = """projectId.set("test-project")"""
         )
     }
 
-    test("BuildService with NoCredentials credentials survives config-cache round-trip") {
+    test("BuildService with NONE credentialSource survives config-cache round-trip") {
         assertParamsRoundTripCleanly(
             name = "no-credentials",
-            parametersBlock = "credentials.set(NoCredentials.getInstance())"
+            parametersBlock = "credentialSource.set(GcpCredentialSource.NONE)"
         )
     }
 
-    test("BuildService with GoogleCredentials survives config-cache round-trip") {
+    test("BuildService with APPLICATION_DEFAULT credentialSource survives config-cache round-trip") {
         assertParamsRoundTripCleanly(
-            name = "google-credentials",
+            name = "application-default",
+            parametersBlock = "credentialSource.set(GcpCredentialSource.APPLICATION_DEFAULT)"
+        )
+    }
+
+    test("BuildService with ACCESS_TOKEN credentials survives config-cache round-trip") {
+        assertParamsRoundTripCleanly(
+            name = "access-token",
             parametersBlock = """
-                credentials.set(GoogleCredentials.create(AccessToken("fake-token", null)))
+                credentialSource.set(GcpCredentialSource.ACCESS_TOKEN)
+                accessToken.set("fake-token")
+            """.trimIndent()
+        )
+    }
+
+    test("BuildService with SERVICE_ACCOUNT_JSON_INLINE credentials survives config-cache round-trip") {
+        assertParamsRoundTripCleanly(
+            name = "service-account-inline",
+            parametersBlock = """
+                credentialSource.set(GcpCredentialSource.SERVICE_ACCOUNT_JSON_INLINE)
+                credentialsJson.set("{}")
+            """.trimIndent()
+        )
+    }
+
+    test("BuildService with SERVICE_ACCOUNT_JSON_FILE credentials survives config-cache round-trip") {
+        assertParamsRoundTripCleanly(
+            name = "service-account-file",
+            parametersBlock = """
+                credentialSource.set(GcpCredentialSource.SERVICE_ACCOUNT_JSON_FILE)
+                credentialsFile.set(layout.projectDirectory.file("service-account.json"))
+            """.trimIndent()
+        )
+    }
+
+    test("BuildService with projectId and ACCESS_TOKEN credentials together survives config-cache round-trip") {
+        assertParamsRoundTripCleanly(
+            name = "project-and-token",
+            parametersBlock = """
+                projectId.set("test-project")
+                credentialSource.set(GcpCredentialSource.ACCESS_TOKEN)
+                accessToken.set("fake-token")
             """.trimIndent()
         )
     }
@@ -76,9 +119,7 @@ private fun writeConfigCacheProbeProject(name: String, parametersBlock: String):
         """
         ${IntegrationTestSupport.buildscriptBlock()}
 
-        import com.google.auth.oauth2.AccessToken
-        import com.google.auth.oauth2.GoogleCredentials
-        import com.google.cloud.NoCredentials
+        import com.kelvsyc.gradle.google.cloud.GcpCredentialSource
         import com.kelvsyc.gradle.google.cloud.storage.StorageClientBuildService
         import com.kelvsyc.gradle.google.cloud.storage.fixtures.StorageBuildServiceProbeTask
 

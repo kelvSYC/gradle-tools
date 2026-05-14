@@ -7,4 +7,3 @@ plugins {
 }
 
 includeBuild("../clients-base")
-includeBuild("../google-cloud-extensions")

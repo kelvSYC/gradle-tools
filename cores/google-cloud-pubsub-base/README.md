@@ -20,10 +20,18 @@ dependencies {
 
 ```kotlin
 val pubsub = gradle.sharedServices.registerIfAbsent("pubsub", TopicAdminClientBuildService::class) {
-    parameters.credentials.set(FixedCredentialsProvider.create(GoogleCredentials.getApplicationDefault()))
-    // credentials is optional; omit to use application default credentials
+    parameters {
+        applicationDefault()
+        // serviceAccount(layout.projectDirectory.file("service-account.json"))
+        // noCredentials()
+    }
 }
 ```
+
+The parameter shape is provided by `GcpBuildServiceParams` from
+[google-cloud-extensions](../google-cloud-extensions); use the extension functions on
+`GcpBuildServiceParams` to configure credentials atomically. Leave `credentialSource` unset to fall
+back to the SDK's default application-default-credential resolution.
 
 ## WorkAction: `PublishAction`
 

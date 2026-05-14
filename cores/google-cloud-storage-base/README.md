@@ -18,20 +18,33 @@ dependencies {
 
 ```kotlin
 val gcs = gradle.sharedServices.registerIfAbsent("gcs", StorageClientBuildService::class) {
-    parameters.projectId.set("my-gcp-project")
-    // credentials is optional; omit for no authentication (set to GoogleCredentials.getApplicationDefault() for ADC)
-    parameters.credentials.set(layout.projectDirectory.file("service-account.json").asServiceAccountCredentials)
+    parameters {
+        projectId.set("my-gcp-project")
+        applicationDefault()
+        // serviceAccount(layout.projectDirectory.file("service-account.json"))
+        // noCredentials()
+    }
 }
 ```
 
+The parameter shape is provided by `GcpBuildServiceParams` from
+[google-cloud-extensions](../google-cloud-extensions); use the extension functions on
+`GcpBuildServiceParams` rather than setting fields directly. See that module's README for the full
+list of supported credential sources.
+
 | Parameter | Type | Description |
 |---|---|---|
-| `projectId` | `Property<String>` | The GCP project ID |
-| `credentials` | `Property<Credentials>` | GCP credentials. If unset, the client uses no authentication. Set to `GoogleCredentials.getApplicationDefault()` for ADC. |
+| `projectId` | `Property<String>` | GCP project ID. Leave unset to delegate to the SDK's default project resolution. |
+| `credentialSource` | `Property<GcpCredentialSource>` | Which credentials object to construct. Set via the extension functions. Leave unset to delegate to the SDK's default credential resolution. |
+| `credentialsFile` | `RegularFileProperty` | Service account JSON key file. Used when `credentialSource` is `SERVICE_ACCOUNT_JSON_FILE`. |
+| `credentialsJson` | `Property<String>` | Inline service account JSON. Used when `credentialSource` is `SERVICE_ACCOUNT_JSON_INLINE`. |
+| `accessToken` | `Property<String>` | Static OAuth2 access token. Used when `credentialSource` is `ACCESS_TOKEN`. |
 
 ### Credentials helpers
 
-`GoogleCredentialsExtensions` provides convenience extensions for loading service account credentials from a file:
+`GoogleCredentialsExtensions` provides convenience extensions for materialising service account
+credentials from a file. These are no longer required for configuring `StorageClientBuildService`
+(use `parameters.serviceAccount(file)` instead) but remain useful for other consumers:
 
 ```kotlin
 // From a RegularFile directly

@@ -14,6 +14,7 @@ configure<DokkaExtension> {
 
 dependencies {
     api("com.kelvsyc.gradle:clients-base")
+    api("com.kelvsyc.gradle:google-cloud-extensions")
 
     api(libs.google.auth.library.credentials)
     api(libs.google.auth.library.oauth2.http)

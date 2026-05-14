@@ -8,17 +8,16 @@ plugins {
 }
 
 configure<DokkaExtension> {
-    moduleName.set("Google Cloud Pub/Sub Base")
+    moduleName.set("Google Cloud Gradle Extensions")
 }
 
 dependencies {
     api("com.kelvsyc.gradle:clients-base")
-    api("com.kelvsyc.gradle:google-cloud-extensions")
 
-    api(libs.google.cloud.pubsub)
+    api(libs.google.auth.library.credentials)
+    api(libs.google.auth.library.oauth2.http)
+    api(libs.google.cloud.core)
     api(libs.google.gax)
-    implementation(libs.google.cloud.pubsub.proto)
-    implementation(libs.google.protobuf.java)
 
     testImplementation(libs.mockk)
 }

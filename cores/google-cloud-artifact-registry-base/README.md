@@ -18,10 +18,18 @@ dependencies {
 
 ```kotlin
 val ar = gradle.sharedServices.registerIfAbsent("ar", ArtifactRegistryClientBuildService::class) {
-    parameters.credentials.set(FixedCredentialsProvider.create(GoogleCredentials.getApplicationDefault()))
-    // credentials is optional; omit to use application default credentials
+    parameters {
+        applicationDefault()
+        // serviceAccount(layout.projectDirectory.file("service-account.json"))
+        // noCredentials()
+    }
 }
 ```
+
+The parameter shape is provided by `GcpBuildServiceParams` from
+[google-cloud-extensions](../google-cloud-extensions); use the extension functions on
+`GcpBuildServiceParams` to configure credentials atomically. Leave `credentialSource` unset to fall
+back to the SDK's default application-default-credential resolution.
 
 Project/location/repository identifiers are not part of the build service — each value source and action
 takes its own `projectName`, `location` and `repository` parameters, so a single client can serve calls
