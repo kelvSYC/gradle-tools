@@ -18,60 +18,66 @@ import java.io.File
  * - `projectId` (`Property<String>`) round-trips cleanly — `String` is natively `Serializable`.
  * - `credentials` (`Property<Credentials>`) set to `NoCredentials.getInstance()` also round-trips. Unlike
  *   AWS SDK's `Region` and `StaticCredentialsProvider`, Google's auth library appears to use
- *   `Serializable`-friendly types in this case. Real production credentials (`GoogleCredentials`,
- *   `ServiceAccountCredentials`) are not exercised here — see the deferred expansion in the plan.
+ *   `Serializable`-friendly types in this case.
+ * - `GoogleCredentials.create(AccessToken)` is now exercised — this is expected to fail until the
+ *   `credentials` parameter shape is decomposed into serializable primitives (credential source enum
+ *   + companion strings), with SDK credential objects reconstructed inside `createClient()`.
  */
 class BuildServiceConfigurationCacheSpec : FunSpec({
     test("BuildService with no parameter values survives config-cache round-trip") {
-        val projectDir = writeConfigCacheProbeProject(parametersBlock = "")
-
-        val first = IntegrationTestSupport.runProbe(
-            projectDir, "probe", "--configuration-cache", "--stacktrace"
-        )
-        val firstSucceeded = first.shouldBeInstanceOf<ProbeOutcome.Succeeded>()
-        firstSucceeded.result.task(":probe")?.outcome shouldBe TaskOutcome.SUCCESS
-
-        val second = IntegrationTestSupport.runProbe(
-            projectDir, "probe", "--configuration-cache", "--stacktrace"
-        )
-        val secondSucceeded = second.shouldBeInstanceOf<ProbeOutcome.Succeeded>()
-        secondSucceeded.result.task(":probe")?.outcome shouldBe TaskOutcome.SUCCESS
-        secondSucceeded.result.output shouldContain "Configuration cache entry reused"
+        assertParamsRoundTripCleanly(name = "no-params", parametersBlock = "")
     }
 
     test("BuildService with projectId String property survives config-cache round-trip") {
-        val projectDir = writeConfigCacheProbeProject(
+        assertParamsRoundTripCleanly(
+            name = "projectid",
             parametersBlock = "projectId.set(\"test-project\")"
         )
-        val outcome = IntegrationTestSupport.runProbe(
-            projectDir, "probe", "--configuration-cache", "--stacktrace"
-        )
-        val succeeded = outcome.shouldBeInstanceOf<ProbeOutcome.Succeeded>()
-        succeeded.result.task(":probe")?.outcome shouldBe TaskOutcome.SUCCESS
     }
 
     test("BuildService with NoCredentials credentials survives config-cache round-trip") {
-        // FINDING: unlike AWS's `StaticCredentialsProvider`, Google's `NoCredentials.getInstance()`
-        // round-trips through Gradle's config-cache isolation cleanly. If this assertion ever flips,
-        // investigate whether the Google auth library or Gradle changed its serialization behavior.
-        val projectDir = writeConfigCacheProbeProject(
+        assertParamsRoundTripCleanly(
+            name = "no-credentials",
             parametersBlock = "credentials.set(NoCredentials.getInstance())"
         )
-        val outcome = IntegrationTestSupport.runProbe(
-            projectDir, "probe", "--configuration-cache", "--stacktrace"
+    }
+
+    test("BuildService with GoogleCredentials survives config-cache round-trip") {
+        assertParamsRoundTripCleanly(
+            name = "google-credentials",
+            parametersBlock = """
+                credentials.set(GoogleCredentials.create(AccessToken("fake-token", null)))
+            """.trimIndent()
         )
-        val succeeded = outcome.shouldBeInstanceOf<ProbeOutcome.Succeeded>()
-        succeeded.result.task(":probe")?.outcome shouldBe TaskOutcome.SUCCESS
     }
 })
 
-private fun writeConfigCacheProbeProject(parametersBlock: String): File {
-    val projectDir = IntegrationTestSupport.newProjectDir("gcs-config-cache-probe")
+private fun assertParamsRoundTripCleanly(name: String, parametersBlock: String) {
+    val projectDir = writeConfigCacheProbeProject(name = name, parametersBlock = parametersBlock)
+
+    val first = IntegrationTestSupport.runProbe(
+        projectDir, "probe", "--configuration-cache", "--stacktrace"
+    )
+    val firstSucceeded = first.shouldBeInstanceOf<ProbeOutcome.Succeeded>()
+    firstSucceeded.result.task(":probe")?.outcome shouldBe TaskOutcome.SUCCESS
+
+    val second = IntegrationTestSupport.runProbe(
+        projectDir, "probe", "--configuration-cache", "--stacktrace"
+    )
+    val secondSucceeded = second.shouldBeInstanceOf<ProbeOutcome.Succeeded>()
+    secondSucceeded.result.task(":probe")?.outcome shouldBe TaskOutcome.SUCCESS
+    secondSucceeded.result.output shouldContain "Configuration cache entry reused"
+}
+
+private fun writeConfigCacheProbeProject(name: String, parametersBlock: String): File {
+    val projectDir = IntegrationTestSupport.newProjectDir("gcs-config-cache-$name")
     File(projectDir, "settings.gradle.kts").writeText("")
     File(projectDir, "build.gradle.kts").writeText(
         """
         ${IntegrationTestSupport.buildscriptBlock()}
 
+        import com.google.auth.oauth2.AccessToken
+        import com.google.auth.oauth2.GoogleCredentials
         import com.google.cloud.NoCredentials
         import com.kelvsyc.gradle.google.cloud.storage.StorageClientBuildService
         import com.kelvsyc.gradle.google.cloud.storage.fixtures.StorageBuildServiceProbeTask

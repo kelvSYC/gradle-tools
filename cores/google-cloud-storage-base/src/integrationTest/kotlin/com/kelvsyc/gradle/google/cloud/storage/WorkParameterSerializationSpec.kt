@@ -11,7 +11,8 @@ import java.io.File
  * Probe #2: serialization of `WorkParameters` at `WorkerExecutor.submit()` time for the GCS module.
  *
  * Variant A baseline mirrors the production shape (`Property<StorageClientBuildService>` on WorkParams).
- * Variant B records whether the BYO retrofit (`Property<Storage>` on WorkParams) is viable.
+ * Variant B confirms the BYO retrofit (`Property<Storage>` on WorkParams) is infeasible and records
+ * that infeasibility as a regression sentinel.
  *
  * No `BuildServiceParameters` are set on the registered service; see `BuildServiceConfigurationCacheSpec`
  * for the isolation findings that motivate that choice.
@@ -31,9 +32,10 @@ class WorkParameterSerializationSpec : FunSpec({
         val outcome = IntegrationTestSupport.runProbe(
             projectDir, "probe", "--configuration-cache", "--stacktrace"
         )
-        // FINDING: the BYO retrofit is structurally infeasible for GCS action-dispatch; the live `Storage`
-        // implementation is not `Serializable`. Same conclusion as AWS SNS — `Property<*BuildService>`
-        // remains the correct end-state for action-dispatch components.
+        // The BYO retrofit is structurally infeasible — `Storage` is not `Serializable`, and
+        // `Property<*BuildService>` on `WorkParameters` is the correct end-state. This test asserts
+        // that the failure remains, acting as a sentinel: if it ever passes, investigate whether
+        // Gradle has changed its serialization rules.
         val failed = outcome.shouldBeInstanceOf<ProbeOutcome.Failed>()
         failed.message shouldContain "Could not serialize value of type"
     }

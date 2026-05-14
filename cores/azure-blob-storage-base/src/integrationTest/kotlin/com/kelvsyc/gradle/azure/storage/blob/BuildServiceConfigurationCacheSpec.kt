@@ -16,43 +16,53 @@ import java.io.File
  * ### Findings (as of the integration-test introduction)
  *
  * - `endpoint` (`Property<String>`) round-trips cleanly — `String` is natively `Serializable`.
- * - `credential` (`Property<TokenCredential>`) is not exercised here; instantiating a real
- *   `TokenCredential` in a TestKit project requires either Azure Identity dependencies or a custom
- *   implementation. Deferred to the v2 coverage expansion once we know what production deployments use.
+ * - `credential` (`Property<TokenCredential>`) is now exercised — this is expected to fail until
+ *   the `credential` parameter shape is decomposed into serializable primitives (credential source
+ *   enum + companion strings), with SDK credential objects reconstructed inside `createClient()`.
  */
 class BuildServiceConfigurationCacheSpec : FunSpec({
     test("BuildService with no parameter values survives config-cache round-trip") {
-        val projectDir = writeConfigCacheProbeProject(parametersBlock = "")
-
-        val first = IntegrationTestSupport.runProbe(
-            projectDir, "probe", "--configuration-cache", "--stacktrace"
+        assertParamsRoundTripCleanly(
+            name = "no-params",
+            parametersBlock = ""
         )
-        val firstSucceeded = first.shouldBeInstanceOf<ProbeOutcome.Succeeded>()
-        firstSucceeded.result.task(":probe")?.outcome shouldBe TaskOutcome.SUCCESS
-
-        val second = IntegrationTestSupport.runProbe(
-            projectDir, "probe", "--configuration-cache", "--stacktrace"
-        )
-        val secondSucceeded = second.shouldBeInstanceOf<ProbeOutcome.Succeeded>()
-        secondSucceeded.result.task(":probe")?.outcome shouldBe TaskOutcome.SUCCESS
-        secondSucceeded.result.output shouldContain "Configuration cache entry reused"
     }
 
     test("BuildService with endpoint String property survives config-cache round-trip") {
-        val projectDir = writeConfigCacheProbeProject(
+        assertParamsRoundTripCleanly(
+            name = "endpoint-string",
             parametersBlock = "endpoint.set(\"https://example.blob.core.windows.net\")"
         )
-        val outcome = IntegrationTestSupport.runProbe(
-            projectDir, "probe", "--configuration-cache", "--stacktrace"
+    }
+
+    test("BuildService with TokenCredential survives config-cache round-trip") {
+        assertParamsRoundTripCleanly(
+            name = "token-credential",
+            parametersBlock = "credential.set(TokenCredential { _ -> Mono.empty() })"
         )
-        val succeeded = outcome.shouldBeInstanceOf<ProbeOutcome.Succeeded>()
-        succeeded.result.task(":probe")?.outcome shouldBe TaskOutcome.SUCCESS
     }
 
 })
 
-private fun writeConfigCacheProbeProject(parametersBlock: String): File {
-    val projectDir = IntegrationTestSupport.newProjectDir("blob-config-cache-probe")
+private fun assertParamsRoundTripCleanly(name: String, parametersBlock: String) {
+    val projectDir = writeConfigCacheProbeProject(name, parametersBlock)
+
+    val first = IntegrationTestSupport.runProbe(
+        projectDir, "probe", "--configuration-cache", "--stacktrace"
+    )
+    val firstSucceeded = first.shouldBeInstanceOf<ProbeOutcome.Succeeded>()
+    firstSucceeded.result.task(":probe")?.outcome shouldBe TaskOutcome.SUCCESS
+
+    val second = IntegrationTestSupport.runProbe(
+        projectDir, "probe", "--configuration-cache", "--stacktrace"
+    )
+    val secondSucceeded = second.shouldBeInstanceOf<ProbeOutcome.Succeeded>()
+    secondSucceeded.result.task(":probe")?.outcome shouldBe TaskOutcome.SUCCESS
+    secondSucceeded.result.output shouldContain "Configuration cache entry reused"
+}
+
+private fun writeConfigCacheProbeProject(name: String, parametersBlock: String): File {
+    val projectDir = IntegrationTestSupport.newProjectDir("blob-config-cache-probe-$name")
     File(projectDir, "settings.gradle.kts").writeText("")
     File(projectDir, "build.gradle.kts").writeText(
         """
@@ -60,6 +70,8 @@ private fun writeConfigCacheProbeProject(parametersBlock: String): File {
 
         import com.kelvsyc.gradle.azure.storage.blob.BlobServiceClientBuildService
         import com.kelvsyc.gradle.azure.storage.blob.fixtures.BlobBuildServiceProbeTask
+        import com.azure.core.credential.TokenCredential
+        import reactor.core.publisher.Mono
 
         val blobService = gradle.sharedServices.registerIfAbsent(
             "blob",
@@ -78,3 +90,4 @@ private fun writeConfigCacheProbeProject(parametersBlock: String): File {
     )
     return projectDir
 }
+
