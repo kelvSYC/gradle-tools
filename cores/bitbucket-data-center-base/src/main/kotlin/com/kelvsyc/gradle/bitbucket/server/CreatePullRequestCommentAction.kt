@@ -15,7 +15,7 @@ abstract class CreatePullRequestCommentAction :
      */
     interface Parameters : WorkParameters {
         /**
-         * The shared [ClientsBaseService] holding the registered Bitbucket Data Center client.
+         * The [BitbucketServerClientBuildService] for this operation.
          */
         @get:Internal
         val service: Property<BitbucketServerClientBuildService>
