@@ -6,7 +6,6 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.Credentials
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import org.gradle.api.credentials.PasswordCredentials
 import org.gradle.api.provider.Property
 import org.gradle.api.services.BuildServiceParameters
 import retrofit2.Retrofit
@@ -16,8 +15,9 @@ import retrofit2.converter.moshi.MoshiConverterFactory
  * Build service managing a [BitbucketCloudService] Retrofit client.
  *
  * Register an instance via [org.gradle.api.services.BuildServiceRegistry.registerIfAbsent], configuring
- * [Params.credentials] and optionally [Params.baseUrl]. The same registration can then be shared with
- * value sources and work actions via a `Property<BitbucketCloudClientBuildService>` parameter.
+ * [Params.username] and [Params.password] (app password), and optionally [Params.baseUrl]. The same
+ * registration can then be shared with value sources and work actions via a
+ * `Property<BitbucketCloudClientBuildService>` parameter.
  */
 abstract class BitbucketCloudClientBuildService :
     AbstractClientBuildService<BitbucketCloudService, BitbucketCloudClientBuildService.Params>() {
@@ -31,16 +31,23 @@ abstract class BitbucketCloudClientBuildService :
         val baseUrl: Property<String>
 
         /**
-         * App password credentials for authenticating with the Bitbucket Cloud API.
+         * Bitbucket Cloud username for authenticating with the API.
          */
-        val credentials: Property<PasswordCredentials>
+        val username: Property<String>
+
+        /**
+         * Bitbucket Cloud app password for authenticating with the API.
+         */
+        val password: Property<String>
     }
 
     override fun createClient(): BitbucketCloudService {
-        val creds = parameters.credentials.get()
         val authInterceptor = Interceptor { chain ->
             val request = chain.request().newBuilder()
-                .header("Authorization", Credentials.basic(creds.username.orEmpty(), creds.password.orEmpty()))
+                .header("Authorization", Credentials.basic(
+                    parameters.username.getOrElse(""),
+                    parameters.password.getOrElse(""),
+                ))
                 .build()
             chain.proceed(request)
         }

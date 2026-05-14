@@ -19,10 +19,8 @@ dependencies {
 
 ```kotlin
 val bb = gradle.sharedServices.registerIfAbsent("bb", BitbucketCloudClientBuildService::class) {
-    parameters.credentials.set(project.objects.newInstance<PasswordCredentials>().apply {
-        username = "user"
-        password = "app-password"
-    })
+    parameters.username.set("user")
+    parameters.password.set("app-password")
     // baseUrl defaults to https://api.bitbucket.org/2.0/
 }
 ```
@@ -30,7 +28,8 @@ val bb = gradle.sharedServices.registerIfAbsent("bb", BitbucketCloudClientBuildS
 | Parameter | Type | Description |
 |---|---|---|
 | `baseUrl` | `Property<String>` | Base URL for the REST API; defaults to `https://api.bitbucket.org/2.0/` |
-| `credentials` | `Property<PasswordCredentials>` | App password credentials (username + app password) |
+| `username` | `Property<String>` | Bitbucket Cloud username |
+| `password` | `Property<String>` | Bitbucket Cloud app password |
 
 ## Value Sources
 
