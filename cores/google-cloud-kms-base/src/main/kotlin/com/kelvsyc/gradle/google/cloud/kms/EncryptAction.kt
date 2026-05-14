@@ -1,7 +1,6 @@
 package com.kelvsyc.gradle.google.cloud.kms
 
 import com.google.cloud.kms.v1.EncryptRequest
-import com.google.cloud.kms.v1.EncryptResponse
 import com.google.protobuf.ByteString
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
@@ -46,9 +45,6 @@ abstract class EncryptAction : WorkAction<EncryptAction.Parameters> {
             .setPlaintext(plaintext)
             .build()
         val response = parameters.service.get().getClient().encrypt(request)
-        // Use Java reflection to access the ciphertext field
-        @Suppress("UNCHECKED_CAST")
-        val ciphertext = response.javaClass.getMethod("getCiphertext").invoke(response) as ByteString
-        parameters.ciphertextFile.get().asFile.writeBytes(ciphertext.toByteArray())
+        parameters.ciphertextFile.get().asFile.writeBytes(response.ciphertext.toByteArray())
     }
 }
