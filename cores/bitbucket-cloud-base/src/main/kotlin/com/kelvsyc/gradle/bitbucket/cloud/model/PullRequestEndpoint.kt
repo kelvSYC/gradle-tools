@@ -1,6 +1,8 @@
 package com.kelvsyc.gradle.bitbucket.cloud.model
 
 import com.squareup.moshi.JsonClass
+import java.io.Serial
+import java.io.Serializable
 
 /**
  * A pull request endpoint representing either the source or destination of a pull request.
@@ -21,4 +23,9 @@ data class PullRequestEndpoint(
      * The commit at the tip of this endpoint.
      */
     val commit: CommitSummary? = null,
-)
+) : Serializable {
+    companion object {
+        @Serial
+        private const val serialVersionUID: Long = 1L
+    }
+}

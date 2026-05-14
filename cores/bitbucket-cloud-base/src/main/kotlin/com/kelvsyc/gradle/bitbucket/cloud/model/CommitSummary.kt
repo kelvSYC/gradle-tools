@@ -1,6 +1,8 @@
 package com.kelvsyc.gradle.bitbucket.cloud.model
 
 import com.squareup.moshi.JsonClass
+import java.io.Serial
+import java.io.Serializable
 
 /**
  * A lightweight commit reference used in nested contexts such as pull request endpoints and merge commits.
@@ -16,4 +18,9 @@ data class CommitSummary(
      * The object type, typically `commit`.
      */
     val type: String? = null,
-)
+) : Serializable {
+    companion object {
+        @Serial
+        private const val serialVersionUID: Long = 1L
+    }
+}

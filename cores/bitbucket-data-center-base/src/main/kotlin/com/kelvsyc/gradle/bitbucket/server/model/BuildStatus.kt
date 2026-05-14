@@ -2,6 +2,8 @@ package com.kelvsyc.gradle.bitbucket.server.model
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import java.io.Serial
+import java.io.Serializable
 
 /**
  * A build status attached to a commit in Bitbucket Data Center.
@@ -38,4 +40,9 @@ data class BuildStatus(
      */
     @Json(name = "dateAdded")
     val dateAdded: Long? = null,
-)
+) : Serializable {
+    companion object {
+        @Serial
+        private const val serialVersionUID: Long = 1L
+    }
+}

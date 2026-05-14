@@ -2,6 +2,8 @@ package com.kelvsyc.gradle.bitbucket.cloud.model
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import java.io.Serial
+import java.io.Serializable
 
 /**
  * A Bitbucket Cloud pull request.
@@ -76,4 +78,9 @@ data class PullRequest(
      * The object type, typically `pullrequest`.
      */
     val type: String? = null,
-)
+) : Serializable {
+    companion object {
+        @Serial
+        private const val serialVersionUID: Long = 1L
+    }
+}

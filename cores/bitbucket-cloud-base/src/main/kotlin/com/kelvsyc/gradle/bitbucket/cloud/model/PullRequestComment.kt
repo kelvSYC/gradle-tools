@@ -2,6 +2,8 @@ package com.kelvsyc.gradle.bitbucket.cloud.model
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import java.io.Serial
+import java.io.Serializable
 
 /**
  * A comment on a Bitbucket Cloud pull request.
@@ -39,7 +41,12 @@ data class PullRequestComment(
      * The object type, typically `pullrequest_comment`.
      */
     val type: String? = null,
-)
+) : Serializable {
+    companion object {
+        @Serial
+        private const val serialVersionUID: Long = 1L
+    }
+}
 
 /**
  * The content body of a pull request comment, available in multiple markup formats.
@@ -60,4 +67,9 @@ data class CommentContent(
      * The plain-text content with markup stripped.
      */
     val markup: String? = null,
-)
+) : Serializable {
+    companion object {
+        @Serial
+        private const val serialVersionUID: Long = 1L
+    }
+}
