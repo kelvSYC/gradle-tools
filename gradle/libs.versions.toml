@@ -85,6 +85,7 @@ google-cloud-artifact-registry-proto = { module = "com.google.api.grpc:proto-goo
 google-cloud-core = { module = "com.google.cloud:google-cloud-core" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-pubsub = { module = "com.google.cloud:google-cloud-pubsub" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-pubsub-proto = { module = "com.google.api.grpc:proto-google-cloud-pubsub-v1" } # version from BOM 'google-cloud-libraries-bom'
+google-cloud-kms = { module = "com.google.cloud:google-cloud-kms" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-secret-manager = { module = "com.google.cloud:google-cloud-secretmanager" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-secret-manager-proto = { module = "com.google.api.grpc:proto-google-cloud-secretmanager-v1" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-storage = { module = "com.google.cloud:google-cloud-storage" } # version from BOM 'google-cloud-libraries-bom'
