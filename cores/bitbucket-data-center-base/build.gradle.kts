@@ -4,6 +4,7 @@ plugins {
     id("com.kelvsyc.internal.dokka")
     id("com.kelvsyc.internal.jacoco")
     id("com.kelvsyc.internal.kotlin-gradle-library")
+    id("com.kelvsyc.internal.gradle-integration-test")
     id("com.kelvsyc.internal.github-publishing")
 }
 
