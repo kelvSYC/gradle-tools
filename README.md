@@ -21,10 +21,9 @@ Standalone Gradle plugins that solve a specific build problem. Apply them direct
 ### Bases
 
 Bases provide managed SDK client infrastructure for a specific cloud service. Each ships an
-`AbstractClientBuildService` subclass (or a Gradle plugin that registers one) so that downstream
-plugins and tasks can access pre-configured SDK clients without managing their lifecycle. Bases
-that have completed the migration to `AbstractClientBuildService` are published as Kotlin
-libraries; bases still on the legacy `ClientsBaseService` registry are published as Gradle plugins.
+`AbstractClientBuildService` subclass so that downstream plugins and tasks can access
+pre-configured SDK clients without managing their lifecycle. All bases are published as Kotlin
+libraries.
 
 **AWS** bases come in **Java SDK** and **Kotlin SDK** variants with mirrored APIs, since
 the two AWS SDKs are distinct libraries:

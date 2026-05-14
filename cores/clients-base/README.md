@@ -84,15 +84,6 @@ abstract class MyValueSource : ValueSource<String, MyValueSource.Parameters> {
 | `createClient()` | Abstract; subclasses implement to create the client from `parameters` |
 | `close()` | Closes the client if it implements `AutoCloseable` and was created |
 
-## Deprecated: `ClientsBaseService`
-
-`ClientsBaseService` and its associated types (`ServiceClientInfo`, `ServiceClientInfoInternal`,
-`ClientsBaseExtension`, `ClientsBasePlugin`) are deprecated. They manage a monolithic polymorphic registry of
-clients in a single build service, which is incompatible with Gradle's configuration cache because the registry
-state is populated imperatively during the configuration phase and lost on cache hits.
-
-Existing consumers are being migrated to `AbstractClientBuildService` on a per-component basis.
-
 ## See Also
 
 - [artifactory-base](../artifactory-base) — Client plugin built on top of `clients-base`

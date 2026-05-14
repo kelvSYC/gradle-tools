@@ -96,18 +96,7 @@ Adapts a `Provider<org.gradle.api.credentials.AwsCredentials>` to an `AwsCredent
 class GradleSessionCredentialsProvider(credentials: Provider<AwsCredentials>) : AwsCredentialsProvider
 ```
 
-## `AwsClientInfo<T>`
-
-Base interface for AWS Java SDK client registrations in the `ClientsBaseService` container. Extends
-`ServiceClientInfo<T>` where `T : AwsClient`.
-
-| Property | Type | Description |
-|---|---|---|
-| `region` | `Property<Region>` | AWS region. Leave unset to use `DefaultAwsRegionProviderChain`. |
-| `credentials` | `Property<AwsCredentialsProvider>` | Credentials provider. If absent, uses `AnonymousCredentialsProvider`. |
-
 ## See Also
 
-- [clients-base](../clients-base) — The underlying service client infrastructure
 - [AWS SDK for Java v2](https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/)
 - [Gradle credential handling](https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:handling_credentials)
