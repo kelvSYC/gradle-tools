@@ -13,6 +13,7 @@ configure<DokkaExtension> {
 
 dependencies {
     api("com.kelvsyc.gradle:clients-base")
+    api("com.kelvsyc.gradle:azure-extensions")
 
     api(libs.azure.core)
     api(libs.azure.security.keyvault.secrets)

@@ -22,15 +22,22 @@ asynchronous variants:
 | `BlobContainerClientBuildService` | Single container | `BlobContainerClient` |
 | `BlobContainerAsyncClientBuildService` | Single container | `BlobContainerAsyncClient` |
 
-Each build service has its own `Params` interface providing `endpoint` and `credential`. The container-scoped
-services add a `containerName` parameter.
+Each build service has its own `Params` interface extending `AzureBuildServiceParams` from
+[azure-extensions](../azure-extensions); it adds `endpoint` (all services) and `containerName`
+(container-scoped services).
 
 ### Account-level client
 
 ```kotlin
 val blobService = gradle.sharedServices.registerIfAbsent("blob-service", BlobServiceClientBuildService::class) {
-    parameters.endpoint.set("https://myaccount.blob.core.windows.net")
-    parameters.credential.set(DefaultAzureCredentialBuilder().build())
+    parameters {
+        endpoint.set("https://myaccount.blob.core.windows.net")
+        defaultCredential()
+        // managedIdentity()
+        // clientSecret(tenantId, clientId, clientSecret)
+        // sasToken("sv=...")
+        // sharedKey("myaccount", accountKey)
+    }
 }
 ```
 
@@ -38,18 +45,23 @@ val blobService = gradle.sharedServices.registerIfAbsent("blob-service", BlobSer
 
 ```kotlin
 val container = gradle.sharedServices.registerIfAbsent("blob-container", BlobContainerClientBuildService::class) {
-    parameters.endpoint.set("https://myaccount.blob.core.windows.net")
-    parameters.containerName.set("my-container")
-    parameters.credential.set(DefaultAzureCredentialBuilder().build())
+    parameters {
+        endpoint.set("https://myaccount.blob.core.windows.net")
+        containerName.set("my-container")
+        defaultCredential()
+    }
 }
 ```
 
 ### Parameter reference
 
+Use the extension functions on `AzureBuildServiceParams` to configure credentials atomically (see
+[azure-extensions](../azure-extensions)).
+
 | Parameter | Type | Description |
 |---|---|---|
 | `endpoint` | `Property<String>` | Azure Storage account endpoint URL, e.g. `https://{accountName}.blob.core.windows.net` |
-| `credential` | `Property<TokenCredential>` | Azure credential. If absent, the client uses no authentication. Set to `DefaultAzureCredentialBuilder().build()` for the default credential chain. |
+| `credentialSource` | `Property<AzureCredentialSource>` | Which credential to construct. Set via the extension functions. Leave unset to skip credential configuration. |
 | `containerName` | `Property<String>` | (container-scoped services only) The name of the blob container |
 
 ## Task: `BatchDownloadFromAzureBlobStorage`

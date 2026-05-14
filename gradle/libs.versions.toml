@@ -34,6 +34,7 @@ semver-plugin = "com.javiersc.semver:semver-gradle-plugin:0.9.0"
 artifactory-client-api = "org.jfrog.artifactory.client:artifactory-java-client-api:2.21.2"
 artifactory-client-impl = "org.jfrog.artifactory.client:artifactory-java-client-services:2.21.2"
 azure-core = { module = "com.azure:azure-core" } # version from BOM 'azure-sdk-bom'
+azure-identity = { module = "com.azure:azure-identity" } # version from BOM 'azure-sdk-bom'
 azure-storage-blob = { module = "com.azure:azure-storage-blob" } # version from BOM 'azure-sdk-bom'
 azure-security-keyvault-secrets = { module = "com.azure:azure-security-keyvault-secrets" } # version from BOM 'azure-sdk-bom'
 azure-storage-common = { module = "com.azure:azure-storage-common" } # version from BOM 'azure-sdk-bom'

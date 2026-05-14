@@ -11,8 +11,10 @@ import java.io.File
  * Probe #2: serialization of `WorkParameters` at `WorkerExecutor.submit()` time for the Azure Blob module.
  *
  * Variant A baseline mirrors the production shape (`Property<BlobServiceClientBuildService>` on
- * WorkParams). Variant B records whether the BYO retrofit (`Property<BlobServiceClient>` on WorkParams)
- * is viable.
+ * WorkParams). Variant B confirms the BYO retrofit (`Property<BlobServiceClient>` on WorkParams) is
+ * infeasible and records that infeasibility as a regression sentinel. No `BuildServiceParameters` are
+ * set on the registered service; see `BuildServiceConfigurationCacheSpec` for the isolation findings
+ * that motivate that choice.
  */
 class WorkParameterSerializationSpec : FunSpec({
     test("Variant A baseline - Property<BlobServiceClientBuildService> on WorkParameters succeeds") {
@@ -29,9 +31,10 @@ class WorkParameterSerializationSpec : FunSpec({
         val outcome = IntegrationTestSupport.runProbe(
             projectDir, "probe", "--configuration-cache", "--stacktrace"
         )
-        // FINDING (expected): live `BlobServiceClient` is not `Serializable`, mirroring AWS SNS and GCS.
-        // Action-dispatch asymmetry is structural — `Property<*BuildService>` on `WorkParameters` is the
-        // correct end-state for these components.
+        // The BYO retrofit is structurally infeasible — `BlobServiceClient` is not `Serializable`, and
+        // `Property<*BuildService>` on `WorkParameters` is the correct end-state. This test asserts
+        // that the failure remains, acting as a sentinel: if it ever passes, investigate whether
+        // Gradle has changed its serialization rules.
         val failed = outcome.shouldBeInstanceOf<ProbeOutcome.Failed>()
         failed.message shouldContain "Could not serialize value of type"
     }

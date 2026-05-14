@@ -20,10 +20,18 @@ Register the build service from a plugin or `build.gradle.kts`:
 
 ```kotlin
 val sm = gradle.sharedServices.registerIfAbsent("sm", SecretManagerServiceClientBuildService::class) {
-    // credentials is optional; omit to use application default credentials
-    parameters.credentials.set(GoogleCredentials.getApplicationDefault())
+    parameters {
+        applicationDefault()
+        // serviceAccount(layout.projectDirectory.file("service-account.json"))
+        // noCredentials()
+    }
 }
 ```
+
+The parameter shape is provided by `GcpBuildServiceParams` from
+[google-cloud-extensions](../google-cloud-extensions); use the extension functions on
+`GcpBuildServiceParams` to configure credentials atomically. Leave `credentialSource` unset to fall
+back to the SDK's default application-default-credential resolution.
 
 The GCP project ID is not part of the build service — each value source and action takes its own `projectId`
 parameter, so a single client can serve calls against multiple projects.

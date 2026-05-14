@@ -7,3 +7,4 @@ plugins {
 }
 
 includeBuild("../clients-base")
+includeBuild("../azure-extensions")

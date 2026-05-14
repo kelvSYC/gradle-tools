@@ -8,3 +8,4 @@ plugins {
 
 includeBuild("../clients-base")
 includeBuild("../gradle-extensions")
+includeBuild("../google-cloud-extensions")
