@@ -79,8 +79,7 @@ abstract class SqsClientBuildService :
 
 ## Credential Extensions (`CredentialsProviderExtensions`)
 
-These extensions remain available for non-`BuildServiceParameters` use cases (e.g. constructing a
-`CredentialsProvider` directly for an `AwsClientInfo`-based registration).
+These extensions are for cases that need a `CredentialsProvider` outside of `BuildServiceParameters` context.
 
 ### `Provider<AwsCredentials>.asCredentialsProvider`
 
@@ -105,22 +104,7 @@ val gradleCreds: Provider<AwsCredentials> = sdkCreds.asGradleCredentials
 
 The returned `AwsCredentials` is immutable — calling any setter throws `UnsupportedOperationException`.
 
-## `AwsClientInfo<T>`
-
-Base interface for AWS Kotlin SDK client registrations in the `ClientsBaseService` container. Extends
-`ServiceClientInfo<T>` where `T : SdkClient`.
-
-| Property | Type | Description |
-|---|---|---|
-| `region` | `Property<String>` | AWS region string (e.g. `"us-east-1"`). Leave unset to use the SDK default chain. |
-| `credentials` | `Property<CredentialsProvider>` | Credentials provider. Leave unset to use the SDK default chain. |
-
-> `AwsClientInfo` is a Gradle extension contract (not a `BuildServiceParameters`), so its `Property<CredentialsProvider>`
-> field does not participate in configuration-cache serialization. For BuildService-based registrations, use
-> `AwsBuildServiceParams` (above) instead.
-
 ## See Also
 
-- [clients-base](../clients-base) — The underlying service client infrastructure
 - [AWS SDK for Kotlin](https://docs.aws.amazon.com/sdk-for-kotlin/latest/developer-guide/)
 - [Gradle credential handling](https://docs.gradle.org/current/userguide/declaring_repositories.html#sec:handling_credentials)
