@@ -55,7 +55,21 @@ jobs:
       - name: Integration Tests
         # Blocking step: TestKit probes for configuration-cache and WorkerExecutor serialization
         # boundaries. Runs after :build so unit-test feedback comes first.
-        run: ./gradlew :aws-sns-java-base:integrationTest :google-cloud-storage-base:integrationTest :azure-blob-storage-base:integrationTest :aggregation:testing:collectIntegrationTestReports
+        # When adding a new *-base component with a BuildService, also add it here and to the
+        # integrationTestComponents set in aggregation/testing/build.gradle.kts.
+        run: >-
+          ./gradlew
+          :artifactory-base:integrationTest
+          :aws-imds-java-base:integrationTest
+          :aws-s3-java-base:integrationTest
+          :aws-secrets-manager-java-base:integrationTest
+          :aws-sns-java-base:integrationTest
+          :aws-sns-kotlin-base:integrationTest
+          :azure-blob-storage-base:integrationTest
+          :bitbucket-cloud-base:integrationTest
+          :bitbucket-data-center-base:integrationTest
+          :google-cloud-storage-base:integrationTest
+          :aggregation:testing:collectIntegrationTestReports
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

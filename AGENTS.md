@@ -101,6 +101,41 @@ includeBuild("../clients-base")  // if needed
 
 Do not modify these — they wire up the composite build correctly.
 
+## Configuration Cache (CC) Rules for BuildService Components ⚠️
+
+These rules apply whenever you create or modify a `*-base` component that contains a `BuildService`.
+
+### Rule 1 — `BuildServiceParameters` must be CC-serializable
+
+Only `Property<T>` where T is a primitive, `String`, enum, or `java.io.Serializable` type is safe. **Never place SDK types directly on parameters** — they are not CC-serializable:
+
+| Forbidden | Replacement |
+|---|---|
+| `Property<PasswordCredentials>` | `Property<String>` username + `Property<String>` password |
+| `Property<Region>` (AWS) | `Property<String>` regionId |
+| `Property<CredentialsProvider>` | `Property<String>` accessKeyId + secretAccessKey + sessionToken + `Property<AwsCredentialSource>` |
+| `Property<Credentials>` (GCP) | `Property<String>` credentialsJson, or use a `CredentialSource` enum |
+| `Property<TokenCredential>` (Azure) | `Property<String>` clientId + tenantId + clientSecret / clientCertificate |
+
+Reconstruct the SDK object inside `createClient()` using the stored string parameters.
+
+### Rule 2 — Nested `BuildService` refs must be registered providers
+
+When a `WorkAction` or task parameter holds a `Property<SomeBuildService>`, it **must** be set via the provider returned from `gradle.sharedServices.registerIfAbsent(...)`. Passing an instance created via `ObjectFactory.newInstance()` bypasses registration and breaks CC because Gradle stores the service name to re-resolve it across cache hits.
+
+### Rule 3 — Every new `*-base` component with a BuildService must ship a CC probe
+
+When adding a new `*-base` component that defines a `BuildService`:
+
+1. Apply `id("com.kelvsyc.internal.gradle-integration-test")` in the component's `build.gradle.kts`.
+2. Create `src/integrationTest/kotlin/.../fixtures/<Service>ProbeTask.kt` — a minimal `DefaultTask` that holds `@get:Internal abstract val service: Property<YourBuildService>` and calls `service.get()` in its `@TaskAction`.
+3. Create `src/integrationTest/kotlin/.../BuildServiceConfigurationCacheSpec.kt` — at minimum, one test case with no parameters to prove the empty-params round-trip works. Follow the pattern established in `artifactory-base` and `bitbucket-cloud-base`.
+4. Add the component name to **both**:
+   - The `integrationTestComponents` set in `aggregation/testing/build.gradle.kts`
+   - The `Integration Tests` step in `.github/workflows/gradle-build.yml`
+
+Skipping any of these four steps means CC breakage will be invisible in CI.
+
 ## Quick Navigation
 
 - **Architecture & detailed build hierarchy**: See `CLAUDE.md`

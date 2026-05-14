@@ -24,10 +24,19 @@ reporting {
 // surfaced separately as a copy task. The `test-report-aggregation` plugin's variant resolution does not
 // gracefully handle a testsuite name that only some dependencies expose, so we collect the raw JUnit XML
 // files directly from each opted-in core. CI globs the same locations independently for JUnit annotation.
+// When adding a new *-base component with a BuildService, also add it here and to the
+// Integration Tests step in .github/workflows/gradle-build.yml.
 val integrationTestComponents = setOf(
+    "artifactory-base",
+    "aws-imds-java-base",
+    "aws-s3-java-base",
+    "aws-secrets-manager-java-base",
     "aws-sns-java-base",
-    "google-cloud-storage-base",
+    "aws-sns-kotlin-base",
     "azure-blob-storage-base",
+    "bitbucket-cloud-base",
+    "bitbucket-data-center-base",
+    "google-cloud-storage-base",
 )
 
 val collectIntegrationTestReports = tasks.register<Sync>("collectIntegrationTestReports") {
