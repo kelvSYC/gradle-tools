@@ -2,6 +2,8 @@ package com.kelvsyc.gradle.bitbucket.server.model
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import java.io.Serial
+import java.io.Serializable
 
 /**
  * A comment on a pull request in Bitbucket Data Center.
@@ -39,4 +41,9 @@ data class Comment(
      * The comment version, used for optimistic locking on updates.
      */
     val version: Int? = null,
-)
+) : Serializable {
+    companion object {
+        @Serial
+        private const val serialVersionUID: Long = 1L
+    }
+}

@@ -1,6 +1,8 @@
 package com.kelvsyc.gradle.bitbucket.server.model
 
 import com.squareup.moshi.JsonClass
+import java.io.Serial
+import java.io.Serializable
 
 /**
  * A Bitbucket Data Center project.
@@ -36,4 +38,9 @@ data class Project(
      * The object type, typically `NORMAL`.
      */
     val type: String? = null,
-)
+) : Serializable {
+    companion object {
+        @Serial
+        private const val serialVersionUID: Long = 1L
+    }
+}

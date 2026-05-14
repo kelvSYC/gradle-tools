@@ -2,6 +2,8 @@ package com.kelvsyc.gradle.bitbucket.server.model
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import java.io.Serial
+import java.io.Serializable
 
 /**
  * A ref (branch) endpoint of a pull request in Bitbucket Data Center.
@@ -29,4 +31,9 @@ data class PullRequestRef(
      * The repository containing this ref.
      */
     val repository: Repository? = null,
-)
+) : Serializable {
+    companion object {
+        @Serial
+        private const val serialVersionUID: Long = 1L
+    }
+}

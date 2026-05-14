@@ -2,6 +2,8 @@ package com.kelvsyc.gradle.bitbucket.cloud.model
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import java.io.Serial
+import java.io.Serializable
 
 /**
  * A Bitbucket Cloud user or team account.
@@ -28,4 +30,9 @@ data class Account(
      * The account's username (may not be present for all account types).
      */
     val nickname: String? = null,
-)
+) : Serializable {
+    companion object {
+        @Serial
+        private const val serialVersionUID: Long = 1L
+    }
+}

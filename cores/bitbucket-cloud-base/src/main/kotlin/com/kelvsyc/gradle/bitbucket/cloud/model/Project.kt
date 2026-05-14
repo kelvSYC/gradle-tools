@@ -1,6 +1,8 @@
 package com.kelvsyc.gradle.bitbucket.cloud.model
 
 import com.squareup.moshi.JsonClass
+import java.io.Serial
+import java.io.Serializable
 
 /**
  * A Bitbucket Cloud project that groups repositories within a workspace.
@@ -26,4 +28,9 @@ data class Project(
      * The object type, typically `project`.
      */
     val type: String? = null,
-)
+) : Serializable {
+    companion object {
+        @Serial
+        private const val serialVersionUID: Long = 1L
+    }
+}
