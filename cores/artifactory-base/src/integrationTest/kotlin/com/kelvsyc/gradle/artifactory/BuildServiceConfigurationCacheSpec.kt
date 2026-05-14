@@ -10,61 +10,36 @@ import java.io.File
 /**
  * Probe: configuration-cache round-trip of `ArtifactoryClientBuildService.Params`.
  *
- * `Params.credentials` is `Property<PasswordCredentials>`. Unlike the AWS and GCP params that were
- * redesigned to hold only primitives, this property holds a Gradle interface type. Two questions are probed:
- *
- * 1. Does an `ObjectFactory`-managed `PasswordCredentials` instance round-trip cleanly? (Gradle managed
- *    types participate in the CC codec via the managed-type serialization path.)
- * 2. Does a plain non-managed implementation of `PasswordCredentials` (i.e. [FakePasswordCredentials])
- *    survive the CC round-trip? (Expected: no — it is neither a Gradle managed type nor `Serializable`.)
- *
- * A failing "managed credentials" test would justify decomposing `Property<PasswordCredentials>` into
- * `Property<String>` username + password fields (see Phase C decomposition PR). A failing "fake credentials"
- * test confirms the decomposition is necessary for defensive correctness even if the managed path works.
+ * All parameters are `Property<String>` (`url`, `username`, `password`) so the CC codec trivially handles
+ * them. Each test verifies that a first invocation stores the configuration cache entry and a second
+ * invocation reuses it without re-executing task configuration.
  */
 class BuildServiceConfigurationCacheSpec : FunSpec({
     test("ArtifactoryClientBuildService with no parameters survives config-cache round-trip") {
-        assertParamsRoundTripCleanly(
-            name = "no-params",
-            credentialsBlock = ""
-        )
+        assertParamsRoundTripCleanly(name = "no-params", parametersBlock = "")
     }
 
     test("ArtifactoryClientBuildService with url-only survives config-cache round-trip") {
         assertParamsRoundTripCleanly(
             name = "url-only",
-            credentialsBlock = """url.set("https://example.jfrog.io/artifactory")"""
+            parametersBlock = """url.set("https://example.jfrog.io/artifactory")"""
         )
     }
 
-    test("ArtifactoryClientBuildService with ObjectFactory-managed PasswordCredentials survives config-cache round-trip") {
+    test("ArtifactoryClientBuildService with url and credentials survives config-cache round-trip") {
         assertParamsRoundTripCleanly(
-            name = "managed-credentials",
-            credentialsBlock = """
+            name = "url-and-credentials",
+            parametersBlock = """
                 url.set("https://example.jfrog.io/artifactory")
-                credentials.set(project.objects.newInstance(org.gradle.api.credentials.PasswordCredentials::class.java).also {
-                    it.username = "user"
-                    it.password = "s3cr3t"
-                })
+                username.set("user")
+                password.set("s3cr3t")
             """.trimIndent()
         )
     }
-
-    test("ArtifactoryClientBuildService with non-managed PasswordCredentials fails config-cache") {
-        val projectDir = writeFakeCredentialsProject()
-        val outcome = IntegrationTestSupport.runProbe(
-            projectDir, "probe", "--configuration-cache", "--stacktrace"
-        )
-        // FINDING: a plain PasswordCredentials implementation that is not a Gradle managed type and
-        // does not implement Serializable cannot be serialized by Gradle's CC codec. Users must either
-        // use objects.newInstance(PasswordCredentials::class.java) or wait for the decomposition to
-        // Property<String> username + password (Phase C follow-up).
-        outcome.shouldBeInstanceOf<ProbeOutcome.Failed>()
-    }
 })
 
-private fun assertParamsRoundTripCleanly(name: String, credentialsBlock: String) {
-    val projectDir = writeConfigCacheProbeProject(name = name, credentialsBlock = credentialsBlock)
+private fun assertParamsRoundTripCleanly(name: String, parametersBlock: String) {
+    val projectDir = writeConfigCacheProbeProject(name = name, parametersBlock = parametersBlock)
 
     val first = IntegrationTestSupport.runProbe(
         projectDir, "probe", "--configuration-cache", "--stacktrace"
@@ -80,7 +55,7 @@ private fun assertParamsRoundTripCleanly(name: String, credentialsBlock: String)
     secondSucceeded.result.output shouldContain "Configuration cache entry reused"
 }
 
-private fun writeConfigCacheProbeProject(name: String, credentialsBlock: String): File {
+private fun writeConfigCacheProbeProject(name: String, parametersBlock: String): File {
     val projectDir = IntegrationTestSupport.newProjectDir("artifactory-config-cache-$name")
     File(projectDir, "settings.gradle.kts").writeText("")
     File(projectDir, "build.gradle.kts").writeText(
@@ -95,37 +70,7 @@ private fun writeConfigCacheProbeProject(name: String, credentialsBlock: String)
             ArtifactoryClientBuildService::class
         ) {
             parameters {
-                $credentialsBlock
-            }
-        }
-
-        tasks.register<ArtifactoryClientBuildServiceProbeTask>("probe") {
-            service.set(artService)
-            usesService(artService)
-        }
-        """.trimIndent()
-    )
-    return projectDir
-}
-
-private fun writeFakeCredentialsProject(): File {
-    val projectDir = IntegrationTestSupport.newProjectDir("artifactory-config-cache-fake-credentials")
-    File(projectDir, "settings.gradle.kts").writeText("")
-    File(projectDir, "build.gradle.kts").writeText(
-        """
-        ${IntegrationTestSupport.buildscriptBlock()}
-
-        import com.kelvsyc.gradle.artifactory.ArtifactoryClientBuildService
-        import com.kelvsyc.gradle.artifactory.fixtures.ArtifactoryClientBuildServiceProbeTask
-        import com.kelvsyc.gradle.artifactory.fixtures.FakePasswordCredentials
-
-        val artService = gradle.sharedServices.registerIfAbsent(
-            "artifactory",
-            ArtifactoryClientBuildService::class
-        ) {
-            parameters {
-                url.set("https://example.jfrog.io/artifactory")
-                credentials.set(FakePasswordCredentials("user", "s3cr3t"))
+                $parametersBlock
             }
         }
 

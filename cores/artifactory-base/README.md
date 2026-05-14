@@ -19,17 +19,16 @@ dependencies {
 ```kotlin
 val artifactory = gradle.sharedServices.registerIfAbsent("artifactory", ArtifactoryClientBuildService::class) {
     parameters.url.set("https://mycompany.jfrog.io/artifactory")
-    parameters.credentials.set(project.objects.newInstance<PasswordCredentials>().apply {
-        username = "user"
-        password = "token"
-    })
+    parameters.username.set("user")
+    parameters.password.set("token")
 }
 ```
 
 | Parameter | Type | Description |
 |---|---|---|
 | `url` | `Property<String>` | Artifactory server URL |
-| `credentials` | `Property<PasswordCredentials>` | Artifactory credentials (username + password/token) |
+| `username` | `Property<String>` | Artifactory username; leave unset for anonymous access |
+| `password` | `Property<String>` | Artifactory password or API token; leave unset for anonymous access |
 
 ## Value Source: `AbstractArtifactValueSource`
 
