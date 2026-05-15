@@ -54,6 +54,7 @@ the two AWS SDKs are distinct libraries:
 | `google-cloud-kms-base` | GCP Cloud KMS | library |
 | `azure-blob-storage-base` | Azure Blob Storage | library |
 | `azure-key-vault-base` | Azure Key Vault | library |
+| `azure-managed-identity-base` | Azure Managed Identity / IMDS | library |
 | `artifactory-base` | JFrog Artifactory | library |
 | `bitbucket-cloud-base` | Bitbucket Cloud REST API | library |
 | `bitbucket-data-center-base` | Bitbucket Data Center REST API | library |
