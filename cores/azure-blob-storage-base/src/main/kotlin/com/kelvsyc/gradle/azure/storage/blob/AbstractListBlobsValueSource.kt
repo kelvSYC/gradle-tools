@@ -5,6 +5,7 @@ import com.azure.storage.blob.models.ListBlobsOptions
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * Base class for [ValueSource] implementations that produce a value by listing blobs in an Azure Blob Storage
@@ -22,6 +23,7 @@ abstract class AbstractListBlobsValueSource<T : Any, P : AbstractListBlobsValueS
      */
     interface Parameters : ValueSourceParameters {
         /** The build service managing the account-scoped Blob Service client. */
+        @get:Internal
         val service: Property<BlobServiceClientBuildService>
 
         /** The name of the blob container. */

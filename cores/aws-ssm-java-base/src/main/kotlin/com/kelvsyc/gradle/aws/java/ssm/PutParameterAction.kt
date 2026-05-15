@@ -1,6 +1,7 @@
 package com.kelvsyc.gradle.aws.java.ssm
 
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import software.amazon.awssdk.services.ssm.model.ParameterType
@@ -18,6 +19,7 @@ abstract class PutParameterAction : WorkAction<PutParameterAction.Parameters> {
      */
     interface Parameters : WorkParameters {
         /** The build service managing the SSM client. */
+        @get:Internal
         val service: Property<SsmClientBuildService>
 
         /** The name of the parameter to create or update. */

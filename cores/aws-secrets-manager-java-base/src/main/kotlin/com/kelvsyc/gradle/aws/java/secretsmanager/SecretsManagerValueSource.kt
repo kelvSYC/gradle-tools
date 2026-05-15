@@ -5,6 +5,7 @@ import com.kelvsyc.gradle.logging.warn
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest
 import software.amazon.awssdk.services.secretsmanager.model.SecretsManagerException
 
@@ -23,6 +24,7 @@ abstract class SecretsManagerValueSource : ValueSource<String, SecretsManagerVal
      */
     interface Parameters : ValueSourceParameters {
         /** The build service managing the Secrets Manager client. */
+        @get:Internal
         val service: Property<SecretsManagerClientBuildService>
 
         /** The name or ARN of the secret to retrieve. */

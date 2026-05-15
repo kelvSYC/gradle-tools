@@ -5,6 +5,7 @@ import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * Base class for [ValueSource]s providing values retrieved from the
@@ -22,6 +23,7 @@ abstract class AbstractImdsValueSource<T : Any, P : AbstractImdsValueSource.Para
      */
     interface Parameters : ValueSourceParameters {
         /** The build service managing the IMDS client. */
+        @get:Internal
         val service: Property<ImdsClientBuildService>
 
         /** The IMDS metadata path to query. */

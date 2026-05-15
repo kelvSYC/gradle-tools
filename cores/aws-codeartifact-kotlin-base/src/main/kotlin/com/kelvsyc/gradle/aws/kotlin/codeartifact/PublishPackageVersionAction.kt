@@ -6,6 +6,7 @@ import aws.smithy.kotlin.runtime.content.asByteStream
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 
@@ -18,6 +19,7 @@ abstract class PublishPackageVersionAction : WorkAction<PublishPackageVersionAct
      */
     interface Parameters : WorkParameters {
         /** The build service managing the CodeArtifact client. */
+        @get:Internal
         val service: Property<CodeArtifactClientBuildService>
 
         /** The CodeArtifact domain name. */

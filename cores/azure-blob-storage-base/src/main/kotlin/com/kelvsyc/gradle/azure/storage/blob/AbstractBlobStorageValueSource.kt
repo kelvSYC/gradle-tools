@@ -4,6 +4,7 @@ import com.azure.core.util.BinaryData
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * Base class for [ValueSource] implementations that provide a value by reading a blob from Azure Blob Storage.
@@ -20,6 +21,7 @@ abstract class AbstractBlobStorageValueSource<T : Any, P : AbstractBlobStorageVa
      */
     interface Parameters : ValueSourceParameters {
         /** The build service managing the account-scoped Blob Service client. */
+        @get:Internal
         val service: Property<BlobServiceClientBuildService>
 
         /** The name of the blob container. */

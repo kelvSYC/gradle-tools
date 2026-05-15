@@ -4,6 +4,7 @@ import aws.sdk.kotlin.services.ssm.model.ParameterType
 import aws.sdk.kotlin.services.ssm.model.PutParameterRequest
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 
@@ -19,6 +20,7 @@ abstract class PutParameterAction : WorkAction<PutParameterAction.Parameters> {
      */
     interface Parameters : WorkParameters {
         /** The build service managing the SSM client. */
+        @get:Internal
         val service: Property<SsmClientBuildService>
 
         /** The name of the parameter to create or update. */

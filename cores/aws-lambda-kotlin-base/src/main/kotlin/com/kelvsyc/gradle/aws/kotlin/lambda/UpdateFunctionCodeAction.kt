@@ -4,6 +4,7 @@ import aws.sdk.kotlin.services.lambda.model.UpdateFunctionCodeRequest
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 
@@ -19,6 +20,7 @@ abstract class UpdateFunctionCodeAction : WorkAction<UpdateFunctionCodeAction.Pa
      */
     interface Parameters : WorkParameters {
         /** The build service managing the Lambda client. */
+        @get:Internal
         val service: Property<LambdaClientBuildService>
 
         /** The function name, ARN, or partial ARN to update. */

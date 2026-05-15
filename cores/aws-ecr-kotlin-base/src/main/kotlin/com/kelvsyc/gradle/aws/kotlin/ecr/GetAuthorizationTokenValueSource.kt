@@ -5,6 +5,7 @@ import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation retrieving an authorization token from AWS ECR for the caller's default
@@ -19,6 +20,7 @@ abstract class GetAuthorizationTokenValueSource : ValueSource<String, GetAuthori
      */
     interface Parameters : ValueSourceParameters {
         /** The build service managing the ECR client. */
+        @get:Internal
         val service: Property<EcrClientBuildService>
     }
 

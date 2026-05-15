@@ -2,6 +2,7 @@ package com.kelvsyc.gradle.aws.java.s3
 
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import software.amazon.awssdk.core.sync.ResponseTransformer
@@ -20,6 +21,7 @@ abstract class DownloadFileAction : WorkAction<DownloadFileAction.Parameters> {
      */
     interface Parameters : WorkParameters {
         /** The build service managing the S3 client. */
+        @get:Internal
         val service: Property<S3ClientBuildService>
 
         /** S3 bucket name. */

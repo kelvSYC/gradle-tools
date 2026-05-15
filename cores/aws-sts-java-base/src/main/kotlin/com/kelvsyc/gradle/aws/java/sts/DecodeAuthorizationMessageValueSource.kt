@@ -5,6 +5,7 @@ import com.kelvsyc.gradle.logging.warn
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 import software.amazon.awssdk.services.sts.model.DecodeAuthorizationMessageRequest
 import software.amazon.awssdk.services.sts.model.StsException
 
@@ -22,6 +23,7 @@ abstract class DecodeAuthorizationMessageValueSource :
      */
     interface Parameters : ValueSourceParameters {
         /** The build service managing the STS client. */
+        @get:Internal
         val service: Property<StsClientBuildService>
 
         /** The encoded authorization message to decode. */

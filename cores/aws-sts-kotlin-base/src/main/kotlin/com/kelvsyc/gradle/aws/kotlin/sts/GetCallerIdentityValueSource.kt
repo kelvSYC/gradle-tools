@@ -5,6 +5,7 @@ import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that returns the calling identity for the configured client as a [Map] with the
@@ -19,6 +20,7 @@ abstract class GetCallerIdentityValueSource :
      */
     interface Parameters : ValueSourceParameters {
         /** The build service managing the STS client. */
+        @get:Internal
         val service: Property<StsClientBuildService>
     }
 

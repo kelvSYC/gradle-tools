@@ -11,6 +11,7 @@ import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that lists all Lambda functions visible to the configured client, returned as a
@@ -24,6 +25,7 @@ abstract class ListFunctionsValueSource : ValueSource<Map<String, String>, ListF
      */
     interface Parameters : ValueSourceParameters {
         /** The build service managing the Lambda client. */
+        @get:Internal
         val service: Property<LambdaClientBuildService>
     }
 

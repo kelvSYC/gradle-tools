@@ -5,6 +5,7 @@ import aws.sdk.kotlin.services.ecr.model.ImageIdentifier
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 
@@ -20,6 +21,7 @@ abstract class BatchDeleteImageAction : WorkAction<BatchDeleteImageAction.Parame
      */
     interface Parameters : WorkParameters {
         /** The build service managing the ECR client. */
+        @get:Internal
         val service: Property<EcrClientBuildService>
 
         /** The repository to delete images from. */
