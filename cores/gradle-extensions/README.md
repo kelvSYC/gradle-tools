@@ -189,6 +189,17 @@ system properties (`teamcity.build.id`, `teamcity.buildType.id`, `teamcity.build
 build properties file whose path is given by the `TEAMCITY_BUILD_PROPERTIES_FILE` environment variable, using
 `PropertiesFromFileValueSource`.
 
+**Configuration cache and sensitive parameters:** TeamCity writes "Password" type build parameters to the system
+properties file and the configuration parameters file in plaintext — the masking in the TeamCity UI and build logs
+is display-only. Any `system.*` parameter of "Password" type will appear in the build properties file read by this
+class, and the configuration parameters file (path exposed via `configurationPropertiesFilePath`) may also contain
+password-type parameters.
+
+The properties exposed by `TeamCityProviders` are limited to well-known, non-sensitive system properties. However,
+if you access additional properties from the same files — for example to read a custom `system.myPassword` parameter
+— those values will be serialized to the Gradle configuration cache in plaintext. Read sensitive TeamCity
+parameters inside a `WorkAction` at task execution time instead.
+
 ## Logging Extensions (`GradleLoggerExtensions`)
 
 Lambda-form logging methods that avoid string construction when the log level is disabled:
@@ -204,6 +215,22 @@ All methods accept either `message: () -> String` or `(Throwable, () -> String)`
 `quiet`, `warn`, `error`.
 
 ## Value Sources
+
+**Configuration cache behaviour:** Gradle serializes the result of every `ValueSource.obtain()` call to the
+configuration cache when the cache is written, and reuses that result on subsequent builds without re-running
+`obtain()`. Two implications follow:
+
+- **Staleness:** The cached result reflects the state at the time the cache was written. External state — file
+  contents, API responses, environment variables — is not re-read on cache hits. For file-backed sources, Gradle
+  uses the input file as a cache key and invalidates the cache when the file changes. For sources that call
+  external services or read values that change independently of the inputs declared in `Parameters`, the cached
+  result may be stale until the cache is explicitly invalidated (e.g. `--rerun-tasks` or deleting
+  `.gradle/configuration-cache/`).
+
+- **Plaintext storage:** The serialized result is stored in plaintext in `.gradle/configuration-cache/`. If
+  `obtain()` returns sensitive values (passwords, tokens, secrets), those values are readable by any process with
+  access to the build directory. Retrieve sensitive values inside a `WorkAction` at task execution time instead —
+  the value is resolved after the cache has been read and is never written to it.
 
 ### `AbstractResourceValueSource`
 
@@ -249,6 +276,12 @@ val defaults: Provider<Properties> = providers.of(PropertiesResourceValueSource:
 
 Reads a `.properties` file into a `Provider<Properties>`. Returns absent (rather than throwing) on missing or
 malformed files. Use via `ProviderFactory.propertiesFile()`.
+
+**Configuration cache:** The entire `Properties` result is serialized to the Gradle configuration cache in
+plaintext when the cache is written. If the file contains sensitive values (passwords, tokens, API keys), those
+values will be stored in `.gradle/configuration-cache/`. Only use this source with files whose complete contents
+can be safely cached. When sensitive values are required at task execution time, read the file inside a
+`WorkAction` instead.
 
 ### `ChecksumValueSource`
 
