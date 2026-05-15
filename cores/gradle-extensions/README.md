@@ -232,9 +232,12 @@ configuration cache when the cache is written, and reuses that result on subsequ
   access to the build directory. Retrieve sensitive values at task execution time instead — either inside a
   `@TaskAction` body or inside a `WorkAction.execute()` body — by calling `ProviderFactory` (or our extensions)
   directly there. Values obtained this way are resolved after the cache has been read and are never written to it.
-  The unsafe pattern is wiring a `Provider` into a task `@Input` property, which forces resolution at cache-write
-  time; calling `providers.of(...)` or `providers.environmentVariable(...)` entirely within task or work action
-  code is safe.
+  The unsafe pattern is storing a `Provider` backed by a `ValueSource` in any task field — whether `@Input`,
+  `@get:Internal`, or a private `val` — because Gradle's config-cache codec walks the entire task object graph
+  and resolves all `Provider` values at cache-write time regardless of annotation. The only safe location is
+  creating and resolving the `Provider` entirely within a `@TaskAction` or `WorkAction.execute()` body;
+  `providers.of(...)` or `providers.environmentVariable(...)` called there runs after the cache has been read
+  and the value is never serialized.
 
 ### `AbstractResourceValueSource`
 

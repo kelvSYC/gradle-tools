@@ -12,6 +12,7 @@ import io.mockk.slot
 import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 
+@Suppress("DEPRECATION")
 class GetAuthorizationTokenValueSourceSpec : FunSpec() {
     init {
         test("obtain - returns authorization token") {

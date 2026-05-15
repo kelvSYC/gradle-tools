@@ -18,6 +18,15 @@ import org.gradle.api.tasks.Internal
  * [org.gradle.workers.WorkAction] at task execution time instead, where the value is never
  * written to the cache.
  *
+ * **Task-field storage is also unsafe.** Gradle's config-cache codec walks the entire task
+ * object graph — including `@get:Internal` properties and private `val` fields — and resolves
+ * all `Provider` values at cache-write time. Wiring a `Provider` backed by this `ValueSource`
+ * into any task field (annotated or not) causes `obtain()` to run at configuration time and the
+ * secret to be stored on disk. The only safe location is entirely within a `@TaskAction` or
+ * `WorkAction.execute()` body. Using this `ValueSource` only inside task execution code is safe
+ * but counterproductive — the abstraction adds no value there; call the build service client
+ * directly instead.
+ *
  * [ValueSource] implementation backed by retrieving a secret version from Google Cloud Secret Manager.
  *
  * The secret payload is returned as a UTF-8 string.

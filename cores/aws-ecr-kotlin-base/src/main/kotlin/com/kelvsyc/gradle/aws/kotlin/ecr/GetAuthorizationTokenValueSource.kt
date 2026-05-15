@@ -15,6 +15,14 @@ import org.gradle.api.tasks.Internal
  * If the token is genuinely needed at configuration time (e.g. for Maven repository authentication),
  * be aware of the cache-storage implication.
  *
+ * **Task-field storage is also unsafe.** Gradle's config-cache codec walks the entire task
+ * object graph — including `@get:Internal` properties and private `val` fields — and resolves
+ * all `Provider` values at cache-write time. Wiring a `Provider` backed by this `ValueSource`
+ * into any task field (annotated or not) causes `obtain()` to run at configuration time and the
+ * token to be stored on disk. For task-execution use cases, use this `ValueSource` only entirely
+ * within a `WorkAction.execute()` body; calling the build service client directly there is
+ * simpler and avoids the `ValueSource` abstraction overhead.
+ *
  * [ValueSource] implementation retrieving an authorization token from AWS ECR for the caller's default
  * registry.
  *
