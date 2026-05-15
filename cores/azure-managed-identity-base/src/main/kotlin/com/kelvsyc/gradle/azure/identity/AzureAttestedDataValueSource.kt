@@ -20,7 +20,7 @@ abstract class AzureAttestedDataValueSource :
         @get:Internal
         val service: Property<AzureImdsClientBuildService>
 
-        /** IMDS API version to use. */
+        /** IMDS API version to use. Defaults to `2021-02-01`. */
         val apiVersion: Property<String>
 
         /** Optional nonce for replay-attack prevention. */
@@ -28,7 +28,7 @@ abstract class AzureAttestedDataValueSource :
     }
 
     override fun obtain(): String? {
-        val version = parameters.apiVersion.get()
+        val version = parameters.apiVersion.getOrElse(DEFAULT_API_VERSION)
         val nonce = parameters.nonce.orNull
         val data = parameters.service.get().getClient()
             .getAttestedData(version, nonce)
@@ -36,5 +36,9 @@ abstract class AzureAttestedDataValueSource :
             .body() ?: return null
 
         return data.signature
+    }
+
+    private companion object {
+        private const val DEFAULT_API_VERSION = "2021-02-01"
     }
 }
