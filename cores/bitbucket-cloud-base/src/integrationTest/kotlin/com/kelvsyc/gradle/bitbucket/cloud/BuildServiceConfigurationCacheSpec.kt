@@ -10,8 +10,8 @@ import java.io.File
 /**
  * Probe: configuration-cache round-trip of `BitbucketCloudClientBuildService.Params`.
  *
- * All parameters are `Property<String>` (`baseUrl`, `username`, `password`) so the CC codec trivially
- * handles them. Each test verifies that a first invocation stores the configuration cache entry and a second
+ * `baseUrl` and `username` are `Property<String>`; `passwordRef` is `Property<CredentialReference>` which stores
+ * only the lookup key. All three types are Gradle config-cache serializable. Each test verifies that a first invocation stores the configuration cache entry and a second
  * invocation reuses it without re-executing task configuration.
  */
 class BuildServiceConfigurationCacheSpec : FunSpec({
@@ -31,7 +31,7 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
             name = "credentials",
             parametersBlock = """
                 username.set("user")
-                password.set("apppassword")
+                passwordRef.set(CredentialReference.EnvironmentVariable("BITBUCKET_APP_PASSWORD"))
             """.trimIndent()
         )
     }
@@ -42,7 +42,7 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
             parametersBlock = """
                 baseUrl.set("https://api.bitbucket.org/2.0/")
                 username.set("user")
-                password.set("apppassword")
+                passwordRef.set(CredentialReference.EnvironmentVariable("BITBUCKET_APP_PASSWORD"))
             """.trimIndent()
         )
     }
@@ -74,6 +74,7 @@ private fun writeConfigCacheProbeProject(name: String, parametersBlock: String):
 
         import com.kelvsyc.gradle.bitbucket.cloud.BitbucketCloudClientBuildService
         import com.kelvsyc.gradle.bitbucket.cloud.fixtures.BitbucketCloudClientBuildServiceProbeTask
+        import com.kelvsyc.gradle.clients.CredentialReference
 
         val bbService = gradle.sharedServices.registerIfAbsent(
             "bitbucketCloud",

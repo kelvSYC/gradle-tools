@@ -69,7 +69,7 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
                 credentialSource.set(AzureCredentialSource.CLIENT_SECRET)
                 tenantId.set("00000000-0000-0000-0000-000000000001")
                 clientId.set("00000000-0000-0000-0000-000000000002")
-                clientSecret.set("fake-secret")
+                clientSecretRef.set(CredentialReference.EnvironmentVariable("AZURE_CLIENT_SECRET"))
             """.trimIndent()
         )
     }
@@ -79,7 +79,7 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
             name = "sas-token",
             parametersBlock = """
                 credentialSource.set(AzureCredentialSource.SAS_TOKEN)
-                sasToken.set("sv=2020-10-02&fake")
+                sasTokenRef.set(CredentialReference.EnvironmentVariable("AZURE_STORAGE_SAS_TOKEN"))
             """.trimIndent()
         )
     }
@@ -90,7 +90,7 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
             parametersBlock = """
                 credentialSource.set(AzureCredentialSource.STORAGE_ACCOUNT_KEY)
                 accountName.set("myaccount")
-                accountKey.set("ZmFrZS1rZXk=")
+                accountKeyRef.set(CredentialReference.EnvironmentVariable("AZURE_STORAGE_ACCOUNT_KEY"))
             """.trimIndent()
         )
     }
@@ -103,7 +103,7 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
                 credentialSource.set(AzureCredentialSource.CLIENT_SECRET)
                 tenantId.set("00000000-0000-0000-0000-000000000001")
                 clientId.set("00000000-0000-0000-0000-000000000002")
-                clientSecret.set("fake-secret")
+                clientSecretRef.set(CredentialReference.EnvironmentVariable("AZURE_CLIENT_SECRET"))
             """.trimIndent()
         )
     }
@@ -136,6 +136,7 @@ private fun writeConfigCacheProbeProject(name: String, parametersBlock: String):
         import com.kelvsyc.gradle.azure.AzureCredentialSource
         import com.kelvsyc.gradle.azure.storage.blob.BlobServiceClientBuildService
         import com.kelvsyc.gradle.azure.storage.blob.fixtures.BlobBuildServiceProbeTask
+        import com.kelvsyc.gradle.clients.CredentialReference
 
         val blobService = gradle.sharedServices.registerIfAbsent(
             "blob",

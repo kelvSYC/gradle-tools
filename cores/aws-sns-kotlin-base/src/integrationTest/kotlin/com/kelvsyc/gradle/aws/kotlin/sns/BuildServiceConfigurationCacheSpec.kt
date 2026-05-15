@@ -12,7 +12,8 @@ import java.io.File
  * from `aws-kotlin-extensions`).
  *
  * Each test pins down the **observed** behavior of the parameter shape — `region: Property<String>`,
- * `credentialSource: Property<AwsCredentialSource>`, `accessKeyId/secretAccessKey/sessionToken: Property<String>`,
+ * `credentialSource: Property<AwsCredentialSource>`,
+ * `accessKeyIdRef/secretAccessKeyRef/sessionTokenRef: Property<CredentialReference>`,
  * `credentialsProfile: Property<String>`. A failing test means either Gradle's config-cache serializer or the
  * AWS Kotlin extensions have regressed; investigate before "fixing" the test.
  *
@@ -49,8 +50,8 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
             name = "static-credentials",
             parametersBlock = """
                 credentialSource.set(AwsCredentialSource.STATIC)
-                accessKeyId.set("ak")
-                secretAccessKey.set("sk")
+                accessKeyIdRef.set(CredentialReference.EnvironmentVariable("AWS_ACCESS_KEY_ID"))
+                secretAccessKeyRef.set(CredentialReference.EnvironmentVariable("AWS_SECRET_ACCESS_KEY"))
             """.trimIndent()
         )
     }
@@ -60,9 +61,9 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
             name = "session-credentials",
             parametersBlock = """
                 credentialSource.set(AwsCredentialSource.STATIC)
-                accessKeyId.set("ak")
-                secretAccessKey.set("sk")
-                sessionToken.set("tok")
+                accessKeyIdRef.set(CredentialReference.EnvironmentVariable("AWS_ACCESS_KEY_ID"))
+                secretAccessKeyRef.set(CredentialReference.EnvironmentVariable("AWS_SECRET_ACCESS_KEY"))
+                sessionTokenRef.set(CredentialReference.EnvironmentVariable("AWS_SESSION_TOKEN"))
             """.trimIndent()
         )
     }
@@ -90,8 +91,8 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
             parametersBlock = """
                 region.set("us-east-1")
                 credentialSource.set(AwsCredentialSource.STATIC)
-                accessKeyId.set("ak")
-                secretAccessKey.set("sk")
+                accessKeyIdRef.set(CredentialReference.EnvironmentVariable("AWS_ACCESS_KEY_ID"))
+                secretAccessKeyRef.set(CredentialReference.EnvironmentVariable("AWS_SECRET_ACCESS_KEY"))
             """.trimIndent()
         )
     }
@@ -124,6 +125,7 @@ private fun writeConfigCacheProbeProject(name: String, parametersBlock: String):
         import com.kelvsyc.gradle.aws.kotlin.AwsCredentialSource
         import com.kelvsyc.gradle.aws.kotlin.sns.SnsClientBuildService
         import com.kelvsyc.gradle.aws.kotlin.sns.fixtures.SnsClientBuildServiceProbeTask
+        import com.kelvsyc.gradle.clients.CredentialReference
 
         val snsService = gradle.sharedServices.registerIfAbsent(
             "sns",

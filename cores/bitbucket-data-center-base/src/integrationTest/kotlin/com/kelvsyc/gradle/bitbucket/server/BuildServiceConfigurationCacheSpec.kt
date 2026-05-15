@@ -10,7 +10,8 @@ import java.io.File
 /**
  * Probe: configuration-cache round-trip of `BitbucketServerClientBuildService.Params`.
  *
- * All parameters are `Property<String>` (`baseUrl`, `token`), so the CC codec trivially handles them.
+ * `baseUrl` is `Property<String>`; `tokenRef` is `Property<CredentialReference>` which stores only the lookup
+ * key. Both types are Gradle config-cache serializable.
  * This spec serves as a baseline regression sentinel: if any future change to the params shape introduces
  * a non-serializable type, at least one test here will go red.
  */
@@ -22,7 +23,7 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
     test("BitbucketServerClientBuildService with token-only survives config-cache round-trip") {
         assertParamsRoundTripCleanly(
             name = "token-only",
-            parametersBlock = """token.set("mytoken")"""
+            parametersBlock = """tokenRef.set(CredentialReference.EnvironmentVariable("BITBUCKET_TOKEN"))"""
         )
     }
 
@@ -31,7 +32,7 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
             name = "base-url-and-token",
             parametersBlock = """
                 baseUrl.set("https://bitbucket.example.com/")
-                token.set("mytoken")
+                tokenRef.set(CredentialReference.EnvironmentVariable("BITBUCKET_TOKEN"))
             """.trimIndent()
         )
     }
@@ -63,6 +64,7 @@ private fun writeConfigCacheProbeProject(name: String, parametersBlock: String):
 
         import com.kelvsyc.gradle.bitbucket.server.BitbucketServerClientBuildService
         import com.kelvsyc.gradle.bitbucket.server.fixtures.BitbucketServerClientBuildServiceProbeTask
+        import com.kelvsyc.gradle.clients.CredentialReference
 
         val bbService = gradle.sharedServices.registerIfAbsent(
             "bitbucketServer",

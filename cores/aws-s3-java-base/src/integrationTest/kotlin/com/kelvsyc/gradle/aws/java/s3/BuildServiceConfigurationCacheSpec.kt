@@ -28,8 +28,8 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
             parametersBlock = """
                 regionId.set("us-east-1")
                 credentialSource.set(AwsCredentialSource.STATIC)
-                accessKeyId.set("ak")
-                secretAccessKey.set("sk")
+                accessKeyIdRef.set(CredentialReference.EnvironmentVariable("AWS_ACCESS_KEY_ID"))
+                secretAccessKeyRef.set(CredentialReference.EnvironmentVariable("AWS_SECRET_ACCESS_KEY"))
             """.trimIndent()
         )
     }
@@ -62,6 +62,7 @@ private fun writeConfigCacheProbeProject(name: String, parametersBlock: String):
         import com.kelvsyc.gradle.aws.java.AwsCredentialSource
         import com.kelvsyc.gradle.aws.java.s3.S3ClientBuildService
         import com.kelvsyc.gradle.aws.java.s3.fixtures.S3ClientBuildServiceProbeTask
+        import com.kelvsyc.gradle.clients.CredentialReference
 
         val s3Service = gradle.sharedServices.registerIfAbsent(
             "s3",

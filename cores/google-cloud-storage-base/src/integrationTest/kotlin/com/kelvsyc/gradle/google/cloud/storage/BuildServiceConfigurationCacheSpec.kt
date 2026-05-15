@@ -13,7 +13,7 @@ import java.io.File
  *
  * Each test pins down the **observed** behavior of the parameter shape — `projectId: Property<String>`,
  * `credentialSource: Property<GcpCredentialSource>`, `credentialsFile: RegularFileProperty`,
- * `credentialsJson: Property<String>`, `accessToken: Property<String>`. A failing test means either
+ * `credentialsJsonRef: Property<CredentialReference>`, `accessTokenRef: Property<CredentialReference>`. A failing test means either
  * Gradle's config-cache serializer or the Google Cloud extensions have regressed; investigate before
  * "fixing" the test.
  *
@@ -24,7 +24,8 @@ import java.io.File
  * and `ServiceAccountCredentials.fromStream(...)` carry non-`Serializable` state. So
  * `GcpBuildServiceParams` exposes only serializable primitives and the SDK credential is reconstructed
  * inside `createClient()` via `resolveCredentials()` / `resolveCredentialsProvider()`. These tests
- * exercise every branch of [com.kelvsyc.gradle.google.cloud.GcpCredentialSource] across the
+ * exercise every branch of [com.kelvsyc.gradle.google.cloud.GcpCredentialSource] (note:
+ * `SERVICE_ACCOUNT_JSON_INLINE` was renamed to `SERVICE_ACCOUNT_JSON_ENV`) across the
  * configuration-cache boundary and a second invocation that should reuse the stored entry.
  */
 class BuildServiceConfigurationCacheSpec : FunSpec({
@@ -58,7 +59,7 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
             name = "access-token",
             parametersBlock = """
                 credentialSource.set(GcpCredentialSource.ACCESS_TOKEN)
-                accessToken.set("fake-token")
+                accessTokenRef.set(CredentialReference.EnvironmentVariable("GOOGLE_OAUTH2_TOKEN"))
             """.trimIndent()
         )
     }
@@ -67,8 +68,8 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
         assertParamsRoundTripCleanly(
             name = "service-account-inline",
             parametersBlock = """
-                credentialSource.set(GcpCredentialSource.SERVICE_ACCOUNT_JSON_INLINE)
-                credentialsJson.set("{}")
+                credentialSource.set(GcpCredentialSource.SERVICE_ACCOUNT_JSON_ENV)
+                credentialsJsonRef.set(CredentialReference.EnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS_JSON"))
             """.trimIndent()
         )
     }
@@ -89,7 +90,7 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
             parametersBlock = """
                 projectId.set("test-project")
                 credentialSource.set(GcpCredentialSource.ACCESS_TOKEN)
-                accessToken.set("fake-token")
+                accessTokenRef.set(CredentialReference.EnvironmentVariable("GOOGLE_OAUTH2_TOKEN"))
             """.trimIndent()
         )
     }
@@ -122,6 +123,7 @@ private fun writeConfigCacheProbeProject(name: String, parametersBlock: String):
         import com.kelvsyc.gradle.google.cloud.GcpCredentialSource
         import com.kelvsyc.gradle.google.cloud.storage.StorageClientBuildService
         import com.kelvsyc.gradle.google.cloud.storage.fixtures.StorageBuildServiceProbeTask
+        import com.kelvsyc.gradle.clients.CredentialReference
 
         val storageService = gradle.sharedServices.registerIfAbsent(
             "storage",
