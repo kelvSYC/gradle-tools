@@ -84,6 +84,7 @@ dependencies {
 | `azure-extensions` | Config-cache-safe BuildService base class and `AzureBuildServiceParams` for the Azure SDK |
 | `moshi-extensions` | `ValueSource` implementations and `Provider` extensions for Moshi JSON parsing |
 | `pkl-extensions` | `ValueSource` implementations for evaluating Pkl configuration files |
+| `snakeyaml-extensions` | `ValueSource` implementation and typed `Provider` extensions for YAML parsing |
 | `xml-extensions` | XPath query engine, `ValueSource` implementations, and migration helpers for XML |
 
 ## Installation
