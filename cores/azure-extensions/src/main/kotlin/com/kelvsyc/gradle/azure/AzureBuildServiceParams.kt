@@ -1,5 +1,6 @@
 package com.kelvsyc.gradle.azure
 
+import com.kelvsyc.gradle.clients.CredentialReference
 import org.gradle.api.provider.Property
 import org.gradle.api.services.BuildServiceParameters
 
@@ -10,6 +11,11 @@ import org.gradle.api.services.BuildServiceParameters
  * extension functions on this interface ([noCredentials], [defaultCredential], [managedIdentity],
  * [clientSecret], [sasToken], [sharedKey]) which atomically set [credentialSource] and its
  * supporting fields together.
+ *
+ * Credential fields ([clientSecretRef], [sasTokenRef], [accountKeyRef]) use [CredentialReference]
+ * rather than plain strings to ensure that only lookup metadata — not secret values — is serialized
+ * to the Gradle configuration cache. Non-secret identity fields ([tenantId], [clientId],
+ * [accountName]) remain plain strings.
  *
  * Note that the service-specific endpoint (Storage account URL, Key Vault URL, etc.) is **not**
  * part of this interface — each service builds upon this interface with its own endpoint property
@@ -41,20 +47,22 @@ interface AzureBuildServiceParams : BuildServiceParameters {
     val clientId: Property<String>
 
     /**
-     * Azure AD client secret. Used when [credentialSource] is
+     * Reference to where the Azure AD client secret can be found. Used when [credentialSource] is
      * [AzureCredentialSource.CLIENT_SECRET].
      *
-     * Set via [clientSecret].
+     * Stores a [CredentialReference] pointing to an environment variable or system property whose
+     * value is the client secret. Set via [clientSecret].
      */
-    val clientSecret: Property<String>
+    val clientSecretRef: Property<CredentialReference>
 
     /**
-     * Shared Access Signature token, **without** the leading `?`. Used when [credentialSource] is
-     * [AzureCredentialSource.SAS_TOKEN].
+     * Reference to where the Shared Access Signature token can be found, **without** the leading
+     * `?`. Used when [credentialSource] is [AzureCredentialSource.SAS_TOKEN].
      *
-     * Set via [sasToken].
+     * Stores a [CredentialReference] pointing to an environment variable or system property whose
+     * value is the SAS token. Set via [sasToken].
      */
-    val sasToken: Property<String>
+    val sasTokenRef: Property<CredentialReference>
 
     /**
      * Azure Storage account name. Used when [credentialSource] is
@@ -65,10 +73,11 @@ interface AzureBuildServiceParams : BuildServiceParameters {
     val accountName: Property<String>
 
     /**
-     * Azure Storage account key. Used when [credentialSource] is
-     * [AzureCredentialSource.STORAGE_ACCOUNT_KEY].
+     * Reference to where the Azure Storage account key can be found. Used when [credentialSource]
+     * is [AzureCredentialSource.STORAGE_ACCOUNT_KEY].
      *
-     * Set via [sharedKey].
+     * Stores a [CredentialReference] pointing to an environment variable or system property whose
+     * value is the account key. Set via [sharedKey].
      */
-    val accountKey: Property<String>
+    val accountKeyRef: Property<CredentialReference>
 }

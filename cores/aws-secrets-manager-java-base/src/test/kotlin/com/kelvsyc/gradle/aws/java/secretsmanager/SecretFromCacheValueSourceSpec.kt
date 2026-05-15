@@ -20,6 +20,7 @@ class SecretFromCacheValueSourceSpec : FunSpec() {
             )
             every { cache.getSecretString("my-secret") } returns "cached-value"
 
+            @Suppress("DEPRECATION")
             val provider = project.providers.ofKt(SecretFromCacheValueSource::class) {
                 parameters.service.set(service)
                 parameters.secretName.set("my-secret")

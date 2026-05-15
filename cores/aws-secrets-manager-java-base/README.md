@@ -23,13 +23,17 @@ dependencies {
 
 ```kotlin
 val sm = gradle.sharedServices.registerIfAbsent("sm", SecretsManagerClientBuildService::class) {
-    parameters.region.set(Region.US_EAST_1)
-    parameters.credentials.set(DefaultCredentialsProvider.create())
+    parameters {
+        regionId.set("us-east-1")
+        defaultCredentials()
+    }
 }
 
 val smAsync = gradle.sharedServices.registerIfAbsent("sm-async", SecretsManagerAsyncClientBuildService::class) {
-    parameters.region.set(Region.US_EAST_1)
-    parameters.credentials.set(DefaultCredentialsProvider.create())
+    parameters {
+        regionId.set("us-east-1")
+        defaultCredentials()
+    }
 }
 ```
 
@@ -57,7 +61,9 @@ lazily — the underlying service is not instantiated until the cache itself is 
 
 ## Value Sources
 
-### `SecretsManagerValueSource`
+**Note on configuration cache safety:** Gradle serializes the result of every `ValueSource.obtain()` call to the configuration cache in plaintext. Any credential or secret value returned by a `ValueSource` will be stored in `.gradle/configuration-cache/` and is readable by any process with access to the build directory. The `ValueSource` implementations in this component that retrieve credentials or secrets are deprecated for this reason. Retrieve sensitive values inside a `WorkAction` at task execution time instead — the value is resolved after the cache has been read and is never written to it.
+
+### **Deprecated.** `SecretsManagerValueSource`
 
 Retrieves a single string secret directly from Secrets Manager:
 
@@ -72,7 +78,7 @@ val secret: Provider<String> = providers.of(SecretsManagerValueSource::class) {
 
 Returns `null` and logs a warning if the call throws `SecretsManagerException`. Only string secrets are supported.
 
-### `SecretFromCacheValueSource`
+### **Deprecated.** `SecretFromCacheValueSource`
 
 Retrieves a single string secret from the in-memory cache:
 
@@ -85,7 +91,7 @@ val secret: Provider<String> = providers.of(SecretFromCacheValueSource::class) {
 }
 ```
 
-### `SecretBatchValueSource`
+### **Deprecated.** `SecretBatchValueSource`
 
 Retrieves multiple secrets in a single paginated batch call, returning a `Map<String, String>` keyed by secret
 name:

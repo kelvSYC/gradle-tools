@@ -8,10 +8,25 @@ import software.amazon.awssdk.services.codeartifact.model.CodeartifactException
 import software.amazon.awssdk.services.codeartifact.model.GetAuthorizationTokenRequest
 
 /**
+ * **Deprecated — configuration cache unsafe.** Gradle serializes the result of every
+ * [ValueSource.obtain] call to the configuration cache in plaintext. An authorization token
+ * returned here will be stored in `.gradle/configuration-cache/`. For task-execution use cases
+ * (e.g. `docker login`), retrieve the token inside a [org.gradle.workers.WorkAction] instead.
+ * If the token is genuinely needed at configuration time (e.g. for Maven repository authentication),
+ * be aware of the cache-storage implication.
+ *
  * [ValueSource] implementation retrieving an authorization token from AWS CodeArtifact.
  *
  * The value is obtained from a request to AWS CodeArtifact.
  */
+@Deprecated(
+    message = "ValueSource results are serialized to the Gradle configuration cache; authorization tokens " +
+        "returned by obtain() are stored in plaintext in .gradle/configuration-cache/. " +
+        "For task-execution use cases such as docker login, retrieve the token inside a " +
+        "WorkAction instead. If the token is required at configuration time (e.g. for repository " +
+        "authentication), be aware that the token value will be cached.",
+    level = DeprecationLevel.WARNING
+)
 abstract class GetAuthorizationTokenValueSource : ValueSource<String, GetAuthorizationTokenValueSource.Parameters> {
     /**
      * Parameters for [GetAuthorizationTokenValueSource].

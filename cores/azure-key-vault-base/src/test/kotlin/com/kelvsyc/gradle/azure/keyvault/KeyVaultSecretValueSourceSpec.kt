@@ -25,6 +25,7 @@ class KeyVaultSecretValueSourceSpec : FunSpec() {
             every { secret.value } returns "super-secret"
             every { client.getSecret(capture(nameSlot)) } returns secret
 
+            @Suppress("DEPRECATION")
             val provider = project.providers.ofKt(KeyVaultSecretValueSource::class) {
                 parameters.service.set(service)
                 parameters.secretName.set("my-secret")
@@ -46,6 +47,7 @@ class KeyVaultSecretValueSourceSpec : FunSpec() {
             every { secret.value } returns "versioned-secret"
             every { client.getSecret(capture(nameSlot), capture(versionSlot)) } returns secret
 
+            @Suppress("DEPRECATION")
             val provider = project.providers.ofKt(KeyVaultSecretValueSource::class) {
                 parameters.service.set(service)
                 parameters.secretName.set("my-secret")
@@ -65,6 +67,7 @@ class KeyVaultSecretValueSourceSpec : FunSpec() {
             val service = project.gradle.sharedServices.registerIfAbsent("kv", MockSecretClientBuildService::class)
             every { client.getSecret(any<String>()) } throws HttpResponseException("not found", mockk<HttpResponse>(relaxed = true))
 
+            @Suppress("DEPRECATION")
             val provider = project.providers.ofKt(KeyVaultSecretValueSource::class) {
                 parameters.service.set(service)
                 parameters.secretName.set("missing-secret")

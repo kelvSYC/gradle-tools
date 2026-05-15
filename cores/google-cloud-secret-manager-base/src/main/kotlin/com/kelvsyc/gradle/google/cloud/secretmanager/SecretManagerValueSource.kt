@@ -11,10 +11,24 @@ import org.gradle.api.provider.ValueSourceParameters
 import org.gradle.api.tasks.Internal
 
 /**
+ * **Deprecated — configuration cache unsafe.** Gradle serializes the result of every
+ * [ValueSource.obtain] call to the configuration cache in plaintext. A secret value returned
+ * here will be stored in `.gradle/configuration-cache/` and is readable by any process with
+ * access to the build directory. Retrieve secrets inside a
+ * [org.gradle.workers.WorkAction] at task execution time instead, where the value is never
+ * written to the cache.
+ *
  * [ValueSource] implementation backed by retrieving a secret version from Google Cloud Secret Manager.
  *
  * The secret payload is returned as a UTF-8 string.
  */
+@Deprecated(
+    message = "ValueSource results are serialized to the Gradle configuration cache; the secret value " +
+        "returned by obtain() is stored in plaintext in .gradle/configuration-cache/. " +
+        "Retrieve secrets inside a WorkAction at task execution time instead, " +
+        "where the value is never written to the cache.",
+    level = DeprecationLevel.WARNING
+)
 abstract class SecretManagerValueSource : ValueSource<String, SecretManagerValueSource.Parameters> {
     companion object {
         val logger by GradleLoggerDelegate

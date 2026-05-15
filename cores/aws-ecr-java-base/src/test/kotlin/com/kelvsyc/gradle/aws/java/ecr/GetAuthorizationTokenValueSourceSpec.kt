@@ -27,6 +27,7 @@ class GetAuthorizationTokenValueSourceSpec : FunSpec() {
 
             every { client.getAuthorizationToken(any<GetAuthorizationTokenRequest>()) } returns response
 
+            @Suppress("DEPRECATION")
             val provider = project.providers.ofKt(GetAuthorizationTokenValueSource::class) {
                 parameters.service.set(service)
             }

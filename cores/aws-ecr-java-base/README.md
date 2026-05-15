@@ -21,8 +21,10 @@ Register the build service from a plugin or `build.gradle.kts`:
 
 ```kotlin
 val ecr = gradle.sharedServices.registerIfAbsent("ecr", EcrClientBuildService::class) {
-    parameters.region.set(Region.US_EAST_1)
-    parameters.credentials.set(DefaultCredentialsProvider.create())
+    parameters {
+        regionId.set("us-east-1")
+        defaultCredentials()
+    }
 }
 ```
 
@@ -31,9 +33,11 @@ and leave `credentials` unset to fall back to anonymous credentials.
 
 ## Value Sources
 
-### `GetAuthorizationTokenValueSource`
+### **Deprecated.** `GetAuthorizationTokenValueSource`
 
 Returns the base64-encoded `user:password` ECR authorization token for the caller's default registry:
+
+> **Security note:** This Value Source is deprecated because its result (an authorization token) is cached by Gradle's configuration cache. See the class KDoc for details.
 
 ```kotlin
 val token: Provider<String> = providers.of(GetAuthorizationTokenValueSource::class) {

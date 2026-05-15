@@ -68,10 +68,10 @@ abstract class AbstractAwsKotlinClientBuildService<C : SdkClient, P : AwsBuildSe
         when (parameters.credentialSource.orNull) {
             AwsCredentialSource.DEFAULT_CHAIN -> DefaultChainCredentialsProvider()
             AwsCredentialSource.STATIC -> {
-                val key = parameters.accessKeyId.get()
-                val secret = parameters.secretAccessKey.get()
-                val credentials = parameters.sessionToken.orNull
-                    ?.let { Credentials(key, secret, it) }
+                val key = parameters.accessKeyIdRef.get().resolve()
+                val secret = parameters.secretAccessKeyRef.get().resolve()
+                val credentials = parameters.sessionTokenRef.orNull
+                    ?.let { Credentials(key, secret, it.resolve()) }
                     ?: Credentials(key, secret)
                 StaticCredentialsProvider(credentials)
             }

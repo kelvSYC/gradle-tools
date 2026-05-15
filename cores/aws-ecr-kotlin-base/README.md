@@ -21,7 +21,7 @@ dependencies {
 val ecr = gradle.sharedServices.registerIfAbsent("ecr", EcrClientBuildService::class) {
     parameters {
         region.set("us-east-1")
-        from(providers.credentials(AwsCredentials::class.java, "ecr"))
+        defaultCredentials()
     }
 }
 ```
@@ -33,10 +33,12 @@ set of credential configuration functions.
 
 ## Value Sources
 
-### `GetAuthorizationTokenValueSource`
+### **Deprecated.** `GetAuthorizationTokenValueSource`
 
 Retrieves the base64-encoded `user:password` authorization token for the caller's default ECR registry, suitable
 for `docker login`:
+
+> **Security note:** This Value Source is deprecated because its result (an authorization token) is cached by Gradle's configuration cache. See the class KDoc for details.
 
 ```kotlin
 val token: Provider<String> = providers.of(GetAuthorizationTokenValueSource::class) {

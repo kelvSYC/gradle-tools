@@ -18,8 +18,8 @@ enum class AwsCredentialSource {
 
     /**
      * Use [software.amazon.awssdk.auth.credentials.StaticCredentialsProvider] built from
-     * [AwsBuildServiceParams.accessKeyId], [AwsBuildServiceParams.secretAccessKey], and
-     * optionally [AwsBuildServiceParams.sessionToken].
+     * [AwsBuildServiceParams.accessKeyIdRef], [AwsBuildServiceParams.secretAccessKeyRef], and
+     * optionally [AwsBuildServiceParams.sessionTokenRef].
      */
     STATIC,
 

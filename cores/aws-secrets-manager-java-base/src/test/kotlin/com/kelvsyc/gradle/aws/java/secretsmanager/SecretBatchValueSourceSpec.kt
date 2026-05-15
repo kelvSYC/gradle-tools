@@ -44,6 +44,7 @@ class SecretBatchValueSourceSpec : FunSpec() {
 
             every { client.batchGetSecretValuePaginator(capture(requestSlot)) } returns paginator
 
+            @Suppress("DEPRECATION")
             val provider = project.providers.ofKt(SecretBatchValueSource::class) {
                 parameters.service.set(service)
                 parameters.secretIds.set(setOf("secret-one", "secret-two"))

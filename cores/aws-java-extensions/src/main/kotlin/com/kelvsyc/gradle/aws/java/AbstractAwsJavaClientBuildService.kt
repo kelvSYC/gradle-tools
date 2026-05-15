@@ -66,10 +66,10 @@ abstract class AbstractAwsJavaClientBuildService<C : AwsClient, P : AwsBuildServ
         when (parameters.credentialSource.orNull) {
             AwsCredentialSource.DEFAULT_CHAIN -> DefaultCredentialsProvider.create()
             AwsCredentialSource.STATIC -> {
-                val key = parameters.accessKeyId.get()
-                val secret = parameters.secretAccessKey.get()
-                parameters.sessionToken.orNull
-                    ?.let { StaticCredentialsProvider.create(AwsSessionCredentials.create(key, secret, it)) }
+                val key = parameters.accessKeyIdRef.get().resolve()
+                val secret = parameters.secretAccessKeyRef.get().resolve()
+                parameters.sessionTokenRef.orNull
+                    ?.let { StaticCredentialsProvider.create(AwsSessionCredentials.create(key, secret, it.resolve())) }
                     ?: StaticCredentialsProvider.create(AwsBasicCredentials.create(key, secret))
             }
             AwsCredentialSource.PROFILE ->

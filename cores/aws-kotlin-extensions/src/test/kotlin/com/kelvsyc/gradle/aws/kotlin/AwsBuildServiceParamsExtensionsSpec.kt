@@ -1,5 +1,6 @@
 package com.kelvsyc.gradle.aws.kotlin
 
+import com.kelvsyc.gradle.clients.CredentialReference
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.shouldBe
@@ -30,27 +31,30 @@ class AwsBuildServiceParamsExtensionsSpec : FunSpec() {
         test("staticCredentials - sets credentialSource to STATIC and maps accessKey and secretKey") {
             val project = ProjectBuilder.builder().build()
             val params = project.objects.newInstance(AwsBuildServiceParams::class.java)
-            params.staticCredentials(project.provider { "AKID" }, project.provider { "SECRET" })
+            params.staticCredentials(
+                CredentialReference.Literal("AKID"),
+                CredentialReference.Literal("SECRET"),
+            )
 
             params.credentialSource.get() shouldBe AwsCredentialSource.STATIC
-            params.accessKeyId.get() shouldBe "AKID"
-            params.secretAccessKey.get() shouldBe "SECRET"
-            params.sessionToken.isPresent.shouldBeFalse()
+            params.accessKeyIdRef.get() shouldBe CredentialReference.Literal("AKID")
+            params.secretAccessKeyRef.get() shouldBe CredentialReference.Literal("SECRET")
+            params.sessionTokenRef.isPresent.shouldBeFalse()
         }
 
         test("sessionCredentials - sets credentialSource to STATIC and maps all three fields") {
             val project = ProjectBuilder.builder().build()
             val params = project.objects.newInstance(AwsBuildServiceParams::class.java)
             params.sessionCredentials(
-                project.provider { "AKID" },
-                project.provider { "SECRET" },
-                project.provider { "TOKEN" },
+                CredentialReference.Literal("AKID"),
+                CredentialReference.Literal("SECRET"),
+                CredentialReference.Literal("TOKEN"),
             )
 
             params.credentialSource.get() shouldBe AwsCredentialSource.STATIC
-            params.accessKeyId.get() shouldBe "AKID"
-            params.secretAccessKey.get() shouldBe "SECRET"
-            params.sessionToken.get() shouldBe "TOKEN"
+            params.accessKeyIdRef.get() shouldBe CredentialReference.Literal("AKID")
+            params.secretAccessKeyRef.get() shouldBe CredentialReference.Literal("SECRET")
+            params.sessionTokenRef.get() shouldBe CredentialReference.Literal("TOKEN")
         }
 
         test("profileCredentials - sets credentialSource to PROFILE and sets credentialsProfile") {
@@ -68,12 +72,13 @@ class AwsBuildServiceParamsExtensionsSpec : FunSpec() {
             every { creds.username } returns "AKID"
             every { creds.password } returns "SECRET"
             val params = project.objects.newInstance(AwsBuildServiceParams::class.java)
+            @Suppress("DEPRECATION")
             params.from(project.provider { creds })
 
             params.credentialSource.get() shouldBe AwsCredentialSource.STATIC
-            params.accessKeyId.get() shouldBe "AKID"
-            params.secretAccessKey.get() shouldBe "SECRET"
-            params.sessionToken.isPresent.shouldBeFalse()
+            params.accessKeyIdRef.get() shouldBe CredentialReference.Literal("AKID")
+            params.secretAccessKeyRef.get() shouldBe CredentialReference.Literal("SECRET")
+            params.sessionTokenRef.isPresent.shouldBeFalse()
         }
 
         test("from GradleAwsCredentials - sets STATIC and maps all fields when sessionToken is present") {
@@ -83,12 +88,13 @@ class AwsBuildServiceParamsExtensionsSpec : FunSpec() {
             every { creds.secretKey } returns "SECRET"
             every { creds.sessionToken } returns "TOKEN"
             val params = project.objects.newInstance(AwsBuildServiceParams::class.java)
+            @Suppress("DEPRECATION")
             params.from(project.provider { creds })
 
             params.credentialSource.get() shouldBe AwsCredentialSource.STATIC
-            params.accessKeyId.get() shouldBe "AKID"
-            params.secretAccessKey.get() shouldBe "SECRET"
-            params.sessionToken.get() shouldBe "TOKEN"
+            params.accessKeyIdRef.get() shouldBe CredentialReference.Literal("AKID")
+            params.secretAccessKeyRef.get() shouldBe CredentialReference.Literal("SECRET")
+            params.sessionTokenRef.get() shouldBe CredentialReference.Literal("TOKEN")
         }
 
         test("from GradleAwsCredentials - leaves sessionToken absent when sessionToken is null") {
@@ -98,10 +104,11 @@ class AwsBuildServiceParamsExtensionsSpec : FunSpec() {
             every { creds.secretKey } returns "SECRET"
             every { creds.sessionToken } returns null
             val params = project.objects.newInstance(AwsBuildServiceParams::class.java)
+            @Suppress("DEPRECATION")
             params.from(project.provider { creds })
 
             params.credentialSource.get() shouldBe AwsCredentialSource.STATIC
-            params.sessionToken.isPresent.shouldBeFalse()
+            params.sessionTokenRef.isPresent.shouldBeFalse()
         }
     }
 }

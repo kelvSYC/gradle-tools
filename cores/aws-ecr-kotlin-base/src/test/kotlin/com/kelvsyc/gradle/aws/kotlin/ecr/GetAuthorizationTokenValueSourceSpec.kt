@@ -29,6 +29,7 @@ class GetAuthorizationTokenValueSourceSpec : FunSpec() {
                 )
             }
 
+            @Suppress("DEPRECATION")
             val provider = project.providers.ofKt(GetAuthorizationTokenValueSource::class) {
                 parameters.service.set(service)
             }

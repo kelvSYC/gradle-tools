@@ -22,8 +22,10 @@ Register a build service from a plugin or `build.gradle.kts`:
 
 ```kotlin
 val ses = gradle.sharedServices.registerIfAbsent("ses", SesClientBuildService::class) {
-    parameters.region.set(Region.US_EAST_1)
-    parameters.credentials.set(DefaultCredentialsProvider.create())
+    parameters {
+        regionId.set("us-east-1")
+        defaultCredentials()
+    }
 }
 ```
 

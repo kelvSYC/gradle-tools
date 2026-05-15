@@ -19,8 +19,10 @@ dependencies {
 
 ```kotlin
 val ssm = gradle.sharedServices.registerIfAbsent("ssm", SsmClientBuildService::class) {
-    parameters.region.set(Region.US_EAST_1)
-    parameters.credentials.set(DefaultCredentialsProvider.create())
+    parameters {
+        regionId.set("us-east-1")
+        defaultCredentials()
+    }
 }
 ```
 

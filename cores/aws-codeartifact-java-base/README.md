@@ -22,8 +22,10 @@ Register a build service from a plugin or `build.gradle.kts`:
 
 ```kotlin
 val codeartifact = gradle.sharedServices.registerIfAbsent("codeartifact", CodeArtifactClientBuildService::class) {
-    parameters.region.set(Region.US_EAST_1)
-    parameters.credentials.set(DefaultCredentialsProvider.create())
+    parameters {
+        regionId.set("us-east-1")
+        defaultCredentials()
+    }
 }
 ```
 
@@ -32,9 +34,11 @@ and leave `credentials` unset to fall back to anonymous credentials.
 
 ## Value Sources
 
-### `GetAuthorizationTokenValueSource`
+### **Deprecated.** `GetAuthorizationTokenValueSource`
 
 Retrieves a temporary authorization token for a CodeArtifact domain:
+
+> **Security note:** This Value Source is deprecated because its result (an authorization token) is cached by Gradle's configuration cache. See the class KDoc for details.
 
 ```kotlin
 val token: Provider<String> = providers.of(GetAuthorizationTokenValueSource::class) {
