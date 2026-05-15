@@ -18,57 +18,57 @@ Standalone Gradle plugins that solve a specific build problem. Apply them direct
 | `git-core` | `com.kelvsyc.gradle.git-core` | Git archival tasks and JGit extensions for remote repositories |
 | `jfrog-cli-core` | `com.kelvsyc.gradle.jfrog-cli-core` | Gradle tasks wrapping the JFrog CLI |
 
-### Bases
-
-Bases provide managed SDK client infrastructure for a specific cloud service. Each ships an
-`AbstractClientBuildService` subclass so that downstream plugins and tasks can access
-pre-configured SDK clients without managing their lifecycle. All bases are published as Kotlin
-libraries.
-
-**AWS** bases come in **Java SDK** and **Kotlin SDK** variants with mirrored APIs, since
-the two AWS SDKs are distinct libraries:
-
-| AWS Service | Java | Kotlin |
-|-------------|------|--------|
-| S3 | `aws-s3-java-base` (library) | `aws-s3-kotlin-base` (library) |
-| SQS | `aws-sqs-java-base` (library) | `aws-sqs-kotlin-base` (library) |
-| SNS | `aws-sns-java-base` (library) | `aws-sns-kotlin-base` (library) |
-| SES | `aws-ses-java-base` (library) | `aws-ses-kotlin-base` (library) |
-| Secrets Manager | `aws-secrets-manager-java-base` (library) | `aws-secrets-manager-kotlin-base` (library) |
-| CodeArtifact | `aws-codeartifact-java-base` (library) | `aws-codeartifact-kotlin-base` (library) |
-| ECR | `aws-ecr-java-base` (library) | `aws-ecr-kotlin-base` (library) |
-| IMDS | `aws-imds-java-base` (library) | `aws-imds-kotlin-base` (library) |
-| KMS | `aws-kms-java-base` (library) | `aws-kms-kotlin-base` (library) |
-| Lambda | `aws-lambda-java-base` (library) | `aws-lambda-kotlin-base` (library) |
-| SSM Parameter Store | `aws-ssm-java-base` (library) | `aws-ssm-kotlin-base` (library) |
-| STS | `aws-sts-java-base` (library) | `aws-sts-kotlin-base` (library) |
-
-**Other** bases:
-
-| Component | Description | Form |
-|-----------|-------------|------|
-| `google-cloud-artifact-registry-base` | GCP Artifact Registry | library |
-| `google-cloud-storage-base` | GCP Cloud Storage | library |
-| `google-cloud-secret-manager-base` | GCP Secret Manager | library |
-| `google-cloud-pubsub-base` | GCP Pub/Sub | library |
-| `google-cloud-kms-base` | GCP Cloud KMS | library |
-| `azure-blob-storage-base` | Azure Blob Storage | library |
-| `azure-key-vault-base` | Azure Key Vault | library |
-| `azure-managed-identity-base` | Azure Managed Identity / IMDS | library |
-| `artifactory-base` | JFrog Artifactory | library |
-| `bitbucket-cloud-base` | Bitbucket Cloud REST API | library |
-| `bitbucket-data-center-base` | Bitbucket Data Center REST API | library |
-
 All plugin IDs are prefixed with `com.kelvsyc.gradle.`.
-
-The shared client registry itself is provided by **`clients-base`**
-(`com.kelvsyc.gradle.clients-base`). End users typically do not apply this plugin directly;
-it is pulled in as a dependency by the service-specific bases.
 
 ### Extensions
 
-Kotlin libraries with no plugin code. Add them as regular dependencies when writing your own
-Gradle plugins or build logic:
+Kotlin libraries to add as dependencies when writing your own Gradle plugins or build logic.
+All are published under the group `com.kelvsyc.gradle`.
+
+#### Client extensions
+
+The shared client infrastructure is provided by **`clients-base`**
+(`com.kelvsyc.gradle:clients-base`). End users typically do not depend on this library
+directly; it is pulled in as a dependency by the service-specific client extensions.
+
+**AWS** client extensions come in **Java SDK** and **Kotlin SDK** variants with mirrored APIs,
+since the two AWS SDKs are distinct libraries:
+
+| AWS Service | Java | Kotlin |
+|-------------|------|--------|
+| S3 | `aws-s3-java-base` | `aws-s3-kotlin-base` |
+| SQS | `aws-sqs-java-base` | `aws-sqs-kotlin-base` |
+| SNS | `aws-sns-java-base` | `aws-sns-kotlin-base` |
+| SES | `aws-ses-java-base` | `aws-ses-kotlin-base` |
+| Secrets Manager | `aws-secrets-manager-java-base` | `aws-secrets-manager-kotlin-base` |
+| CodeArtifact | `aws-codeartifact-java-base` | `aws-codeartifact-kotlin-base` |
+| ECR | `aws-ecr-java-base` | `aws-ecr-kotlin-base` |
+| IMDS | `aws-imds-java-base` | `aws-imds-kotlin-base` |
+| KMS | `aws-kms-java-base` | `aws-kms-kotlin-base` |
+| Lambda | `aws-lambda-java-base` | `aws-lambda-kotlin-base` |
+| SSM Parameter Store | `aws-ssm-java-base` | `aws-ssm-kotlin-base` |
+| STS | `aws-sts-java-base` | `aws-sts-kotlin-base` |
+
+**Other** client extensions:
+
+| Component | Description |
+|-----------|-------------|
+| `google-cloud-artifact-registry-base` | GCP Artifact Registry |
+| `google-cloud-storage-base` | GCP Cloud Storage |
+| `google-cloud-secret-manager-base` | GCP Secret Manager |
+| `google-cloud-pubsub-base` | GCP Pub/Sub |
+| `google-cloud-kms-base` | GCP Cloud KMS |
+| `azure-blob-storage-base` | Azure Blob Storage |
+| `azure-key-vault-base` | Azure Key Vault |
+| `azure-managed-identity-base` | Azure Managed Identity / IMDS |
+| `artifactory-base` | JFrog Artifactory |
+| `bitbucket-cloud-base` | Bitbucket Cloud REST API |
+| `bitbucket-data-center-base` | Bitbucket Data Center REST API |
+
+#### Utility extensions
+
+**`gradle-extensions`** is the foundation for writing Gradle plugins in this suite. Add it as
+a dependency when building plugins or custom build logic:
 
 ```kotlin
 dependencies {
@@ -78,7 +78,6 @@ dependencies {
 
 | Library | Description |
 |---------|-------------|
-| `gradle-extensions` | Kotlin DSL extensions and utility types for Gradle plugin development |
 | `aws-java-extensions` | Config-cache-safe BuildService base class, `AwsBuildServiceParams`, and credential adapters for the AWS SDK for Java |
 | `aws-kotlin-extensions` | Base client info interface and credential extensions for the AWS SDK for Kotlin |
 | `google-cloud-extensions` | Config-cache-safe BuildService base class and `GcpBuildServiceParams` for the Google Cloud SDK |
