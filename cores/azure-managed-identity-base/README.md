@@ -47,16 +47,32 @@ val imds = gradle.sharedServices.registerIfAbsent("imds", AzureImdsClientBuildSe
 
 Retrieves a raw OAuth2 bearer token for the specified Azure scopes.
 
-> **Security note:** This Value Source is deprecated because its result (an authorization token) is cached by Gradle's configuration cache. See the class KDoc for details.
+> **Deprecated — configuration cache unsafe.** Gradle serializes `ValueSource.obtain()` results to `.gradle/configuration-cache/` in plaintext at cache-write time. The token value is written to disk. See the class KDoc for full safety constraints, including the `@get:Internal` and private `val` caveats.
 
-```kotlin
-val token: Provider<String> = providers.of(AccessTokenValueSource::class) {
-    parameters {
-        service.set(mi)
-        scopes.add("https://management.azure.com/.default")
-    }
-}
-```
+**Repository authentication** (e.g. Azure Artifacts / Azure DevOps package feeds) is the common configuration-time use case, but Gradle resolves `maven { credentials { } }` blocks at configuration time — any token obtained here will be stored in the cache regardless of how it was fetched. There is no deferred-credential mechanism. The pre-generation pattern avoids this ValueSource entirely:
+
+1. Obtain the token before Gradle runs, in a CI startup step or pipeline script. On an Azure VM or container with managed identity:
+   ```bash
+   export AZURE_TOKEN=$(az account get-access-token \
+     --resource https://pkgs.dev.azure.com \
+     --query accessToken \
+     --output tsv)
+   ```
+
+2. Reference it via `providers.environmentVariable()` in the credentials block. Gradle stores the env var _name_ in the config cache and re-reads the value on every build — the token itself is never cached:
+   ```kotlin
+   maven {
+       url = uri("https://pkgs.dev.azure.com/<org>/<project>/_packaging/<feed>/maven/v1")
+       credentials {
+           username = "AzureDevOps"
+           password = providers.environmentVariable("AZURE_TOKEN").get()
+       }
+   }
+   ```
+
+Azure AD tokens are typically valid for 1 hour. The threat model of the pre-generation pattern is equivalent to the CI environment variable attack surface — no new exposure.
+
+**Task-execution use cases**: use the `ManagedIdentityCredentialBuildService` client directly inside a `WorkAction.execute()` body instead. The `ValueSource` abstraction adds no value there.
 
 ### `AzureComputeMetadataValueSource`
 
