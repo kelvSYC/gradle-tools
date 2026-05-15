@@ -229,8 +229,12 @@ configuration cache when the cache is written, and reuses that result on subsequ
 
 - **Plaintext storage:** The serialized result is stored in plaintext in `.gradle/configuration-cache/`. If
   `obtain()` returns sensitive values (passwords, tokens, secrets), those values are readable by any process with
-  access to the build directory. Retrieve sensitive values inside a `WorkAction` at task execution time instead —
-  the value is resolved after the cache has been read and is never written to it.
+  access to the build directory. Retrieve sensitive values at task execution time instead — either inside a
+  `@TaskAction` body or inside a `WorkAction.execute()` body — by calling `ProviderFactory` (or our extensions)
+  directly there. Values obtained this way are resolved after the cache has been read and are never written to it.
+  The unsafe pattern is wiring a `Provider` into a task `@Input` property, which forces resolution at cache-write
+  time; calling `providers.of(...)` or `providers.environmentVariable(...)` entirely within task or work action
+  code is safe.
 
 ### `AbstractResourceValueSource`
 
