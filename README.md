@@ -18,6 +18,8 @@ Standalone Gradle plugins that solve a specific build problem. Apply them direct
 | `git-core` | `com.kelvsyc.gradle.git-core` | Git archival tasks and JGit extensions for remote repositories |
 | `jfrog-cli-core` | `com.kelvsyc.gradle.jfrog-cli-core` | Gradle tasks wrapping the JFrog CLI |
 
+All plugin IDs are prefixed with `com.kelvsyc.gradle.`.
+
 ### Bases
 
 Bases provide managed SDK client infrastructure for a specific cloud service. Each ships an
@@ -58,8 +60,6 @@ the two AWS SDKs are distinct libraries:
 | `artifactory-base` | JFrog Artifactory | library |
 | `bitbucket-cloud-base` | Bitbucket Cloud REST API | library |
 | `bitbucket-data-center-base` | Bitbucket Data Center REST API | library |
-
-All plugin IDs are prefixed with `com.kelvsyc.gradle.`.
 
 The shared client registry itself is provided by **`clients-base`**
 (`com.kelvsyc.gradle.clients-base`). End users typically do not apply this plugin directly;
