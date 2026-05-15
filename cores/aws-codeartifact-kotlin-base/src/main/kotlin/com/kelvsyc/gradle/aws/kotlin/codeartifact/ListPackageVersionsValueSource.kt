@@ -6,6 +6,7 @@ import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation providing a list of package version strings from a CodeArtifact repository.
@@ -19,6 +20,7 @@ abstract class ListPackageVersionsValueSource :
      */
     interface Parameters : ValueSourceParameters {
         /** The build service managing the CodeArtifact client. */
+        @get:Internal
         val service: Property<CodeArtifactClientBuildService>
 
         /** The CodeArtifact domain name. */

@@ -5,6 +5,7 @@ import com.kelvsyc.gradle.logging.warn
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 import software.amazon.awssdk.services.ssm.model.GetParameterRequest
 import software.amazon.awssdk.services.ssm.model.SsmException
 
@@ -24,6 +25,7 @@ abstract class GetParameterValueSource : ValueSource<String, GetParameterValueSo
      */
     interface Parameters : ValueSourceParameters {
         /** The build service managing the SSM client. */
+        @get:Internal
         val service: Property<SsmClientBuildService>
 
         /** The name (or ARN) of the parameter to retrieve. */

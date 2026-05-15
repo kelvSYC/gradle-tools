@@ -7,6 +7,7 @@ import org.gradle.api.logging.Logging
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that decodes an STS-encoded authorization failure message into a JSON document
@@ -22,6 +23,7 @@ abstract class DecodeAuthorizationMessageValueSource :
      */
     interface Parameters : ValueSourceParameters {
         /** The build service managing the STS client. */
+        @get:Internal
         val service: Property<StsClientBuildService>
 
         /** The encoded authorization message to decode. */

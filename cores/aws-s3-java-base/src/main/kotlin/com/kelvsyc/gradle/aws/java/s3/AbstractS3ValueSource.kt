@@ -3,6 +3,7 @@ package com.kelvsyc.gradle.aws.java.s3
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 import software.amazon.awssdk.core.ResponseBytes
 import software.amazon.awssdk.services.s3.model.GetObjectRequest
 import software.amazon.awssdk.services.s3.model.GetObjectResponse
@@ -21,6 +22,7 @@ abstract class AbstractS3ValueSource<T : Any, P : AbstractS3ValueSource.Paramete
      */
     interface Parameters : ValueSourceParameters {
         /** The build service managing the S3 client. */
+        @get:Internal
         val service: Property<S3ClientBuildService>
 
         /** S3 bucket name. */

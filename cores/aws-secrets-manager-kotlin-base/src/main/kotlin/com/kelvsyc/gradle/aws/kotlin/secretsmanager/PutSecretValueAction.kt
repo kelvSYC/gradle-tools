@@ -3,6 +3,7 @@ package com.kelvsyc.gradle.aws.kotlin.secretsmanager
 import aws.sdk.kotlin.services.secretsmanager.model.PutSecretValueRequest
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 
@@ -17,6 +18,7 @@ abstract class PutSecretValueAction : WorkAction<PutSecretValueAction.Parameters
      */
     interface Parameters : WorkParameters {
         /** The build service managing the Secrets Manager client. */
+        @get:Internal
         val service: Property<SecretsManagerClientBuildService>
 
         /** The name or ARN of the secret to update. */

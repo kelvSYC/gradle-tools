@@ -1,6 +1,7 @@
 package com.kelvsyc.gradle.azure.storage.blob
 
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 
@@ -18,6 +19,7 @@ abstract class CopyBlobAction : WorkAction<CopyBlobAction.Parameters> {
      */
     interface Parameters : WorkParameters {
         /** The build service managing the account-scoped Blob Service client. */
+        @get:Internal
         val service: Property<BlobServiceClientBuildService>
 
         /** Source container name. */

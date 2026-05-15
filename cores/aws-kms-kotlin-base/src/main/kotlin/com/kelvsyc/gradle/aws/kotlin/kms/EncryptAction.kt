@@ -4,6 +4,7 @@ import aws.sdk.kotlin.services.kms.model.EncryptRequest
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 
@@ -20,6 +21,7 @@ abstract class EncryptAction : WorkAction<EncryptAction.Parameters> {
      */
     interface Parameters : WorkParameters {
         /** The build service managing the KMS client. */
+        @get:Internal
         val service: Property<KmsClientBuildService>
 
         /** Key ID, ARN, or alias name (e.g. `alias/my-key`) to encrypt under. */

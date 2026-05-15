@@ -3,6 +3,7 @@ package com.kelvsyc.gradle.aws.java.secretsmanager
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation backed by retrieving a secret from an in-memory Secrets Manager cache.
@@ -15,6 +16,7 @@ abstract class SecretFromCacheValueSource : ValueSource<String, SecretFromCacheV
      */
     interface Parameters : ValueSourceParameters {
         /** The build service managing the secret cache. */
+        @get:Internal
         val service: Property<SecretCacheBuildService>
 
         /** The name or ARN of the secret to retrieve. */

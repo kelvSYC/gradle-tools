@@ -3,6 +3,7 @@ package com.kelvsyc.gradle.aws.java.sts
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 import software.amazon.awssdk.services.sts.model.GetCallerIdentityRequest
 
 /**
@@ -18,6 +19,7 @@ abstract class GetCallerIdentityValueSource :
      */
     interface Parameters : ValueSourceParameters {
         /** The build service managing the STS client. */
+        @get:Internal
         val service: Property<StsClientBuildService>
     }
 

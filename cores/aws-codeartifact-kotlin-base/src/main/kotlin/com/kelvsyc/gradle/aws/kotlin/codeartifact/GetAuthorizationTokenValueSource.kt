@@ -5,6 +5,7 @@ import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation retrieving an authorization token from AWS CodeArtifact.
@@ -17,6 +18,7 @@ abstract class GetAuthorizationTokenValueSource : ValueSource<String, GetAuthori
      */
     interface Parameters : ValueSourceParameters {
         /** The build service managing the CodeArtifact client. */
+        @get:Internal
         val service: Property<CodeArtifactClientBuildService>
 
         /** The CodeArtifact domain name. */

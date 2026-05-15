@@ -11,6 +11,7 @@ import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that lists ECR repositories visible to the configured client, returned as a
@@ -25,6 +26,7 @@ abstract class DescribeRepositoriesValueSource :
      */
     interface Parameters : ValueSourceParameters {
         /** The build service managing the ECR client. */
+        @get:Internal
         val service: Property<EcrClientBuildService>
     }
 

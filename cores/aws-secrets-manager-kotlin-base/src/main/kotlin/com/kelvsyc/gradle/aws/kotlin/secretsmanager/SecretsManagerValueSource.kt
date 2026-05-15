@@ -7,6 +7,7 @@ import org.gradle.api.logging.Logging
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation backed by retrieving a secret from Secrets Manager.
@@ -19,6 +20,7 @@ abstract class SecretsManagerValueSource : ValueSource<String, SecretsManagerVal
      */
     interface Parameters : ValueSourceParameters {
         /** The build service managing the Secrets Manager client. */
+        @get:Internal
         val service: Property<SecretsManagerClientBuildService>
 
         /** The name or ARN of the secret to retrieve. */

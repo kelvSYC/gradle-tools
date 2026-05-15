@@ -1,6 +1,7 @@
 package com.kelvsyc.gradle.aws.java.secretsmanager
 
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import software.amazon.awssdk.services.secretsmanager.model.PutSecretValueRequest
@@ -16,6 +17,7 @@ abstract class PutSecretValueAction : WorkAction<PutSecretValueAction.Parameters
      */
     interface Parameters : WorkParameters {
         /** The build service managing the Secrets Manager client. */
+        @get:Internal
         val service: Property<SecretsManagerClientBuildService>
 
         /** The name or ARN of the secret to update. */

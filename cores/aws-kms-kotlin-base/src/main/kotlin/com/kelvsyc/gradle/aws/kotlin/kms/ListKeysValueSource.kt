@@ -11,6 +11,7 @@ import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that lists all KMS keys visible to the configured client, returned as a [Map]
@@ -24,6 +25,7 @@ abstract class ListKeysValueSource : ValueSource<Map<String, String>, ListKeysVa
      */
     interface Parameters : ValueSourceParameters {
         /** The build service managing the KMS client. */
+        @get:Internal
         val service: Property<KmsClientBuildService>
     }
 

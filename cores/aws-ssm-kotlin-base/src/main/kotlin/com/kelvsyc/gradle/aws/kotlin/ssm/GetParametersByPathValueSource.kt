@@ -11,6 +11,7 @@ import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 
 /**
  * [ValueSource] implementation that retrieves all SSM parameters under a given hierarchy [Parameters.path],
@@ -26,6 +27,7 @@ abstract class GetParametersByPathValueSource :
      */
     interface Parameters : ValueSourceParameters {
         /** The build service managing the SSM client. */
+        @get:Internal
         val service: Property<SsmClientBuildService>
 
         /** The hierarchy path under which parameters are retrieved (e.g. `/my/app/`). */

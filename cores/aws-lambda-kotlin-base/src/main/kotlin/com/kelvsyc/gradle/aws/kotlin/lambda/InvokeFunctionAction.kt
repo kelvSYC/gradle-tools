@@ -4,6 +4,7 @@ import aws.sdk.kotlin.services.lambda.model.InvocationType
 import aws.sdk.kotlin.services.lambda.model.InvokeRequest
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 
@@ -20,6 +21,7 @@ abstract class InvokeFunctionAction : WorkAction<InvokeFunctionAction.Parameters
      */
     interface Parameters : WorkParameters {
         /** The build service managing the Lambda client. */
+        @get:Internal
         val service: Property<LambdaClientBuildService>
 
         /** The function name, ARN, or partial ARN to invoke. */

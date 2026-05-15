@@ -5,6 +5,7 @@ import com.kelvsyc.gradle.logging.warn
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
+import org.gradle.api.tasks.Internal
 import software.amazon.awssdk.services.kms.model.DescribeKeyRequest
 import software.amazon.awssdk.services.kms.model.KmsException
 
@@ -24,6 +25,7 @@ abstract class DescribeKeyValueSource : ValueSource<String, DescribeKeyValueSour
      */
     interface Parameters : ValueSourceParameters {
         /** The build service managing the KMS client. */
+        @get:Internal
         val service: Property<KmsClientBuildService>
 
         /** The key ID, ARN, or alias name (e.g. `alias/my-key`) to describe. */

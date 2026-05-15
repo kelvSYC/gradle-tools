@@ -2,6 +2,7 @@ package com.kelvsyc.gradle.aws.java.kms
 
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Internal
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 import software.amazon.awssdk.core.SdkBytes
@@ -20,6 +21,7 @@ abstract class DecryptAction : WorkAction<DecryptAction.Parameters> {
      */
     interface Parameters : WorkParameters {
         /** The build service managing the KMS client. */
+        @get:Internal
         val service: Property<KmsClientBuildService>
 
         /** Optional key ID, ARN, or alias name. Required only for asymmetric keys. */
