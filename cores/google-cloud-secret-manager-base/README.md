@@ -36,7 +36,9 @@ back to the SDK's default application-default-credential resolution.
 The GCP project ID is not part of the build service — each value source and action takes its own `projectId`
 parameter, so a single client can serve calls against multiple projects.
 
-## Value Source: `SecretManagerValueSource`
+## Value Source: **Deprecated.** `SecretManagerValueSource`
+
+**Note on configuration cache safety:** Gradle serializes the result of every `ValueSource.obtain()` call to the configuration cache in plaintext. Any credential or secret value returned by a `ValueSource` will be stored in `.gradle/configuration-cache/` and is readable by any process with access to the build directory. The `ValueSource` implementations in this component that retrieve credentials or secrets are deprecated for this reason. Retrieve sensitive values inside a `WorkAction` at task execution time instead — the value is resolved after the cache has been read and is never written to it.
 
 Retrieves a secret version payload as a UTF-8 string.
 

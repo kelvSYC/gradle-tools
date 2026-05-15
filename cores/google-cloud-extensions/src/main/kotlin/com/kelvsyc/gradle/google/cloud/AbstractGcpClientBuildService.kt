@@ -57,8 +57,8 @@ abstract class AbstractGcpClientBuildService<C : Any, P : GcpBuildServiceParams>
      * | `NONE` | [NoCredentials.getInstance] |
      * | `APPLICATION_DEFAULT` | [GoogleCredentials.getApplicationDefault] |
      * | `SERVICE_ACCOUNT_JSON_FILE` | [ServiceAccountCredentials.fromStream] over the credentials file |
-     * | `SERVICE_ACCOUNT_JSON_INLINE` | [ServiceAccountCredentials.fromStream] over the credentials JSON |
-     * | `ACCESS_TOKEN` | [GoogleCredentials.create] over an [AccessToken] |
+     * | `SERVICE_ACCOUNT_JSON_ENV` | [ServiceAccountCredentials.fromStream] over JSON resolved from [GcpBuildServiceParams.credentialsJsonRef] |
+     * | `ACCESS_TOKEN` | [GoogleCredentials.create] over an [AccessToken] resolved from [GcpBuildServiceParams.accessTokenRef] |
      * | unset | `null` |
      */
     protected fun resolveCredentials(): Credentials? = when (parameters.credentialSource.orNull) {
@@ -66,10 +66,10 @@ abstract class AbstractGcpClientBuildService<C : Any, P : GcpBuildServiceParams>
         GcpCredentialSource.APPLICATION_DEFAULT -> GoogleCredentials.getApplicationDefault()
         GcpCredentialSource.SERVICE_ACCOUNT_JSON_FILE ->
             parameters.credentialsFile.get().asFile.inputStream().use(ServiceAccountCredentials::fromStream)
-        GcpCredentialSource.SERVICE_ACCOUNT_JSON_INLINE ->
-            parameters.credentialsJson.get().byteInputStream().use(ServiceAccountCredentials::fromStream)
+        GcpCredentialSource.SERVICE_ACCOUNT_JSON_ENV ->
+            parameters.credentialsJsonRef.get().resolve().byteInputStream().use(ServiceAccountCredentials::fromStream)
         GcpCredentialSource.ACCESS_TOKEN ->
-            GoogleCredentials.create(AccessToken(parameters.accessToken.get(), null))
+            GoogleCredentials.create(AccessToken(parameters.accessTokenRef.get().resolve(), null))
         null -> null
     }
 

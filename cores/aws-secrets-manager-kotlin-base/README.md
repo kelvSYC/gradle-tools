@@ -21,7 +21,7 @@ dependencies {
 val sm = gradle.sharedServices.registerIfAbsent("sm", SecretsManagerClientBuildService::class) {
     parameters {
         region.set("us-east-1")
-        from(providers.credentials(AwsCredentials::class.java, "sm"))
+        defaultCredentials()
     }
 }
 ```
@@ -33,7 +33,9 @@ set of credential configuration functions.
 
 ## Value Sources
 
-### `SecretsManagerValueSource`
+**Note on configuration cache safety:** Gradle serializes the result of every `ValueSource.obtain()` call to the configuration cache in plaintext. Any credential or secret value returned by a `ValueSource` will be stored in `.gradle/configuration-cache/` and is readable by any process with access to the build directory. The `ValueSource` implementations in this component that retrieve credentials or secrets are deprecated for this reason. Retrieve sensitive values inside a `WorkAction` at task execution time instead — the value is resolved after the cache has been read and is never written to it.
+
+### **Deprecated.** `SecretsManagerValueSource`
 
 Retrieves a single string secret from Secrets Manager:
 
@@ -48,7 +50,7 @@ val secret: Provider<String> = providers.of(SecretsManagerValueSource::class) {
 
 Only string secrets are supported. The `secretString` field of the response is returned directly.
 
-### `SecretBatchValueSource`
+### **Deprecated.** `SecretBatchValueSource`
 
 Retrieves multiple secrets using the paginated batch API, returning a `Map<String, String>` keyed by secret name:
 

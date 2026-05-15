@@ -62,9 +62,9 @@ abstract class AbstractAzureClientBuildService<C : Any, P : AzureBuildServicePar
      * | `NONE` | `null` |
      * | `DEFAULT` | [ResolvedAzureCredential.Token] over `DefaultAzureCredentialBuilder().build()` |
      * | `MANAGED_IDENTITY` | [ResolvedAzureCredential.Token] over `ManagedIdentityCredentialBuilder()` (optionally with `clientId`) |
-     * | `CLIENT_SECRET` | [ResolvedAzureCredential.Token] over `ClientSecretCredentialBuilder()` |
-     * | `SAS_TOKEN` | [ResolvedAzureCredential.Sas] over [AzureSasCredential] |
-     * | `STORAGE_ACCOUNT_KEY` | [ResolvedAzureCredential.NamedKey] over [AzureNamedKeyCredential] |
+     * | `CLIENT_SECRET` | [ResolvedAzureCredential.Token] over `ClientSecretCredentialBuilder()` using [AzureBuildServiceParams.clientSecretRef] |
+     * | `SAS_TOKEN` | [ResolvedAzureCredential.Sas] over [AzureSasCredential] using [AzureBuildServiceParams.sasTokenRef] |
+     * | `STORAGE_ACCOUNT_KEY` | [ResolvedAzureCredential.NamedKey] over [AzureNamedKeyCredential] using [AzureBuildServiceParams.accountKeyRef] |
      * | unset | `null` |
      */
     protected fun resolveCredential(): ResolvedAzureCredential? =
@@ -90,17 +90,17 @@ abstract class AbstractAzureClientBuildService<C : Any, P : AzureBuildServicePar
         val credential: TokenCredential = ClientSecretCredentialBuilder()
             .tenantId(parameters.tenantId.get())
             .clientId(parameters.clientId.get())
-            .clientSecret(parameters.clientSecret.get())
+            .clientSecret(parameters.clientSecretRef.get().resolve())
             .build()
         return ResolvedAzureCredential.Token(credential)
     }
 
     private fun resolveSasToken(): ResolvedAzureCredential.Sas =
-        ResolvedAzureCredential.Sas(AzureSasCredential(parameters.sasToken.get()))
+        ResolvedAzureCredential.Sas(AzureSasCredential(parameters.sasTokenRef.get().resolve()))
 
     private fun resolveStorageAccountKey(): ResolvedAzureCredential.NamedKey =
         ResolvedAzureCredential.NamedKey(
-            AzureNamedKeyCredential(parameters.accountName.get(), parameters.accountKey.get())
+            AzureNamedKeyCredential(parameters.accountName.get(), parameters.accountKeyRef.get().resolve())
         )
 
     /**

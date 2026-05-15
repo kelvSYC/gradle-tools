@@ -43,9 +43,11 @@ val imds = gradle.sharedServices.registerIfAbsent("imds", AzureImdsClientBuildSe
 
 ## Value Sources
 
-### `AccessTokenValueSource`
+### **Deprecated.** `AccessTokenValueSource`
 
 Retrieves a raw OAuth2 bearer token for the specified Azure scopes.
+
+> **Security note:** This Value Source is deprecated because its result (an authorization token) is cached by Gradle's configuration cache. See the class KDoc for details.
 
 ```kotlin
 val token: Provider<String> = providers.of(AccessTokenValueSource::class) {

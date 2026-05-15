@@ -11,7 +11,7 @@ import java.io.File
  * Probe #1: configuration-cache round-trip of `SnsClientBuildService.Params` (a.k.a. `AwsBuildServiceParams`).
  *
  * Each test pins down the **observed** behavior of the parameter shape — `regionId: Property<String>`,
- * `credentialSource: Property<AwsCredentialSource>`, `accessKeyId/secretAccessKey/sessionToken: Property<String>`,
+ * `credentialSource: Property<AwsCredentialSource>`, `accessKeyIdRef/secretAccessKeyRef/sessionTokenRef: Property<CredentialReference>`,
  * `credentialsProfile: Property<String>`. A failing test means either Gradle's config-cache serializer or the
  * AWS Java extensions have regressed; investigate before "fixing" the test.
  *
@@ -48,8 +48,8 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
             name = "static-credentials",
             parametersBlock = """
                 credentialSource.set(AwsCredentialSource.STATIC)
-                accessKeyId.set("ak")
-                secretAccessKey.set("sk")
+                accessKeyIdRef.set(CredentialReference.Literal("ak"))
+                secretAccessKeyRef.set(CredentialReference.Literal("sk"))
             """.trimIndent()
         )
     }
@@ -59,9 +59,9 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
             name = "session-credentials",
             parametersBlock = """
                 credentialSource.set(AwsCredentialSource.STATIC)
-                accessKeyId.set("ak")
-                secretAccessKey.set("sk")
-                sessionToken.set("tok")
+                accessKeyIdRef.set(CredentialReference.Literal("ak"))
+                secretAccessKeyRef.set(CredentialReference.Literal("sk"))
+                sessionTokenRef.set(CredentialReference.Literal("tok"))
             """.trimIndent()
         )
     }
@@ -89,8 +89,8 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
             parametersBlock = """
                 regionId.set("us-east-1")
                 credentialSource.set(AwsCredentialSource.STATIC)
-                accessKeyId.set("ak")
-                secretAccessKey.set("sk")
+                accessKeyIdRef.set(CredentialReference.Literal("ak"))
+                secretAccessKeyRef.set(CredentialReference.Literal("sk"))
             """.trimIndent()
         )
     }
@@ -121,6 +121,7 @@ private fun writeConfigCacheProbeProject(name: String, parametersBlock: String):
         ${IntegrationTestSupport.buildscriptBlock()}
 
         import com.kelvsyc.gradle.aws.java.AwsCredentialSource
+        import com.kelvsyc.gradle.clients.CredentialReference
         import com.kelvsyc.gradle.aws.java.sns.SnsClientBuildService
         import com.kelvsyc.gradle.aws.java.sns.fixtures.SnsBuildServiceProbeTask
 

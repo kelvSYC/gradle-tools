@@ -31,6 +31,7 @@ class SecretManagerValueSourceSpec : FunSpec() {
             every { payload.data } returns ByteString.copyFromUtf8("super-secret")
             every { client.accessSecretVersion(capture(slot)) } returns response
 
+            @Suppress("DEPRECATION")
             val provider = project.providers.ofKt(SecretManagerValueSource::class) {
                 parameters.service.set(service)
                 parameters.projectId.set("my-project")
@@ -56,6 +57,7 @@ class SecretManagerValueSourceSpec : FunSpec() {
             every { payload.data } returns ByteString.copyFromUtf8("secret-value")
             every { client.accessSecretVersion(capture(slot)) } returns response
 
+            @Suppress("DEPRECATION")
             val provider = project.providers.ofKt(SecretManagerValueSource::class) {
                 parameters.service.set(service)
                 parameters.projectId.set("my-project")
@@ -74,6 +76,7 @@ class SecretManagerValueSourceSpec : FunSpec() {
 
             every { client.accessSecretVersion(any<AccessSecretVersionRequest>()) } throws mockk<ApiException>(relaxed = true)
 
+            @Suppress("DEPRECATION")
             val provider = project.providers.ofKt(SecretManagerValueSource::class) {
                 parameters.service.set(service)
                 parameters.projectId.set("my-project")

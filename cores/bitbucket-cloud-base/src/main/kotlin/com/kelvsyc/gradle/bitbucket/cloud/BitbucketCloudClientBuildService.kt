@@ -1,6 +1,7 @@
 package com.kelvsyc.gradle.bitbucket.cloud
 
 import com.kelvsyc.gradle.clients.AbstractClientBuildService
+import com.kelvsyc.gradle.clients.CredentialReference
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.Credentials
@@ -36,9 +37,12 @@ abstract class BitbucketCloudClientBuildService :
         val username: Property<String>
 
         /**
-         * Bitbucket Cloud app password for authenticating with the API.
+         * Reference to where the Bitbucket Cloud app password can be found.
+         *
+         * Stores a [CredentialReference] pointing to an environment variable or system property
+         * whose value is the app password. Set via the [basicAuth] extension function.
          */
-        val password: Property<String>
+        val passwordRef: Property<CredentialReference>
     }
 
     override fun createClient(): BitbucketCloudService {
@@ -46,7 +50,7 @@ abstract class BitbucketCloudClientBuildService :
             val request = chain.request().newBuilder()
                 .header("Authorization", Credentials.basic(
                     parameters.username.getOrElse(""),
-                    parameters.password.getOrElse(""),
+                    parameters.passwordRef.orNull?.resolve() ?: "",
                 ))
                 .build()
             chain.proceed(request)

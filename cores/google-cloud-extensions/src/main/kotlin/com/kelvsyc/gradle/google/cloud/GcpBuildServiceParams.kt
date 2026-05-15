@@ -1,5 +1,6 @@
 package com.kelvsyc.gradle.google.cloud
 
+import com.kelvsyc.gradle.clients.CredentialReference
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.services.BuildServiceParameters
@@ -11,6 +12,10 @@ import org.gradle.api.services.BuildServiceParameters
  * use the extension functions on this interface ([noCredentials], [applicationDefault],
  * [serviceAccount], [accessToken]) which atomically set [credentialSource] and its supporting
  * fields together.
+ *
+ * Credential fields ([credentialsJsonRef], [accessTokenRef]) use [CredentialReference] rather than
+ * plain strings to ensure that only lookup metadata — not secret values — is serialized to the
+ * Gradle configuration cache.
  */
 interface GcpBuildServiceParams : BuildServiceParameters {
     /**
@@ -38,18 +43,20 @@ interface GcpBuildServiceParams : BuildServiceParameters {
     val credentialsFile: RegularFileProperty
 
     /**
-     * Inline Google service account JSON key payload. Used when [credentialSource] is
-     * [GcpCredentialSource.SERVICE_ACCOUNT_JSON_INLINE].
+     * Reference to where the Google service account JSON key payload can be found. Used when
+     * [credentialSource] is [GcpCredentialSource.SERVICE_ACCOUNT_JSON_ENV].
      *
-     * Set via [serviceAccount].
+     * Stores a [CredentialReference] pointing to an environment variable or system property whose
+     * value is the full service account JSON string. Set via [serviceAccount].
      */
-    val credentialsJson: Property<String>
+    val credentialsJsonRef: Property<CredentialReference>
 
     /**
-     * Static OAuth2 access token string. Used when [credentialSource] is
-     * [GcpCredentialSource.ACCESS_TOKEN].
+     * Reference to where the static OAuth2 access token can be found. Used when [credentialSource]
+     * is [GcpCredentialSource.ACCESS_TOKEN].
      *
-     * Set via [accessToken].
+     * Stores a [CredentialReference] pointing to an environment variable or system property whose
+     * value is the token string. Set via [accessToken].
      */
-    val accessToken: Property<String>
+    val accessTokenRef: Property<CredentialReference>
 }

@@ -25,6 +25,7 @@ class GetAuthorizationTokenValueSourceSpec : FunSpec() {
             every { response.authorizationToken() } returns "token-value"
             every { client.getAuthorizationToken(capture(slot)) } returns response
 
+            @Suppress("DEPRECATION")
             val provider = project.providers.ofKt(GetAuthorizationTokenValueSource::class) {
                 parameters.service.set(service)
                 parameters.domain.set("my-domain")
@@ -46,6 +47,7 @@ class GetAuthorizationTokenValueSourceSpec : FunSpec() {
             every { client.getAuthorizationToken(any<GetAuthorizationTokenRequest>()) } throws
                 CodeartifactException.builder().message("Unauthorized").build()
 
+            @Suppress("DEPRECATION")
             val provider = project.providers.ofKt(GetAuthorizationTokenValueSource::class) {
                 parameters.service.set(service)
                 parameters.domain.set("my-domain")

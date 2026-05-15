@@ -26,6 +26,7 @@ class AccessTokenValueSourceSpec : FunSpec() {
             val accessToken = AccessToken("my-token-value", OffsetDateTime.now().plusHours(1))
             every { credential.getToken(capture(contextSlot)) } returns Mono.just(accessToken)
 
+            @Suppress("DEPRECATION")
             val provider = project.providers.ofKt(AccessTokenValueSource::class) {
                 parameters.service.set(service)
                 parameters.scopes.add("https://management.azure.com/.default")

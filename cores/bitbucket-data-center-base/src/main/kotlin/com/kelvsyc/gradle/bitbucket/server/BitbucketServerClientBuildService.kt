@@ -1,6 +1,7 @@
 package com.kelvsyc.gradle.bitbucket.server
 
 import com.kelvsyc.gradle.clients.AbstractClientBuildService
+import com.kelvsyc.gradle.clients.CredentialReference
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.Interceptor
@@ -29,15 +30,18 @@ abstract class BitbucketServerClientBuildService :
         val baseUrl: Property<String>
 
         /**
-         * A personal access token (or HTTP access token) for authenticating with the Bitbucket Data Center API.
+         * Reference to where the personal access token (or HTTP access token) can be found.
+         *
+         * Stores a [CredentialReference] pointing to an environment variable or system property
+         * whose value is the token. Set via the [bearerToken] extension function.
          */
-        val token: Property<String>
+        val tokenRef: Property<CredentialReference>
     }
 
     override fun createClient(): BitbucketServerService {
         val authInterceptor = Interceptor { chain ->
             val request = chain.request().newBuilder()
-                .header("Authorization", "Bearer ${parameters.token.get()}")
+                .header("Authorization", "Bearer ${parameters.tokenRef.get().resolve()}")
                 .build()
             chain.proceed(request)
         }

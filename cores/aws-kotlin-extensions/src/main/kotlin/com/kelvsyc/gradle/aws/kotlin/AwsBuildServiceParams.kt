@@ -1,5 +1,6 @@
 package com.kelvsyc.gradle.aws.kotlin
 
+import com.kelvsyc.gradle.clients.CredentialReference
 import org.gradle.api.provider.Property
 import org.gradle.api.services.BuildServiceParameters
 
@@ -9,6 +10,10 @@ import org.gradle.api.services.BuildServiceParameters
  * All properties are serializable primitives. Do not set [credentialSource] and its supporting
  * fields directly; use the extension functions on this interface (e.g. [anonymous],
  * [defaultCredentials], [staticCredentials], [from]) which atomically configure them together.
+ *
+ * Credential fields (`accessKeyIdRef`, `secretAccessKeyRef`, `sessionTokenRef`) use [CredentialReference]
+ * rather than plain strings to ensure that only lookup metadata — not secret values — is serialized to the
+ * Gradle configuration cache.
  */
 interface AwsBuildServiceParams : BuildServiceParameters {
     /**
@@ -28,28 +33,31 @@ interface AwsBuildServiceParams : BuildServiceParameters {
     val credentialSource: Property<AwsCredentialSource>
 
     /**
-     * AWS access key ID. Used when [credentialSource] is [AwsCredentialSource.STATIC].
+     * AWS access key ID reference. Used when [credentialSource] is [AwsCredentialSource.STATIC].
      *
+     * Stores a [CredentialReference] pointing to where the access key ID can be found at execution time.
      * Set via [staticCredentials], [sessionCredentials], or [from].
      */
-    val accessKeyId: Property<String>
+    val accessKeyIdRef: Property<CredentialReference>
 
     /**
-     * AWS secret access key. Used when [credentialSource] is [AwsCredentialSource.STATIC].
+     * AWS secret access key reference. Used when [credentialSource] is [AwsCredentialSource.STATIC].
      *
+     * Stores a [CredentialReference] pointing to where the secret access key can be found at execution time.
      * Set via [staticCredentials], [sessionCredentials], or [from].
      */
-    val secretAccessKey: Property<String>
+    val secretAccessKeyRef: Property<CredentialReference>
 
     /**
-     * AWS session token for temporary credentials. Optional; used when [credentialSource] is
+     * AWS session token reference for temporary credentials. Optional; used when [credentialSource] is
      * [AwsCredentialSource.STATIC]. When absent, the underlying
      * [aws.smithy.kotlin.runtime.auth.awscredentials.Credentials] is constructed without a
      * session token.
      *
+     * Stores a [CredentialReference] pointing to where the session token can be found at execution time.
      * Set via [sessionCredentials] or [from].
      */
-    val sessionToken: Property<String>
+    val sessionTokenRef: Property<CredentialReference>
 
     /**
      * Named AWS credentials profile. Used when [credentialSource] is [AwsCredentialSource.PROFILE].

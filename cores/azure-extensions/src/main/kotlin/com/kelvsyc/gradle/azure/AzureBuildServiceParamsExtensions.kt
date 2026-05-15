@@ -1,6 +1,6 @@
 package com.kelvsyc.gradle.azure
 
-import org.gradle.api.provider.Provider
+import com.kelvsyc.gradle.clients.CredentialReference
 
 /**
  * Configures these parameters to skip credential construction entirely. Suitable for tests, local
@@ -31,64 +31,53 @@ fun AzureBuildServiceParams.managedIdentity(clientId: String? = null) {
 
 /**
  * Configures these parameters to use a `ClientSecretCredential` for an Azure AD service principal.
+ *
+ * [tenantId] and [clientId] are non-sensitive identifiers and are stored as plain strings.
+ * [clientSecret] is a [CredentialReference] pointing to an environment variable or system property
+ * whose value is the client secret — by default `AZURE_CLIENT_SECRET`. The secret value is
+ * resolved at build execution time and never enters the Gradle configuration cache.
  */
 fun AzureBuildServiceParams.clientSecret(
-    tenantId: Provider<String>,
-    clientId: Provider<String>,
-    clientSecret: Provider<String>,
+    tenantId: String,
+    clientId: String,
+    clientSecret: CredentialReference = CredentialReference.EnvironmentVariable("AZURE_CLIENT_SECRET"),
 ) {
     credentialSource.set(AzureCredentialSource.CLIENT_SECRET)
     this.tenantId.set(tenantId)
     this.clientId.set(clientId)
-    this.clientSecret.set(clientSecret)
-}
-
-/**
- * Configures these parameters to use a `ClientSecretCredential` for an Azure AD service principal.
- */
-fun AzureBuildServiceParams.clientSecret(tenantId: String, clientId: String, clientSecret: String) {
-    credentialSource.set(AzureCredentialSource.CLIENT_SECRET)
-    this.tenantId.set(tenantId)
-    this.clientId.set(clientId)
-    this.clientSecret.set(clientSecret)
+    this.clientSecretRef.set(clientSecret)
 }
 
 /**
  * Configures these parameters to use an [com.azure.core.credential.AzureSasCredential]. The token
  * must not include the leading `?`. Supported by Storage services; **not** supported by Key Vault.
+ *
+ * [token] is a [CredentialReference] pointing to an environment variable or system property whose
+ * value is the SAS token — by default `AZURE_STORAGE_SAS_TOKEN`. The token value is resolved at
+ * build execution time and never enters the Gradle configuration cache.
  */
-fun AzureBuildServiceParams.sasToken(token: Provider<String>) {
+fun AzureBuildServiceParams.sasToken(
+    token: CredentialReference = CredentialReference.EnvironmentVariable("AZURE_STORAGE_SAS_TOKEN"),
+) {
     credentialSource.set(AzureCredentialSource.SAS_TOKEN)
-    sasToken.set(token)
-}
-
-/**
- * Configures these parameters to use an [com.azure.core.credential.AzureSasCredential]. The token
- * must not include the leading `?`. Supported by Storage services; **not** supported by Key Vault.
- */
-fun AzureBuildServiceParams.sasToken(token: String) {
-    credentialSource.set(AzureCredentialSource.SAS_TOKEN)
-    sasToken.set(token)
+    sasTokenRef.set(token)
 }
 
 /**
  * Configures these parameters to use an [com.azure.core.credential.AzureNamedKeyCredential] sourced
  * from an Azure Storage account name and access key. Supported by Storage services; **not**
  * supported by Key Vault.
+ *
+ * [accountName] is a non-sensitive identifier stored as a plain string. [accountKey] is a
+ * [CredentialReference] pointing to an environment variable or system property whose value is the
+ * account key — by default `AZURE_STORAGE_ACCOUNT_KEY`. The key value is resolved at build
+ * execution time and never enters the Gradle configuration cache.
  */
-fun AzureBuildServiceParams.sharedKey(accountName: Provider<String>, accountKey: Provider<String>) {
+fun AzureBuildServiceParams.sharedKey(
+    accountName: String,
+    accountKey: CredentialReference = CredentialReference.EnvironmentVariable("AZURE_STORAGE_ACCOUNT_KEY"),
+) {
     credentialSource.set(AzureCredentialSource.STORAGE_ACCOUNT_KEY)
     this.accountName.set(accountName)
-    this.accountKey.set(accountKey)
-}
-
-/**
- * Configures these parameters to use an [com.azure.core.credential.AzureNamedKeyCredential] sourced
- * from an Azure Storage account name and access key. Supported by Storage services; **not**
- * supported by Key Vault.
- */
-fun AzureBuildServiceParams.sharedKey(accountName: String, accountKey: String) {
-    credentialSource.set(AzureCredentialSource.STORAGE_ACCOUNT_KEY)
-    this.accountName.set(accountName)
-    this.accountKey.set(accountKey)
+    this.accountKeyRef.set(accountKey)
 }

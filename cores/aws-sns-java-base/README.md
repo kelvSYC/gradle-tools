@@ -23,13 +23,17 @@ registering under different names. Same applies to the async service.
 
 ```kotlin
 val sns = gradle.sharedServices.registerIfAbsent("sns", SnsClientBuildService::class) {
-    parameters.region.set(Region.US_EAST_1)
-    parameters.credentials.set(DefaultCredentialsProvider.create())
+    parameters {
+        regionId.set("us-east-1")
+        defaultCredentials()
+    }
 }
 
 val snsAsync = gradle.sharedServices.registerIfAbsent("sns-async", SnsAsyncClientBuildService::class) {
-    parameters.region.set(Region.US_EAST_1)
-    parameters.credentials.set(DefaultCredentialsProvider.create())
+    parameters {
+        regionId.set("us-east-1")
+        defaultCredentials()
+    }
 }
 ```
 

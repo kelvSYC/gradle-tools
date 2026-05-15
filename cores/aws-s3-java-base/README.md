@@ -23,13 +23,17 @@ dependencies {
 
 ```kotlin
 val s3 = gradle.sharedServices.registerIfAbsent("s3", S3ClientBuildService::class) {
-    parameters.region.set(Region.US_EAST_1)
-    parameters.credentials.set(DefaultCredentialsProvider.create())
+    parameters {
+        regionId.set("us-east-1")
+        defaultCredentials()
+    }
 }
 
 val s3Async = gradle.sharedServices.registerIfAbsent("s3-async", S3AsyncClientBuildService::class) {
-    parameters.region.set(Region.US_EAST_1)
-    parameters.credentials.set(DefaultCredentialsProvider.create())
+    parameters {
+        regionId.set("us-east-1")
+        defaultCredentials()
+    }
 }
 ```
 

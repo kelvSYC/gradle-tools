@@ -26,6 +26,7 @@ class GradleSessionCredentialsProviderSpec : FunSpec() {
             every { provider.map<AwsCredentials>(capture(transformerSlot)) } returns mappedProvider
             every { mappedProvider.get() } answers { transformerSlot.captured.transform(gradleCredentials) }
 
+            @Suppress("DEPRECATION")
             val sut = GradleSessionCredentialsProvider(provider)
             val resolved = sut.resolveCredentials() as AwsSessionCredentials
 

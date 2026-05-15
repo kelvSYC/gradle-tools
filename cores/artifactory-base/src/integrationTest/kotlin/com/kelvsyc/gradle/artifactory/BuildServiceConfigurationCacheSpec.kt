@@ -10,9 +10,10 @@ import java.io.File
 /**
  * Probe: configuration-cache round-trip of `ArtifactoryClientBuildService.Params`.
  *
- * All parameters are `Property<String>` (`url`, `username`, `password`) so the CC codec trivially handles
- * them. Each test verifies that a first invocation stores the configuration cache entry and a second
- * invocation reuses it without re-executing task configuration.
+ * `url` and `username` are `Property<String>`; `passwordRef` is `Property<CredentialReference>` which stores
+ * only the lookup key (an env-var name or system-property name), never the credential value. All three types
+ * are Gradle config-cache serializable. Each test verifies that a first invocation stores the configuration
+ * cache entry and a second invocation reuses it without re-executing task configuration.
  */
 class BuildServiceConfigurationCacheSpec : FunSpec({
     test("ArtifactoryClientBuildService with no parameters survives config-cache round-trip") {
@@ -32,7 +33,7 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
             parametersBlock = """
                 url.set("https://example.jfrog.io/artifactory")
                 username.set("user")
-                password.set("s3cr3t")
+                passwordRef.set(CredentialReference.EnvironmentVariable("ARTIFACTORY_PASSWORD"))
             """.trimIndent()
         )
     }
@@ -64,6 +65,7 @@ private fun writeConfigCacheProbeProject(name: String, parametersBlock: String):
 
         import com.kelvsyc.gradle.artifactory.ArtifactoryClientBuildService
         import com.kelvsyc.gradle.artifactory.fixtures.ArtifactoryClientBuildServiceProbeTask
+        import com.kelvsyc.gradle.clients.CredentialReference
 
         val artService = gradle.sharedServices.registerIfAbsent(
             "artifactory",

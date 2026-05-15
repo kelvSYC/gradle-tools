@@ -26,8 +26,8 @@ class BuildServiceConfigurationCacheSpec : FunSpec({
             parametersBlock = """
                 regionId.set("us-east-1")
                 credentialSource.set(AwsCredentialSource.STATIC)
-                accessKeyId.set("ak")
-                secretAccessKey.set("sk")
+                accessKeyIdRef.set(CredentialReference.Literal("ak"))
+                secretAccessKeyRef.set(CredentialReference.Literal("sk"))
             """.trimIndent()
         )
     }
@@ -58,6 +58,7 @@ private fun writeConfigCacheProbeProject(name: String, parametersBlock: String):
         ${IntegrationTestSupport.buildscriptBlock()}
 
         import com.kelvsyc.gradle.aws.java.AwsCredentialSource
+        import com.kelvsyc.gradle.clients.CredentialReference
         import com.kelvsyc.gradle.aws.java.secretsmanager.SecretsManagerClientBuildService
         import com.kelvsyc.gradle.aws.java.secretsmanager.fixtures.SecretsManagerClientBuildServiceProbeTask
 

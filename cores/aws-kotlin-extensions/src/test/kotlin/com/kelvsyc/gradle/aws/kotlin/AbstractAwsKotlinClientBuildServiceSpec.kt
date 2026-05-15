@@ -4,6 +4,7 @@ import aws.sdk.kotlin.runtime.auth.credentials.DefaultChainCredentialsProvider
 import aws.sdk.kotlin.runtime.auth.credentials.ProfileCredentialsProvider
 import aws.sdk.kotlin.runtime.auth.credentials.StaticCredentialsProvider
 import aws.smithy.kotlin.runtime.client.SdkClient
+import com.kelvsyc.gradle.clients.CredentialReference
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
@@ -65,8 +66,8 @@ class AbstractAwsKotlinClientBuildServiceSpec : FunSpec() {
             val project = ProjectBuilder.builder().build()
             val service = project.gradle.sharedServices.registerIfAbsent("test", TestService::class.java) { spec: BuildServiceSpec<AwsBuildServiceParams> ->
                 spec.parameters.credentialSource.set(AwsCredentialSource.STATIC)
-                spec.parameters.accessKeyId.set("AKID")
-                spec.parameters.secretAccessKey.set("SECRET")
+                spec.parameters.accessKeyIdRef.set(CredentialReference.Literal("AKID"))
+                spec.parameters.secretAccessKeyRef.set(CredentialReference.Literal("SECRET"))
             }
 
             val provider = service.get().testResolveCredentialsProvider()
@@ -81,9 +82,9 @@ class AbstractAwsKotlinClientBuildServiceSpec : FunSpec() {
             val project = ProjectBuilder.builder().build()
             val service = project.gradle.sharedServices.registerIfAbsent("test", TestService::class.java) { spec: BuildServiceSpec<AwsBuildServiceParams> ->
                 spec.parameters.credentialSource.set(AwsCredentialSource.STATIC)
-                spec.parameters.accessKeyId.set("AKID")
-                spec.parameters.secretAccessKey.set("SECRET")
-                spec.parameters.sessionToken.set("TOKEN")
+                spec.parameters.accessKeyIdRef.set(CredentialReference.Literal("AKID"))
+                spec.parameters.secretAccessKeyRef.set(CredentialReference.Literal("SECRET"))
+                spec.parameters.sessionTokenRef.set(CredentialReference.Literal("TOKEN"))
             }
 
             val provider = service.get().testResolveCredentialsProvider()

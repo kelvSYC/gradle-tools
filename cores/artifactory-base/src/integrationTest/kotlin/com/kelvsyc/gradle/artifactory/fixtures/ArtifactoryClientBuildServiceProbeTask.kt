@@ -9,7 +9,7 @@ import org.gradle.api.tasks.TaskAction
 /**
  * Forces Gradle to isolate the `ArtifactoryClientBuildService` parameters at task-execution time by querying
  * the `service` property. The body never calls `getClient()` so the probe stays focused on the isolation
- * boundary — in particular whether `Params.credentials: Property<PasswordCredentials>` survives the
+ * boundary — in particular whether `Params.passwordRef: Property<CredentialReference>` survives the
  * config-cache round-trip.
  */
 abstract class ArtifactoryClientBuildServiceProbeTask : DefaultTask() {

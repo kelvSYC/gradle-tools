@@ -26,6 +26,7 @@ class SecretsManagerValueSourceSpec : FunSpec() {
                 secretString = "super-secret"
             }
 
+            @Suppress("DEPRECATION")
             val provider = project.providers.ofKt(SecretsManagerValueSource::class) {
                 parameters.service.set(service)
                 parameters.secretName.set("my-secret")
@@ -46,6 +47,7 @@ class SecretsManagerValueSourceSpec : FunSpec() {
                 client.getSecretValue(any<GetSecretValueRequest>())
             } throws SecretsManagerException("not found")
 
+            @Suppress("DEPRECATION")
             val provider = project.providers.ofKt(SecretsManagerValueSource::class) {
                 parameters.service.set(service)
                 parameters.secretName.set("missing-secret")

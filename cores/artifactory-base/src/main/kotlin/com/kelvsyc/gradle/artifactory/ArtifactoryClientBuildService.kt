@@ -1,6 +1,7 @@
 package com.kelvsyc.gradle.artifactory
 
 import com.kelvsyc.gradle.clients.AbstractClientBuildService
+import com.kelvsyc.gradle.clients.CredentialReference
 import org.gradle.api.provider.Property
 import org.gradle.api.services.BuildServiceParameters
 import org.jfrog.artifactory.client.Artifactory
@@ -30,14 +31,18 @@ abstract class ArtifactoryClientBuildService :
         val username: Property<String>
 
         /**
-         * The Artifactory password or API token. Leave unset for anonymous access.
+         * Reference to where the Artifactory password or API token can be found. Leave unset for
+         * anonymous access.
+         *
+         * Stores a [CredentialReference] pointing to an environment variable or system property
+         * whose value is the password or token. Set via the [basicAuth] extension function.
          */
-        val password: Property<String>
+        val passwordRef: Property<CredentialReference>
     }
 
     override fun createClient(): Artifactory = ArtifactoryClientBuilder.create().apply {
         url = parameters.url.get()
         username = parameters.username.orNull
-        password = parameters.password.orNull
+        password = parameters.passwordRef.orNull?.resolve()
     }.build()
 }

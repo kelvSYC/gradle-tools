@@ -13,6 +13,15 @@ import javax.inject.Inject
  * - **System properties** written to a properties file whose path is given by the `TEAMCITY_BUILD_PROPERTIES_FILE`
  *   environment variable. These are read via [PropertiesFromFileValueSource].
  *
+ * **Configuration cache and sensitive parameters:** TeamCity writes "Password" type build parameters to the
+ * system properties file in plaintext — the masking applied in the TeamCity UI and build logs is display-only and
+ * does not prevent the value from appearing in the file. Any `system.*` parameter defined as "Password" type in the
+ * build configuration will therefore be present in the file read by this class. The properties exposed here are
+ * limited to well-known, non-sensitive system properties (build IDs, paths, branch names). However, callers who
+ * access additional properties from the same file — or who use [configurationPropertiesFilePath] to read the
+ * configuration parameters file — risk caching password-type parameter values in the Gradle configuration cache
+ * in plaintext. Read sensitive properties inside a [org.gradle.workers.WorkAction] at task execution time instead.
+ *
  * See [TeamCity Build Script Interaction](https://www.jetbrains.com/help/teamcity/build-script-interaction-with-teamcity.html).
  */
 abstract class TeamCityProviders @Inject constructor(layout: ProjectLayout, providers: ProviderFactory) {
@@ -171,6 +180,11 @@ abstract class TeamCityProviders @Inject constructor(layout: ProjectLayout, prov
      * Provides the path to the configuration parameters file. This file contains TeamCity configuration parameters
      * (those without a `system.` or `env.` prefix). Sourced from the `teamcity.configuration.properties.file`
      * system property.
+     *
+     * **Warning:** TeamCity configuration parameters of "Password" type are written to this file in plaintext.
+     * Reading this file via [PropertiesFromFileValueSource] or [ProviderFactory.propertiesFile][org.gradle.api.provider.ProviderFactory]
+     * will serialize those values to the Gradle configuration cache. Use this path only to read non-sensitive
+     * configuration parameters, or read the file inside a [org.gradle.workers.WorkAction] at task execution time.
      */
     val configurationPropertiesFilePath = buildProperties.getting("teamcity.configuration.properties.file")
 

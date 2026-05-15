@@ -28,14 +28,16 @@ enum class GcpCredentialSource {
     SERVICE_ACCOUNT_JSON_FILE,
 
     /**
-     * Load a [com.google.auth.oauth2.ServiceAccountCredentials] from the JSON key payload in
-     * [GcpBuildServiceParams.credentialsJson].
+     * Load a [com.google.auth.oauth2.ServiceAccountCredentials] from the JSON key payload referenced by
+     * [GcpBuildServiceParams.credentialsJsonRef]. The reference points to an environment variable or system
+     * property whose value is the full service account JSON string.
      */
-    SERVICE_ACCOUNT_JSON_INLINE,
+    SERVICE_ACCOUNT_JSON_ENV,
 
     /**
-     * Build a [com.google.auth.oauth2.GoogleCredentials] from a static OAuth2 access token at
-     * [GcpBuildServiceParams.accessToken].
+     * Build a [com.google.auth.oauth2.GoogleCredentials] from a static OAuth2 access token referenced by
+     * [GcpBuildServiceParams.accessTokenRef]. The reference points to an environment variable or system
+     * property whose value is the token string.
      */
     ACCESS_TOKEN,
 }
