@@ -19,5 +19,7 @@ gradlePlugin {
 }
 
 dependencies {
+    api("com.kelvsyc.gradle:clients-base")
+
     testImplementation(libs.mockk)
 }

@@ -1,5 +1,6 @@
 package com.kelvsyc.gradle.jfrog
 
+import com.kelvsyc.gradle.clients.CredentialReference
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
@@ -16,10 +17,12 @@ import javax.inject.Inject
  * Subclasses must implement [buildSearchArgs] to supply the search-specific CLI arguments (pattern, file spec path,
  * or AQL flags), and [doObtain] to transform the raw JSON string into the desired type.
  *
- * **Configuration cache — access token:** If [Parameters.accessToken] is set, the token value is a
- * `Property<String>` on `ValueSourceParameters` and will be serialized to `.gradle/configuration-cache/` in
- * plaintext when the cache is written. Prefer leaving [Parameters.accessToken] unset and configuring credentials
- * in the JFrog CLI itself (via `jf config add`), so that no token ever enters the configuration cache.
+ * **Configuration cache — access token:** If [Parameters.accessTokenRef] is set, only the lookup reference
+ * (environment variable name or system property key) is serialized to `.gradle/configuration-cache/` — never
+ * the token value itself. The token is resolved via [CredentialReference.resolve] inside [obtain], which runs
+ * at configuration time but leaves no trace of the raw value in the cache. Prefer leaving
+ * [Parameters.accessTokenRef] unset and configuring credentials in the JFrog CLI itself (via `jf config add`)
+ * to avoid token resolution at configuration time entirely.
  *
  * **Configuration cache — search results:** Gradle serializes the result of every [ValueSource.obtain] call to
  * the configuration cache in plaintext. Whatever [doObtain] returns will be stored in
@@ -50,10 +53,12 @@ abstract class AbstractArtifactorySearchValueSource<T : Any, P : AbstractArtifac
         val serverUrl: Property<String>
 
         /**
-         * The JFrog access token for authentication. Leave unset to use the CLI's configured credentials.
+         * A reference to the JFrog access token for authentication. Leave unset to use the CLI's configured
+         * credentials. Set to a [CredentialReference.EnvironmentVariable] or [CredentialReference.SystemProperty]
+         * pointing to the token — the lookup name, not the token value, is what is stored in the configuration cache.
          */
         @get:Internal
-        val accessToken: Property<String>
+        val accessTokenRef: Property<CredentialReference>
     }
 
     /**
@@ -83,9 +88,9 @@ abstract class AbstractArtifactorySearchValueSource<T : Any, P : AbstractArtifac
                     add("--url")
                     add(parameters.serverUrl.get())
                 }
-                if (parameters.accessToken.isPresent) {
+                if (parameters.accessTokenRef.isPresent) {
                     add("--access-token")
-                    add(parameters.accessToken.get())
+                    add(parameters.accessTokenRef.get().resolve())
                 }
                 addAll(buildSearchArgs())
             }

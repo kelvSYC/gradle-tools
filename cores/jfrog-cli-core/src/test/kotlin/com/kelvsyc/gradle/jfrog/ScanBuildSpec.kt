@@ -1,5 +1,6 @@
 package com.kelvsyc.gradle.jfrog
 
+import com.kelvsyc.gradle.clients.CredentialReference
 import com.kelvsyc.gradle.plugins.JFrogCliPlugin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -37,13 +38,13 @@ class ScanBuildSpec : FunSpec() {
                 task.serverUrl.get() shouldBe "https://artifactory.example.com"
             }
 
-            test("accessToken can be set and retrieved") {
+            test("accessTokenRef can be set and retrieved") {
                 val project = ProjectBuilder.builder().build()
                 val task = project.tasks.register<ScanBuild>("myTask").get()
 
-                task.accessToken.set("mytoken")
+                task.accessTokenRef.set(CredentialReference.EnvironmentVariable("JFROG_ACCESS_TOKEN"))
 
-                task.accessToken.get() shouldBe "mytoken"
+                task.accessTokenRef.get() shouldBe CredentialReference.EnvironmentVariable("JFROG_ACCESS_TOKEN")
             }
 
             test("failBuild can be set to true") {
