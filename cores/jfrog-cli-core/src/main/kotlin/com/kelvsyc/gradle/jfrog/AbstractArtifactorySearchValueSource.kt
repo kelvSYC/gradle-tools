@@ -16,6 +16,17 @@ import javax.inject.Inject
  * Subclasses must implement [buildSearchArgs] to supply the search-specific CLI arguments (pattern, file spec path,
  * or AQL flags), and [doObtain] to transform the raw JSON string into the desired type.
  *
+ * **Configuration cache — access token:** If [Parameters.accessToken] is set, the token value is a
+ * `Property<String>` on `ValueSourceParameters` and will be serialized to `.gradle/configuration-cache/` in
+ * plaintext when the cache is written. Prefer leaving [Parameters.accessToken] unset and configuring credentials
+ * in the JFrog CLI itself (via `jf config add`), so that no token ever enters the configuration cache.
+ *
+ * **Configuration cache — search results:** Gradle serializes the result of every [ValueSource.obtain] call to
+ * the configuration cache in plaintext. Whatever [doObtain] returns will be stored in
+ * `.gradle/configuration-cache/`. Search results are typically artifact metadata (names, checksums, paths) and
+ * are not sensitive. However, storing the resulting [org.gradle.api.provider.Provider] in any task field —
+ * `@Input`, `@get:Internal`, or a private `val` — causes `obtain()` to run at configuration time.
+ *
  * @param T The type of value produced by this source.
  * @param P The parameters type, which must extend [Parameters].
  */

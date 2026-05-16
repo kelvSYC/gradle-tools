@@ -11,6 +11,18 @@ import org.gradle.api.tasks.Internal
  *
  * Subclasses should implement the [doObtain] function, transforming a [BinaryData] object to an object of the
  * desired type. This class should only be used on blobs for which the entire blob can be kept in memory.
+ *
+ * **Configuration cache and sensitive blobs:** Gradle serializes the result of every [ValueSource.obtain] call
+ * to the configuration cache in plaintext when the cache is written. Whatever [doObtain] returns — including any
+ * sensitive content the blob may contain (credentials, private keys, tokens) — will be stored in
+ * `.gradle/configuration-cache/` and is readable by any process with access to the build directory. This applies
+ * regardless of how the resulting [org.gradle.api.provider.Provider] is stored: wiring it into a task `@Input`
+ * property, a `@get:Internal` property, or a private `val` all cause `obtain()` to run at configuration time and
+ * the result to be cached.
+ *
+ * If the fetched blob may contain sensitive data, call the [BlobServiceClientBuildService] client directly inside
+ * a [org.gradle.workers.WorkAction.execute] body instead, where the result is never written to the cache.
+ * Non-sensitive blobs (version manifests, metadata, changelogs) are safe to use at configuration time.
  */
 abstract class AbstractBlobStorageValueSource<T : Any, P : AbstractBlobStorageValueSource.Parameters> :
     ValueSource<T, P> {

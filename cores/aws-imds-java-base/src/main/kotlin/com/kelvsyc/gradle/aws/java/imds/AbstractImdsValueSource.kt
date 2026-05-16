@@ -12,6 +12,17 @@ import software.amazon.awssdk.imds.Ec2MetadataResponse
  *
  * Subclasses should implement the [doObtain] function, transforming the [Ec2MetadataResponse] to an object of the
  * desired type.
+ *
+ * **Configuration cache and sensitive IMDS paths:** Gradle serializes the result of every [ValueSource.obtain]
+ * call to the configuration cache in plaintext when the cache is written. Most IMDS paths return non-sensitive
+ * instance metadata (AMI ID, instance type, availability zone). However, some paths return sensitive data — for
+ * example, `/latest/meta-data/iam/security-credentials/` returns temporary IAM credentials. Whatever [doObtain]
+ * returns will be stored in `.gradle/configuration-cache/` and is readable by any process with access to the
+ * build directory, regardless of whether the result is stored in a task `@Input`, `@get:Internal`, or private
+ * `val` — all cause `obtain()` to run at configuration time and the result to be cached.
+ *
+ * If the queried IMDS path may return sensitive data, call the [ImdsClientBuildService] client directly inside a
+ * [org.gradle.workers.WorkAction.execute] body instead, where the result is never written to the cache.
  */
 abstract class AbstractImdsValueSource<T : Any, P : AbstractImdsValueSource.Parameters> : ValueSource<T, P> {
     /**

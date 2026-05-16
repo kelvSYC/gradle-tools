@@ -10,6 +10,12 @@ import java.io.InputStream
  *
  * Subclasses should implement the [doObtain] function, transforming an [InputStream] object to an object of the
  * desired type.
+ *
+ * **Configuration cache:** Gradle serializes the result of every [ValueSource.obtain] call to the configuration
+ * cache in plaintext when the cache is written. Resources bundled in a plugin JAR are developer-controlled and
+ * typically contain non-sensitive defaults (configuration schemas, version strings, embedded templates). However,
+ * whatever [doObtain] returns is what gets serialized, so ensure the resource does not contain sensitive data
+ * before using this as a configuration-time value source.
  */
 abstract class AbstractResourceValueSource<T : Any, P : AbstractResourceValueSource.Parameters> : ValueSource<T, P> {
     /**

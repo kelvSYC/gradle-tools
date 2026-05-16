@@ -15,6 +15,13 @@ import org.gradle.api.tasks.Internal
  *
  * Pagination is handled internally via the SDK Kotlin paginated flow; subclasses receive the full list of
  * [S3Object] summaries across all pages via [doObtain] and transform it to the desired type.
+ *
+ * **Configuration cache:** Gradle serializes the result of every [ValueSource.obtain] call to the configuration
+ * cache in plaintext when the cache is written. The [S3Object] summaries passed to [doObtain] contain only object
+ * metadata (key, size, ETag, last-modified), not object content — this is typically non-sensitive. However,
+ * whatever [doObtain] returns is what gets cached, and a subclass could derive sensitive values from the listing.
+ * Storing the resulting [org.gradle.api.provider.Provider] in any task field — `@Input`, `@get:Internal`, or a
+ * private `val` — causes `obtain()` to run at configuration time and the return value to be serialized.
  */
 abstract class AbstractListObjectsValueSource<T : Any, P : AbstractListObjectsValueSource.Parameters>
     : ValueSource<T, P> {

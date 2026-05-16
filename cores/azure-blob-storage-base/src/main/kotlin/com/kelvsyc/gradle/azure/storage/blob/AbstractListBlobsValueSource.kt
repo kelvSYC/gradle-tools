@@ -13,6 +13,13 @@ import org.gradle.api.tasks.Internal
  *
  * Pagination is handled internally; subclasses receive the full list of [BlobItem] entries across all pages
  * via [doObtain] and transform it to the desired type.
+ *
+ * **Configuration cache:** Gradle serializes the result of every [ValueSource.obtain] call to the configuration
+ * cache in plaintext when the cache is written. The [BlobItem] entries passed to [doObtain] contain only blob
+ * metadata (name, size, content type, last-modified), not blob content — this is typically non-sensitive.
+ * However, whatever [doObtain] returns is what gets cached, and a subclass could derive sensitive values from the
+ * listing. Storing the resulting [org.gradle.api.provider.Provider] in any task field — `@Input`, `@get:Internal`,
+ * or a private `val` — causes `obtain()` to run at configuration time and the return value to be serialized.
  */
 abstract class AbstractListBlobsValueSource<T : Any, P : AbstractListBlobsValueSource.Parameters> :
     ValueSource<T, P> {

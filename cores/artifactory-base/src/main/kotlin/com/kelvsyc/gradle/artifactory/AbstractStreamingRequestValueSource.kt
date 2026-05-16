@@ -13,6 +13,16 @@ import org.jfrog.artifactory.client.ArtifactoryStreamingResponse
  *
  * Subclasses should implement the [doObtain] function, transforming an [ArtifactoryStreamingResponse] object to an
  * object of the desired type.
+ *
+ * **Configuration cache and sensitive responses:** Gradle serializes the result of every [ValueSource.obtain] call
+ * to the configuration cache in plaintext when the cache is written. Whatever [doObtain] returns — including any
+ * sensitive content the API response may contain — will be stored in `.gradle/configuration-cache/` and is
+ * readable by any process with access to the build directory. This applies regardless of how the resulting
+ * [org.gradle.api.provider.Provider] is stored: wiring it into a task `@Input` property, a `@get:Internal`
+ * property, or a private `val` all cause `obtain()` to run at configuration time and the result to be cached.
+ *
+ * If the API response may contain sensitive data, call the [ArtifactoryClientBuildService] client directly inside
+ * a [org.gradle.workers.WorkAction.execute] body instead, where the result is never written to the cache.
  */
 abstract class AbstractStreamingRequestValueSource<T : Any, P : AbstractStreamingRequestValueSource.Parameters>
     : ValueSource<T, P> {
