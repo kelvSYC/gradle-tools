@@ -115,6 +115,31 @@ val signature: Provider<String> = providers.of(AzureAttestedDataValueSource::cla
 }
 ```
 
+## WorkActions
+
+### `AbstractGetAccessTokenWorkAction`
+
+Retrieves an OAuth2 access token inside a `WorkAction`, keeping the token out of the Gradle
+configuration cache. Subclass and implement `doExecute` to use the token:
+
+```kotlin
+abstract class CallAzureApiAction : AbstractGetAccessTokenWorkAction() {
+    override fun doExecute(token: String) {
+        // token is the raw OAuth2 bearer token for the requested scopes
+    }
+}
+
+workerExecutor.noIsolation().submit(CallAzureApiAction::class) {
+    service.set(mi)
+    scopes.add("https://management.azure.com/.default")
+}
+```
+
+Azure AD access tokens are typically valid for 1 hour and **cannot be explicitly revoked** —
+`doExecute` provides the correct execution-time scope. The token must not escape `doExecute`:
+storing it in a WorkParameters property (even `@get:Internal`), a task input, or a shared file
+writes it to `.gradle/configuration-cache/` in plaintext.
+
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure

@@ -75,6 +75,29 @@ val repos: Provider<Map<String, String>> = providers.of(DescribeRepositoriesValu
 }
 ```
 
+## WorkAction: `AbstractGetAuthorizationTokenWorkAction`
+
+Retrieves an ECR authorization token inside a `WorkAction`, keeping the token out of the Gradle
+configuration cache. Subclass and implement `doExecute` to use the token:
+
+```kotlin
+abstract class DockerLoginAction : AbstractGetAuthorizationTokenWorkAction() {
+    override fun doExecute(token: String) {
+        // token is the base64-encoded "AWS:password" string suitable for docker login
+    }
+}
+
+// Submit:
+workerExecutor.noIsolation().submit(DockerLoginAction::class) {
+    service.set(ecr)
+}
+```
+
+ECR tokens are valid for up to 12 hours and have no explicit revocation API — `doExecute` provides
+the correct execution-time scope. The token must not escape `doExecute`: storing it in a
+WorkParameters property (even `@get:Internal`), a task input, or a shared file writes it to
+`.gradle/configuration-cache/` in plaintext.
+
 ## WorkAction: `BatchDeleteImageAction`
 
 Deletes a set of images by tag from an ECR repository:
