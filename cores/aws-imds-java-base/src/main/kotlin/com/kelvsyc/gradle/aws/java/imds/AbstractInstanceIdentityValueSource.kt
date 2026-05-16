@@ -12,6 +12,14 @@ import software.amazon.awssdk.core.document.Document
  *
  * Subclasses should implement the [doObtain] function, transforming a [Document] object to an object of the desired
  * type.
+ *
+ * **Configuration cache:** Gradle serializes the result of every [ValueSource.obtain] call to the configuration
+ * cache in plaintext when the cache is written. The instance identity document contains non-sensitive instance
+ * metadata (account ID, region, instance ID, image ID) — this is typically safe to cache. However, whatever
+ * [doObtain] returns is what gets serialized, and a subclass could derive values that the caller considers
+ * sensitive. Storing the resulting [org.gradle.api.provider.Provider] in any task field — `@Input`,
+ * `@get:Internal`, or a private `val` — causes `obtain()` to run at configuration time and the return value to
+ * be serialized.
  */
 abstract class AbstractInstanceIdentityValueSource<T : Any, P : AbstractInstanceIdentityValueSource.Parameters> :
     ValueSource<T, P> {

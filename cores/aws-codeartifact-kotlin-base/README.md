@@ -31,20 +31,38 @@ default region provider chain. Omit the credentials call to skip the `credential
 case the SDK applies its own default behavior. See [aws-kotlin-extensions](../aws-kotlin-extensions) for the full
 set of credential configuration functions.
 
-## Value Source: `GetAuthorizationTokenValueSource`
+## **Deprecated.** Value Source: `GetAuthorizationTokenValueSource`
 
-Retrieves an AWS CodeArtifact authorization token:
+Retrieves an AWS CodeArtifact authorization token.
 
-```kotlin
-val token: Provider<String> = providers.of(GetAuthorizationTokenValueSource::class) {
-    parameters {
-        service.set(codeArtifact)
-        domain.set("my-domain")
-        domainOwner.set("111122223333")
-        duration.set(3600L)
-    }
-}
-```
+> **Deprecated — configuration cache unsafe.** Gradle serializes `ValueSource.obtain()` results to `.gradle/configuration-cache/` in plaintext at cache-write time. The token value is written to disk. See the class KDoc for full safety constraints, including the `@get:Internal` and private `val` caveats.
+
+**Repository authentication** is the common use case, but Gradle resolves `maven { credentials { } }` blocks at configuration time — any token obtained here will be stored in the cache regardless of how it was fetched. There is no deferred-credential mechanism. The pre-generation pattern avoids this ValueSource entirely:
+
+1. Obtain the token before Gradle runs, in a CI startup step or pipeline script:
+   ```bash
+   export CODEARTIFACT_TOKEN=$(aws codeartifact get-authorization-token \
+     --domain my-domain \
+     --domain-owner 111122223333 \
+     --duration-seconds 3600 \
+     --query authorizationToken \
+     --output text)
+   ```
+
+2. Reference it via `providers.environmentVariable()` in the credentials block. Gradle stores the env var _name_ in the config cache and re-reads the value on every build — the token itself is never cached:
+   ```kotlin
+   maven {
+       url = uri("https://my-domain-111122223333.d.codeartifact.us-east-1.amazonaws.com/maven/my-repo/")
+       credentials {
+           username = "aws"
+           password = providers.environmentVariable("CODEARTIFACT_TOKEN").get()
+       }
+   }
+   ```
+
+CodeArtifact tokens are valid for up to 12 hours (configurable via `--duration-seconds`). The threat model of the pre-generation pattern is equivalent to the CI environment variable attack surface — no new exposure.
+
+**Task-execution use cases**: use the `CodeArtifactClientBuildService` client directly inside a `WorkAction.execute()` body instead. The `ValueSource` abstraction adds no value there.
 
 Parameters:
 
@@ -84,6 +102,8 @@ abstract class MyAssetValueSource
         response.asset?.decodeToString()
 }
 ```
+
+> **Security note:** Whatever `doObtain()` returns is serialized to `.gradle/configuration-cache/` in plaintext at cache-write time — this applies whether the resulting `Provider` is stored in a task `@Input`, a `@get:Internal` property, or a private `val`. If the asset contains sensitive data (private keys, credentials, tokens), use `GetGenericPackageVersionAssetAction` to download it to a file at task execution time, or call the `CodeArtifactClientBuildService` client directly inside a `WorkAction.execute()` body. Non-sensitive assets (version manifests, metadata) are safe to use at configuration time.
 
 ## Value Source: `ListPackageVersionsValueSource`
 

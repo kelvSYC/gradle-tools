@@ -15,6 +15,23 @@ import software.amazon.awssdk.services.codeartifact.model.PackageFormat
  *
  * Subclasses should implement the [doObtain] function, transforming the supplied parameters to an object of the
  * desired type.
+ *
+ * **Configuration cache and sensitive assets:** Gradle serializes the result of every [ValueSource.obtain] call to
+ * the configuration cache in plaintext when the cache is written. If the asset retrieved by a subclass contains
+ * sensitive data — private keys, API tokens, credentials, or any secret material — that data will be stored in
+ * `.gradle/configuration-cache/` and is readable by any process with access to the build directory. This applies
+ * regardless of how the [org.gradle.api.provider.Provider] is stored: wiring the result into a task `@Input`
+ * property, a `@get:Internal` property, or a private `val` all cause `obtain()` to run at configuration time and
+ * the result to be cached.
+ *
+ * If the fetched asset may contain sensitive data, either:
+ * - Use [GetGenericPackageVersionAssetAction] to download the asset to a file at task execution time, then read
+ *   the file within the task action; or
+ * - Call the [CodeArtifactClientBuildService] client directly inside a [org.gradle.workers.WorkAction.execute]
+ *   body, where the result is never written to the cache.
+ *
+ * If the fetched asset is non-sensitive (version manifests, changelogs, metadata), this `ValueSource` is safe to
+ * use at configuration time.
  */
 abstract class AbstractGetGenericAssetValueSource<T : Any, P : AbstractGetGenericAssetValueSource.Parameters> :
     ValueSource<T, P> {
