@@ -27,6 +27,7 @@ dependencies {
         api(libs.moshi)
         api(libs.moshi.kotlin)
         api(libs.pkl.core)
+        api(libs.vault.java.driver)
         api(libs.woodstox)
     }
 }
