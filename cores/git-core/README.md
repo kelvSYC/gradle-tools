@@ -125,7 +125,7 @@ tasks.register<GetGitHubRepoArchive>("fetchSource") {
     owner.set("example")
     repo.set("my-repo")
     ref.set("v2.0.0")
-    token.set(providers.environmentVariable("GITHUB_TOKEN"))
+    tokenRef.set(CredentialReference.EnvironmentVariable("GITHUB_TOKEN"))
     outputFile.set(layout.buildDirectory.file("source.tar.gz"))
 }
 ```
@@ -134,7 +134,7 @@ tasks.register<GetGitHubRepoArchive>("fetchSource") {
 |---|---|---|
 | `ghCommand` | `Property<String>` | Path to the `gh` binary. Set via convention when plugin is applied. |
 | `hostname` | `Property<String>` | GitHub Enterprise hostname. Leave unset for GitHub.com. |
-| `token` | `Property<String>` | Personal access token (`GH_TOKEN` or `GH_ENTERPRISE_TOKEN`). |
+| `tokenRef` | `Property<CredentialReference>` | Reference to the personal access token (`GH_TOKEN` or `GH_ENTERPRISE_TOKEN`). Leave unset to use CLI-configured credentials. |
 | `owner` | `Property<String>` | Repository owner |
 | `repo` | `Property<String>` | Repository name |
 | `ref` | `Property<String>` | Commit ref to archive |
@@ -192,7 +192,7 @@ tasks.register<GetGitLabRepoArchive>("fetchSource") {
     owner.set("example-group")
     repo.set("my-project")
     ref.set("v2.0.0")
-    token.set(providers.environmentVariable("GITLAB_TOKEN"))
+    tokenRef.set(CredentialReference.EnvironmentVariable("GITLAB_TOKEN"))
     outputFile.set(layout.buildDirectory.file("source.tar.gz"))
 }
 ```
@@ -201,7 +201,7 @@ tasks.register<GetGitLabRepoArchive>("fetchSource") {
 |---|---|---|
 | `glabCommand` | `Property<String>` | Path to the `glab` binary. Set via convention when plugin is applied. |
 | `hostname` | `Property<String>` | Self-hosted GitLab hostname. Leave unset for GitLab.com. |
-| `token` | `Property<String>` | Personal access token (`GITLAB_TOKEN`). |
+| `tokenRef` | `Property<CredentialReference>` | Reference to the personal access token (`GITLAB_TOKEN`). Leave unset to use CLI-configured credentials. |
 | `owner` | `Property<String>` | Namespace or group owning the repository |
 | `repo` | `Property<String>` | Repository name |
 | `ref` | `Property<String>` | Commit ref to archive |
