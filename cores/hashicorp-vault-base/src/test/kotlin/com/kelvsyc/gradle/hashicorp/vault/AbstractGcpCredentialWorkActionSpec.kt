@@ -62,7 +62,7 @@ class AbstractGcpCredentialWorkActionSpec : FunSpec() {
             val action = object : AbstractGcpCredentialWorkAction() {
                 override fun getParameters() = params
                 override fun doExecute(credential: GcpDynamicCredential) {
-                    throw IllegalStateException("work failed")
+                    error("work failed")
                 }
             }
 

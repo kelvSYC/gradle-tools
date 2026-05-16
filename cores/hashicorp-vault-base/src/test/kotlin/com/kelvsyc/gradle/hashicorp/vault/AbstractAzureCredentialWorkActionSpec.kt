@@ -63,7 +63,7 @@ class AbstractAzureCredentialWorkActionSpec : FunSpec() {
             val action = object : AbstractAzureCredentialWorkAction() {
                 override fun getParameters() = params
                 override fun doExecute(credential: AzureDynamicCredential) {
-                    throw IllegalStateException("work failed")
+                    error("work failed")
                 }
             }
 

@@ -63,7 +63,7 @@ class AbstractDatabaseCredentialWorkActionSpec : FunSpec() {
             val action = object : AbstractDatabaseCredentialWorkAction() {
                 override fun getParameters() = params
                 override fun doExecute(credential: DatabaseCredential) {
-                    throw IllegalStateException("work failed")
+                    error("work failed")
                 }
             }
 

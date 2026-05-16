@@ -106,7 +106,7 @@ class AbstractAwsCredentialWorkActionSpec : FunSpec() {
                 val action = object : AbstractAwsCredentialWorkAction() {
                     override fun getParameters() = params
                     override fun doExecute(credential: AwsDynamicCredential) {
-                        throw IllegalStateException("work failed")
+                        error("work failed")
                     }
                 }
 
