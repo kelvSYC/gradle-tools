@@ -28,6 +28,7 @@ dependencies {
         api(libs.moshi.kotlin)
         api(libs.msgpack.core)
         api(libs.pkl.core)
+        api(libs.vault.java.driver)
         api(libs.woodstox)
     }
 }

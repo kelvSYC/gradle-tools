@@ -57,6 +57,7 @@ since the two AWS SDKs are distinct libraries:
 | `google-cloud-storage-base` | GCP Cloud Storage |
 | `google-cloud-secret-manager-base` | GCP Secret Manager |
 | `google-cloud-pubsub-base` | GCP Pub/Sub |
+| `hashicorp-vault-base` | HashiCorp Vault KV and dynamic credentials |
 | `google-cloud-kms-base` | GCP Cloud KMS |
 | `azure-blob-storage-base` | Azure Blob Storage |
 | `azure-key-vault-base` | Azure Key Vault |
@@ -81,6 +82,7 @@ dependencies {
 | `aws-java-extensions` | Config-cache-safe BuildService base class, `AwsBuildServiceParams`, and credential adapters for the AWS SDK for Java |
 | `aws-kotlin-extensions` | Base client info interface and credential extensions for the AWS SDK for Kotlin |
 | `google-cloud-extensions` | Config-cache-safe BuildService base class and `GcpBuildServiceParams` for the Google Cloud SDK |
+| `hashicorp-vault-extensions` | Config-cache-safe BuildService base for HashiCorp Vault with token renewal and lease tracking |
 | `azure-extensions` | Config-cache-safe BuildService base class and `AzureBuildServiceParams` for the Azure SDK |
 | `moshi-extensions` | `ValueSource` implementations and `Provider` extensions for Moshi JSON parsing |
 | `pkl-extensions` | `ValueSource` implementations for evaluating Pkl configuration files |
