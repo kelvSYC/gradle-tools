@@ -17,6 +17,7 @@ Standalone Gradle plugins that solve a specific build problem. Apply them direct
 | `dokka-dash` | `com.kelvsyc.gradle.dokka-dash` | Packages Dokka HTML output into Dash docset bundles |
 | `git-core` | `com.kelvsyc.gradle.git-core` | Git archival tasks and JGit extensions for remote repositories |
 | `jfrog-cli-core` | `com.kelvsyc.gradle.jfrog-cli-core` | Gradle tasks wrapping the JFrog CLI |
+| `karakum-core` | `com.kelvsyc.gradle.karakum-core` | Karakum TypeScript → Kotlin external-declaration codegen, with automatic Kotlin/JS and KMP source-set wiring |
 
 All plugin IDs are prefixed with `com.kelvsyc.gradle.`.
 
