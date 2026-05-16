@@ -7,7 +7,7 @@ Architectural reference for this Gradle composite build. See `AGENTS.md` for bui
 - **Tests and detekt must pass** before any task is complete: `./gradlew :test` and `./gradlew :detekt`.
 - **KDocs are required** on every `DefaultTask` subclass, `WorkAction` implementation, and `ValueSource` implementation, including their individual properties and parameters.
 - **Every `WorkAction` implementation must have a unit test.** Follow the `MockXyzClientBuildService` pattern: create a test-only service subclass in `src/test/kotlin` that overrides `createClient()` to return a mock client (see `MockSecretsManagerClientBuildService` as reference). Instantiate the action as an anonymous subclass with `getParameters()` overridden, then call `execute()` directly. WorkActions that call external services (AWS, GCP, Azure, Vault) are fully unit-testable against mocked clients — do not defer tests on the grounds that integration tests are required.
-- **README must stay current** when adding or modifying public-facing components (tasks, `WorkAction`/`ValueSource` implementations, extensions, plugin behaviour).
+- **Every `cores/` component must have a `README.md`** — it is not optional. Create it when scaffolding a new component and keep it current when adding or modifying public-facing API (tasks, `WorkAction`/`ValueSource` implementations, extensions, plugin behaviour).
 - **Root README must stay current** when adding a new component — add it to the appropriate table in `README.md` (cores, bases, or extensions).
 
 ## Build Commands
