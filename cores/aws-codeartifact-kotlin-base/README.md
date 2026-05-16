@@ -62,7 +62,7 @@ Retrieves an AWS CodeArtifact authorization token.
 
 CodeArtifact tokens are valid for up to 12 hours (configurable via `--duration-seconds`). The threat model of the pre-generation pattern is equivalent to the CI environment variable attack surface — no new exposure.
 
-**Task-execution use cases**: use the `CodeArtifactClientBuildService` client directly inside a `WorkAction.execute()` body instead. The `ValueSource` abstraction adds no value there.
+**Task-execution use cases**: use the `AbstractGetAuthorizationTokenWorkAction` WorkAction or call the `CodeArtifactClientBuildService` client directly inside a `WorkAction.execute()` body. The `ValueSource` abstraction adds no value for task execution.
 
 Parameters:
 
@@ -122,6 +122,44 @@ val versions: Provider<List<String>> = providers.of(ListPackageVersionsValueSour
     }
 }
 ```
+
+## WorkAction: `AbstractGetAuthorizationTokenWorkAction`
+
+Abstract base class for WorkActions that retrieve a CodeArtifact authorization token and execute
+work with it, keeping the token out of the Gradle configuration cache.
+
+> **Configuration cache safe.** The token is retrieved at task execution time and passed to
+> [doExecute], which executes immediately. The token is never stored in the configuration cache.
+
+Extend this class and implement `doExecute(token: String)`:
+
+```kotlin
+abstract class PublishArtifactAction : AbstractGetAuthorizationTokenWorkAction() {
+    override fun doExecute(token: String) {
+        // use token for CodeArtifact authentication
+    }
+}
+
+tasks.register<DefaultTask>("publish") {
+    doLast {
+        workerExecutor.noIsolation().submit(PublishArtifactAction::class) {
+            service.set(codeArtifact)
+            domain.set("my-domain")
+            domainOwner.set("111122223333")
+            duration.set(3600L)
+        }
+    }
+}
+```
+
+Parameters:
+
+| Parameter | Type | Description |
+|---|---|---|
+| `service` | `Property<CodeArtifactClientBuildService>` | Build service supplying the CodeArtifact client |
+| `domain` | `Property<String>` | CodeArtifact domain name |
+| `domainOwner` | `Property<String>` | AWS account ID owning the domain |
+| `duration` | `Property<Long>` | Token validity in seconds (900 to 43200) |
 
 ## WorkAction: `GetGenericPackageVersionAssetAction`
 

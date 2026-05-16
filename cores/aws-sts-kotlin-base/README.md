@@ -73,6 +73,56 @@ val decoded: Provider<String> = providers.of(DecodeAuthorizationMessageValueSour
 Returns `null` and logs a warning if the call throws `StsException` (typically because the message has expired
 or the caller lacks `sts:DecodeAuthorizationMessage`).
 
+## WorkActions
+
+### `AbstractAssumeRoleWorkAction`
+
+Assumes an AWS IAM role and produces temporary session credentials via the STS AssumeRole API. Subclasses must
+implement `doExecute(credential: AwsSessionCredential)` to consume the credential at execution time.
+
+The credential is valid only within the `doExecute` call and must be used to construct a short-lived AWS SDK
+client. Storing the credential in any Gradle property or input violates configuration cache security guarantees —
+see [AwsSessionCredential](../aws-kotlin-extensions) for details.
+
+Example plugin using `AbstractAssumeRoleWorkAction`:
+
+```kotlin
+abstract class MyAssumeRoleTask : DefaultTask() {
+    @get:Internal
+    abstract val assumeRoleAction: Property<ProviderFactory>
+
+    @TaskAction
+    fun execute() {
+        val workers = workerExecutor.classLoaderIsolation {
+            classpath.from(configurations.runtimeClasspath)
+        }
+
+        workers.submit(MyAssumeRoleAction::class) {
+            service.set(sts)
+            roleArn.set("arn:aws:iam::123456789012:role/MyRole")
+            roleSessionName.set("my-build-session")
+            duration.set(3600L)
+        }
+    }
+}
+
+abstract class MyAssumeRoleAction : AbstractAssumeRoleWorkAction() {
+    override fun doExecute(credential: AwsSessionCredential) {
+        KmsClient {
+            credentialsProvider = StaticCredentialsProvider {
+                accessKeyId = credential.accessKeyId
+                secretAccessKey = credential.secretAccessKey
+                sessionToken = credential.sessionToken
+            }
+        }.use { client ->
+            client.describeKey(DescribeKeyRequest { keyId = "arn:aws:kms:us-east-1:..." })
+        }
+    }
+}
+```
+
+No explicit revocation is available for STS credentials — they self-expire at [AwsSessionCredential.expiration].
+
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure

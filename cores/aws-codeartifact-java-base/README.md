@@ -122,6 +122,31 @@ Parameters: `service`, `domain`, `domainOwner`, `repository`, `namespace`, `pack
 
 ## WorkActions
 
+### `AbstractGetAuthorizationTokenWorkAction`
+
+Retrieves a CodeArtifact authorization token inside a `WorkAction`, keeping the token out of the
+Gradle configuration cache. Subclass and implement `doExecute` to use the token:
+
+```kotlin
+abstract class PublishAction : AbstractGetAuthorizationTokenWorkAction() {
+    override fun doExecute(token: String) {
+        // use token for Maven/npm/pip repository authentication
+    }
+}
+
+workerExecutor.noIsolation().submit(PublishAction::class) {
+    service.set(codeartifact)
+    domain.set("my-domain")
+    domainOwner.set("123456789012")
+    duration.set(3600L)
+}
+```
+
+Token validity is configurable up to 43200 seconds (12 hours). There is no explicit revocation
+API — `doExecute` provides the correct execution-time scope. The token must not escape `doExecute`:
+storing it in a WorkParameters property (even `@get:Internal`), a task input, or a shared file
+writes it to `.gradle/configuration-cache/` in plaintext.
+
 ### `GetGenericPackageVersionAssetAction`
 
 Downloads a single CodeArtifact generic-repo asset to a file:
