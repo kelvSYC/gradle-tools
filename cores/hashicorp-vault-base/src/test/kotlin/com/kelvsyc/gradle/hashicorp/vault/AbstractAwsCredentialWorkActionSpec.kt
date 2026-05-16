@@ -58,10 +58,10 @@ class AbstractAwsCredentialWorkActionSpec : FunSpec() {
                     override fun doExecute(credential: AwsDynamicCredential) { received = credential }
                 }.execute()
 
-                received!!.accessKeyId shouldBe "AKIAEXAMPLE"
-                received!!.secretAccessKey shouldBe "wJalrXUtn"
-                received!!.sessionToken shouldBe "STStoken"
-                received!!.leaseId shouldBe "aws/creds/my-role/abc-123"
+                received?.accessKeyId shouldBe "AKIAEXAMPLE"
+                received?.secretAccessKey shouldBe "wJalrXUtn"
+                received?.sessionToken shouldBe "STStoken"
+                received?.leaseId shouldBe "aws/creds/my-role/abc-123"
             }
 
             test("execute - sessionToken is null when security_token absent from response") {
@@ -84,7 +84,7 @@ class AbstractAwsCredentialWorkActionSpec : FunSpec() {
                     override fun doExecute(credential: AwsDynamicCredential) { received = credential }
                 }.execute()
 
-                received!!.sessionToken shouldBe null
+                received?.sessionToken shouldBe null
             }
         }
 
