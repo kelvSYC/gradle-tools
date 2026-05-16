@@ -77,7 +77,7 @@ Requires a server connection.
 ```kotlin
 tasks.register<PublishBuildInfo>("publishBuildInfo") {
     serverUrl.set("https://artifactory.example.com")
-    accessToken.set(providers.environmentVariable("JFROG_ACCESS_TOKEN"))
+    accessTokenRef.set(CredentialReference.EnvironmentVariable("JFROG_ACCESS_TOKEN"))
     buildName.set("my-app")
     buildNumber.set(providers.environmentVariable("BUILD_NUMBER"))
     envExcludePatterns.add("*PASSWORD*")   // optional: strip sensitive vars before publishing
@@ -88,7 +88,7 @@ tasks.register<PublishBuildInfo>("publishBuildInfo") {
 |---|---|---|
 | `jfCommand` | `Property<String>` | Path to the `jf` binary. Set via convention when plugin is applied. |
 | `serverUrl` | `Property<String>` | Artifactory server URL |
-| `accessToken` | `Property<String>` | JFrog access token for authentication |
+| `accessTokenRef` | `Property<CredentialReference>` | Reference to the JFrog access token — only the lookup name is cached, not the token value |
 | `buildName` | `Property<String>` | Build name |
 | `buildNumber` | `Property<String>` | Build number |
 | `envExcludePatterns` | `ListProperty<String>` | Glob patterns for env var names to strip before publishing. |
@@ -119,7 +119,7 @@ with Xray enabled. The build must already be published before scanning — use `
 ```kotlin
 tasks.register<ScanBuild>("scanBuild") {
     serverUrl.set("https://artifactory.example.com")
-    accessToken.set(providers.environmentVariable("JFROG_ACCESS_TOKEN"))
+    accessTokenRef.set(CredentialReference.EnvironmentVariable("JFROG_ACCESS_TOKEN"))
     buildName.set("my-app")
     buildNumber.set(providers.environmentVariable("BUILD_NUMBER"))
     failBuild.set(true)    // optional: fail the build on policy violations
@@ -130,7 +130,7 @@ tasks.register<ScanBuild>("scanBuild") {
 |---|---|---|
 | `jfCommand` | `Property<String>` | Path to the `jf` binary. Set via convention when plugin is applied. |
 | `serverUrl` | `Property<String>` | Artifactory server URL |
-| `accessToken` | `Property<String>` | JFrog access token for authentication |
+| `accessTokenRef` | `Property<CredentialReference>` | Reference to the JFrog access token — only the lookup name is cached, not the token value |
 | `buildName` | `Property<String>` | Build name |
 | `buildNumber` | `Property<String>` | Build number |
 | `failBuild` | `Property<Boolean>` | Fail the build if Xray policy violations are found. Defaults to `false`. |
@@ -145,7 +145,7 @@ abstract class MyTask @Inject constructor(private val workers: WorkerExecutor) :
     fun run() {
         workers.noIsolation().submit(PublishBuildInfoAction::class) {
             serverUrl.set("https://artifactory.example.com")
-            accessToken.set("...")
+            accessToken.set(System.getenv("JFROG_ACCESS_TOKEN"))
             buildName.set("my-app")
             buildNumber.set("42")
         }
@@ -200,7 +200,7 @@ val latestVersion: Provider<String> = providers.of(LatestVersionValueSource::cla
     parameters {
         jfCommand.set(providers.which("jf"))
         serverUrl.set("https://artifactory.example.com")
-        accessToken.set(providers.environmentVariable("JFROG_ACCESS_TOKEN"))
+        accessTokenRef.set(CredentialReference.EnvironmentVariable("JFROG_ACCESS_TOKEN"))
         repoKey.set("libs-release-local")
         artifactName.set("my-app")
     }
@@ -213,7 +213,7 @@ Base parameters declared in `AbstractArtifactorySearchValueSource.Parameters`:
 |---|---|---|
 | `jfCommand` | `Property<String>` | Path to the `jf` binary |
 | `serverUrl` | `Property<String>` | Artifactory server URL. Leave unset to use the CLI's configured default. |
-| `accessToken` | `Property<String>` | JFrog access token. Leave unset to use the CLI's configured credentials. |
+| `accessTokenRef` | `Property<CredentialReference>` | Reference to the JFrog access token. Leave unset to use the CLI's configured credentials. |
 
 ## See Also
 

@@ -1,5 +1,6 @@
 package com.kelvsyc.gradle.jfrog
 
+import com.kelvsyc.gradle.clients.CredentialReference
 import com.kelvsyc.gradle.jfrog.actions.PublishBuildInfoAction
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.ListProperty
@@ -40,12 +41,14 @@ abstract class PublishBuildInfo @Inject constructor(private val workers: WorkerE
     abstract val serverUrl: Property<String>
 
     /**
-     * The JFrog access token for authentication.
+     * A reference to the JFrog access token for authentication. Set to a [CredentialReference.EnvironmentVariable]
+     * or [CredentialReference.SystemProperty] pointing to the token — only the lookup name is serialized to the
+     * configuration cache, never the token value itself.
      *
      * @see [PublishBuildInfoAction.Parameters.accessToken]
      */
     @get:Internal
-    abstract val accessToken: Property<String>
+    abstract val accessTokenRef: Property<CredentialReference>
 
     /**
      * The build name.
@@ -77,7 +80,7 @@ abstract class PublishBuildInfo @Inject constructor(private val workers: WorkerE
         workers.noIsolation().submit(PublishBuildInfoAction::class) {
             jfCommand.set(this@PublishBuildInfo.jfCommand)
             serverUrl.set(this@PublishBuildInfo.serverUrl)
-            accessToken.set(this@PublishBuildInfo.accessToken)
+            accessToken.set(this@PublishBuildInfo.accessTokenRef.get().resolve())
             buildName.set(this@PublishBuildInfo.buildName)
             buildNumber.set(this@PublishBuildInfo.buildNumber)
             envExcludePatterns.set(this@PublishBuildInfo.envExcludePatterns)

@@ -5,3 +5,5 @@ pluginManagement {
 plugins {
     id("com.kelvsyc.internal")
 }
+
+includeBuild("../clients-base")

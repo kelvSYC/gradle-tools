@@ -1,5 +1,6 @@
 package com.kelvsyc.gradle.plugins
 
+import com.kelvsyc.gradle.clients.CredentialReference
 import com.kelvsyc.gradle.jfrog.AddGitInfoToBuild
 import com.kelvsyc.gradle.jfrog.CleanBuildInfo
 import com.kelvsyc.gradle.jfrog.CollectBuildEnvironment
@@ -38,7 +39,7 @@ class JFrogCliPluginSpec : FunSpec() {
 
             project.tasks.register<PublishBuildInfo>("myTask") {
                 serverUrl.set("https://artifactory.example.com")
-                accessToken.set("mytoken")
+                accessTokenRef.set(CredentialReference.EnvironmentVariable("JFROG_ACCESS_TOKEN"))
                 buildName.set("my-build")
                 buildNumber.set("1")
             }.get()
@@ -60,7 +61,7 @@ class JFrogCliPluginSpec : FunSpec() {
 
             project.tasks.register<ScanBuild>("myTask") {
                 serverUrl.set("https://artifactory.example.com")
-                accessToken.set("mytoken")
+                accessTokenRef.set(CredentialReference.EnvironmentVariable("JFROG_ACCESS_TOKEN"))
                 buildName.set("my-build")
                 buildNumber.set("1")
             }.get()

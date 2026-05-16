@@ -1,5 +1,6 @@
 package com.kelvsyc.gradle.jfrog
 
+import com.kelvsyc.gradle.clients.CredentialReference
 import com.kelvsyc.gradle.jfrog.actions.ScanBuildAction
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
@@ -39,12 +40,14 @@ abstract class ScanBuild @Inject constructor(private val workers: WorkerExecutor
     abstract val serverUrl: Property<String>
 
     /**
-     * The JFrog access token for authentication.
+     * A reference to the JFrog access token for authentication. Set to a [CredentialReference.EnvironmentVariable]
+     * or [CredentialReference.SystemProperty] pointing to the token — only the lookup name is serialized to the
+     * configuration cache, never the token value itself.
      *
      * @see [ScanBuildAction.Parameters.accessToken]
      */
     @get:Internal
-    abstract val accessToken: Property<String>
+    abstract val accessTokenRef: Property<CredentialReference>
 
     /**
      * The build name.
@@ -76,7 +79,7 @@ abstract class ScanBuild @Inject constructor(private val workers: WorkerExecutor
         workers.noIsolation().submit(ScanBuildAction::class) {
             jfCommand.set(this@ScanBuild.jfCommand)
             serverUrl.set(this@ScanBuild.serverUrl)
-            accessToken.set(this@ScanBuild.accessToken)
+            accessToken.set(this@ScanBuild.accessTokenRef.get().resolve())
             buildName.set(this@ScanBuild.buildName)
             buildNumber.set(this@ScanBuild.buildNumber)
             failBuild.set(this@ScanBuild.failBuild)
