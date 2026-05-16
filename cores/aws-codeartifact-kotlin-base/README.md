@@ -103,6 +103,8 @@ abstract class MyAssetValueSource
 }
 ```
 
+> **Security note:** Whatever `doObtain()` returns is serialized to `.gradle/configuration-cache/` in plaintext at cache-write time — this applies whether the resulting `Provider` is stored in a task `@Input`, a `@get:Internal` property, or a private `val`. If the asset contains sensitive data (private keys, credentials, tokens), use `GetGenericPackageVersionAssetAction` to download it to a file at task execution time, or call the `CodeArtifactClientBuildService` client directly inside a `WorkAction.execute()` body. Non-sensitive assets (version manifests, metadata) are safe to use at configuration time.
+
 ## Value Source: `ListPackageVersionsValueSource`
 
 Lists all version strings for a package in a CodeArtifact repository, paginating automatically:
