@@ -121,7 +121,9 @@ abstract class AbstractVaultClientBuildService<P : VaultBuildServiceParams> :
                 vault.auth().loginByGCP("gcp", jwt)
             }
             VaultCredentialSource.AZURE_MSI -> {
-                error("Azure Managed Identity authentication is not supported by vault-java-driver")
+                throw UnsupportedOperationException(
+                    "Azure Managed Identity authentication is not supported by vault-java-driver 6.2.1"
+                )
             }
         }
     }

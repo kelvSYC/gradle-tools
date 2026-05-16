@@ -23,7 +23,9 @@ dependencies {
 | Kubernetes | `kubernetesAuth(role)` | Role name, JWT path (default: `/var/run/secrets/kubernetes.io/serviceaccount/token`) |
 | AWS IAM | `awsIamAuth()` | None — uses ambient AWS credentials |
 | Google Cloud | `gcpAuth()` | GCP JWT reference |
-| Azure Managed Identity | `azureMsiAuth()` | Azure JWT reference |
+| Azure Managed Identity | `azureMsiAuth()` | **(not supported)** |
+
+Azure Managed Identity authentication (`AZURE_MSI`) is defined for future compatibility but is not currently supported by vault-java-driver 6.2.1. Attempting to use it will throw an `UnsupportedOperationException` at build execution time.
 
 ## Build Service Registration
 

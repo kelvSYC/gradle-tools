@@ -62,8 +62,13 @@ fun VaultBuildServiceParams.gcpAuth() {
 }
 
 /**
- * Configures Azure Managed Identity authentication. Vault will verify the caller's
- * Azure identity using the managed identity available in the environment.
+ * Configures Azure Managed Identity authentication.
+ *
+ * **Note:** Azure Managed Identity authentication is not currently supported by
+ * the underlying vault-java-driver client. Calling this method will register
+ * [VaultCredentialSource.AZURE_MSI] as the credential source, but attempting
+ * to create a Vault client will throw an [UnsupportedOperationException] at
+ * build execution time.
  */
 fun VaultBuildServiceParams.azureMsiAuth() {
     credentialSource.set(VaultCredentialSource.AZURE_MSI)
