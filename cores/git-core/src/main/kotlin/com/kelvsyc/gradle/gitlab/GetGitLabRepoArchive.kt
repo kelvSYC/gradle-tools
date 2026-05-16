@@ -1,5 +1,6 @@
 package com.kelvsyc.gradle.gitlab
 
+import com.kelvsyc.gradle.clients.CredentialReference
 import com.kelvsyc.gradle.gitlab.actions.GitLabRepoArchiveAction
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
@@ -39,12 +40,14 @@ abstract class GetGitLabRepoArchive @Inject constructor(private val workers: Wor
     abstract val hostname: Property<String>
 
     /**
-     * The GitLab personal access token.
+     * A reference to the GitLab personal access token. Leave unset to use the CLI's configured credentials.
+     * Set to a [CredentialReference.EnvironmentVariable] or [CredentialReference.SystemProperty] pointing to
+     * the token — only the lookup name is serialized to the configuration cache, never the token value itself.
      *
      * @see [GitLabRepoArchiveAction.Parameters.token]
      */
     @get:Internal
-    abstract val token: Property<String>
+    abstract val tokenRef: Property<CredentialReference>
 
     /**
      * The namespace or group owning the repository.
@@ -86,7 +89,7 @@ abstract class GetGitLabRepoArchive @Inject constructor(private val workers: Wor
         queue.submit(GitLabRepoArchiveAction::class) {
             glabCommand.set(this@GetGitLabRepoArchive.glabCommand)
             hostname.set(this@GetGitLabRepoArchive.hostname)
-            token.set(this@GetGitLabRepoArchive.token)
+            this@GetGitLabRepoArchive.tokenRef.orNull?.let { token.set(it.resolve()) }
             owner.set(this@GetGitLabRepoArchive.owner)
             repo.set(this@GetGitLabRepoArchive.repo)
             ref.set(this@GetGitLabRepoArchive.ref)

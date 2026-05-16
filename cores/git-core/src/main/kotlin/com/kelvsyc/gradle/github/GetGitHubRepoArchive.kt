@@ -1,5 +1,6 @@
 package com.kelvsyc.gradle.github
 
+import com.kelvsyc.gradle.clients.CredentialReference
 import com.kelvsyc.gradle.github.actions.GitHubRepoArchiveAction
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
@@ -39,12 +40,14 @@ abstract class GetGitHubRepoArchive @Inject constructor(private val workers: Wor
     abstract val hostname: Property<String>
 
     /**
-     * The GitHub personal access token.
+     * A reference to the GitHub personal access token. Leave unset to use the CLI's configured credentials.
+     * Set to a [CredentialReference.EnvironmentVariable] or [CredentialReference.SystemProperty] pointing to
+     * the token — only the lookup name is serialized to the configuration cache, never the token value itself.
      *
      * @see [GitHubRepoArchiveAction.Parameters.token]
      */
     @get:Internal
-    abstract val token: Property<String>
+    abstract val tokenRef: Property<CredentialReference>
 
     /**
      * The owner of the repository.
@@ -86,7 +89,7 @@ abstract class GetGitHubRepoArchive @Inject constructor(private val workers: Wor
         queue.submit(GitHubRepoArchiveAction::class) {
             ghCommand.set(this@GetGitHubRepoArchive.ghCommand)
             hostname.set(this@GetGitHubRepoArchive.hostname)
-            token.set(this@GetGitHubRepoArchive.token)
+            this@GetGitHubRepoArchive.tokenRef.orNull?.let { token.set(it.resolve()) }
             owner.set(this@GetGitHubRepoArchive.owner)
             repo.set(this@GetGitHubRepoArchive.repo)
             ref.set(this@GetGitHubRepoArchive.ref)
