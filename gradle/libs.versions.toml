@@ -37,6 +37,7 @@ azure-core = { module = "com.azure:azure-core" } # version from BOM 'azure-sdk-b
 azure-identity = { module = "com.azure:azure-identity" } # version from BOM 'azure-sdk-bom'
 azure-storage-blob = { module = "com.azure:azure-storage-blob" } # version from BOM 'azure-sdk-bom'
 azure-security-keyvault-secrets = { module = "com.azure:azure-security-keyvault-secrets" } # version from BOM 'azure-sdk-bom'
+azure-messaging-servicebus = { module = "com.azure:azure-messaging-servicebus" } # version from BOM 'azure-sdk-bom'
 azure-storage-common = { module = "com.azure:azure-storage-common" } # version from BOM 'azure-sdk-bom'
 aws-auth-java = { module = "software.amazon.awssdk:auth" } # version from BOM 'aws-java-sdk-bom'
 aws-config-kotlin = { module = "aws.sdk.kotlin:aws-config" } # version from BOM 'aws-kotlin-sdk-bom'
