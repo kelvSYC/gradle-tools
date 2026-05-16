@@ -59,7 +59,7 @@ interface VaultBuildServiceParams : BuildServiceParameters {
     val secretIdRef: Property<CredentialReference>
 
     /**
-     * A reference to the JWT for [VaultCredentialSource.APP_ROLE] JWT or cloud IAM authentication.
+     * A reference to the JWT for [VaultCredentialSource.GCP] authentication.
      * Resolved at build execution time — never stored as a plaintext value.
      */
     val jwtRef: Property<CredentialReference>

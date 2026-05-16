@@ -56,9 +56,14 @@ fun VaultBuildServiceParams.awsIamAuth() {
 /**
  * Configures Google Cloud service account authentication. Vault will verify the
  * caller's GCP identity using the credentials available in the environment.
+ *
+ * @param jwt A reference to the GCP JWT. Defaults to the `GOOGLE_OAUTH2_TOKEN` environment variable.
  */
-fun VaultBuildServiceParams.gcpAuth() {
+fun VaultBuildServiceParams.gcpAuth(
+    jwt: CredentialReference = CredentialReference.EnvironmentVariable("GOOGLE_OAUTH2_TOKEN"),
+) {
     credentialSource.set(VaultCredentialSource.GCP)
+    jwtRef.set(jwt)
 }
 
 /**

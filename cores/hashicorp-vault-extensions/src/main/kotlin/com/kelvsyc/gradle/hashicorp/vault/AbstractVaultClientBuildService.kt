@@ -84,6 +84,12 @@ abstract class AbstractVaultClientBuildService<P : VaultBuildServiceParams> :
             }
         }
 
+        // Apply token to config if using TOKEN authentication
+        if (parameters.credentialSource.get() == VaultCredentialSource.TOKEN) {
+            val token = parameters.tokenRef.get().resolve()
+            configBuilder.token(token)
+        }
+
         val config = configBuilder.build()
         val vault = Vault.create(config)
 
@@ -96,11 +102,7 @@ abstract class AbstractVaultClientBuildService<P : VaultBuildServiceParams> :
     private fun authenticate(vault: Vault) {
         when (parameters.credentialSource.get()) {
             VaultCredentialSource.TOKEN -> {
-                val token = parameters.tokenRef.get().resolve()
-                val configBuilder = VaultConfig()
-                    .address(parameters.endpoint.get())
-                    .token(token)
-                parameters.namespace.orNull?.let { configBuilder.nameSpace(it) }
+                // Token is already set in VaultConfig during client creation
             }
             VaultCredentialSource.APP_ROLE -> {
                 val roleId = parameters.roleId.get()
