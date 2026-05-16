@@ -62,6 +62,7 @@ since the two AWS SDKs are distinct libraries:
 | `azure-blob-storage-base` | Azure Blob Storage |
 | `azure-key-vault-base` | Azure Key Vault |
 | `azure-managed-identity-base` | Azure Managed Identity / IMDS |
+| `azure-service-bus-base` | Azure Service Bus |
 | `artifactory-base` | JFrog Artifactory |
 | `bitbucket-cloud-base` | Bitbucket Cloud REST API |
 | `bitbucket-data-center-base` | Bitbucket Data Center REST API |
