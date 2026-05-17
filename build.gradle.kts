@@ -22,7 +22,6 @@ tasks.register("build") {
         dependsOn(gradle.includedBuild(it).task(":$name"))
     }
     dependsOn(gradle.includedBuild("metadata").task(":catalog:generateCatalogAsToml"))
-    dependsOn(gradle.includedBuild("aggregation").task(":dokka:$name"))
     dependsOn(gradle.includedBuild("aggregation").task(":jacoco:testCodeCoverageReport"))
     dependsOn(gradle.includedBuild("metadata").task(":bom:$name"))
     dependsOn(gradle.includedBuild("aggregation").task(":testing:testAggregateTestReport"))
@@ -40,7 +39,7 @@ tasks.register("publish") {
 }
 
 tasks.register("dokkaGenerate") {
-    dependsOn(gradle.includedBuild("aggregation").task(":dokka:dokkaGeneratePublicationHtml"))
+    dependsOn(gradle.includedBuild("aggregation").task(":dokka:build"))
 }
 
 tasks.register("detekt") {
