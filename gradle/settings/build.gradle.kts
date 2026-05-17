@@ -9,5 +9,5 @@ kotlin {
 }
 
 dependencies {
-    implementation(libs.semver.plugin)
+    implementation("com.kelvsyc.internal:semver-convention")
 }
