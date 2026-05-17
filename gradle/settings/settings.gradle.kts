@@ -1,3 +1,7 @@
+pluginManagement {
+    includeBuild("../plugins")
+}
+
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
@@ -11,6 +15,7 @@ dependencyResolutionManagement {
     }
 
     includeBuild("../platform")
+    includeBuild("../plugins")
 
     versionCatalogs.register("libs") {
         from(files("../libs.versions.toml"))
