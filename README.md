@@ -68,6 +68,7 @@ since the two AWS SDKs are distinct libraries:
 | `nexus-base` | Sonatype Nexus Repository Manager 3 |
 | `bitbucket-cloud-base` | Bitbucket Cloud REST API |
 | `bitbucket-data-center-base` | Bitbucket Data Center REST API |
+| `gitea-base` | Gitea/Forgejo REST API |
 
 #### Utility extensions
 
