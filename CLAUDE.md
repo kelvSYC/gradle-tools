@@ -16,6 +16,7 @@ Architectural reference for this Gradle composite build. See `AGENTS.md` for bui
 
 ```bash
 ./gradlew :build          # Build all components + BOM, catalog, docs, coverage
+./gradlew :check          # Run tests + detekt across all components (no docs/coverage)
 ./gradlew :test           # Run tests across all components
 ./gradlew :detekt         # Lint all components
 ./gradlew :publish        # Publish to GitHub Packages (requires GITHUB_ACTOR, GITHUB_TOKEN)

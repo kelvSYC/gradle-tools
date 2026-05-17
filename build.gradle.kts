@@ -43,8 +43,19 @@ tasks.register("dokkaGenerate") {
     dependsOn(gradle.includedBuild("aggregation").task(":dokka:dokkaGeneratePublicationHtml"))
 }
 
+tasks.register("detekt") {
+    components.forEach {
+        dependsOn(gradle.includedBuild(it).task(":$name"))
+    }
+}
+
 tasks.register("test") {
     dependsOn(gradle.includedBuild("aggregation").task(":testing:testAggregateTestReport"))
+}
+
+tasks.register("check") {
+    dependsOn("test")
+    dependsOn("detekt")
 }
 
 tasks.register("jacoco") {
