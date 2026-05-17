@@ -28,13 +28,13 @@ data class ReleaseAsset(
     /**
      * The number of times the asset has been downloaded.
      */
-    @Json(name = "download_count")
+    @param:Json(name = "download_count")
     val downloadCount: Long? = null,
 
     /**
      * The direct download URL for the asset.
      */
-    @Json(name = "browser_download_url")
+    @param:Json(name = "browser_download_url")
     val browserDownloadUrl: String? = null,
 ) : Serializable {
     companion object {

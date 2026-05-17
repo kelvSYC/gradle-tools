@@ -23,7 +23,7 @@ data class User(
     /**
      * The user's full name.
      */
-    @Json(name = "full_name")
+    @param:Json(name = "full_name")
     val fullName: String? = null,
 
     /**
@@ -34,7 +34,7 @@ data class User(
     /**
      * The URL to the user's avatar image.
      */
-    @Json(name = "avatar_url")
+    @param:Json(name = "avatar_url")
     val avatarUrl: String? = null,
 ) : Serializable {
     companion object {

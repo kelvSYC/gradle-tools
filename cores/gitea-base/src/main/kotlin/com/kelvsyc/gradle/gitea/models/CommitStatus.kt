@@ -23,7 +23,7 @@ data class CommitStatus(
     /**
      * The target URL for the status (typically a link to CI/CD results).
      */
-    @Json(name = "target_url")
+    @param:Json(name = "target_url")
     val targetUrl: String? = null,
 
     /**
@@ -39,13 +39,13 @@ data class CommitStatus(
     /**
      * The ISO 8601 timestamp when the status was created.
      */
-    @Json(name = "created_at")
+    @param:Json(name = "created_at")
     val createdAt: String? = null,
 
     /**
      * The ISO 8601 timestamp when the status was last updated.
      */
-    @Json(name = "updated_at")
+    @param:Json(name = "updated_at")
     val updatedAt: String? = null,
 ) : Serializable {
     companion object {

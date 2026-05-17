@@ -28,13 +28,13 @@ data class Comment(
     /**
      * The ISO 8601 timestamp when the comment was created.
      */
-    @Json(name = "created_at")
+    @param:Json(name = "created_at")
     val createdAt: String? = null,
 
     /**
      * The ISO 8601 timestamp when the comment was last updated.
      */
-    @Json(name = "updated_at")
+    @param:Json(name = "updated_at")
     val updatedAt: String? = null,
 ) : Serializable {
     companion object {

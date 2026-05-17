@@ -53,19 +53,19 @@ data class PullRequest(
     /**
      * The ISO 8601 timestamp when the pull request was merged, or null if not merged.
      */
-    @Json(name = "merged_at")
+    @param:Json(name = "merged_at")
     val mergedAt: String? = null,
 
     /**
      * The ISO 8601 timestamp when the pull request was created.
      */
-    @Json(name = "created_at")
+    @param:Json(name = "created_at")
     val createdAt: String? = null,
 
     /**
      * The ISO 8601 timestamp when the pull request was last updated.
      */
-    @Json(name = "updated_at")
+    @param:Json(name = "updated_at")
     val updatedAt: String? = null,
 ) : Serializable {
     companion object {

@@ -18,7 +18,7 @@ data class Release(
     /**
      * The Git tag name for the release.
      */
-    @Json(name = "tag_name")
+    @param:Json(name = "tag_name")
     val tagName: String? = null,
 
     /**

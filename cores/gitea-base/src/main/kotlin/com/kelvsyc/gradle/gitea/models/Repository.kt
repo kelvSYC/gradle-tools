@@ -23,7 +23,7 @@ data class Repository(
     /**
      * The full name of the repository in `owner/repo` format.
      */
-    @Json(name = "full_name")
+    @param:Json(name = "full_name")
     val fullName: String? = null,
 
     /**
@@ -44,19 +44,19 @@ data class Repository(
     /**
      * The URL to view the repository in Gitea's web interface.
      */
-    @Json(name = "html_url")
+    @param:Json(name = "html_url")
     val htmlUrl: String? = null,
 
     /**
      * The Git clone URL for the repository.
      */
-    @Json(name = "clone_url")
+    @param:Json(name = "clone_url")
     val cloneUrl: String? = null,
 
     /**
      * The name of the default branch.
      */
-    @Json(name = "default_branch")
+    @param:Json(name = "default_branch")
     val defaultBranch: String? = null,
 
     /**
