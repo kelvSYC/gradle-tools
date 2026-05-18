@@ -1,11 +1,13 @@
 package com.kelvsyc.gradle.providers
 
 import org.gradle.api.artifacts.dsl.RepositoryHandler
+import org.gradle.api.artifacts.repositories.IvyArtifactRepository
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import java.net.URI
 
-// Internal workaround since Gradle libraries do not treat Action<in T> as T.() -> Unit
+// Internal workarounds since Gradle libraries do not treat Action<in T> as T.() -> Unit
 internal fun RepositoryHandler.mavenKt(action: MavenArtifactRepository.() -> Unit) = maven(action)
+internal fun RepositoryHandler.ivyKt(action: IvyArtifactRepository.() -> Unit) = ivy(action)
 
 /**
  * Adds and configures a GitHub Packages repository.
@@ -67,45 +69,32 @@ fun RepositoryHandler.gitLabPackages(
 }
 
 /**
- * Adds and configures an AWS CodeArtifact repository.
+ * Adds and configures a Gitea or Forgejo Maven package registry repository.
  *
  * @param name The Gradle name of the repository
- * @param domain The AWS domain
- * @param domainOwner The ID of the AWS domain owner
- * @param region The AWS region
- * @param repo The repo name
+ * @param baseUrl The Gitea/Forgejo server root URL (e.g. `https://gitea.example.com`), without a trailing slash
+ * @param owner The Gitea/Forgejo user or organisation that owns the package namespace
  */
-fun RepositoryHandler.awsCodeArtifact(
-    name: String,
-    domain: String,
-    domainOwner: String,
-    region: String,
-    repo: String
-) = mavenKt {
+fun RepositoryHandler.giteaPackages(name: String, baseUrl: String, owner: String) = mavenKt {
     this.name = name
-    url = URI.create("https://$domain-$domainOwner.d.codeartifact.$region.amazonaws.com/maven/$repo")
+    url = URI.create("$baseUrl/api/packages/$owner/maven")
 }
 
 /**
- * Adds and configures an AWS CodeArtifact repository.
+ * Adds and configures a Gitea or Forgejo Maven package registry repository.
  *
  * @param name The Gradle name of the repository
- * @param domain The AWS domain
- * @param domainOwner The ID of the AWS domain owner
- * @param region The AWS region
- * @param repo The repo name
+ * @param baseUrl The Gitea/Forgejo server root URL (e.g. `https://gitea.example.com`), without a trailing slash
+ * @param owner The Gitea/Forgejo user or organisation that owns the package namespace
  * @param action Configuration action for further configuration of the artifact repository
  */
-@Suppress("detekt:LongParameterList")
-fun RepositoryHandler.awsCodeArtifact(
+fun RepositoryHandler.giteaPackages(
     name: String,
-    domain: String,
-    domainOwner: String,
-    region: String,
-    repo: String,
+    baseUrl: String,
+    owner: String,
     action: MavenArtifactRepository.() -> Unit
 ) = mavenKt {
     this.name = name
-    url = URI.create("https://$domain-$domainOwner.d.codeartifact.$region.amazonaws.com/maven/$repo")
+    url = URI.create("$baseUrl/api/packages/$owner/maven")
     action(this)
 }

@@ -7,7 +7,7 @@ import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.testfixtures.ProjectBuilder
 import java.net.URI
 
-class RepositoryHandlerExtensionsSpec : FunSpec() {
+class GitRegistryRepositoryHandlerExtensionsSpec : FunSpec() {
     init {
         test("gitHubPackages sets name and URL") {
             val project = ProjectBuilder.builder().build()
@@ -57,31 +57,27 @@ class RepositoryHandlerExtensionsSpec : FunSpec() {
             actionInvoked shouldBeEqual true
         }
 
-        test("awsCodeArtifact sets name and URL") {
+        test("giteaPackages sets name and URL") {
             val project = ProjectBuilder.builder().build()
 
-            project.repositories.awsCodeArtifact("MyRepo", "mydomain", "123456789", "us-east-1", "myrepo")
+            project.repositories.giteaPackages("MyRepo", "https://gitea.example.com", "myorg")
 
             val repo = project.repositories.findByName("MyRepo")
             repo.shouldBeInstanceOf<MavenArtifactRepository>()
-            repo.url shouldBeEqual URI.create(
-                "https://mydomain-123456789.d.codeartifact.us-east-1.amazonaws.com/maven/myrepo"
-            )
+            repo.url shouldBeEqual URI.create("https://gitea.example.com/api/packages/myorg/maven")
         }
 
-        test("awsCodeArtifact with action sets name, URL, and invokes action") {
+        test("giteaPackages with action sets name, URL, and invokes action") {
             val project = ProjectBuilder.builder().build()
             var actionInvoked = false
 
-            project.repositories.awsCodeArtifact("MyRepo", "mydomain", "123456789", "us-east-1", "myrepo") {
+            project.repositories.giteaPackages("MyRepo", "https://gitea.example.com", "myorg") {
                 actionInvoked = true
             }
 
             val repo = project.repositories.findByName("MyRepo")
             repo.shouldBeInstanceOf<MavenArtifactRepository>()
-            repo.url shouldBeEqual URI.create(
-                "https://mydomain-123456789.d.codeartifact.us-east-1.amazonaws.com/maven/myrepo"
-            )
+            repo.url shouldBeEqual URI.create("https://gitea.example.com/api/packages/myorg/maven")
             actionInvoked shouldBeEqual true
         }
     }

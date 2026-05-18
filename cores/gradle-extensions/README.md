@@ -67,19 +67,68 @@ val cachedValue: Provider<String> = someExpensiveProvider.cached(objects)
 | `Provider<Map<K, V>>.orElseEmpty` | Falls back to empty map |
 | `Provider<Properties>.asMap` | Converts `Properties` to `Map<String, String>` |
 
-## Repository Handler Extensions (`RepositoryHandlerExtensions`)
+## Repository Handler Extensions
 
-Convenience methods for common Maven repository configurations:
+Convenience extension functions for common Maven and Ivy repository configurations. All are extensions on
+`RepositoryHandler` and accept an optional trailing action lambda for further configuration (e.g. credentials).
+
+### Git platform registries (`GitRegistryRepositoryHandlerExtensions`)
 
 ```kotlin
 repositories {
+    // GitHub Packages
     gitHubPackages("MyRepo", "owner", "repo-name") {
         credentials(PasswordCredentials::class.java)
     }
+    // GitLab Package Registry
     gitLabPackages("MyGitLabRepo", "12345678")
+    // Gitea / Forgejo — baseUrl is the server root, not the /api/v1 REST base
+    giteaPackages("MyGiteaRepo", "https://gitea.example.com", "myorg")
+}
+```
+
+### AWS (`AwsRepositoryHandlerExtensions`)
+
+```kotlin
+repositories {
     awsCodeArtifact("MyCodeArtifact", "my-domain", "111122223333", "us-east-1", "my-repo")
 }
 ```
+
+### GCP (`GcpRepositoryHandlerExtensions`)
+
+```kotlin
+repositories {
+    gcpArtifactRegistry("MyGAR", "us-central1", "my-gcp-project", "my-repo")
+}
+```
+
+### Sonatype Nexus (`NexusRepositoryHandlerExtensions`)
+
+```kotlin
+repositories {
+    nexusMaven("MyNexus", "https://nexus.example.com", "releases")
+}
+```
+
+`baseUrl` accepts with or without a trailing slash.
+
+### JFrog Artifactory and JFrog Cloud (`ArtifactoryRepositoryHandlerExtensions`)
+
+```kotlin
+repositories {
+    // Self-hosted Artifactory — Maven
+    artifactoryMaven("MyArtifactory", "https://artifactory.example.com/artifactory", "libs-release")
+    // Self-hosted Artifactory — Ivy (use action to configure layout patterns)
+    artifactoryIvy("MyArtifactoryIvy", "https://artifactory.example.com/artifactory", "libs-ivy")
+    // JFrog Cloud — Maven
+    jfrogCloudMaven("MyJFrogMaven", "mycompany", "libs-release")
+    // JFrog Cloud — Ivy
+    jfrogCloudIvy("MyJFrogIvy", "mycompany", "libs-ivy")
+}
+```
+
+`serverUrl` for self-hosted Artifactory accepts with or without a trailing slash.
 
 ## Task Extensions
 
