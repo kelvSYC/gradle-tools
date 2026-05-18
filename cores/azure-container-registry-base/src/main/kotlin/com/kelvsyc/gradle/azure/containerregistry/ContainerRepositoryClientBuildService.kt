@@ -47,7 +47,7 @@ abstract class ContainerRepositoryClientBuildService :
 
         /**
          * The name of the repository within the Azure Container Registry, e.g., `myrepo` or
-         * `myorg/myrepo`. This is passed to [ContainerRegistryClient.getRepository].
+         * `myorg/myrepo`. This is passed to the registry client's getRepository method.
          */
         val repositoryName: Property<String>
     }
