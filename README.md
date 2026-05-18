@@ -61,6 +61,7 @@ since the two AWS SDKs are distinct libraries:
 | `hashicorp-vault-base` | HashiCorp Vault KV and dynamic credentials |
 | `google-cloud-kms-base` | GCP Cloud KMS |
 | `azure-blob-storage-base` | Azure Blob Storage |
+| `azure-container-registry-base` | Azure Container Registry |
 | `azure-key-vault-base` | Azure Key Vault |
 | `azure-managed-identity-base` | Azure Managed Identity / IMDS |
 | `azure-service-bus-base` | Azure Service Bus |
