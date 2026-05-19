@@ -85,6 +85,8 @@ google-auth-library-oauth2-http = { module = "com.google.auth:google-auth-librar
 google-cloud-artifact-registry = { module = "com.google.cloud:google-cloud-artifact-registry" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-artifact-registry-proto = { module = "com.google.api.grpc:proto-google-cloud-artifact-registry-v1" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-core = { module = "com.google.cloud:google-cloud-core" } # version from BOM 'google-cloud-libraries-bom'
+google-cloud-functions = { module = "com.google.cloud:google-cloud-functions" } # version from BOM 'google-cloud-libraries-bom'
+google-cloud-functions-proto = { module = "com.google.api.grpc:proto-google-cloud-functions-v2" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-pubsub = { module = "com.google.cloud:google-cloud-pubsub" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-pubsub-proto = { module = "com.google.api.grpc:proto-google-cloud-pubsub-v1" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-kms = { module = "com.google.cloud:google-cloud-kms" } # version from BOM 'google-cloud-libraries-bom'
