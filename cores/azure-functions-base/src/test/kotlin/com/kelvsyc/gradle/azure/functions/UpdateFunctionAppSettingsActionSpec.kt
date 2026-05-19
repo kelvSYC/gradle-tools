@@ -8,6 +8,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.maps.shouldContainAll
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.unmockkAll
 import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.registerIfAbsent
@@ -27,12 +28,9 @@ class UpdateFunctionAppSettingsActionSpec : FunSpec() {
             MockFunctionAppClientBuildService.mockClient = mockManager
             every { mockManager.functionApps() } returns mockFunctionApps
             every { mockFunctionApps.getByResourceGroup("test-rg", "my-app") } returns mockApp
-            val capturedSettings = mutableMapOf<String, String>()
+            val settingsSlot = slot<Map<String, String>>()
             every { mockApp.update() } returns mockUpdate
-            every { mockUpdate.withAppSetting(any(), any()) } answers {
-                capturedSettings[firstArg()] = secondArg()
-                mockUpdate
-            }
+            every { mockUpdate.withAppSettings(capture(settingsSlot)) } returns mockUpdate
             every { mockUpdate.apply() } returns mockApp
 
             val service = project.gradle.sharedServices.registerIfAbsent(
@@ -52,7 +50,7 @@ class UpdateFunctionAppSettingsActionSpec : FunSpec() {
             }
             action.execute()
 
-            capturedSettings shouldContainAll mapOf(
+            settingsSlot.captured shouldContainAll mapOf(
                 "LOG_LEVEL" to "info",
                 "REGION" to "eastus",
                 "DB_CONNECTION_STRING" to "secret-conn",

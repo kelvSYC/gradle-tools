@@ -1,6 +1,5 @@
 package com.kelvsyc.gradle.azure.functions
 
-import com.azure.resourcemanager.appservice.models.FunctionApp
 import com.kelvsyc.gradle.clients.CredentialReference
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
@@ -49,12 +48,8 @@ abstract class UpdateFunctionAppSettingsAction : WorkAction<UpdateFunctionAppSet
             .mapValues { (_, ref) -> ref.resolve() }
         val allSettings = parameters.settings.getOrElse(emptyMap()) + resolvedSensitive
 
-        @Suppress("UNCHECKED_CAST")
-        var update: Any = functionApp.update()
-        allSettings.forEach { (key, value) ->
-            update = (update as FunctionApp.Update).withAppSetting(key, value)
-        }
-        @Suppress("UNCHECKED_CAST")
-        (update as FunctionApp.Update).apply()
+        functionApp.update()
+            .withAppSettings(allSettings)
+            .apply()
     }
 }
