@@ -63,6 +63,7 @@ since the two AWS SDKs are distinct libraries:
 | `google-cloud-kms-base` | GCP Cloud KMS |
 | `azure-blob-storage-base` | Azure Blob Storage |
 | `azure-container-registry-base` | Azure Container Registry |
+| `azure-functions-base` | Deploy, invoke, and configure Azure Function Apps (zip deploy, run-from-package, HTTP invocation, app settings) |
 | `azure-key-vault-base` | Azure Key Vault |
 | `azure-managed-identity-base` | Azure Managed Identity / IMDS |
 | `azure-service-bus-base` | Azure Service Bus |
