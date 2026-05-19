@@ -42,32 +42,19 @@ abstract class FunctionClientBuildService :
         val resourceGroup = parameters.appService.get().parameters.resourceGroup.get()
         val functionApp = manager.functionApps().getByResourceGroup(resourceGroup, parameters.appName.get())
 
-        // listFunctions() returns an iterable of function envelopes.
         val functionName = parameters.functionName.get()
         val envelope = functionApp.listFunctions()
             .firstOrNull { func ->
-                // The function name is the last segment of the resource ID/name
                 func.innerModel().id().orEmpty().substringAfterLast('/') == functionName
             }
             ?: throw IllegalArgumentException("Function '$functionName' not found in app '${parameters.appName.get()}'")
 
-        // Get the function metadata from the envelope's inner model.
-        // The inner model is a FunctionEnvelope which provides access to function properties.
-        val innerModel = envelope.innerModel()
-
-        // Extract the invoke URL template if available
-        val invokeUrlTemplate = innerModel.invokeUrlTemplate().orEmpty()
-
-        // Extract the auth level from the function.
-        // The Azure SDK structure requires traversing the config to get the auth level information.
-        // For now, default to FUNCTION level as the most restrictive auth mode.
-        // This will be resolved in test implementation when mocking the SDK responses.
-        val authLevelEnum = FunctionAuthLevel.FUNCTION
-
+        val invokeUrlTemplate = envelope.innerModel().invokeUrlTemplate().orEmpty()
+        // ARM SDK 2.x does not expose authLevel on FunctionEnvelope; default to the most restrictive safe value.
         return FunctionInfo(
-            functionName,
-            invokeUrlTemplate,
-            authLevelEnum,
+            name = functionName,
+            invokeUrlTemplate = invokeUrlTemplate,
+            authLevel = FunctionAuthLevel.FUNCTION,
         )
     }
 }
