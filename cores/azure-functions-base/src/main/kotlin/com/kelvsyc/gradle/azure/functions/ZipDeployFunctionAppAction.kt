@@ -14,10 +14,11 @@ import org.gradle.workers.WorkParameters
 /**
  * [WorkAction] that deploys a zip file to an Azure Function App via the Kudu SCM zip-deploy API.
  *
- * Kudu publishing credentials (username and password) are retrieved from Azure Resource Manager
- * at execution time and used as HTTP Basic auth on the SCM endpoint. The credentials are held
- * only in local variables within [execute] — they are never serialized to [WorkParameters].
- * All requests are made over HTTPS.
+ * Git publishing credentials (username and password) are retrieved from Azure Resource Manager
+ * at execution time via [com.azure.resourcemanager.appservice.models.WebAppBase.getPublishingProfile]
+ * and used as HTTP Basic auth on the SCM endpoint. The credentials are held only in local
+ * variables within [execute] — they are never serialized to [WorkParameters]. All requests are
+ * made over HTTPS.
  */
 abstract class ZipDeployFunctionAppAction : WorkAction<ZipDeployFunctionAppAction.Parameters> {
 
@@ -41,28 +42,17 @@ abstract class ZipDeployFunctionAppAction : WorkAction<ZipDeployFunctionAppActio
         val resourceGroup = parameters.appService.get().parameters.resourceGroup.get()
         val appName = parameters.appName.get()
         val functionApp = manager.functionApps().getByResourceGroup(resourceGroup, appName)
-
-        // Retrieve publishing credentials from the function app
-        @Suppress("UNCHECKED_CAST")
-        val publishingProfiles = functionApp.javaClass.getDeclaredMethod("getPublishingProfiles")
-            .invoke(functionApp) as List<Any>
-        val publishingProfile = publishingProfiles.firstOrNull()
-            ?: throw IllegalStateException("No publishing profiles found for function app '$appName'")
-
-        val publishingUserName = publishingProfile.javaClass.getMethod("publishingUserName")
-            .invoke(publishingProfile) as String
-        val publishingPassword = publishingProfile.javaClass.getMethod("publishingPassword")
-            .invoke(publishingProfile) as String
+        val publishingProfile = functionApp.getPublishingProfile()
 
         val kuduUrl = "https://$appName.scm.azurewebsites.net/api/zipdeploy"
         val requestBody = parameters.zipFile.asFile.get()
             .asRequestBody("application/zip".toMediaType())
         val request = Request.Builder()
             .url(kuduUrl)
-            .addHeader("Authorization", Credentials.basic(
-                publishingUserName,
-                publishingPassword
-            ))
+            .addHeader(
+                "Authorization",
+                Credentials.basic(publishingProfile.gitUsername(), publishingProfile.gitPassword())
+            )
             .post(requestBody)
             .build()
 
