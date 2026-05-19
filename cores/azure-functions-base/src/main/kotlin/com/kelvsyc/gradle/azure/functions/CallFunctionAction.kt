@@ -48,7 +48,7 @@ abstract class CallFunctionAction : WorkAction<CallFunctionAction.Parameters> {
         @get:Internal
         val identityTokenRef: Property<CredentialReference>
 
-        /** Optional request body to include in the POST. Defaults to an empty body. */
+        /** Optional request body to include in the POST. If unset, defaults to an empty body. */
         val payload: Property<String>
     }
 
