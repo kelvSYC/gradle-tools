@@ -17,9 +17,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import org.gradle.kotlin.dsl.newInstance
-import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 import java.io.File
+import java.lang.reflect.Method as ReflectMethod
 
 class ZipDeployFunctionAppActionSpec : FunSpec() {
     init {
@@ -29,34 +29,46 @@ class ZipDeployFunctionAppActionSpec : FunSpec() {
             mockkConstructor(OkHttpClient::class)
             val project = ProjectBuilder.builder().build()
 
+            // Create a mock publishing profile object with the expected methods
+            val mockProfile = object {
+                fun publishingUserName(): String = "test-user"
+                fun publishingPassword(): String = "test-password"
+            }
+
             val mockManager = mockk<AppServiceManager>()
+            val mockFunctionApps = mockk<FunctionApps>()
             val mockCall = mockk<Call>()
             val mockResponse = mockk<Response>()
-            val mockServiceProvider = mockk<FunctionAppClientBuildService>()
+            val mockApp = mockk<FunctionApp>(relaxed = true)
+
+            // Create a mock method that returns our profile list
+            val mockMethod = mockk<ReflectMethod>()
+            every { mockMethod.name } returns "getPublishingProfiles"
+            every { mockMethod.invoke(mockApp) } returns listOf(mockProfile)
+
+            every { mockApp.javaClass.getDeclaredMethod("getPublishingProfiles") } returns mockMethod
+            every { mockManager.functionApps() } returns mockFunctionApps
+            every { mockFunctionApps.getByResourceGroup("test-rg", "my-app") } returns mockApp
 
             justRun { mockResponse.close() }
             every { mockCall.execute() } returns mockResponse
             val requestSlot = slot<Request>()
             every { anyConstructed<OkHttpClient>().newCall(capture(requestSlot)) } returns mockCall
-            every { mockServiceProvider.getClient() } returns mockManager
-            every { mockServiceProvider.parameters.resourceGroup.get() } returns "test-rg"
+
+            val mockService = mockk<FunctionAppClientBuildService>(relaxed = true)
+            every { mockService.getClient() } returns mockManager
+            val mockServiceParams = mockk<FunctionAppClientBuildService.Params>(relaxed = true)
+            every { mockServiceParams.resourceGroup.get() } returns "test-rg"
+            every { mockService.parameters } returns mockServiceParams
 
             val zipFile = File.createTempFile("deploy", ".zip").also { it.deleteOnExit() }
             val params = project.objects.newInstance<ZipDeployFunctionAppAction.Parameters>()
-            params.appService.set(mockServiceProvider)
+            params.appService.set(mockService)
             params.appName.set("my-app")
             params.zipFile.set(zipFile)
 
             val action = object : ZipDeployFunctionAppAction() {
                 override fun getParameters() = params
-                override fun retrievePublishingCredentials(
-                    manager: AppServiceManager,
-                    resourceGroup: String,
-                    appName: String,
-                ) = PublishingCredentials(
-                    publishingUserName = "test-user",
-                    publishingPassword = "test-password"
-                )
             }
             action.execute()
 

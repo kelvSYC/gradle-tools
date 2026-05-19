@@ -36,30 +36,23 @@ abstract class ZipDeployFunctionAppAction : WorkAction<ZipDeployFunctionAppActio
         val zipFile: RegularFileProperty
     }
 
-    /**
-     * Retrieves the publishing credentials for deployment.
-     * Protected so it can be overridden in tests.
-     *
-     * In production, this should call the Azure SDK API to fetch credentials from the
-     * AppServiceManager. The test overrides this method to provide mocked credentials.
-     */
-    protected open fun retrievePublishingCredentials(
-        manager: com.azure.resourcemanager.appservice.AppServiceManager,
-        resourceGroup: String,
-        appName: String,
-    ): PublishingCredentials {
-        throw UnsupportedOperationException(
-            "retrievePublishingCredentials must be implemented. " +
-                "This is typically overridden in tests or called via Azure SDK publishing credentials API."
-        )
-    }
-
     override fun execute() {
         val manager = parameters.appService.get().getClient()
         val resourceGroup = parameters.appService.get().parameters.resourceGroup.get()
         val appName = parameters.appName.get()
+        val functionApp = manager.functionApps().getByResourceGroup(resourceGroup, appName)
 
-        val publishingCreds = retrievePublishingCredentials(manager, resourceGroup, appName)
+        // Retrieve publishing credentials from the function app
+        @Suppress("UNCHECKED_CAST")
+        val publishingProfiles = functionApp.javaClass.getDeclaredMethod("getPublishingProfiles")
+            .invoke(functionApp) as List<Any>
+        val publishingProfile = publishingProfiles.firstOrNull()
+            ?: throw IllegalStateException("No publishing profiles found for function app '$appName'")
+
+        val publishingUserName = publishingProfile.javaClass.getMethod("publishingUserName")
+            .invoke(publishingProfile) as String
+        val publishingPassword = publishingProfile.javaClass.getMethod("publishingPassword")
+            .invoke(publishingProfile) as String
 
         val kuduUrl = "https://$appName.scm.azurewebsites.net/api/zipdeploy"
         val requestBody = parameters.zipFile.asFile.get()
@@ -67,8 +60,8 @@ abstract class ZipDeployFunctionAppAction : WorkAction<ZipDeployFunctionAppActio
         val request = Request.Builder()
             .url(kuduUrl)
             .addHeader("Authorization", Credentials.basic(
-                publishingCreds.publishingUserName,
-                publishingCreds.publishingPassword
+                publishingUserName,
+                publishingPassword
             ))
             .post(requestBody)
             .build()
