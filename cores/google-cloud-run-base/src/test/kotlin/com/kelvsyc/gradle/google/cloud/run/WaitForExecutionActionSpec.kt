@@ -88,7 +88,7 @@ class WaitForExecutionActionSpec : FunSpec() {
             val exception = shouldThrow<GradleException> {
                 action.execute()
             }
-            exception.message shouldBe "Execution failed: $executionName"
+            exception.message shouldBe "Execution $executionName did not succeed (failedCount=1, cancelledCount=0)"
         }
 
         test("execute - polls until completion") {
@@ -135,6 +135,80 @@ class WaitForExecutionActionSpec : FunSpec() {
             action.execute()
 
             verify(exactly = 2) { client.getExecution(executionName) }
+        }
+
+        test("execute - throws GradleException when execution is cancelled") {
+            val project = ProjectBuilder.builder().build()
+            val client = mockk<ExecutionsClient>()
+            MockCloudRunExecutionsClientBuildService.mockClient = client
+
+            val service = project.gradle.sharedServices.registerIfAbsent(
+                "executions-cancel",
+                MockCloudRunExecutionsClientBuildService::class,
+            )
+
+            val executionName = "projects/p/locations/us-central1/jobs/my-job/executions/exec-4"
+            val completionTime = Timestamp.newBuilder()
+                .setSeconds(1000000000L)
+                .build()
+            val execution = Execution.newBuilder()
+                .setName(executionName)
+                .setCompletionTime(completionTime)
+                .setFailedCount(0)
+                .setCancelledCount(1)
+                .build()
+
+            every { client.getExecution(executionName) } returns execution
+
+            val params = project.objects.newInstance<WaitForExecutionAction.Parameters>()
+            params.service.set(service)
+            params.executionName.set(executionName)
+            params.pollIntervalMs.set(0L)
+
+            val action = object : WaitForExecutionAction() {
+                override fun getParameters() = params
+            }
+
+            val exception = shouldThrow<GradleException> {
+                action.execute()
+            }
+            exception.message shouldBe "Execution $executionName did not succeed (failedCount=0, cancelledCount=1)"
+        }
+
+        test("execute - throws GradleException when timeout is exceeded") {
+            val project = ProjectBuilder.builder().build()
+            val client = mockk<ExecutionsClient>()
+            MockCloudRunExecutionsClientBuildService.mockClient = client
+
+            val service = project.gradle.sharedServices.registerIfAbsent(
+                "executions-timeout",
+                MockCloudRunExecutionsClientBuildService::class,
+            )
+
+            val executionName = "projects/p/locations/us-central1/jobs/my-job/executions/exec-5"
+
+            // Return incomplete execution every time
+            val incompleteExecution = Execution.newBuilder()
+                .setName(executionName)
+                .setReconciling(true)
+                .build()
+
+            every { client.getExecution(executionName) } returns incompleteExecution
+
+            val params = project.objects.newInstance<WaitForExecutionAction.Parameters>()
+            params.service.set(service)
+            params.executionName.set(executionName)
+            params.pollIntervalMs.set(0L)
+            params.maxWaitTimeMs.set(0L)  // Set timeout to 0 to trigger immediately
+
+            val action = object : WaitForExecutionAction() {
+                override fun getParameters() = params
+            }
+
+            val exception = shouldThrow<GradleException> {
+                action.execute()
+            }
+            exception.message?.startsWith("Timed out waiting for execution $executionName") shouldBe true
         }
     }
 }
