@@ -16,7 +16,7 @@ import org.gradle.workers.WorkerExecutor
 import javax.inject.Inject
 
 /**
- * Abstract task that submits a Cloud Run Job Execution and waits for it to complete.
+ * Abstract task that submits a Cloud Run Job Execution, optionally waiting for it to complete.
  *
  * Job submission is performed inline in the [@TaskAction] method rather than delegating
  * to a WorkAction. This is because the submission API returns an execution name (a String)
@@ -24,6 +24,10 @@ import javax.inject.Inject
  * input-only — there is no mechanism for a WorkAction to write a String value back to the
  * calling task. Using a companion-object or static state to share this value would be
  * an anti-pattern that breaks under parallel task execution.
+ *
+ * If [executionNameFile] is set, the execution name is written to disk and the task returns
+ * immediately — waiting is deferred to a downstream [AbstractWaitForJobExecutionTask].
+ * If [executionNameFile] is absent, the task waits inline via [WaitForExecutionAction].
  *
  * Prefer [RunJobTask] for direct task registration. Subclass this abstract form only when
  * you need to supply custom `service` or `executionsService` bindings without `@ServiceReference` tracking.
@@ -59,8 +63,10 @@ abstract class AbstractRunJobTask @Inject constructor(
     abstract val overrides: MapProperty<String, String>
 
     /**
-     * If set, the execution name is written to this file after submission,
-     * enabling downstream tasks to wait for this execution via [AbstractWaitForJobExecutionTask].
+     * If set, the execution name is written to this file and the task returns immediately
+     * without waiting. A downstream [AbstractWaitForJobExecutionTask] can then wait for the
+     * execution, allowing other build work to run in between. If absent, this task waits
+     * inline via [WaitForExecutionAction].
      */
     @get:Optional
     @get:OutputFile
@@ -108,15 +114,13 @@ abstract class AbstractRunJobTask @Inject constructor(
             "Could not retrieve execution name for job ${jobName.get()}"
         }.name
 
-        // Write to file if configured
         if (executionNameFile.isPresent) {
             executionNameFile.get().asFile.writeText(executionName)
-        }
-
-        // Wait for execution
-        workerExecutor.noIsolation().submit(WaitForExecutionAction::class.java) { params ->
-            params.service.set(executionsService)
-            params.executionName.set(executionName)
+        } else {
+            workerExecutor.noIsolation().submit(WaitForExecutionAction::class.java) { params ->
+                params.service.set(executionsService)
+                params.executionName.set(executionName)
+            }
         }
     }
 

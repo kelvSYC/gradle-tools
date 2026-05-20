@@ -339,9 +339,11 @@ tasks.register<DeleteJobTask>("deleteBatchJob") {
 
 ### `RunJobTask` / `AbstractRunJobTask`
 
-Submits a Cloud Run Job Execution and waits for it to complete. Job submission is performed
-inline (not as a WorkAction); the execution name is optionally written to a file for use by
-downstream tasks:
+Submits a Cloud Run Job Execution. If `executionNameFile` is set, the execution name is written
+to disk and the task returns immediately — a downstream `WaitForJobExecutionTask` handles the
+wait, allowing other build work to run in between. If `executionNameFile` is absent, the task
+waits inline via `WaitForExecutionAction`. Job submission is always performed inline (not as a
+WorkAction):
 
 ```kotlin
 tasks.register<RunJobTask>("runBatchJob") {
