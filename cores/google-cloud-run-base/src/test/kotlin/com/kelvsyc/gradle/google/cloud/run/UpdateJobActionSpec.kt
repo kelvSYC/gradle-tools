@@ -55,12 +55,12 @@ class UpdateJobActionSpec : FunSpec() {
             capturedJob.template.template.containersList[0].envList[0].value shouldBe "production"
         }
 
-        test("execute - update passes correct request") {
+        test("execute - update request contains the updated job") {
             val project = ProjectBuilder.builder().build()
             val client = mockk<JobsClient>()
             MockCloudRunJobsClientBuildService.mockClient = client
             val service = project.gradle.sharedServices.registerIfAbsent(
-                "jobs-mask",
+                "jobs-verify",
                 MockCloudRunJobsClientBuildService::class,
             )
 

@@ -84,7 +84,6 @@ abstract class UpdateJobAction : WorkAction<UpdateJobAction.Parameters> {
 
         val request = UpdateJobRequest.newBuilder()
             .setJob(updated)
-            .setAllowMissing(false)
             .build()
 
         client.updateJobAsync(request).get()
