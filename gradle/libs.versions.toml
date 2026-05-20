@@ -94,6 +94,8 @@ google-cloud-kms = { module = "com.google.cloud:google-cloud-kms" } # version fr
 google-cloud-secret-manager = { module = "com.google.cloud:google-cloud-secretmanager" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-secret-manager-proto = { module = "com.google.api.grpc:proto-google-cloud-secretmanager-v1" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-storage = { module = "com.google.cloud:google-cloud-storage" } # version from BOM 'google-cloud-libraries-bom'
+google-cloud-run = { module = "com.google.cloud:google-cloud-run" } # version from BOM 'google-cloud-libraries-bom'
+google-cloud-run-proto = { module = "com.google.api.grpc:proto-google-cloud-run-v2" } # version from BOM 'google-cloud-libraries-bom'
 google-gax = { module = "com.google.api:gax" } # version from BOM 'google-cloud-libraries-bom'
 google-protobuf-java = { module = "com.google.protobuf:protobuf-java" } # version from BOM 'google-cloud-libraries-bom'
 gson = "com.google.code.gson:gson:2.14.0"
