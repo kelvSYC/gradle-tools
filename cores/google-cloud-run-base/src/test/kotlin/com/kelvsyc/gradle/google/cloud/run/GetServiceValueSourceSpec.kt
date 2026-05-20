@@ -1,5 +1,7 @@
 package com.kelvsyc.gradle.google.cloud.run
 
+import com.google.api.gax.rpc.NotFoundException
+import com.google.api.gax.rpc.StatusCode
 import com.google.cloud.run.v2.Service
 import com.google.cloud.run.v2.ServicesClient
 import io.kotest.core.spec.style.FunSpec
@@ -59,6 +61,30 @@ class GetServiceValueSourceSpec : FunSpec() {
             val provider = project.providers.ofKt(GetServiceValueSource::class) {
                 parameters.service.set(service)
                 parameters.serviceName.set("projects/my-project/locations/us-central1/services/my-service")
+            }
+
+            provider.orNull shouldBe null
+        }
+
+        test("obtain - returns null when service is not found") {
+            val project = ProjectBuilder.builder().build()
+            val client = mockk<ServicesClient>()
+            MockCloudRunServicesClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent(
+                "services-not-found",
+                MockCloudRunServicesClientBuildService::class,
+            )
+
+            val statusCode = mockk<StatusCode>()
+            every { client.getService(any<String>()) } throws NotFoundException(
+                Exception("Service not found"),
+                statusCode,
+                false
+            )
+
+            val provider = project.providers.ofKt(GetServiceValueSource::class) {
+                parameters.service.set(service)
+                parameters.serviceName.set("projects/my-project/locations/us-central1/services/nonexistent")
             }
 
             provider.orNull shouldBe null

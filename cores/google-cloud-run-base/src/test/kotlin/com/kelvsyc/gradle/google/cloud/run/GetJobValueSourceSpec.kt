@@ -1,5 +1,7 @@
 package com.kelvsyc.gradle.google.cloud.run
 
+import com.google.api.gax.rpc.NotFoundException
+import com.google.api.gax.rpc.StatusCode
 import com.google.cloud.run.v2.ExecutionReference
 import com.google.cloud.run.v2.Job
 import com.google.cloud.run.v2.JobsClient
@@ -67,6 +69,30 @@ class GetJobValueSourceSpec : FunSpec() {
             val provider = project.providers.ofKt(GetJobValueSource::class) {
                 parameters.service.set(service)
                 parameters.jobName.set("projects/my-project/locations/us-central1/jobs/my-job")
+            }
+
+            provider.orNull shouldBe null
+        }
+
+        test("obtain - returns null when job is not found") {
+            val project = ProjectBuilder.builder().build()
+            val client = mockk<JobsClient>()
+            MockCloudRunJobsClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent(
+                "jobs-not-found",
+                MockCloudRunJobsClientBuildService::class,
+            )
+
+            val statusCode = mockk<StatusCode>()
+            every { client.getJob(any<String>()) } throws NotFoundException(
+                Exception("Job not found"),
+                statusCode,
+                false
+            )
+
+            val provider = project.providers.ofKt(GetJobValueSource::class) {
+                parameters.service.set(service)
+                parameters.jobName.set("projects/my-project/locations/us-central1/jobs/nonexistent")
             }
 
             provider.orNull shouldBe null

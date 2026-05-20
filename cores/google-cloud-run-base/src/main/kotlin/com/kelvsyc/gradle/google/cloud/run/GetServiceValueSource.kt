@@ -1,5 +1,6 @@
 package com.kelvsyc.gradle.google.cloud.run
 
+import com.google.api.gax.rpc.NotFoundException
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
@@ -36,8 +37,8 @@ abstract class GetServiceValueSource : ValueSource<String, GetServiceValueSource
         return try {
             val service = parameters.service.get().getClient().getService(parameters.serviceName.get())
             service.uri.takeIf { it.isNotBlank() }
-        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-            if (e.javaClass.name == "com.google.api.gax.rpc.NotFoundException") null else throw e
+        } catch (@Suppress("SwallowedException") e: NotFoundException) {
+            null
         }
     }
 }
