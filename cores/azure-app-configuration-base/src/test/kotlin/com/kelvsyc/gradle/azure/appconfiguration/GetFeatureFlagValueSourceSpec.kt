@@ -91,5 +91,27 @@ class GetFeatureFlagValueSourceSpec : FunSpec() {
 
             keySlot.captured shouldBe ".appconfig.featureflag/my-feature"
         }
+
+        test("obtain - passes label when set") {
+            val project = ProjectBuilder.builder().build()
+            val client = mockk<ConfigurationClient>()
+            MockAppConfigurationClientBuildService.mockClient = client
+            val service = project.gradle.sharedServices.registerIfAbsent(
+                "appconfig",
+                MockAppConfigurationClientBuildService::class
+            )
+            val labelSlot = slot<String>()
+            val flag = FeatureFlagConfigurationSetting("my-feature", true)
+            every { client.getConfigurationSetting(any(), capture(labelSlot)) } returns flag
+
+            val provider = project.providers.ofKt(GetFeatureFlagValueSource::class) {
+                parameters.service.set(service)
+                parameters.featureName.set("my-feature")
+                parameters.label.set("prod")
+            }
+            provider.orNull
+
+            labelSlot.captured shouldBe "prod"
+        }
     }
 }
