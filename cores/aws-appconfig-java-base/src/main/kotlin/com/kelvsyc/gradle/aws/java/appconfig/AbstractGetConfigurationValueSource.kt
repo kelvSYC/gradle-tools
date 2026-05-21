@@ -6,18 +6,17 @@ import org.gradle.api.provider.ValueSourceParameters
 import org.gradle.api.tasks.Internal
 
 /**
- * Abstract [ValueSource] template base for retrieving a deployed AppConfig configuration
- * and converting it to a custom value type.
+ * Abstract [ValueSource] base for retrieving a deployed AppConfig configuration and converting it
+ * to a value of type [T].
  *
- * Extend this class and implement [convert] to transform the raw configuration bytes
- * into your desired type. Returns `null` when the configuration is unavailable or empty.
- *
- * Most users should use [GetConfigurationValueSource] for UTF-8 string retrieval.
- * Extend this class only if you need a different conversion (e.g., JSON, binary format).
+ * Subclasses implement [convert] to map the raw configuration bytes to the desired type.
+ * Returns `null` when the configuration is unavailable or the byte array is empty.
  *
  * @param T the non-null value type returned by [obtain].
+ * @param P the parameters type, which must extend [Parameters].
  */
-abstract class AbstractGetConfigurationValueSource<T : Any> : ValueSource<T, AbstractGetConfigurationValueSource.Parameters> {
+abstract class AbstractGetConfigurationValueSource<T : Any, P : AbstractGetConfigurationValueSource.Parameters> :
+    ValueSource<T, P> {
     /**
      * Common parameters for all [AbstractGetConfigurationValueSource] implementations.
      */
@@ -48,8 +47,7 @@ abstract class AbstractGetConfigurationValueSource<T : Any> : ValueSource<T, Abs
             parameters.applicationIdentifier.get(),
             parameters.environmentIdentifier.get(),
             parameters.configurationProfileIdentifier.get(),
-        )
-        if (bytes == null || bytes.isEmpty()) return null
-        return convert(bytes)
+        ) ?: return null
+        return if (bytes.isEmpty()) null else convert(bytes)
     }
 }
