@@ -66,6 +66,7 @@ since the two AWS SDKs are distinct libraries:
 | `azure-blob-storage-base` | Azure Blob Storage |
 | `azure-container-registry-base` | Azure Container Registry |
 | `azure-functions-base` | Deploy, invoke, and configure Azure Function Apps (zip deploy, run-from-package, HTTP invocation, app settings) |
+| `azure-app-configuration-base` | Read and write Azure App Configuration key-values, feature flags, and snapshots |
 | `azure-key-vault-base` | Azure Key Vault |
 | `azure-managed-identity-base` | Azure Managed Identity / IMDS |
 | `azure-service-bus-base` | Azure Service Bus |
