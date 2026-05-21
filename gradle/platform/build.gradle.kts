@@ -31,7 +31,6 @@ dependencies {
         api(libs.pkl.core)
         api(libs.vault.java.driver)
         api(libs.woodstox)
-        api(libs.azure.data.appconfiguration)
         api(libs.azure.resourcemanager.appconfiguration)
     }
 }
