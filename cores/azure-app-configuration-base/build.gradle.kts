@@ -23,4 +23,6 @@ dependencies {
 tasks.test {
     // FIXME https://github.com/gradle/gradle/issues/18647
     jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
+    // Mock build services are compiled into the test source set but no runnable specs exist yet
+    failOnNoDiscoveredTests = false
 }
