@@ -41,6 +41,8 @@ azure-messaging-servicebus = { module = "com.azure:azure-messaging-servicebus" }
 azure-storage-common = { module = "com.azure:azure-storage-common" } # version from BOM 'azure-sdk-bom'
 azure-containers-containerregistry = { module = "com.azure:azure-containers-containerregistry" } # version from BOM 'azure-sdk-bom'
 azure-resourcemanager-appservice = { module = "com.azure.resourcemanager:azure-resourcemanager-appservice" } # version from BOM 'azure-sdk-bom'
+azure-data-appconfiguration = { module = "com.azure:azure-data-appconfiguration" } # version from BOM 'azure-sdk-bom'
+azure-resourcemanager-appconfiguration = { module = "com.azure.resourcemanager:azure-resourcemanager-appconfiguration", version = "1.2.0-beta.1" } # not in azure-sdk-bom; pinned explicitly
 aws-appconfig-java = { module = "software.amazon.awssdk:appconfig" } # version from BOM 'aws-java-sdk-bom'
 aws-appconfigdata-java = { module = "software.amazon.awssdk:appconfigdata" } # version from BOM 'aws-java-sdk-bom'
 aws-auth-java = { module = "software.amazon.awssdk:auth" } # version from BOM 'aws-java-sdk-bom'
