@@ -1,6 +1,9 @@
 package com.kelvsyc.gradle.azure.appconfiguration
 
 import com.azure.data.appconfiguration.models.SettingSelector
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.gradle.api.logging.Logging
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
@@ -13,9 +16,6 @@ import org.gradle.api.tasks.Internal
  * prefix automatically stripped, so the returned keys are bare feature names.
  *
  * Returns an empty map if no feature flags match the filter.
- *
- * Note: The enabled state is determined by parsing the setting's JSON value for the `enabled` field.
- * Pending JSON parsing implementation, this currently returns `false` for all flags.
  */
 abstract class ListFeatureFlagsValueSource :
     ValueSource<Map<String, Boolean>, ListFeatureFlagsValueSource.Parameters> {
@@ -38,12 +38,12 @@ abstract class ListFeatureFlagsValueSource :
 
     override fun obtain(): Map<String, Boolean> {
         val client = parameters.service.get().getClient()
-        val selector = SettingSelector()
-        selector.setKeyFilter(".appconfig.featureflag/*")
+        val selector = SettingSelector().setKeyFilter(".appconfig.featureflag/*")
         if (parameters.label.isPresent) {
             selector.setLabelFilter(parameters.label.get())
         }
 
+        val mapper = ObjectMapper()
         return client.listConfigurationSettings(selector)
             .toList()
             .filter { setting ->
@@ -52,9 +52,21 @@ abstract class ListFeatureFlagsValueSource :
             }
             .associate { setting ->
                 val flagName = setting.key.removePrefix(".appconfig.featureflag/")
-                // Would parse JSON to extract enabled field; for now return false
-                flagName to false
+                try {
+                    val json = mapper.readTree(setting.value)
+                    val enabled = json.get("enabled")?.asBoolean() ?: false
+                    flagName to enabled
+                } catch (e: JsonProcessingException) {
+                    logger.debug("Failed to parse feature flag JSON for $flagName", e)
+                    flagName to false
+                }
             }
     }
+
+    private companion object {
+        private val logger = Logging.getLogger(ListFeatureFlagsValueSource::class.java)
+    }
 }
+
+
 

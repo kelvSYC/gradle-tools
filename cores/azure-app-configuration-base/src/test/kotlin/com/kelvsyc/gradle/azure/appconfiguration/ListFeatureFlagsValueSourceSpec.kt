@@ -12,7 +12,7 @@ import org.gradle.testfixtures.ProjectBuilder
 
 class ListFeatureFlagsValueSourceSpec : FunSpec() {
     init {
-        test("obtain - returns feature name to enabled map (placeholder until JSON parsing added)") {
+        test("obtain - returns feature name to enabled map") {
             val project = ProjectBuilder.builder().build()
             val client = mockk<ConfigurationClient>()
             MockAppConfigurationClientBuildService.mockClient = client
@@ -24,10 +24,12 @@ class ListFeatureFlagsValueSourceSpec : FunSpec() {
             val flag1 = mockk<ConfigurationSetting>()
             every { flag1.key } returns ".appconfig.featureflag/feature-a"
             every { flag1.contentType } returns "application/vnd.microsoft.appconfig.featureflag+json"
+            every { flag1.value } returns """{"enabled":true}"""
 
             val flag2 = mockk<ConfigurationSetting>()
             every { flag2.key } returns ".appconfig.featureflag/feature-b"
             every { flag2.contentType } returns "application/vnd.microsoft.appconfig.featureflag+json"
+            every { flag2.value } returns """{"enabled":false}"""
 
             every { client.listConfigurationSettings(any()) } returns
                 mockk { every { iterator() } returns listOf(flag1, flag2).toMutableList().iterator() }
@@ -37,9 +39,8 @@ class ListFeatureFlagsValueSourceSpec : FunSpec() {
             }
             val result = provider.get()
 
-            // Returns false for all until JSON parsing is implemented
             result shouldContainExactly mapOf(
-                "feature-a" to false,
+                "feature-a" to true,
                 "feature-b" to false
             )
         }
@@ -64,7 +65,7 @@ class ListFeatureFlagsValueSourceSpec : FunSpec() {
             result.shouldBeEmpty()
         }
 
-        test("obtain - uses feature flag key prefix in selector") {
+        test("obtain - returns flag names without prefix") {
             val project = ProjectBuilder.builder().build()
             val client = mockk<ConfigurationClient>()
             MockAppConfigurationClientBuildService.mockClient = client
@@ -76,6 +77,7 @@ class ListFeatureFlagsValueSourceSpec : FunSpec() {
             val flag = mockk<ConfigurationSetting>()
             every { flag.key } returns ".appconfig.featureflag/test-flag"
             every { flag.contentType } returns "application/vnd.microsoft.appconfig.featureflag+json"
+            every { flag.value } returns """{"enabled":true}"""
 
             every { client.listConfigurationSettings(any()) } returns
                 mockk { every { iterator() } returns listOf(flag).toMutableList().iterator() }
@@ -85,8 +87,10 @@ class ListFeatureFlagsValueSourceSpec : FunSpec() {
             }
             val result = provider.get()
 
-            result shouldContainExactly mapOf("test-flag" to false)
+            result shouldContainExactly mapOf("test-flag" to true)
         }
     }
 }
+
+
 

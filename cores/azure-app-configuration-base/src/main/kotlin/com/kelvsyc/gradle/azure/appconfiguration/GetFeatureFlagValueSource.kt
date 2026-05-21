@@ -1,6 +1,8 @@
 package com.kelvsyc.gradle.azure.appconfiguration
 
 import com.azure.core.exception.ResourceNotFoundException
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.gradle.api.logging.Logging
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
@@ -13,10 +15,9 @@ import org.gradle.api.tasks.Internal
  * Feature flag keys in Azure App Configuration are stored with the prefix `.appconfig.featureflag/`.
  * Callers provide only the feature name; this class constructs the full key internally.
  *
- * Returns `true` if the feature flag exists and is enabled, `false` if it exists and is disabled,
- * and `false` if the feature flag is not found.
+ * Returns `true` if the feature flag exists and is enabled, and `false` if it is disabled or not found.
  *
- * The enabled state is determined by parsing the setting's JSON value for the `enabled` field.
+ * The enabled state is extracted from the setting's JSON value by reading the `enabled` field.
  */
 abstract class GetFeatureFlagValueSource :
     ValueSource<Boolean, GetFeatureFlagValueSource.Parameters> {
@@ -47,13 +48,17 @@ abstract class GetFeatureFlagValueSource :
             val client = parameters.service.get().getClient()
             val key = ".appconfig.featureflag/" + parameters.featureName.get()
             val setting = client.getConfigurationSetting(key, parameters.label.orNull)
-            // Feature flag value is a JSON containing { "enabled": true|false }
-            // For now, check content type to identify if this is a feature flag setting
             val contentType = setting.contentType ?: ""
             if (contentType.contains("featureflag", ignoreCase = true)) {
-                // Would need to parse JSON to extract enabled field; for now return false
-                // This is a placeholder pending actual JSON parsing implementation
-                false
+                // Feature flag value is a JSON containing { "enabled": true|false }
+                try {
+                    val mapper = ObjectMapper()
+                    val json = mapper.readTree(setting.value)
+                    json.get("enabled")?.asBoolean() ?: false
+                } catch (e: JsonProcessingException) {
+                    logger.debug("Failed to parse feature flag JSON for ${parameters.featureName.get()}", e)
+                    false
+                }
             } else {
                 false
             }
@@ -67,5 +72,7 @@ abstract class GetFeatureFlagValueSource :
         private val logger = Logging.getLogger(GetFeatureFlagValueSource::class.java)
     }
 }
+
+
 
 

@@ -12,7 +12,7 @@ import org.gradle.api.tasks.Internal
  *
  * Returns the setting's value as a string. When the setting is a Key Vault reference
  * (identified by content type `application/vnd.microsoft.appconfig.keyvaultref+json`),
- * returns empty string instead. Callers should use `azure-key-vault-base` to resolve Key Vault
+ * returns an empty string. Callers should use `azure-key-vault-base` to resolve Key Vault
  * references separately.
  *
  * Returns empty string if the configuration setting is not found.
@@ -48,7 +48,6 @@ abstract class GetConfigurationSettingValueSource :
                 parameters.key.get(),
                 parameters.label.orNull
             )
-            // Skip Key Vault references by checking content type.
             val contentType = setting.contentType ?: ""
             if (contentType.contains("keyvaultref", ignoreCase = true)) "" else setting.value
         } catch (e: ResourceNotFoundException) {
@@ -61,5 +60,7 @@ abstract class GetConfigurationSettingValueSource :
         private val logger = Logging.getLogger(GetConfigurationSettingValueSource::class.java)
     }
 }
+
+
 
 
