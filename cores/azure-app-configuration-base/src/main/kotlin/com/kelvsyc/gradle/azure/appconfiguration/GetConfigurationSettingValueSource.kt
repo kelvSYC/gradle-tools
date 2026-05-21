@@ -10,12 +10,11 @@ import org.gradle.api.tasks.Internal
 /**
  * [ValueSource] that retrieves a single configuration setting from Azure App Configuration.
  *
- * Returns the setting's value as a string. When the setting is a Key Vault reference
- * (identified by content type `application/vnd.microsoft.appconfig.keyvaultref+json`),
- * returns an empty string. Callers should use `azure-key-vault-base` to resolve Key Vault
- * references separately.
- *
- * Returns empty string if the configuration setting is not found.
+ * Returns the setting's string value, or `null` if:
+ * - the setting does not exist, or
+ * - the setting is a Key Vault reference (content type contains `keyvaultref`). Key Vault
+ *   references are intentionally not resolved here to prevent secrets from entering the
+ *   configuration cache; use `azure-key-vault-base` and resolve at task execution time instead.
  */
 abstract class GetConfigurationSettingValueSource :
     ValueSource<String, GetConfigurationSettingValueSource.Parameters> {
@@ -41,18 +40,15 @@ abstract class GetConfigurationSettingValueSource :
         val label: Property<String>
     }
 
-    override fun obtain(): String {
+    override fun obtain(): String? {
         return try {
             val client = parameters.service.get().getClient()
-            val setting = client.getConfigurationSetting(
-                parameters.key.get(),
-                parameters.label.orNull
-            )
+            val setting = client.getConfigurationSetting(parameters.key.get(), parameters.label.orNull)
             val contentType = setting.contentType ?: ""
-            if (contentType.contains("keyvaultref", ignoreCase = true)) "" else setting.value
+            if (contentType.contains("keyvaultref", ignoreCase = true)) null else setting.value
         } catch (e: ResourceNotFoundException) {
             logger.debug("Configuration setting not found: ${parameters.key.get()}", e)
-            ""
+            null
         }
     }
 

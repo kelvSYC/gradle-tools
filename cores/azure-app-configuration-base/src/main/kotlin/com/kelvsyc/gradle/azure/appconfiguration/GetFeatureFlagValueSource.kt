@@ -1,8 +1,7 @@
 package com.kelvsyc.gradle.azure.appconfiguration
 
 import com.azure.core.exception.ResourceNotFoundException
-import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.azure.data.appconfiguration.models.FeatureFlagConfigurationSetting
 import org.gradle.api.logging.Logging
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.ValueSource
@@ -12,12 +11,12 @@ import org.gradle.api.tasks.Internal
 /**
  * [ValueSource] that retrieves the enabled state of a feature flag from Azure App Configuration.
  *
- * Feature flag keys in Azure App Configuration are stored with the prefix `.appconfig.featureflag/`.
- * Callers provide only the feature name; this class constructs the full key internally.
+ * Feature flag keys in Azure App Configuration are stored with the prefix
+ * [FeatureFlagConfigurationSetting.KEY_PREFIX] (`.appconfig.featureflag/`). Callers provide
+ * only the feature name; this class constructs the full key internally.
  *
- * Returns `true` if the feature flag exists and is enabled, and `false` if it is disabled or not found.
- *
- * The enabled state is extracted from the setting's JSON value by reading the `enabled` field.
+ * Returns `true` if the feature flag exists and is enabled, `false` if it exists and is disabled,
+ * or `null` if the feature flag is not found.
  */
 abstract class GetFeatureFlagValueSource :
     ValueSource<Boolean, GetFeatureFlagValueSource.Parameters> {
@@ -33,7 +32,7 @@ abstract class GetFeatureFlagValueSource :
         val service: Property<AppConfigurationClientBuildService>
 
         /**
-         * The feature flag name (without the `.appconfig.featureflag/` prefix).
+         * The feature flag name (without the [FeatureFlagConfigurationSetting.KEY_PREFIX]).
          */
         val featureName: Property<String>
 
@@ -43,28 +42,15 @@ abstract class GetFeatureFlagValueSource :
         val label: Property<String>
     }
 
-    override fun obtain(): Boolean {
+    override fun obtain(): Boolean? {
         return try {
             val client = parameters.service.get().getClient()
-            val key = ".appconfig.featureflag/" + parameters.featureName.get()
+            val key = FeatureFlagConfigurationSetting.KEY_PREFIX + parameters.featureName.get()
             val setting = client.getConfigurationSetting(key, parameters.label.orNull)
-            val contentType = setting.contentType ?: ""
-            if (contentType.contains("featureflag", ignoreCase = true)) {
-                // Feature flag value is a JSON containing { "enabled": true|false }
-                try {
-                    val mapper = ObjectMapper()
-                    val json = mapper.readTree(setting.value)
-                    json.get("enabled")?.asBoolean() ?: false
-                } catch (e: JsonProcessingException) {
-                    logger.debug("Failed to parse feature flag JSON for ${parameters.featureName.get()}", e)
-                    false
-                }
-            } else {
-                false
-            }
+            if (setting is FeatureFlagConfigurationSetting) setting.isEnabled else null
         } catch (e: ResourceNotFoundException) {
             logger.debug("Feature flag not found: ${parameters.featureName.get()}", e)
-            false
+            null
         }
     }
 
@@ -72,7 +58,3 @@ abstract class GetFeatureFlagValueSource :
         private val logger = Logging.getLogger(GetFeatureFlagValueSource::class.java)
     }
 }
-
-
-
-

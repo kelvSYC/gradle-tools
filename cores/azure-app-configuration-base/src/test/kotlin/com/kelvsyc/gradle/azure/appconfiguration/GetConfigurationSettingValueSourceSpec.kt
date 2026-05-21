@@ -23,22 +23,19 @@ class GetConfigurationSettingValueSourceSpec : FunSpec() {
                 MockAppConfigurationClientBuildService::class
             )
             val keySlot = slot<String>()
-            val setting = mockk<ConfigurationSetting>()
-            every { setting.value } returns "hello"
-            every { setting.contentType } returns null
-            every { client.getConfigurationSetting(capture(keySlot), any()) } returns setting
+            val setting = ConfigurationSetting().setKey("app.name").setValue("hello")
+            every { client.getConfigurationSetting(capture(keySlot), null) } returns setting
 
             val provider = project.providers.ofKt(GetConfigurationSettingValueSource::class) {
                 parameters.service.set(service)
                 parameters.key.set("app.name")
             }
-            val result = provider.get()
 
-            result shouldBe "hello"
+            provider.orNull shouldBe "hello"
             keySlot.captured shouldBe "app.name"
         }
 
-        test("obtain - returns empty string for Key Vault reference") {
+        test("obtain - returns null for Key Vault reference") {
             val project = ProjectBuilder.builder().build()
             val client = mockk<ConfigurationClient>()
             MockAppConfigurationClientBuildService.mockClient = client
@@ -46,20 +43,20 @@ class GetConfigurationSettingValueSourceSpec : FunSpec() {
                 "appconfig",
                 MockAppConfigurationClientBuildService::class
             )
-            val kvSetting = mockk<ConfigurationSetting>()
-            every { kvSetting.contentType } returns "application/vnd.microsoft.appconfig.keyvaultref+json"
-            every { client.getConfigurationSetting(any(), any()) } returns kvSetting
+            val kvSetting = ConfigurationSetting()
+                .setKey("kv-ref")
+                .setContentType("application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8")
+            every { client.getConfigurationSetting(any(), null) } returns kvSetting
 
             val provider = project.providers.ofKt(GetConfigurationSettingValueSource::class) {
                 parameters.service.set(service)
                 parameters.key.set("kv-ref")
             }
-            val result = provider.get()
 
-            result shouldBe ""
+            provider.orNull.shouldBeNull()
         }
 
-        test("obtain - returns empty string when setting not found") {
+        test("obtain - returns null when setting not found") {
             val project = ProjectBuilder.builder().build()
             val client = mockk<ConfigurationClient>()
             MockAppConfigurationClientBuildService.mockClient = client
@@ -67,16 +64,15 @@ class GetConfigurationSettingValueSourceSpec : FunSpec() {
                 "appconfig",
                 MockAppConfigurationClientBuildService::class
             )
-            every { client.getConfigurationSetting(any(), any()) } throws
+            every { client.getConfigurationSetting(any(), null) } throws
                 ResourceNotFoundException("not found", null)
 
             val provider = project.providers.ofKt(GetConfigurationSettingValueSource::class) {
                 parameters.service.set(service)
                 parameters.key.set("missing-key")
             }
-            val result = provider.get()
 
-            result shouldBe ""
+            provider.orNull.shouldBeNull()
         }
 
         test("obtain - passes label when set") {
@@ -89,9 +85,7 @@ class GetConfigurationSettingValueSourceSpec : FunSpec() {
             )
             val keySlot = slot<String>()
             val labelSlot = slot<String>()
-            val setting = mockk<ConfigurationSetting>()
-            every { setting.value } returns "prod-value"
-            every { setting.contentType } returns null
+            val setting = ConfigurationSetting().setKey("app.config").setValue("prod-value")
             every { client.getConfigurationSetting(capture(keySlot), capture(labelSlot)) } returns setting
 
             val provider = project.providers.ofKt(GetConfigurationSettingValueSource::class) {
@@ -99,14 +93,10 @@ class GetConfigurationSettingValueSourceSpec : FunSpec() {
                 parameters.key.set("app.config")
                 parameters.label.set("prod")
             }
-            val result = provider.get()
 
-            result shouldBe "prod-value"
+            provider.orNull shouldBe "prod-value"
             keySlot.captured shouldBe "app.config"
             labelSlot.captured shouldBe "prod"
         }
     }
 }
-
-
-

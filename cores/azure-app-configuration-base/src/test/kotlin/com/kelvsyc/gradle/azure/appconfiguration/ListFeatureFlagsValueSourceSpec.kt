@@ -1,7 +1,7 @@
 package com.kelvsyc.gradle.azure.appconfiguration
 
 import com.azure.data.appconfiguration.ConfigurationClient
-import com.azure.data.appconfiguration.models.ConfigurationSetting
+import com.azure.data.appconfiguration.models.FeatureFlagConfigurationSetting
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.maps.shouldBeEmpty
 import io.kotest.matchers.maps.shouldContainExactly
@@ -20,29 +20,16 @@ class ListFeatureFlagsValueSourceSpec : FunSpec() {
                 "appconfig",
                 MockAppConfigurationClientBuildService::class
             )
-
-            val flag1 = mockk<ConfigurationSetting>()
-            every { flag1.key } returns ".appconfig.featureflag/feature-a"
-            every { flag1.contentType } returns "application/vnd.microsoft.appconfig.featureflag+json"
-            every { flag1.value } returns """{"enabled":true}"""
-
-            val flag2 = mockk<ConfigurationSetting>()
-            every { flag2.key } returns ".appconfig.featureflag/feature-b"
-            every { flag2.contentType } returns "application/vnd.microsoft.appconfig.featureflag+json"
-            every { flag2.value } returns """{"enabled":false}"""
-
+            val flag1 = FeatureFlagConfigurationSetting("feature-a", true)
+            val flag2 = FeatureFlagConfigurationSetting("feature-b", false)
             every { client.listConfigurationSettings(any()) } returns
-                mockk { every { iterator() } returns listOf(flag1, flag2).toMutableList().iterator() }
+                mockk { every { iterator() } returns mutableListOf(flag1, flag2).iterator() }
 
             val provider = project.providers.ofKt(ListFeatureFlagsValueSource::class) {
                 parameters.service.set(service)
             }
-            val result = provider.get()
 
-            result shouldContainExactly mapOf(
-                "feature-a" to true,
-                "feature-b" to false
-            )
+            provider.get() shouldContainExactly mapOf("feature-a" to true, "feature-b" to false)
         }
 
         test("obtain - returns empty map when no flags") {
@@ -53,16 +40,14 @@ class ListFeatureFlagsValueSourceSpec : FunSpec() {
                 "appconfig",
                 MockAppConfigurationClientBuildService::class
             )
-
             every { client.listConfigurationSettings(any()) } returns
-                mockk { every { iterator() } returns listOf<ConfigurationSetting>().toMutableList().iterator() }
+                mockk { every { iterator() } returns mutableListOf<FeatureFlagConfigurationSetting>().iterator() }
 
             val provider = project.providers.ofKt(ListFeatureFlagsValueSource::class) {
                 parameters.service.set(service)
             }
-            val result = provider.get()
 
-            result.shouldBeEmpty()
+            provider.get().shouldBeEmpty()
         }
 
         test("obtain - returns flag names without prefix") {
@@ -73,24 +58,15 @@ class ListFeatureFlagsValueSourceSpec : FunSpec() {
                 "appconfig",
                 MockAppConfigurationClientBuildService::class
             )
-
-            val flag = mockk<ConfigurationSetting>()
-            every { flag.key } returns ".appconfig.featureflag/test-flag"
-            every { flag.contentType } returns "application/vnd.microsoft.appconfig.featureflag+json"
-            every { flag.value } returns """{"enabled":true}"""
-
+            val flag = FeatureFlagConfigurationSetting("test-flag", true)
             every { client.listConfigurationSettings(any()) } returns
-                mockk { every { iterator() } returns listOf(flag).toMutableList().iterator() }
+                mockk { every { iterator() } returns mutableListOf(flag).iterator() }
 
             val provider = project.providers.ofKt(ListFeatureFlagsValueSource::class) {
                 parameters.service.set(service)
             }
-            val result = provider.get()
 
-            result shouldContainExactly mapOf("test-flag" to true)
+            provider.get() shouldContainExactly mapOf("test-flag" to true)
         }
     }
 }
-
-
-
