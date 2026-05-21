@@ -1,0 +1,11 @@
+pluginManagement {
+    includeBuild("../../gradle/settings")
+}
+
+plugins {
+    id("com.kelvsyc.internal")
+}
+
+includeBuild("../clients-base")
+includeBuild("../gradle-extensions")
+includeBuild("../aws-java-extensions")

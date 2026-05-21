@@ -41,6 +41,8 @@ azure-messaging-servicebus = { module = "com.azure:azure-messaging-servicebus" }
 azure-storage-common = { module = "com.azure:azure-storage-common" } # version from BOM 'azure-sdk-bom'
 azure-containers-containerregistry = { module = "com.azure:azure-containers-containerregistry" } # version from BOM 'azure-sdk-bom'
 azure-resourcemanager-appservice = { module = "com.azure.resourcemanager:azure-resourcemanager-appservice" } # version from BOM 'azure-sdk-bom'
+aws-appconfig-java = { module = "software.amazon.awssdk:appconfig" } # version from BOM 'aws-java-sdk-bom'
+aws-appconfigdata-java = { module = "software.amazon.awssdk:appconfigdata" } # version from BOM 'aws-java-sdk-bom'
 aws-auth-java = { module = "software.amazon.awssdk:auth" } # version from BOM 'aws-java-sdk-bom'
 aws-config-kotlin = { module = "aws.sdk.kotlin:aws-config" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-core-java = { module = "software.amazon.awssdk:aws-core" } # version from BOM 'aws-java-sdk-bom'

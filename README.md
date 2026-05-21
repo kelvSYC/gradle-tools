@@ -37,6 +37,7 @@ since the two AWS SDKs are distinct libraries:
 
 | AWS Service | Java | Kotlin |
 |-------------|------|--------|
+| AppConfig | `aws-appconfig-java-base` | — |
 | S3 | `aws-s3-java-base` | `aws-s3-kotlin-base` |
 | SQS | `aws-sqs-java-base` | `aws-sqs-kotlin-base` |
 | SNS | `aws-sns-java-base` | `aws-sns-kotlin-base` |
