@@ -21,5 +21,6 @@ dependencies {
 }
 
 tasks.test {
+    // FIXME https://github.com/gradle/gradle/issues/18647
     jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
 }
