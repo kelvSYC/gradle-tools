@@ -13,11 +13,21 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import java.time.Instant
-import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 
-class AbstractAssumeRoleWorkActionSpec : FunSpec() {
+/**
+ * Concrete implementation of [AbstractAssumeRole] for testing purposes.
+ */
+abstract class ConcreteAssumeRole : AbstractAssumeRole() {
+    var capturedCredential: AwsSessionCredential? = null
+
+    override fun doExecute(credential: AwsSessionCredential) {
+        capturedCredential = credential
+    }
+}
+
+class AbstractAssumeRoleSpec : FunSpec() {
     init {
         test("execute - passes roleArn, roleSessionName, duration and calls doExecute with credential") {
             val project = ProjectBuilder.builder().build()
@@ -37,30 +47,22 @@ class AbstractAssumeRoleWorkActionSpec : FunSpec() {
             every { response.credentials } returns sdkCreds
             coEvery { client.assumeRole(capture(requestSlot)) } returns response
 
-            val params = project.objects.newInstance<AbstractAssumeRoleWorkAction.Parameters>()
-            params.service.set(service)
-            params.roleArn.set("arn:aws:iam::123456789012:role/TestRole")
-            params.roleSessionName.set("test-session")
-            params.duration.set(3600L)
-
-            var capturedCredential: AwsSessionCredential? = null
-            val action = object : AbstractAssumeRoleWorkAction() {
-                override fun getParameters() = params
-                override fun doExecute(credential: AwsSessionCredential) {
-                    capturedCredential = credential
-                }
-            }
-            action.execute()
+            val task = project.tasks.create("abstractAssumeRole", ConcreteAssumeRole::class.java)
+            task.service.set(service)
+            task.roleArn.set("arn:aws:iam::123456789012:role/TestRole")
+            task.roleSessionName.set("test-session")
+            task.duration.set(3600L)
+            task.execute()
 
             val captured = requestSlot.captured
             captured.roleArn shouldBe "arn:aws:iam::123456789012:role/TestRole"
             captured.roleSessionName shouldBe "test-session"
-            captured.durationSeconds shouldBe 3600L
+            captured.durationSeconds shouldBe 3600
 
-            capturedCredential?.accessKeyId shouldBe "AKIAIOSFODNN7EXAMPLE"
-            capturedCredential?.secretAccessKey shouldBe "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
-            capturedCredential?.sessionToken shouldBe "AQoDYXdzEJr..."
-            capturedCredential?.expiration shouldBe Instant.ofEpochSecond(4070908800L)
+            task.capturedCredential?.accessKeyId shouldBe "AKIAIOSFODNN7EXAMPLE"
+            task.capturedCredential?.secretAccessKey shouldBe "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+            task.capturedCredential?.sessionToken shouldBe "AQoDYXdzEJr..."
+            task.capturedCredential?.expiration shouldBe Instant.ofEpochSecond(4070908800L)
         }
 
         test("execute - includes externalId when present") {
@@ -81,18 +83,13 @@ class AbstractAssumeRoleWorkActionSpec : FunSpec() {
             every { response.credentials } returns sdkCreds
             coEvery { client.assumeRole(capture(requestSlot)) } returns response
 
-            val params = project.objects.newInstance<AbstractAssumeRoleWorkAction.Parameters>()
-            params.service.set(service)
-            params.roleArn.set("arn:aws:iam::123456789012:role/TestRole")
-            params.roleSessionName.set("test-session")
-            params.duration.set(3600L)
-            params.externalId.set("my-external-id")
-
-            val action = object : AbstractAssumeRoleWorkAction() {
-                override fun getParameters() = params
-                override fun doExecute(credential: AwsSessionCredential) = Unit
-            }
-            action.execute()
+            val task = project.tasks.create("abstractAssumeRole", ConcreteAssumeRole::class.java)
+            task.service.set(service)
+            task.roleArn.set("arn:aws:iam::123456789012:role/TestRole")
+            task.roleSessionName.set("test-session")
+            task.duration.set(3600L)
+            task.externalId.set("my-external-id")
+            task.execute()
 
             requestSlot.captured.externalId shouldBe "my-external-id"
         }

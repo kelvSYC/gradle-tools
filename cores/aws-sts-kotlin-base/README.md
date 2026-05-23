@@ -73,40 +73,18 @@ val decoded: Provider<String> = providers.of(DecodeAuthorizationMessageValueSour
 Returns `null` and logs a warning if the call throws `StsException` (typically because the message has expired
 or the caller lacks `sts:DecodeAuthorizationMessage`).
 
-## WorkActions
+## Task: `AbstractAssumeRole`
 
-### `AbstractAssumeRoleWorkAction`
+Assumes an AWS IAM role and produces temporary session credentials via the STS AssumeRole API.
+Subclasses must implement `doExecute(credential: AwsSessionCredential)` to consume the credential
+at execution time.
 
-Assumes an AWS IAM role and produces temporary session credentials via the STS AssumeRole API. Subclasses must
-implement `doExecute(credential: AwsSessionCredential)` to consume the credential at execution time.
-
-The credential is valid only within the `doExecute` call and must be used to construct a short-lived AWS SDK
-client. Storing the credential in any Gradle property or input violates configuration cache security guarantees —
-see [AwsSessionCredential](../aws-kotlin-extensions) for details.
-
-Example plugin using `AbstractAssumeRoleWorkAction`:
+The credential is valid only within the `doExecute` call and must be used to construct a
+short-lived AWS SDK client. Storing the credential in any Gradle property or input violates
+configuration cache security guarantees — see [AwsSessionCredential](../aws-kotlin-extensions) for details.
 
 ```kotlin
-abstract class MyAssumeRoleTask : DefaultTask() {
-    @get:Internal
-    abstract val assumeRoleAction: Property<ProviderFactory>
-
-    @TaskAction
-    fun execute() {
-        val workers = workerExecutor.classLoaderIsolation {
-            classpath.from(configurations.runtimeClasspath)
-        }
-
-        workers.submit(MyAssumeRoleAction::class) {
-            service.set(sts)
-            roleArn.set("arn:aws:iam::123456789012:role/MyRole")
-            roleSessionName.set("my-build-session")
-            duration.set(3600L)
-        }
-    }
-}
-
-abstract class MyAssumeRoleAction : AbstractAssumeRoleWorkAction() {
+abstract class MyAssumeRole : AbstractAssumeRole() {
     override fun doExecute(credential: AwsSessionCredential) {
         KmsClient {
             credentialsProvider = StaticCredentialsProvider {
@@ -119,9 +97,38 @@ abstract class MyAssumeRoleAction : AbstractAssumeRoleWorkAction() {
         }
     }
 }
+
+tasks.register<MyAssumeRole>("assumeRole") {
+    service.set(sts)
+    roleArn.set("arn:aws:iam::123456789012:role/MyRole")
+    roleSessionName.set("my-build-session")
+    duration.set(3600L)
+}
 ```
 
-No explicit revocation is available for STS credentials — they self-expire at [AwsSessionCredential.expiration].
+| Property | Type | Description |
+|---|---|---|
+| `service` | `Property<StsClientBuildService>` | Build service supplying the STS client |
+| `roleArn` | `Property<String>` | ARN of the IAM role to assume |
+| `roleSessionName` | `Property<String>` | Session name for the assumed role |
+| `duration` | `Property<Long>` | Session validity in seconds (900 to 3600) |
+| `externalId` | `Property<String>` | Optional external ID required by the role's trust policy |
+
+No explicit revocation is available for STS credentials — they self-expire at `AwsSessionCredential.expiration`.
+
+## Why no WorkActions
+
+The AWS Kotlin SDK exposes all service calls as `suspend` functions. A `WorkAction` that wraps a single suspend call reduces to:
+
+```kotlin
+override fun execute() {
+    runBlocking { singleSuspendCall() }
+}
+```
+
+This adds ceremony with no benefit: no return values, no isolation beyond what coroutines already provide, and no concurrency advantage (Gradle's task graph handles cross-task concurrency; coroutines handle within-task concurrency). WorkActions were designed for blocking Java SDK calls to avoid tying up Gradle's worker thread pool — that problem doesn't exist with a coroutine-based SDK.
+
+Accordingly, this component exposes `DefaultTask` subclasses instead. Plugin authors needing compound operations should compose via Gradle task dependencies (sequential) or call `service.get().getClient()` directly inside a `runBlocking { coroutineScope { } }` block (parallel).
 
 ## See Also
 
