@@ -140,28 +140,26 @@ Parameters:
 | `bucket` | `Property<String>` | S3 bucket name |
 | `prefix` | `Property<String>` | Optional key prefix filter |
 
-## WorkActions: single-object operations
+## Tasks: single-object operations
 
-Low-level `WorkAction` implementations for single-object S3 operations. Submit via `WorkerExecutor`:
+`DefaultTask` implementations for single-object S3 operations:
 
-| Action | Purpose | Required parameters |
+| Task | Purpose | Required properties |
 |---|---|---|
-| `DownloadFileAction` | Download one object to a local file | `bucket`, `key`, `outputFile` |
-| `UploadFileAction` | Upload one local file | `bucket`, `key`, `inputFile` |
-| `CopyObjectAction` | Server-side copy between bucket/key pairs | `sourceBucket`, `sourceKey`, `destinationBucket`, `destinationKey` |
-| `DeleteObjectAction` | Delete one object | `bucket`, `key` |
-
-All four also require `service` (a `Property<S3ClientBuildService>`).
+| `DownloadFile` | Download one object to a local file | `service`, `bucket`, `key`, `outputFile` |
+| `UploadFile` | Upload one local file | `service`, `bucket`, `key`, `inputFile` |
+| `CopyObject` | Server-side copy between bucket/key pairs | `service`, `sourceBucket`, `sourceKey`, `destinationBucket`, `destinationKey` |
+| `DeleteObject` | Delete one object | `service`, `bucket`, `key` |
 
 ```kotlin
-workerExecutor.noIsolation().submit(UploadFileAction::class) {
+tasks.register<UploadFile>("uploadResult") {
     service.set(s3)
     bucket.set("my-bucket")
     key.set("output/result.json")
     inputFile.set(layout.buildDirectory.file("result.json"))
 }
 
-workerExecutor.noIsolation().submit(CopyObjectAction::class) {
+tasks.register<CopyObject>("promoteArtifact") {
     service.set(s3)
     sourceBucket.set("staging-bucket")
     sourceKey.set("artifact-1.0.0.jar")
