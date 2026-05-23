@@ -6,6 +6,8 @@ import aws.sdk.kotlin.services.appconfigdata.model.GetLatestConfigurationRequest
 import aws.sdk.kotlin.services.appconfigdata.model.StartConfigurationSessionRequest
 import com.kelvsyc.gradle.aws.kotlin.AbstractAwsKotlinClientBuildService
 import com.kelvsyc.gradle.aws.kotlin.AwsBuildServiceParams
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.gradle.api.logging.Logging
 import java.util.concurrent.ConcurrentHashMap
 
@@ -31,10 +33,29 @@ abstract class AppConfigDataClientBuildService :
     )
 
     private val sessionTokens = ConcurrentHashMap<SessionKey, String>()
+    private val sessionMutex = Mutex()
 
     override fun createClient(): AppConfigDataClient = AppConfigDataClient {
         resolveRegion()?.let { region = it }
         resolveCredentialsProvider()?.let { credentialsProvider = it }
+    }
+
+    private suspend fun getOrCreateToken(key: SessionKey): String? {
+        val cached = sessionTokens[key]
+        if (cached != null) return cached
+        return sessionMutex.withLock {
+            sessionTokens[key] ?: run {
+                val newToken = getClient().startConfigurationSession(
+                    StartConfigurationSessionRequest {
+                        applicationIdentifier = key.applicationIdentifier
+                        environmentIdentifier = key.environmentIdentifier
+                        configurationProfileIdentifier = key.configurationProfileIdentifier
+                    }
+                ).initialConfigurationToken
+                if (newToken != null) sessionTokens[key] = newToken
+                newToken
+            }
+        }
     }
 
     /**
@@ -43,7 +64,8 @@ abstract class AppConfigDataClientBuildService :
      * Manages the AppConfig Data session-token protocol internally. Starts a new session on the
      * first call for a given [applicationIdentifier]/[environmentIdentifier]/
      * [configurationProfileIdentifier] combination, then reuses the cached token on subsequent
-     * calls within the same build.
+     * calls within the same build. Session creation is serialized via a mutex to prevent duplicate
+     * sessions under concurrent access.
      *
      * @return the configuration content as a [ByteArray], or `null` if the request fails.
      */
@@ -54,17 +76,7 @@ abstract class AppConfigDataClientBuildService :
     ): ByteArray? {
         return try {
             val key = SessionKey(applicationIdentifier, environmentIdentifier, configurationProfileIdentifier)
-            val token = sessionTokens[key] ?: run {
-                val newToken = getClient().startConfigurationSession(
-                    StartConfigurationSessionRequest {
-                        this.applicationIdentifier = applicationIdentifier
-                        this.environmentIdentifier = environmentIdentifier
-                        this.configurationProfileIdentifier = configurationProfileIdentifier
-                    }
-                ).initialConfigurationToken ?: return null
-                sessionTokens[key] = newToken
-                newToken
-            }
+            val token = getOrCreateToken(key) ?: return null
             val response = getClient().getLatestConfiguration(
                 GetLatestConfigurationRequest {
                     configurationToken = token
