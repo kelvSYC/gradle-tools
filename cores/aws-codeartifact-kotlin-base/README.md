@@ -219,6 +219,107 @@ tasks.register<PublishPackageVersion>("publishPackageVersion") {
 | `assetContent` | `RegularFileProperty` | Asset file to upload |
 | `unfinished` | `Property<Boolean>` | Optional; set to `true` when uploading multiple assets to the same package version |
 
+## Task: `BatchGetGenericPackageVersionAsset`
+
+Downloads multiple assets from a CodeArtifact generic repository in parallel.
+Coordinates are specified per artifact. Downloads run concurrently via coroutines (`flatMapMerge`);
+transient failures are retried. If any download fails, the task throws listing the failed artifact names.
+
+```kotlin
+val downloadAll = tasks.register<BatchGetGenericPackageVersionAsset>("downloadAll") {
+    service.set(codeArtifact)
+    registerArtifact("sdk") {
+        domain.set("my-domain")
+        domainOwner.set("111122223333")
+        repository.set("my-repo")
+        namespace.set("my-ns")
+        packageValue.set("my-sdk")
+        packageVersion.set("1.0.0")
+        assetName.set("my-sdk-1.0.0.zip")
+        outputFile.set(layout.buildDirectory.file("downloads/my-sdk-1.0.0.zip"))
+    }
+}
+
+// Wire the output file to a downstream task without forcing evaluation:
+val sdkZip: Provider<RegularFile> = downloadAll.flatMap { it.outputFileForArtifact("sdk") }
+```
+
+For BYO-client usage (without a build service), extend `AbstractBatchGetGenericPackageVersionAsset` and set
+`client` directly.
+
+| Per-artifact property | Type | Description |
+|---|---|---|
+| `domain` | `Property<String>` | CodeArtifact domain name |
+| `domainOwner` | `Property<String>` | AWS account ID owning the domain |
+| `repository` | `Property<String>` | CodeArtifact repository name |
+| `namespace` | `Property<String>` | Package namespace |
+| `packageValue` | `Property<String>` | Package name |
+| `packageVersion` | `Property<String>` | Package version |
+| `assetName` | `Property<String>` | Asset name within the package version |
+| `outputFile` | `RegularFileProperty` | Destination file for the downloaded asset |
+
+| Task property | Type | Description |
+|---|---|---|
+| `service` | `Property<CodeArtifactClientBuildService>` | Build service supplying the CodeArtifact client |
+| `retries` | `Property<Int>` | Max retries per artifact on transient failure (default 1) |
+
+## Task: `BatchPublishPackageVersion`
+
+Publishes multiple assets to a CodeArtifact generic repository in parallel.
+Coordinates are specified per artifact. Uploads run concurrently via coroutines (`flatMapMerge`);
+transient failures are retried. If any upload fails, the task throws listing the failed artifact names.
+
+```kotlin
+tasks.register<BatchPublishPackageVersion>("publishAll") {
+    service.set(codeArtifact)
+    registerArtifact("jar") {
+        domain.set("my-domain")
+        domainOwner.set("111122223333")
+        repository.set("my-repo")
+        namespace.set("my-ns")
+        packageValue.set("my-lib")
+        packageVersion.set("1.0.0")
+        assetName.set("my-lib-1.0.0.jar")
+        assetSHA256.set("abc123...")
+        assetContent.set(layout.buildDirectory.file("libs/my-lib-1.0.0.jar"))
+        unfinished.set(true)  // more assets to follow
+    }
+    registerArtifact("sources") {
+        domain.set("my-domain")
+        domainOwner.set("111122223333")
+        repository.set("my-repo")
+        namespace.set("my-ns")
+        packageValue.set("my-lib")
+        packageVersion.set("1.0.0")
+        assetName.set("my-lib-1.0.0-sources.jar")
+        assetSHA256.set("def456...")
+        assetContent.set(layout.buildDirectory.file("libs/my-lib-1.0.0-sources.jar"))
+        // unfinished absent — marks version as finished
+    }
+}
+```
+
+For BYO-client usage (without a build service), extend `AbstractBatchPublishPackageVersion` and set
+`client` directly.
+
+| Per-artifact property | Type | Description |
+|---|---|---|
+| `domain` | `Property<String>` | CodeArtifact domain name |
+| `domainOwner` | `Property<String>` | AWS account ID owning the domain |
+| `repository` | `Property<String>` | CodeArtifact repository name |
+| `namespace` | `Property<String>` | Package namespace |
+| `packageValue` | `Property<String>` | Package name |
+| `packageVersion` | `Property<String>` | Package version |
+| `assetName` | `Property<String>` | Asset name within the package version |
+| `assetSHA256` | `Property<String>` | SHA-256 hash of the asset content |
+| `assetContent` | `RegularFileProperty` | Asset file to upload |
+| `unfinished` | `Property<Boolean>` | Optional; `true` keeps the version in `Unfinished` state |
+
+| Task property | Type | Description |
+|---|---|---|
+| `service` | `Property<CodeArtifactClientBuildService>` | Build service supplying the CodeArtifact client |
+| `retries` | `Property<Int>` | Max retries per artifact on transient failure (default 1) |
+
 ## Why no WorkActions
 
 The AWS Kotlin SDK exposes all service calls as `suspend` functions. A `WorkAction` that wraps a single suspend call reduces to:
