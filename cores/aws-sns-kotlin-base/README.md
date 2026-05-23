@@ -33,12 +33,12 @@ default region provider chain. Omit the credentials call to skip the `credential
 case the SDK applies its own default behavior. See [aws-kotlin-extensions](../aws-kotlin-extensions) for the full
 set of credential configuration functions.
 
-## WorkAction: `PublishAction`
+## Task: `Publish`
 
 Publishes a single message to an SNS topic. Only simple (non-JSON) messages are supported:
 
 ```kotlin
-workerExecutor.noIsolation().submit(PublishAction::class) {
+tasks.register<Publish>("publish") {
     service.set(sns)
     topicArn.set("arn:aws:sns:us-east-1:111122223333:my-topic")
     message.set("Build complete.")
@@ -46,7 +46,7 @@ workerExecutor.noIsolation().submit(PublishAction::class) {
 }
 ```
 
-| Parameter | Type | Description |
+| Property | Type | Description |
 |---|---|---|
 | `service` | `Property<SnsClientBuildService>` | The shared build service |
 | `topicArn` | `Property<String>` | SNS topic ARN |
@@ -59,7 +59,7 @@ For FIFO topics, set `messageGroupId` (and `messageDeduplicationId` if the topic
 deduplication disabled):
 
 ```kotlin
-workerExecutor.noIsolation().submit(PublishAction::class) {
+tasks.register<Publish>("publishFifo") {
     service.set(sns)
     topicArn.set("arn:aws:sns:us-east-1:111122223333:my-topic.fifo")
     message.set("Build complete.")
@@ -109,6 +109,20 @@ For FIFO topics, set `messageGroupId` (and `messageDeduplicationId` if needed) o
 | Entry: `attributes` | `MapProperty<String, MessageAttributeValue>` | Optional message attributes |
 | Entry: `messageGroupId` | `Property<String>` | FIFO topics only |
 | Entry: `messageDeduplicationId` | `Property<String>` | FIFO topics only |
+
+## Why no WorkActions
+
+The AWS Kotlin SDK exposes all service calls as `suspend` functions. A `WorkAction` that wraps a single suspend call reduces to:
+
+```kotlin
+override fun execute() {
+    runBlocking { singleSuspendCall() }
+}
+```
+
+This adds ceremony with no benefit: no return values, no isolation beyond what coroutines already provide, and no concurrency advantage (Gradle's task graph handles cross-task concurrency; coroutines handle within-task concurrency). WorkActions were designed for blocking Java SDK calls to avoid tying up Gradle's worker thread pool — that problem doesn't exist with a coroutine-based SDK.
+
+Accordingly, this component exposes `DefaultTask` subclasses instead. Plugin authors needing compound operations should compose via Gradle task dependencies (sequential) or call `service.get().getClient()` directly inside a `runBlocking { coroutineScope { } }` block (parallel).
 
 ## See Also
 
