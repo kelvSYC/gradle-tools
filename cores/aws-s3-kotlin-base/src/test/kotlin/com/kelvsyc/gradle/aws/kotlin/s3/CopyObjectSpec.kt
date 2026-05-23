@@ -8,11 +8,11 @@ import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.slot
-import org.gradle.kotlin.dsl.newInstance
+import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 
-class CopyObjectActionSpec : FunSpec() {
+class CopyObjectSpec : FunSpec() {
     init {
         test("execute - URL-encodes source and forwards destination fields") {
             val project = ProjectBuilder.builder().build()
@@ -22,17 +22,15 @@ class CopyObjectActionSpec : FunSpec() {
             val requestSlot = slot<CopyObjectRequest>()
             coEvery { client.copyObject(capture(requestSlot)) } returns mockk<CopyObjectResponse>()
 
-            val params = project.objects.newInstance<CopyObjectAction.Parameters>()
-            params.service.set(service)
-            params.sourceBucket.set("src-bucket")
-            params.sourceKey.set("path with spaces/key")
-            params.destinationBucket.set("dst-bucket")
-            params.destinationKey.set("dst/key")
+            val task = project.tasks.register<CopyObject>("copyObject") {
+                this.service.set(service)
+                sourceBucket.set("src-bucket")
+                sourceKey.set("path with spaces/key")
+                destinationBucket.set("dst-bucket")
+                destinationKey.set("dst/key")
+            }.get()
 
-            val action = object : CopyObjectAction() {
-                override fun getParameters() = params
-            }
-            action.execute()
+            task.execute()
 
             val captured = requestSlot.captured
             captured.copySource shouldBe "src-bucket/path+with+spaces%2Fkey"

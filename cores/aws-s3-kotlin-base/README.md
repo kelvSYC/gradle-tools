@@ -170,6 +170,20 @@ workerExecutor.noIsolation().submit(CopyObjectAction::class) {
 }
 ```
 
+## Why no WorkActions
+
+The AWS Kotlin SDK exposes all service calls as `suspend` functions. A `WorkAction` that wraps a single suspend call reduces to:
+
+```kotlin
+override fun execute() {
+    runBlocking { singleSuspendCall() }
+}
+```
+
+This adds ceremony with no benefit: no return values, no isolation beyond what coroutines already provide, and no concurrency advantage (Gradle's task graph handles cross-task concurrency; coroutines handle within-task concurrency). WorkActions were designed for blocking Java SDK calls to avoid tying up Gradle's worker thread pool — that problem doesn't exist with a coroutine-based SDK.
+
+Accordingly, this component exposes `DefaultTask` subclasses instead. Plugin authors needing compound operations should compose via Gradle task dependencies (sequential) or call `service.get().getClient()` directly inside a `runBlocking { coroutineScope { } }` block (parallel).
+
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure

@@ -8,11 +8,11 @@ import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.slot
-import org.gradle.kotlin.dsl.newInstance
+import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 
-class DeleteObjectActionSpec : FunSpec() {
+class DeleteObjectSpec : FunSpec() {
     init {
         test("execute - passes correct request parameters") {
             val project = ProjectBuilder.builder().build()
@@ -22,15 +22,13 @@ class DeleteObjectActionSpec : FunSpec() {
             val requestSlot = slot<DeleteObjectRequest>()
             coEvery { client.deleteObject(capture(requestSlot)) } returns mockk<DeleteObjectResponse>()
 
-            val params = project.objects.newInstance<DeleteObjectAction.Parameters>()
-            params.service.set(service)
-            params.bucket.set("my-bucket")
-            params.key.set("my/key")
+            val task = project.tasks.register<DeleteObject>("deleteObject") {
+                this.service.set(service)
+                bucket.set("my-bucket")
+                key.set("my/key")
+            }.get()
 
-            val action = object : DeleteObjectAction() {
-                override fun getParameters() = params
-            }
-            action.execute()
+            task.execute()
 
             val captured = requestSlot.captured
             captured.bucket shouldBe "my-bucket"

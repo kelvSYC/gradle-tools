@@ -9,11 +9,11 @@ import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.slot
-import org.gradle.kotlin.dsl.newInstance
+import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 
-class UploadFileActionSpec : FunSpec() {
+class UploadFileSpec : FunSpec() {
     init {
         test("execute - uploads file with correct request parameters") {
             val project = ProjectBuilder.builder().build()
@@ -26,16 +26,14 @@ class UploadFileActionSpec : FunSpec() {
             val inputFile = tempfile()
             inputFile.writeText("upload-content")
 
-            val params = project.objects.newInstance<UploadFileAction.Parameters>()
-            params.service.set(service)
-            params.bucket.set("my-bucket")
-            params.key.set("my/key")
-            params.inputFile.set(inputFile)
+            val task = project.tasks.register<UploadFile>("uploadFile") {
+                this.service.set(service)
+                bucket.set("my-bucket")
+                key.set("my/key")
+                this.inputFile.set(inputFile)
+            }.get()
 
-            val action = object : UploadFileAction() {
-                override fun getParameters() = params
-            }
-            action.execute()
+            task.execute()
 
             val captured = requestSlot.captured
             captured.bucket shouldBe "my-bucket"

@@ -9,12 +9,12 @@ import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.slot
-import org.gradle.kotlin.dsl.newInstance
+import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 import java.nio.file.Files
 
-class DownloadFileActionSpec : FunSpec() {
+class DownloadFileSpec : FunSpec() {
     init {
         test("execute - downloads object to output file with correct request parameters") {
             val project = ProjectBuilder.builder().build()
@@ -36,16 +36,14 @@ class DownloadFileActionSpec : FunSpec() {
 
             val outputFile = Files.createTempFile("download-test", ".bin")
 
-            val params = project.objects.newInstance<DownloadFileAction.Parameters>()
-            params.service.set(service)
-            params.bucket.set("my-bucket")
-            params.key.set("my/key")
-            params.outputFile.set(outputFile.toFile())
+            val task = project.tasks.register<DownloadFile>("downloadFile") {
+                this.service.set(service)
+                bucket.set("my-bucket")
+                key.set("my/key")
+                this.outputFile.set(outputFile.toFile())
+            }.get()
 
-            val action = object : DownloadFileAction() {
-                override fun getParameters() = params
-            }
-            action.execute()
+            task.execute()
 
             val captured = requestSlot.captured
             captured.bucket shouldBe "my-bucket"
