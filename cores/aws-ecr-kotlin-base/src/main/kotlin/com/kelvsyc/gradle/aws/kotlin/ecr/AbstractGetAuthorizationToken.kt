@@ -2,17 +2,18 @@ package com.kelvsyc.gradle.aws.kotlin.ecr
 
 import aws.sdk.kotlin.services.ecr.model.GetAuthorizationTokenRequest
 import kotlinx.coroutines.runBlocking
+import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Internal
-import org.gradle.workers.WorkAction
-import org.gradle.workers.WorkParameters
+import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.UntrackedTask
 
 /**
- * Abstract base [WorkAction] that retrieves an ECR authorization token at task execution time and
+ * Abstract base [DefaultTask] that retrieves an ECR authorization token at task execution time and
  * passes it to [doExecute], keeping the token out of the Gradle configuration cache.
  *
- * The token is obtained inside [execute], which is marked `final` to ensure it always runs at task
- * execution time. The [runBlocking] call wraps the Kotlin SDK's suspend function.
+ * The token is obtained inside the [@TaskAction][TaskAction] method, which runs at task execution time.
+ * The [runBlocking] call wraps the Kotlin SDK's suspend function.
  *
  * ## Token lifecycle
  *
@@ -26,39 +27,46 @@ import org.gradle.workers.WorkParameters
  *
  * Do not let the token escape [doExecute]. The ways it can leak:
  *
- * - **WorkParameters property** (even `@get:Internal`): Gradle serializes all WorkParameters to
- *   `.gradle/configuration-cache/` in plaintext.
- * - **Task input, output, or property**: same serialization path.
+ * - **Task property** (even `@get:Internal`): if stored in a property and accessed during configuration,
+ *   Gradle may serialize it to the configuration cache in plaintext.
+ * - **Task input, output, or property**: same serialization risk.
  * - **Shared file or static field**: the value persists on disk beyond this build invocation.
  *
  * Subclass and implement [doExecute] to use the token:
  *
  * ```kotlin
- * abstract class DockerLoginAction : AbstractGetAuthorizationTokenWorkAction() {
+ * abstract class DockerLogin : AbstractGetAuthorizationToken() {
  *     override fun doExecute(token: String) {
  *         // token is the base64-encoded "AWS:password" string suitable for docker login
  *     }
  * }
+ *
+ * tasks.register<DockerLogin>("dockerLogin") {
+ *     service.set(ecr)
+ * }
  * ```
  */
-abstract class AbstractGetAuthorizationTokenWorkAction :
-    WorkAction<AbstractGetAuthorizationTokenWorkAction.Parameters> {
+@UntrackedTask(because = "Communicates with AWS ECR; no local output")
+abstract class AbstractGetAuthorizationToken : DefaultTask() {
 
     /**
-     * Parameters for [AbstractGetAuthorizationTokenWorkAction].
+     * The build service managing the ECR client.
+     * Excluded from task snapshots.
      */
-    interface Parameters : WorkParameters {
-        /**
-         * The build service managing the ECR client.
-         * Excluded from task snapshots.
-         */
-        @get:Internal
-        val service: Property<EcrClientBuildService>
-    }
+    @get:Internal
+    abstract val service: Property<EcrClientBuildService>
 
-    final override fun execute() {
+    /**
+     * Retrieves the ECR authorization token and passes it to [doExecute].
+     *
+     * Marked `@TaskAction` to ensure execution at task execution time, not configuration time.
+     * The token obtained here is not stored in any property or cache — it is scoped to this call
+     * and [doExecute], guaranteeing it will not be serialized to `.gradle/configuration-cache/`.
+     */
+    @TaskAction
+    fun execute() {
         val token = runBlocking {
-            parameters.service.get().getClient()
+            service.get().getClient()
                 .getAuthorizationToken(GetAuthorizationTokenRequest {})
                 .authorizationData
                 ?.first()
@@ -68,7 +76,7 @@ abstract class AbstractGetAuthorizationTokenWorkAction :
     }
 
     /**
-     * Executes work using the retrieved authorization [token].
+     * Executes work using the retrieved authorization token.
      *
      * Called at task execution time with a valid ECR token. The token self-expires after up to
      * 12 hours — there is no explicit revocation API.

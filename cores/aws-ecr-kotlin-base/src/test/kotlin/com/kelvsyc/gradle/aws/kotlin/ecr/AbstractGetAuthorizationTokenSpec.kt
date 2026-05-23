@@ -9,11 +9,10 @@ import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 
-class AbstractGetAuthorizationTokenWorkActionSpec : FunSpec() {
+class AbstractGetAuthorizationTokenSpec : FunSpec() {
     init {
         test("execute - retrieves token and passes it to doExecute") {
             val project = ProjectBuilder.builder().build()
@@ -29,19 +28,21 @@ class AbstractGetAuthorizationTokenWorkActionSpec : FunSpec() {
 
             coEvery { client.getAuthorizationToken(any<GetAuthorizationTokenRequest>()) } returns response
 
-            val params = project.objects.newInstance<AbstractGetAuthorizationTokenWorkAction.Parameters>()
-            params.service.set(service)
-
             var capturedToken: String? = null
-            val action = object : AbstractGetAuthorizationTokenWorkAction() {
-                override fun getParameters() = params
-                override fun doExecute(token: String) {
-                    capturedToken = token
-                }
-            }
-            action.execute()
+            val task = project.tasks.create("abstractGetAuthorizationToken", ConcreteGetAuthorizationToken::class.java)
+            task.service.set(service)
+            task.tokenCapture = { capturedToken = it }
+            task.execute()
 
             capturedToken shouldBe "QVdTOnRva2VuLXZhbHVl"
+        }
+    }
+
+    abstract class ConcreteGetAuthorizationToken : AbstractGetAuthorizationToken() {
+        var tokenCapture: ((String) -> Unit)? = null
+
+        override fun doExecute(token: String) {
+            tokenCapture?.invoke(token)
         }
     }
 }

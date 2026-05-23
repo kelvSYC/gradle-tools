@@ -9,11 +9,10 @@ import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.slot
-import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 
-class BatchDeleteImageActionSpec : FunSpec() {
+class BatchDeleteImageSpec : FunSpec() {
     init {
         test("execute - passes correct repositoryName and image tags") {
             val project = ProjectBuilder.builder().build()
@@ -23,15 +22,12 @@ class BatchDeleteImageActionSpec : FunSpec() {
             val requestSlot = slot<BatchDeleteImageRequest>()
             coEvery { client.batchDeleteImage(capture(requestSlot)) } returns mockk<BatchDeleteImageResponse>()
 
-            val params = project.objects.newInstance<BatchDeleteImageAction.Parameters>()
-            params.service.set(service)
-            params.repositoryName.set("my-repo")
-            params.imageTags.set(setOf("v1.0", "v1.1"))
+            val task = project.tasks.create("batchDeleteImage", BatchDeleteImage::class.java)
+            task.service.set(service)
+            task.repositoryName.set("my-repo")
+            task.imageTags.set(setOf("v1.0", "v1.1"))
 
-            val action = object : BatchDeleteImageAction() {
-                override fun getParameters() = params
-            }
-            action.execute()
+            task.execute()
 
             val captured = requestSlot.captured
             captured.repositoryName shouldBe "my-repo"
