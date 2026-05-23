@@ -185,6 +185,106 @@ workerExecutor.noIsolation().submit(PublishPackageVersionAction::class) {
 }
 ```
 
+## Tasks: Batch Download
+
+Downloads multiple assets from a CodeArtifact generic repository concurrently. Coordinates are specified
+per-artifact. All artifacts must be registered via `registerArtifact`.
+
+Two concurrency models are available — choose based on which client you use:
+
+| Class | Client type | Concurrency |
+|---|---|---|
+| `BatchGetGenericPackageVersionAsset` | `CodeartifactClient` (sync) | Gradle Worker API |
+| `AsyncBatchGetGenericPackageVersionAsset` | `CodeartifactAsyncClient` (async) | `CompletableFuture.allOf` |
+
+For BYO-client usage (without auto-registered build services), extend `AbstractWorkerBatchGetGenericPackageVersionAsset`
+(sync) or `AbstractAsyncBatchGetGenericPackageVersionAsset` (async) and set the `service` or `client` property directly.
+
+```kotlin
+val downloadAll = tasks.register<BatchGetGenericPackageVersionAsset>("downloadAll") {
+    service.set(codeartifact)
+    registerArtifact("sdk") {
+        domain.set("my-domain")
+        domainOwner.set("111122223333")
+        repository.set("my-repo")
+        namespace.set("my-ns")
+        packageValue.set("my-sdk")
+        packageVersion.set("1.0.0")
+        assetName.set("my-sdk-1.0.0.zip")
+        outputFile.set(layout.buildDirectory.file("downloads/my-sdk-1.0.0.zip"))
+    }
+}
+
+// Wire output file to a downstream task without forcing evaluation:
+val sdkZip: Provider<RegularFile> = downloadAll.flatMap { it.outputFileForArtifact("sdk") }
+```
+
+| Per-artifact property | Type | Description |
+|---|---|---|
+| `domain` | `Property<String>` | CodeArtifact domain name |
+| `domainOwner` | `Property<String>` | AWS account ID owning the domain |
+| `repository` | `Property<String>` | CodeArtifact repository name |
+| `namespace` | `Property<String>` | Package namespace |
+| `packageValue` | `Property<String>` | Package name |
+| `packageVersion` | `Property<String>` | Package version |
+| `assetName` | `Property<String>` | Asset name within the package version |
+| `outputFile` | `RegularFileProperty` | Destination file for the downloaded asset |
+
+## Tasks: Batch Publish
+
+Publishes multiple assets to a CodeArtifact generic repository concurrently. Coordinates and content
+are specified per-artifact.
+
+| Class | Client type | Concurrency |
+|---|---|---|
+| `BatchPublishPackageVersion` | `CodeartifactClient` (sync) | Gradle Worker API |
+| `AsyncBatchPublishPackageVersion` | `CodeartifactAsyncClient` (async) | `CompletableFuture.allOf` |
+
+For BYO-client usage, extend `AbstractWorkerBatchPublishPackageVersion` or `AbstractAsyncBatchPublishPackageVersion`.
+
+```kotlin
+tasks.register<BatchPublishPackageVersion>("publishAll") {
+    service.set(codeartifact)
+    registerArtifact("jar") {
+        domain.set("my-domain")
+        domainOwner.set("111122223333")
+        repository.set("my-repo")
+        namespace.set("my-ns")
+        packageValue.set("my-lib")
+        packageVersion.set("1.0.0")
+        assetName.set("my-lib-1.0.0.jar")
+        assetSHA256.set("abc123...")
+        assetContent.set(layout.buildDirectory.file("libs/my-lib-1.0.0.jar"))
+        unfinished.set(true)  // more assets to follow
+    }
+    registerArtifact("sources") {
+        domain.set("my-domain")
+        domainOwner.set("111122223333")
+        repository.set("my-repo")
+        namespace.set("my-ns")
+        packageValue.set("my-lib")
+        packageVersion.set("1.0.0")
+        assetName.set("my-lib-1.0.0-sources.jar")
+        assetSHA256.set("def456...")
+        assetContent.set(layout.buildDirectory.file("libs/my-lib-1.0.0-sources.jar"))
+        // unfinished absent — marks version as finished
+    }
+}
+```
+
+| Per-artifact property | Type | Description |
+|---|---|---|
+| `domain` | `Property<String>` | CodeArtifact domain name |
+| `domainOwner` | `Property<String>` | AWS account ID owning the domain |
+| `repository` | `Property<String>` | CodeArtifact repository name |
+| `namespace` | `Property<String>` | Package namespace |
+| `packageValue` | `Property<String>` | Package name |
+| `packageVersion` | `Property<String>` | Package version |
+| `assetName` | `Property<String>` | Asset name within the package version |
+| `assetSHA256` | `Property<String>` | SHA-256 hash of the asset content |
+| `assetContent` | `RegularFileProperty` | Asset file to upload |
+| `unfinished` | `Property<Boolean>` | Optional; `true` keeps the version in `Unfinished` state |
+
 ## See Also
 
 - [clients-base](../clients-base) — The underlying service client infrastructure

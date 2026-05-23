@@ -19,6 +19,7 @@ dependencies {
     api(libs.aws.http.client.spi.java)
     api(libs.aws.codeartifact.java)
     api(libs.aws.sdk.core.java)
+    implementation(libs.aws.core.java)
 
     testImplementation(libs.mockk)
 }
