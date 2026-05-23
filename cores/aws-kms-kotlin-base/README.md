@@ -61,14 +61,14 @@ val keys: Provider<Map<String, String>> = providers.of(ListKeysValueSource::clas
 }
 ```
 
-## WorkActions
+## Tasks
 
-### `EncryptAction`
+### `Encrypt`
 
 Encrypts the contents of a plaintext file under a KMS key and writes the resulting ciphertext blob to disk:
 
 ```kotlin
-workerExecutor.noIsolation().submit(EncryptAction::class) {
+tasks.register<Encrypt>("encryptConfig") {
     service.set(kms)
     keyId.set("alias/my-key")
     plaintextFile.set(layout.projectDirectory.file("secrets/config.json"))
@@ -76,26 +76,26 @@ workerExecutor.noIsolation().submit(EncryptAction::class) {
 }
 ```
 
-| Parameter | Type | Description |
+| Property | Type | Description |
 |---|---|---|
 | `service` | `Property<KmsClientBuildService>` | Build service supplying the KMS client |
 | `keyId` | `Property<String>` | Key ID, ARN, or alias name to encrypt under |
 | `plaintextFile` | `RegularFileProperty` | Plaintext input file |
 | `ciphertextFile` | `RegularFileProperty` | Ciphertext output file |
 
-### `DecryptAction`
+### `Decrypt`
 
 Decrypts a KMS ciphertext blob back into plaintext:
 
 ```kotlin
-workerExecutor.noIsolation().submit(DecryptAction::class) {
+tasks.register<Decrypt>("decryptConfig") {
     service.set(kms)
     ciphertextFile.set(layout.projectDirectory.file("encrypted/config.json.kms"))
     plaintextFile.set(layout.buildDirectory.file("decrypted/config.json"))
 }
 ```
 
-| Parameter | Type | Description |
+| Property | Type | Description |
 |---|---|---|
 | `service` | `Property<KmsClientBuildService>` | Build service supplying the KMS client |
 | `keyId` | `Property<String>` | Optional; required only for asymmetric keys |
