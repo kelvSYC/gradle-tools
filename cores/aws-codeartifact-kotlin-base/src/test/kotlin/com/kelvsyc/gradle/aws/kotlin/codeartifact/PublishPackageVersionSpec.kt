@@ -53,5 +53,68 @@ class PublishPackageVersionSpec : FunSpec() {
 
             assetFile.toFile().delete()
         }
+
+        test("execute - includes unfinished=true when property is set") {
+            val project = ProjectBuilder.builder().build()
+            val client = mockk<CodeartifactClient>()
+            MockCodeArtifactClientBuildService.mockClient = client
+            val service =
+                project.gradle.sharedServices.registerIfAbsent("ca2", MockCodeArtifactClientBuildService::class)
+            val requestSlot = slot<PublishPackageVersionRequest>()
+            coEvery { client.publishPackageVersion(capture(requestSlot)) } returns PublishPackageVersionResponse {}
+
+            val assetFile = Files.createTempFile("publish-test", ".jar")
+            Files.writeString(assetFile, "test-content")
+
+            val task = project.tasks.create("publishPackageVersion", PublishPackageVersion::class.java)
+            task.service.set(service)
+            task.domain.set("my-domain")
+            task.domainOwner.set("123456789012")
+            task.repository.set("my-repo")
+            task.namespace.set("my-namespace")
+            task.packageValue.set("my-package")
+            task.packageVersion.set("1.0.0")
+            task.assetName.set("my-asset.jar")
+            task.assetSHA256.set("abc123def456")
+            task.assetContent.set(assetFile.toFile())
+            task.unfinished.set(true)
+            task.execute()
+
+            val captured = requestSlot.captured
+            captured.unfinished shouldBe true
+
+            assetFile.toFile().delete()
+        }
+
+        test("execute - omits unfinished when property is not set") {
+            val project = ProjectBuilder.builder().build()
+            val client = mockk<CodeartifactClient>()
+            MockCodeArtifactClientBuildService.mockClient = client
+            val service =
+                project.gradle.sharedServices.registerIfAbsent("ca3", MockCodeArtifactClientBuildService::class)
+            val requestSlot = slot<PublishPackageVersionRequest>()
+            coEvery { client.publishPackageVersion(capture(requestSlot)) } returns PublishPackageVersionResponse {}
+
+            val assetFile = Files.createTempFile("publish-test", ".jar")
+            Files.writeString(assetFile, "test-content")
+
+            val task = project.tasks.create("publishPackageVersion", PublishPackageVersion::class.java)
+            task.service.set(service)
+            task.domain.set("my-domain")
+            task.domainOwner.set("123456789012")
+            task.repository.set("my-repo")
+            task.namespace.set("my-namespace")
+            task.packageValue.set("my-package")
+            task.packageVersion.set("1.0.0")
+            task.assetName.set("my-asset.jar")
+            task.assetSHA256.set("abc123def456")
+            task.assetContent.set(assetFile.toFile())
+            task.execute()
+
+            val captured = requestSlot.captured
+            captured.unfinished shouldBe null
+
+            assetFile.toFile().delete()
+        }
     }
 }
