@@ -72,14 +72,14 @@ val parameters: Provider<Map<String, String>> = providers.of(GetParametersByPath
 | `recursive` | `Property<Boolean>` | Whether to recurse into sub-paths (defaults to `false`) |
 | `withDecryption` | `Property<Boolean>` | Whether to decrypt `SecureString` values (defaults to `false`) |
 
-## WorkActions
+## Tasks
 
-### `PutParameterAction`
+### `PutParameter`
 
 Creates or updates a parameter in SSM Parameter Store:
 
 ```kotlin
-workerExecutor.noIsolation().submit(PutParameterAction::class) {
+tasks.register("updateParameter", PutParameter::class) {
     service.set(ssm)
     parameterName.set("/my/app/feature-flag")
     parameterValue.set("enabled")
@@ -88,13 +88,27 @@ workerExecutor.noIsolation().submit(PutParameterAction::class) {
 }
 ```
 
-| Parameter | Type | Description |
+| Property | Type | Description |
 |---|---|---|
 | `service` | `Property<SsmClientBuildService>` | Build service supplying the SSM client |
 | `parameterName` | `Property<String>` | Name of the parameter to create or update |
 | `parameterValue` | `Property<String>` | New parameter value |
 | `parameterType` | `Property<String>` | One of `String`, `StringList`, `SecureString`; required when creating |
 | `overwrite` | `Property<Boolean>` | Whether to overwrite an existing parameter (defaults to `false`) |
+
+## Why no WorkActions
+
+The AWS Kotlin SDK exposes all service calls as `suspend` functions. A `WorkAction` that wraps a single suspend call reduces to:
+
+```kotlin
+override fun execute() {
+    runBlocking { singleSuspendCall() }
+}
+```
+
+This adds ceremony with no benefit: no return values, no isolation beyond what coroutines already provide, and no concurrency advantage (Gradle's task graph handles cross-task concurrency; coroutines handle within-task concurrency). WorkActions were designed for blocking Java SDK calls to avoid tying up Gradle's worker thread pool — that problem doesn't exist with a coroutine-based SDK.
+
+Accordingly, this component exposes `DefaultTask` subclasses instead. Plugin authors needing compound operations should compose via Gradle task dependencies (sequential) or call `service.get().getClient()` directly inside a `runBlocking { coroutineScope { } }` block (parallel).
 
 ## See Also
 
