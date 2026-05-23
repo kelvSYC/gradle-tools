@@ -33,12 +33,12 @@ default region provider chain. Omit the credentials call to skip the `credential
 case the SDK applies its own default behavior. See [aws-kotlin-extensions](../aws-kotlin-extensions) for the full
 set of credential configuration functions.
 
-## WorkAction: `SendMessageAction`
+## Task: `SendMessage`
 
 Sends a single message to an SQS queue:
 
 ```kotlin
-workerExecutor.noIsolation().submit(SendMessageAction::class) {
+tasks.register<SendMessage>("sendMessage") {
     service.set(sqs)
     queueUrl.set("https://sqs.us-east-1.amazonaws.com/111122223333/my-queue")
     messageBody.set("Hello from Gradle")
@@ -49,7 +49,7 @@ workerExecutor.noIsolation().submit(SendMessageAction::class) {
 }
 ```
 
-| Parameter | Type | Description |
+| Property | Type | Description |
 |---|---|---|
 | `service` | `Property<SqsClientBuildService>` | The shared build service |
 | `queueUrl` | `Property<String>` | SQS queue URL |
@@ -62,7 +62,7 @@ For FIFO queues, set `messageGroupId` (and `messageDeduplicationId` if the queue
 deduplication disabled):
 
 ```kotlin
-workerExecutor.noIsolation().submit(SendMessageAction::class) {
+tasks.register<SendMessage>("sendMessage") {
     service.set(sqs)
     queueUrl.set("https://sqs.us-east-1.amazonaws.com/111122223333/my-queue.fifo")
     messageBody.set("Hello from Gradle")
@@ -115,3 +115,17 @@ For FIFO queues, set `messageGroupId` (and `messageDeduplicationId` if needed) o
 
 - [clients-base](../clients-base) — The underlying service client infrastructure
 - [aws-sqs-java-base](../aws-sqs-java-base) — Java SDK variant with async client support
+
+## Why no WorkActions
+
+The AWS Kotlin SDK exposes all service calls as `suspend` functions. A `WorkAction` that wraps a single suspend call reduces to:
+
+```kotlin
+override fun execute() {
+    runBlocking { singleSuspendCall() }
+}
+```
+
+This adds ceremony with no benefit: no return values, no isolation beyond what coroutines already provide, and no concurrency advantage (Gradle's task graph handles cross-task concurrency; coroutines handle within-task concurrency). WorkActions were designed for blocking Java SDK calls to avoid tying up Gradle's worker thread pool — that problem doesn't exist with a coroutine-based SDK.
+
+Accordingly, this component exposes `DefaultTask` subclasses instead. Plugin authors needing compound operations should compose via Gradle task dependencies (sequential) or call `service.get().getClient()` directly inside a `runBlocking { coroutineScope { } }` block (parallel).
