@@ -129,5 +129,3 @@ override fun execute() {
 This adds ceremony with no benefit: no return values, no isolation beyond what coroutines already provide, and no concurrency advantage (Gradle's task graph handles cross-task concurrency; coroutines handle within-task concurrency). WorkActions were designed for blocking Java SDK calls to avoid tying up Gradle's worker thread pool — that problem doesn't exist with a coroutine-based SDK.
 
 Accordingly, this component exposes `DefaultTask` subclasses instead. Plugin authors needing compound operations should compose via Gradle task dependencies (sequential) or call `service.get().getClient()` directly inside a `runBlocking { coroutineScope { } }` block (parallel).
-
-Existing Kotlin SDK bases in this suite (`aws-secrets-manager-kotlin-base`, `aws-ssm-kotlin-base`, `aws-s3-kotlin-base`, and others) that currently use WorkActions are candidates for the same migration.
