@@ -30,8 +30,8 @@ abstract class Publish : DefaultTask() {
     abstract val topicArn: Property<String>
 
     /** Optional subject for the message (used by SNS email transport). */
-    @get:Optional
     @get:Input
+    @get:Optional
     abstract val subject: Property<String>
 
     /** Body of the message. */
