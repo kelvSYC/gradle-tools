@@ -9,11 +9,10 @@ import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.slot
-import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 
-class AbstractGetAuthorizationTokenWorkActionSpec : FunSpec() {
+class AbstractGetAuthorizationTokenSpec : FunSpec() {
     init {
         test("execute - retrieves and passes token to doExecute") {
             val project = ProjectBuilder.builder().build()
@@ -30,24 +29,14 @@ class AbstractGetAuthorizationTokenWorkActionSpec : FunSpec() {
             coEvery { response.authorizationToken } returns "my-token"
             coEvery { client.getAuthorizationToken(capture(requestSlot)) } returns response
 
-            var capturedToken: String? = null
-            val action = object : AbstractGetAuthorizationTokenWorkAction() {
-                override fun getParameters(): Parameters = run {
-                    val params = project.objects.newInstance<Parameters>()
-                    params.service.set(service)
-                    params.domain.set("my-domain")
-                    params.domainOwner.set("123456789012")
-                    params.duration.set(3600L)
-                    params
-                }
+            val task = project.tasks.create("abstractGetAuthorizationToken", ConcreteGetAuthorizationToken::class.java)
+            task.service.set(service)
+            task.domain.set("my-domain")
+            task.domainOwner.set("123456789012")
+            task.duration.set(3600L)
+            task.execute()
 
-                override fun doExecute(token: String) {
-                    capturedToken = token
-                }
-            }
-            action.execute()
-
-            capturedToken shouldBe "my-token"
+            task.capturedToken shouldBe "my-token"
             requestSlot.captured.domain shouldBe "my-domain"
             requestSlot.captured.domainOwner shouldBe "123456789012"
             requestSlot.captured.durationSeconds shouldBe 3600L
@@ -67,24 +56,22 @@ class AbstractGetAuthorizationTokenWorkActionSpec : FunSpec() {
             coEvery { response.authorizationToken } returns null
             coEvery { client.getAuthorizationToken(any()) } returns response
 
-            val action = object : AbstractGetAuthorizationTokenWorkAction() {
-                override fun getParameters(): Parameters = run {
-                    val params = project.objects.newInstance<Parameters>()
-                    params.service.set(service)
-                    params.domain.set("my-domain")
-                    params.domainOwner.set("123456789012")
-                    params.duration.set(3600L)
-                    params
-                }
-
-                override fun doExecute(token: String) {
-                    /* test hook, do nothing */
-                }
-            }
+            val task = project.tasks.create("abstractGetAuthorizationToken", ConcreteGetAuthorizationToken::class.java)
+            task.service.set(service)
+            task.domain.set("my-domain")
+            task.domainOwner.set("123456789012")
+            task.duration.set(3600L)
 
             shouldThrow<IllegalStateException> {
-                action.execute()
+                task.execute()
             }
+        }
+    }
+
+    abstract class ConcreteGetAuthorizationToken : AbstractGetAuthorizationToken() {
+        var capturedToken: String? = null
+        override fun doExecute(token: String) {
+            capturedToken = token
         }
     }
 }

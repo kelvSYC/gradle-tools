@@ -8,12 +8,11 @@ import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.slot
-import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 import java.nio.file.Files
 
-class GetGenericPackageVersionAssetActionSpec : FunSpec() {
+class GetGenericPackageVersionAssetSpec : FunSpec() {
     init {
         test("execute - passes correct request parameters to CodeArtifact") {
             val project = ProjectBuilder.builder().build()
@@ -26,21 +25,17 @@ class GetGenericPackageVersionAssetActionSpec : FunSpec() {
 
             val outputFile = Files.createTempFile("asset-test", ".zip")
 
-            val params = project.objects.newInstance<GetGenericPackageVersionAssetAction.Parameters>()
-            params.service.set(service)
-            params.domain.set("my-domain")
-            params.domainOwner.set("123456789012")
-            params.repository.set("my-repo")
-            params.namespace.set("my-namespace")
-            params.packageValue.set("my-package")
-            params.packageVersion.set("1.0.0")
-            params.asset.set("my-asset.zip")
-            params.outputFile.set(outputFile.toFile())
-
-            val action = object : GetGenericPackageVersionAssetAction() {
-                override fun getParameters() = params
-            }
-            action.execute()
+            val task = project.tasks.create("getAsset", GetGenericPackageVersionAsset::class.java)
+            task.service.set(service)
+            task.domain.set("my-domain")
+            task.domainOwner.set("123456789012")
+            task.repository.set("my-repo")
+            task.namespace.set("my-namespace")
+            task.packageValue.set("my-package")
+            task.packageVersion.set("1.0.0")
+            task.asset.set("my-asset.zip")
+            task.outputFile.set(outputFile.toFile())
+            task.execute()
 
             val captured = requestSlot.captured
             captured.domain shouldBe "my-domain"

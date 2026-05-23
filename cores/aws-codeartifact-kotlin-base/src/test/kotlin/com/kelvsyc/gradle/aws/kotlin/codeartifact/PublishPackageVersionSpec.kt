@@ -9,12 +9,11 @@ import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.slot
-import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.testfixtures.ProjectBuilder
 import java.nio.file.Files
 
-class PublishPackageVersionActionSpec : FunSpec() {
+class PublishPackageVersionSpec : FunSpec() {
     init {
         test("execute - passes correct request parameters to CodeArtifact") {
             val project = ProjectBuilder.builder().build()
@@ -28,22 +27,18 @@ class PublishPackageVersionActionSpec : FunSpec() {
             val assetFile = Files.createTempFile("publish-test", ".jar")
             Files.writeString(assetFile, "test-content")
 
-            val params = project.objects.newInstance<PublishPackageVersionAction.Parameters>()
-            params.service.set(service)
-            params.domain.set("my-domain")
-            params.domainOwner.set("123456789012")
-            params.repository.set("my-repo")
-            params.namespace.set("my-namespace")
-            params.packageValue.set("my-package")
-            params.packageVersion.set("1.0.0")
-            params.assetName.set("my-asset.jar")
-            params.assetSHA256.set("abc123def456")
-            params.assetContent.set(assetFile.toFile())
-
-            val action = object : PublishPackageVersionAction() {
-                override fun getParameters() = params
-            }
-            action.execute()
+            val task = project.tasks.create("publishPackageVersion", PublishPackageVersion::class.java)
+            task.service.set(service)
+            task.domain.set("my-domain")
+            task.domainOwner.set("123456789012")
+            task.repository.set("my-repo")
+            task.namespace.set("my-namespace")
+            task.packageValue.set("my-package")
+            task.packageVersion.set("1.0.0")
+            task.assetName.set("my-asset.jar")
+            task.assetSHA256.set("abc123def456")
+            task.assetContent.set(assetFile.toFile())
+            task.execute()
 
             val captured = requestSlot.captured
             captured.domain shouldBe "my-domain"

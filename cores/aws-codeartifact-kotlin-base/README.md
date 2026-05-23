@@ -62,7 +62,7 @@ Retrieves an AWS CodeArtifact authorization token.
 
 CodeArtifact tokens are valid for up to 12 hours (configurable via `--duration-seconds`). The threat model of the pre-generation pattern is equivalent to the CI environment variable attack surface — no new exposure.
 
-**Task-execution use cases**: use the `AbstractGetAuthorizationTokenWorkAction` WorkAction or call the `CodeArtifactClientBuildService` client directly inside a `WorkAction.execute()` body. The `ValueSource` abstraction adds no value for task execution.
+**Task-execution use cases**: use the `AbstractGetAuthorizationToken` task or call the `CodeArtifactClientBuildService` client directly inside a `DefaultTask` `@TaskAction`. The `ValueSource` abstraction adds no value for task execution.
 
 Parameters:
 
@@ -103,7 +103,7 @@ abstract class MyAssetValueSource
 }
 ```
 
-> **Security note:** Whatever `doObtain()` returns is serialized to `.gradle/configuration-cache/` in plaintext at cache-write time — this applies whether the resulting `Provider` is stored in a task `@Input`, a `@get:Internal` property, or a private `val`. If the asset contains sensitive data (private keys, credentials, tokens), use `GetGenericPackageVersionAssetAction` to download it to a file at task execution time, or call the `CodeArtifactClientBuildService` client directly inside a `WorkAction.execute()` body. Non-sensitive assets (version manifests, metadata) are safe to use at configuration time.
+> **Security note:** Whatever `doObtain()` returns is serialized to `.gradle/configuration-cache/` in plaintext at cache-write time — this applies whether the resulting `Provider` is stored in a task `@Input`, a `@get:Internal` property, or a private `val`. If the asset contains sensitive data (private keys, credentials, tokens), use `GetGenericPackageVersionAsset` to download it to a file at task execution time, or call the `CodeArtifactClientBuildService` client directly inside a `DefaultTask` `@TaskAction`. Non-sensitive assets (version manifests, metadata) are safe to use at configuration time.
 
 ## Value Source: `ListPackageVersionsValueSource`
 
@@ -123,50 +123,44 @@ val versions: Provider<List<String>> = providers.of(ListPackageVersionsValueSour
 }
 ```
 
-## WorkAction: `AbstractGetAuthorizationTokenWorkAction`
+## Task: `AbstractGetAuthorizationToken`
 
-Abstract base class for WorkActions that retrieve a CodeArtifact authorization token and execute
+Abstract base class for tasks that retrieve a CodeArtifact authorization token and execute
 work with it, keeping the token out of the Gradle configuration cache.
 
 > **Configuration cache safe.** The token is retrieved at task execution time and passed to
-> [doExecute], which executes immediately. The token is never stored in the configuration cache.
+> `doExecute`, which executes immediately. The token is never stored in the configuration cache.
 
 Extend this class and implement `doExecute(token: String)`:
 
 ```kotlin
-abstract class PublishArtifactAction : AbstractGetAuthorizationTokenWorkAction() {
+abstract class PublishArtifact : AbstractGetAuthorizationToken() {
     override fun doExecute(token: String) {
         // use token for CodeArtifact authentication
     }
 }
 
-tasks.register<DefaultTask>("publish") {
-    doLast {
-        workerExecutor.noIsolation().submit(PublishArtifactAction::class) {
-            service.set(codeArtifact)
-            domain.set("my-domain")
-            domainOwner.set("111122223333")
-            duration.set(3600L)
-        }
-    }
+tasks.register<PublishArtifact>("publishArtifact") {
+    service.set(codeArtifact)
+    domain.set("my-domain")
+    domainOwner.set("111122223333")
+    duration.set(3600L)
 }
 ```
 
-Parameters:
-
-| Parameter | Type | Description |
+| Property | Type | Description |
 |---|---|---|
 | `service` | `Property<CodeArtifactClientBuildService>` | Build service supplying the CodeArtifact client |
 | `domain` | `Property<String>` | CodeArtifact domain name |
 | `domainOwner` | `Property<String>` | AWS account ID owning the domain |
 | `duration` | `Property<Long>` | Token validity in seconds (900 to 43200) |
 
-## WorkAction: `GetGenericPackageVersionAssetAction`
+## Task: `GetGenericPackageVersionAsset`
 
 Downloads a CodeArtifact generic repository asset to a file:
 
 ```kotlin
-workerExecutor.noIsolation().submit(GetGenericPackageVersionAssetAction::class) {
+tasks.register<GetGenericPackageVersionAsset>("downloadAsset") {
     service.set(codeArtifact)
     domain.set("my-domain")
     domainOwner.set("111122223333")
@@ -179,12 +173,24 @@ workerExecutor.noIsolation().submit(GetGenericPackageVersionAssetAction::class) 
 }
 ```
 
-## WorkAction: `PublishPackageVersionAction`
+| Property | Type | Description |
+|---|---|---|
+| `service` | `Property<CodeArtifactClientBuildService>` | Build service supplying the CodeArtifact client |
+| `domain` | `Property<String>` | CodeArtifact domain name |
+| `domainOwner` | `Property<String>` | AWS account ID owning the domain |
+| `repository` | `Property<String>` | CodeArtifact repository name |
+| `namespace` | `Property<String>` | Package namespace |
+| `packageValue` | `Property<String>` | Package name |
+| `packageVersion` | `Property<String>` | Package version |
+| `asset` | `Property<String>` | Asset name within the package version |
+| `outputFile` | `RegularFileProperty` | Destination file for the downloaded asset |
+
+## Task: `PublishPackageVersion`
 
 Publishes an asset to a CodeArtifact generic package version:
 
 ```kotlin
-workerExecutor.noIsolation().submit(PublishPackageVersionAction::class) {
+tasks.register<PublishPackageVersion>("publishPackageVersion") {
     service.set(codeArtifact)
     domain.set("my-domain")
     domainOwner.set("111122223333")
@@ -198,6 +204,34 @@ workerExecutor.noIsolation().submit(PublishPackageVersionAction::class) {
     unfinished.set(false) // optional; set true when uploading multiple assets
 }
 ```
+
+| Property | Type | Description |
+|---|---|---|
+| `service` | `Property<CodeArtifactClientBuildService>` | Build service supplying the CodeArtifact client |
+| `domain` | `Property<String>` | CodeArtifact domain name |
+| `domainOwner` | `Property<String>` | AWS account ID owning the domain |
+| `repository` | `Property<String>` | CodeArtifact repository name |
+| `namespace` | `Property<String>` | Package namespace |
+| `packageValue` | `Property<String>` | Package name |
+| `packageVersion` | `Property<String>` | Package version |
+| `assetName` | `Property<String>` | Asset name within the package version |
+| `assetSHA256` | `Property<String>` | SHA-256 hash of the asset content |
+| `assetContent` | `RegularFileProperty` | Asset file to upload |
+| `unfinished` | `Property<Boolean>` | Optional; set to `true` when uploading multiple assets to the same package version |
+
+## Why no WorkActions
+
+The AWS Kotlin SDK exposes all service calls as `suspend` functions. A `WorkAction` that wraps a single suspend call reduces to:
+
+```kotlin
+override fun execute() {
+    runBlocking { singleSuspendCall() }
+}
+```
+
+This adds ceremony with no benefit: no return values, no isolation beyond what coroutines already provide, and no concurrency advantage (Gradle's task graph handles cross-task concurrency; coroutines handle within-task concurrency). WorkActions were designed for blocking Java SDK calls to avoid tying up Gradle's worker thread pool — that problem doesn't exist with a coroutine-based SDK.
+
+Accordingly, this component exposes `DefaultTask` subclasses instead. Plugin authors needing compound operations should compose via Gradle task dependencies (sequential) or call `service.get().getClient()` directly inside a `runBlocking { coroutineScope { } }` block (parallel).
 
 ## See Also
 
