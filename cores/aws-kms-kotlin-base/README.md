@@ -61,14 +61,14 @@ val keys: Provider<Map<String, String>> = providers.of(ListKeysValueSource::clas
 }
 ```
 
-## WorkActions
+## Tasks
 
-### `EncryptAction`
+### `Encrypt`
 
 Encrypts the contents of a plaintext file under a KMS key and writes the resulting ciphertext blob to disk:
 
 ```kotlin
-workerExecutor.noIsolation().submit(EncryptAction::class) {
+tasks.register<Encrypt>("encryptConfig") {
     service.set(kms)
     keyId.set("alias/my-key")
     plaintextFile.set(layout.projectDirectory.file("secrets/config.json"))
@@ -76,26 +76,26 @@ workerExecutor.noIsolation().submit(EncryptAction::class) {
 }
 ```
 
-| Parameter | Type | Description |
+| Property | Type | Description |
 |---|---|---|
 | `service` | `Property<KmsClientBuildService>` | Build service supplying the KMS client |
 | `keyId` | `Property<String>` | Key ID, ARN, or alias name to encrypt under |
 | `plaintextFile` | `RegularFileProperty` | Plaintext input file |
 | `ciphertextFile` | `RegularFileProperty` | Ciphertext output file |
 
-### `DecryptAction`
+### `Decrypt`
 
 Decrypts a KMS ciphertext blob back into plaintext:
 
 ```kotlin
-workerExecutor.noIsolation().submit(DecryptAction::class) {
+tasks.register<Decrypt>("decryptConfig") {
     service.set(kms)
     ciphertextFile.set(layout.projectDirectory.file("encrypted/config.json.kms"))
     plaintextFile.set(layout.buildDirectory.file("decrypted/config.json"))
 }
 ```
 
-| Parameter | Type | Description |
+| Property | Type | Description |
 |---|---|---|
 | `service` | `Property<KmsClientBuildService>` | Build service supplying the KMS client |
 | `keyId` | `Property<String>` | Optional; required only for asymmetric keys |
@@ -103,6 +103,20 @@ workerExecutor.noIsolation().submit(DecryptAction::class) {
 | `plaintextFile` | `RegularFileProperty` | Plaintext output file |
 
 For symmetric keys the key is determined from the ciphertext blob itself.
+
+## Why no WorkActions
+
+The AWS Kotlin SDK exposes all service calls as `suspend` functions. A `WorkAction` that wraps a single suspend call reduces to:
+
+```kotlin
+override fun execute() {
+    runBlocking { singleSuspendCall() }
+}
+```
+
+This adds ceremony with no benefit: no return values, no isolation beyond what coroutines already provide, and no concurrency advantage (Gradle's task graph handles cross-task concurrency; coroutines handle within-task concurrency). WorkActions were designed for blocking Java SDK calls to avoid tying up Gradle's worker thread pool — that problem doesn't exist with a coroutine-based SDK.
+
+Accordingly, this component exposes `DefaultTask` subclasses instead. Plugin authors needing compound operations should compose via Gradle task dependencies (sequential) or call `service.get().getClient()` directly inside a `runBlocking { coroutineScope { } }` block (parallel).
 
 ## See Also
 

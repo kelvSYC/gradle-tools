@@ -140,28 +140,26 @@ Parameters:
 | `bucket` | `Property<String>` | S3 bucket name |
 | `prefix` | `Property<String>` | Optional key prefix filter |
 
-## WorkActions: single-object operations
+## Tasks: single-object operations
 
-Low-level `WorkAction` implementations for single-object S3 operations. Submit via `WorkerExecutor`:
+`DefaultTask` implementations for single-object S3 operations:
 
-| Action | Purpose | Required parameters |
+| Task | Purpose | Required properties |
 |---|---|---|
-| `DownloadFileAction` | Download one object to a local file | `bucket`, `key`, `outputFile` |
-| `UploadFileAction` | Upload one local file | `bucket`, `key`, `inputFile` |
-| `CopyObjectAction` | Server-side copy between bucket/key pairs | `sourceBucket`, `sourceKey`, `destinationBucket`, `destinationKey` |
-| `DeleteObjectAction` | Delete one object | `bucket`, `key` |
-
-All four also require `service` (a `Property<S3ClientBuildService>`).
+| `DownloadFile` | Download one object to a local file | `service`, `bucket`, `key`, `outputFile` |
+| `UploadFile` | Upload one local file | `service`, `bucket`, `key`, `inputFile` |
+| `CopyObject` | Server-side copy between bucket/key pairs | `service`, `sourceBucket`, `sourceKey`, `destinationBucket`, `destinationKey` |
+| `DeleteObject` | Delete one object | `service`, `bucket`, `key` |
 
 ```kotlin
-workerExecutor.noIsolation().submit(UploadFileAction::class) {
+tasks.register<UploadFile>("uploadResult") {
     service.set(s3)
     bucket.set("my-bucket")
     key.set("output/result.json")
     inputFile.set(layout.buildDirectory.file("result.json"))
 }
 
-workerExecutor.noIsolation().submit(CopyObjectAction::class) {
+tasks.register<CopyObject>("promoteArtifact") {
     service.set(s3)
     sourceBucket.set("staging-bucket")
     sourceKey.set("artifact-1.0.0.jar")
@@ -169,6 +167,20 @@ workerExecutor.noIsolation().submit(CopyObjectAction::class) {
     destinationKey.set("artifact-1.0.0.jar")
 }
 ```
+
+## Why no WorkActions
+
+The AWS Kotlin SDK exposes all service calls as `suspend` functions. A `WorkAction` that wraps a single suspend call reduces to:
+
+```kotlin
+override fun execute() {
+    runBlocking { singleSuspendCall() }
+}
+```
+
+This adds ceremony with no benefit: no return values, no isolation beyond what coroutines already provide, and no concurrency advantage (Gradle's task graph handles cross-task concurrency; coroutines handle within-task concurrency). WorkActions were designed for blocking Java SDK calls to avoid tying up Gradle's worker thread pool — that problem doesn't exist with a coroutine-based SDK.
+
+Accordingly, this component exposes `DefaultTask` subclasses instead. Plugin authors needing compound operations should compose via Gradle task dependencies (sequential) or call `service.get().getClient()` directly inside a `runBlocking { coroutineScope { } }` block (parallel).
 
 ## See Also
 

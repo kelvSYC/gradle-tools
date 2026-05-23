@@ -62,14 +62,14 @@ val functions: Provider<Map<String, String>> = providers.of(ListFunctionsValueSo
 }
 ```
 
-## WorkActions
+## Tasks
 
-### `InvokeFunctionAction`
+### `InvokeFunction`
 
 Invokes a Lambda function (fire-and-forget — the response payload is discarded):
 
 ```kotlin
-workerExecutor.noIsolation().submit(InvokeFunctionAction::class) {
+tasks.register<InvokeFunction>("invokeLambda") {
     service.set(lambda)
     functionName.set("my-fn")
     qualifier.set("prod")          // optional
@@ -78,7 +78,7 @@ workerExecutor.noIsolation().submit(InvokeFunctionAction::class) {
 }
 ```
 
-| Parameter | Type | Description |
+| Property | Type | Description |
 |---|---|---|
 | `service` | `Property<LambdaClientBuildService>` | Build service supplying the Lambda client |
 | `functionName` | `Property<String>` | Function name, ARN, or partial ARN |
@@ -86,12 +86,12 @@ workerExecutor.noIsolation().submit(InvokeFunctionAction::class) {
 | `payload` | `Property<String>` | Optional UTF-8 payload |
 | `invocationType` | `Property<String>` | One of `RequestResponse`, `Event`, `DryRun` |
 
-### `UpdateFunctionCodeAction`
+### `UpdateFunctionCode`
 
 Uploads a new deployment package zip to an existing Lambda function:
 
 ```kotlin
-workerExecutor.noIsolation().submit(UpdateFunctionCodeAction::class) {
+tasks.register<UpdateFunctionCode>("updateLambdaCode") {
     service.set(lambda)
     functionName.set("my-fn")
     zipFile.set(layout.buildDirectory.file("dist/my-fn.zip"))
@@ -99,12 +99,26 @@ workerExecutor.noIsolation().submit(UpdateFunctionCodeAction::class) {
 }
 ```
 
-| Parameter | Type | Description |
+| Property | Type | Description |
 |---|---|---|
 | `service` | `Property<LambdaClientBuildService>` | Build service supplying the Lambda client |
 | `functionName` | `Property<String>` | Function name, ARN, or partial ARN |
 | `zipFile` | `RegularFileProperty` | Path to the zip file to upload |
 | `publish` | `Property<Boolean>` | Whether to publish a new version after update (defaults to `false`) |
+
+## Why no WorkActions
+
+The AWS Kotlin SDK exposes all service calls as `suspend` functions. A `WorkAction` that wraps a single suspend call reduces to:
+
+```kotlin
+override fun execute() {
+    runBlocking { singleSuspendCall() }
+}
+```
+
+This adds ceremony with no benefit: no return values, no isolation beyond what coroutines already provide, and no concurrency advantage (Gradle's task graph handles cross-task concurrency; coroutines handle within-task concurrency). WorkActions were designed for blocking Java SDK calls to avoid tying up Gradle's worker thread pool — that problem doesn't exist with a coroutine-based SDK.
+
+Accordingly, this component exposes `DefaultTask` subclasses instead. Plugin authors needing compound operations should compose via Gradle task dependencies (sequential) or call `service.get().getClient()` directly inside a `runBlocking { coroutineScope { } }` block (parallel).
 
 ## See Also
 

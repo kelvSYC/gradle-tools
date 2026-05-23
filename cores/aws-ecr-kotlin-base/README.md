@@ -77,49 +77,62 @@ val repositories: Provider<Map<String, String>> = providers.of(DescribeRepositor
 }
 ```
 
-## WorkActions
+## Tasks
 
-### `AbstractGetAuthorizationTokenWorkAction`
+### `AbstractGetAuthorizationToken`
 
-Retrieves an ECR authorization token inside a `WorkAction`, keeping the token out of the Gradle
+Retrieves an ECR authorization token inside a `@TaskAction`, keeping the token out of the Gradle
 configuration cache. Subclass and implement `doExecute` to use the token:
 
 ```kotlin
-abstract class DockerLoginAction : AbstractGetAuthorizationTokenWorkAction() {
+abstract class DockerLogin : AbstractGetAuthorizationToken() {
     override fun doExecute(token: String) {
         // token is the base64-encoded "AWS:password" string suitable for docker login
     }
 }
 
-workerExecutor.noIsolation().submit(DockerLoginAction::class) {
+tasks.register<DockerLogin>("dockerLogin") {
     service.set(ecr)
 }
 ```
 
 ECR tokens are valid for up to 12 hours and have no explicit revocation API — `doExecute` provides
 the correct execution-time scope. The token must not escape `doExecute`: storing it in a
-WorkParameters property (even `@get:Internal`), a task input, or a shared file writes it to
-`.gradle/configuration-cache/` in plaintext.
+task property or a shared file would write it to disk.
 
-### `BatchDeleteImageAction`
+### `BatchDeleteImage`
 
 Deletes a set of images, by tag, from an ECR repository:
 
 ```kotlin
-workerExecutor.noIsolation().submit(BatchDeleteImageAction::class) {
+tasks.register<BatchDeleteImage>("deleteOldImages") {
     service.set(ecr)
     repositoryName.set("my-repo")
     imageTags.addAll("v1.0", "v1.1-rc1")
 }
 ```
 
-| Parameter | Type | Description |
+| Property | Type | Description |
 |---|---|---|
 | `service` | `Property<EcrClientBuildService>` | Build service supplying the ECR client |
 | `repositoryName` | `Property<String>` | Repository to delete images from |
 | `imageTags` | `SetProperty<String>` | Set of image tags to delete |
 
 To delete by digest instead of tag, use the SDK directly.
+
+## Why no WorkActions
+
+The AWS Kotlin SDK exposes all service calls as `suspend` functions. A `WorkAction` that wraps a single suspend call reduces to:
+
+```kotlin
+override fun execute() {
+    runBlocking { singleSuspendCall() }
+}
+```
+
+This adds ceremony with no benefit: no return values, no isolation beyond what coroutines already provide, and no concurrency advantage (Gradle's task graph handles cross-task concurrency; coroutines handle within-task concurrency). WorkActions were designed for blocking Java SDK calls to avoid tying up Gradle's worker thread pool — that problem doesn't exist with a coroutine-based SDK.
+
+Accordingly, this component exposes `DefaultTask` subclasses instead. Plugin authors needing compound operations should compose via Gradle task dependencies (sequential) or call `service.get().getClient()` directly inside a `runBlocking { coroutineScope { } }` block (parallel).
 
 ## See Also
 
