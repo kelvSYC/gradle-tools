@@ -11,16 +11,23 @@ dependencies {
 }
 ```
 
-## Build Service
+## Build Services
 
-| Class | Client type |
-|---|---|
-| `LambdaClientBuildService` | `LambdaClient` (AWS SDK for Java) |
+| Class | Client type | Use case |
+|---|---|---|
+| `LambdaClientBuildService` | `LambdaClient` | Synchronous Lambda operations |
+| `LambdaAsyncClientBuildService` | `LambdaAsyncClient` | Asynchronous Lambda operations |
 
-Register the build service from a plugin or `build.gradle.kts`:
+Register a build service from a plugin or `build.gradle.kts`:
 
 ```kotlin
 val lambda = gradle.sharedServices.registerIfAbsent("lambda", LambdaClientBuildService::class) {
+    parameters {
+        regionId.set("us-east-1")
+        defaultCredentials()
+    }
+}
+val lambdaAsync = gradle.sharedServices.registerIfAbsent("lambdaAsync", LambdaAsyncClientBuildService::class) {
     parameters {
         regionId.set("us-east-1")
         defaultCredentials()
@@ -90,6 +97,56 @@ workerExecutor.noIsolation().submit(UpdateFunctionCodeAction::class) {
     publish.set(true)   // optional; defaults to false
 }
 ```
+
+## Tasks: Batch Code Update
+
+Updates the deployment package for multiple Lambda functions. Coordinates and content are specified
+per-artifact. All artifacts must be registered via `registerArtifact`.
+
+Two concurrency models are available — choose based on which client you use:
+
+| Class | Client type | Concurrency |
+|---|---|---|
+| `BatchUpdateFunctionCode` | `LambdaClient` (sync) | Sequential |
+| `AsyncBatchUpdateFunctionCode` | `LambdaAsyncClient` (async) | `CompletableFuture.allOf` |
+
+For BYO-client usage (without auto-registered build services), extend `AbstractSyncBatchUpdateFunctionCode`
+(sync) or `AbstractAsyncBatchUpdateFunctionCode` (async) and set the `service` or `client` property directly.
+
+```kotlin
+val updateAll = tasks.register<BatchUpdateFunctionCode>("updateAll") {
+    service.set(lambda)
+    registerArtifact("api") {
+        it.functionName.set("my-api-fn")
+        it.zipFile.set(layout.buildDirectory.file("dist/api.zip"))
+        it.publish.set(true)
+    }
+    registerArtifact("worker") {
+        it.functionName.set("my-worker-fn")
+        it.zipFile.set(layout.buildDirectory.file("dist/worker.zip"))
+        it.publish.set(true)
+    }
+    // waitForActive.set(false)  // opt out of post-update Active state wait
+    versionArnsFile.set(layout.buildDirectory.file("lambda/version-arns.json"))
+}
+
+// Wire the version ARNs file to a downstream task without forcing evaluation:
+val arnsFile: Provider<RegularFile> = updateAll.flatMap { it.versionArnsFile }
+```
+
+The `versionArnsFile` JSON format is `{"functionName": "arn:aws:lambda:…:function:my-fn:42", …}`.
+
+| Per-artifact property | Type | Description |
+|---|---|---|
+| `functionName` | `Property<String>` | Function name, ARN, or partial ARN |
+| `zipFile` | `RegularFileProperty` | Path to the zip file to upload |
+| `publish` | `Property<Boolean>` | Whether to publish a new version (optional) |
+
+| Task property | Type | Description |
+|---|---|---|
+| `service` / `client` | `Property<…BuildService>` | Build service (or raw async client) |
+| `waitForActive` | `Property<Boolean>` | Wait for `LastUpdateStatus = Successful` after each upload (default `true`) |
+| `versionArnsFile` | `RegularFileProperty` | Optional file to write published version ARN JSON into |
 
 ## See Also
 

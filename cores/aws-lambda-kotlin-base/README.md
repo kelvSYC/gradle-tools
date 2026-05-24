@@ -106,6 +106,54 @@ tasks.register<UpdateFunctionCode>("updateLambdaCode") {
 | `zipFile` | `RegularFileProperty` | Path to the zip file to upload |
 | `publish` | `Property<Boolean>` | Whether to publish a new version after update (defaults to `false`) |
 
+### `BatchUpdateFunctionCode`
+
+Updates the deployment package for multiple Lambda functions concurrently via coroutine `flatMapMerge`.
+All functions registered via `registerArtifact` are uploaded in parallel. After each upload, the task
+optionally waits for the function's `LastUpdateStatus` to reach `Successful` (controlled by `waitForActive`,
+default `true`) before completing. When any function is published, the resulting version ARNs can be written
+to a JSON file via `versionArnsFile`:
+
+```kotlin
+val updateAll = tasks.register<BatchUpdateFunctionCode>("updateAll") {
+    service.set(lambda)
+    registerArtifact("api") {
+        functionName.set("my-api-fn")
+        zipFile.set(layout.buildDirectory.file("dist/api.zip"))
+        publish.set(true)
+    }
+    registerArtifact("worker") {
+        functionName.set("my-worker-fn")
+        zipFile.set(layout.buildDirectory.file("dist/worker.zip"))
+        publish.set(true)
+    }
+    // waitForActive.set(false)  // opt out of post-update Active state wait
+    versionArnsFile.set(layout.buildDirectory.file("lambda/version-arns.json"))
+}
+```
+
+Wire the version ARNs file to a downstream task without forcing evaluation:
+
+```kotlin
+val arnsFile: Provider<RegularFile> = updateAll.flatMap { it.versionArnsFile }
+```
+
+The `versionArnsFile` JSON format is `{"functionName": "arn:aws:lambda:…:function:my-fn:42", …}`.
+
+| Per-artifact property | Type | Description |
+|---|---|---|
+| `functionName` | `Property<String>` | Function name, ARN, or partial ARN |
+| `zipFile` | `RegularFileProperty` | Path to the zip file to upload |
+| `publish` | `Property<Boolean>` | Whether to publish a new version (optional) |
+
+| Task property | Type | Description |
+|---|---|---|
+| `service` | `Property<LambdaClientBuildService>` | Build service supplying the Lambda client |
+| `waitForActive` | `Property<Boolean>` | Wait for `LastUpdateStatus = Successful` after each upload (default `true`) |
+| `versionArnsFile` | `RegularFileProperty` | Optional file to write published version ARN JSON into |
+
+For BYO-client usage (no build service), extend `AbstractBatchUpdateFunctionCode` and set `client` directly.
+
 ## Why no WorkActions
 
 The AWS Kotlin SDK exposes all service calls as `suspend` functions. A `WorkAction` that wraps a single suspend call reduces to:
