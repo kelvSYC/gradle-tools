@@ -5,7 +5,9 @@ import com.google.api.gax.core.FixedCredentialsProvider
 import com.google.api.gax.core.NoCredentialsProvider
 import com.google.auth.Credentials
 import com.google.auth.oauth2.AccessToken
+import com.google.auth.oauth2.ExternalAccountCredentials
 import com.google.auth.oauth2.GoogleCredentials
+import com.google.auth.oauth2.IdentityPoolCredentials
 import com.google.auth.oauth2.ServiceAccountCredentials
 import com.google.cloud.NoCredentials
 import com.kelvsyc.gradle.clients.AbstractClientBuildService
@@ -59,6 +61,9 @@ abstract class AbstractGcpClientBuildService<C : Any, P : GcpBuildServiceParams>
      * | `SERVICE_ACCOUNT_JSON_FILE` | [ServiceAccountCredentials.fromStream] over the credentials file |
      * | `SERVICE_ACCOUNT_JSON_ENV` | [ServiceAccountCredentials.fromStream] over JSON resolved from [GcpBuildServiceParams.credentialsJsonRef] |
      * | `ACCESS_TOKEN` | [GoogleCredentials.create] over an [AccessToken] resolved from [GcpBuildServiceParams.accessTokenRef] |
+     * | `EXTERNAL_ACCOUNT_CONFIG_FILE` | [ExternalAccountCredentials.fromStream] over the credential config file |
+     * | `EXTERNAL_ACCOUNT_CONFIG_ENV` | [ExternalAccountCredentials.fromStream] over JSON resolved from [GcpBuildServiceParams.externalAccountConfigRef] |
+     * | `WORKLOAD_IDENTITY_OIDC` | [IdentityPoolCredentials] built from [GcpBuildServiceParams.workloadIdentityAudience], [GcpBuildServiceParams.workloadIdentityTokenRef], and optionally [GcpBuildServiceParams.workloadIdentityServiceAccountEmail] |
      * | unset | `null` |
      */
     protected fun resolveCredentials(): Credentials? = when (parameters.credentialSource.orNull) {
@@ -70,7 +75,28 @@ abstract class AbstractGcpClientBuildService<C : Any, P : GcpBuildServiceParams>
             parameters.credentialsJsonRef.get().resolve().byteInputStream().use(ServiceAccountCredentials::fromStream)
         GcpCredentialSource.ACCESS_TOKEN ->
             GoogleCredentials.create(AccessToken(parameters.accessTokenRef.get().resolve(), null))
+        GcpCredentialSource.EXTERNAL_ACCOUNT_CONFIG_FILE ->
+            parameters.externalAccountConfigFile.get().asFile.inputStream().use(ExternalAccountCredentials::fromStream)
+        GcpCredentialSource.EXTERNAL_ACCOUNT_CONFIG_ENV ->
+            parameters.externalAccountConfigRef.get().resolve().byteInputStream().use(ExternalAccountCredentials::fromStream)
+        GcpCredentialSource.WORKLOAD_IDENTITY_OIDC -> buildWorkloadIdentityCredentials()
         null -> null
+    }
+
+    private fun buildWorkloadIdentityCredentials(): IdentityPoolCredentials {
+        val tokenRef = parameters.workloadIdentityTokenRef.get()
+        return IdentityPoolCredentials.newBuilder().apply {
+            setAudience(parameters.workloadIdentityAudience.get())
+            setSubjectTokenType("urn:ietf:params:oauth:token-type:jwt")
+            setTokenUrl("https://sts.googleapis.com/v1/token")
+            setSubjectTokenSupplier { _ -> tokenRef.resolve() }
+            setScopes(listOf("https://www.googleapis.com/auth/cloud-platform"))
+            parameters.workloadIdentityServiceAccountEmail.orNull?.let { email ->
+                setServiceAccountImpersonationUrl(
+                    "https://iamcredentials.googleapis.com/v1/serviceAccounts/$email:generateAccessToken"
+                )
+            }
+        }.build()
     }
 
     /**
