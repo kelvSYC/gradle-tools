@@ -63,10 +63,11 @@ since the two AWS SDKs are distinct libraries:
 | `google-cloud-pubsub-base` | GCP Pub/Sub |
 | `hashicorp-vault-base` | HashiCorp Vault KV and dynamic credentials |
 | `google-cloud-kms-base` | GCP Cloud KMS |
+| `azure-app-configuration-base` | Read and write Azure App Configuration key-values, feature flags, and snapshots |
 | `azure-blob-storage-base` | Azure Blob Storage |
+| `azure-container-apps-base` | Container Apps environments, apps, revisions, and jobs (create/update/delete, revision activation, job execution start/stop) |
 | `azure-container-registry-base` | Azure Container Registry |
 | `azure-functions-base` | Deploy, invoke, and configure Azure Function Apps (zip deploy, run-from-package, HTTP invocation, app settings) |
-| `azure-app-configuration-base` | Read and write Azure App Configuration key-values, feature flags, and snapshots |
 | `azure-key-vault-base` | Azure Key Vault |
 | `azure-managed-identity-base` | Azure Managed Identity / IMDS |
 | `azure-service-bus-base` | Azure Service Bus |
