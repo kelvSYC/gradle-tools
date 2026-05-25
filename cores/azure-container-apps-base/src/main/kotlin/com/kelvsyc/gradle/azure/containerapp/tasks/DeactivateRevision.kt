@@ -1,7 +1,7 @@
 package com.kelvsyc.gradle.azure.containerapp.tasks
 
 import com.kelvsyc.gradle.azure.containerapp.ContainerAppBuildService
-import com.kelvsyc.gradle.azure.containerapp.actions.ActivateRevisionAction
+import com.kelvsyc.gradle.azure.containerapp.actions.DeactivateRevisionAction
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
@@ -12,16 +12,16 @@ import org.gradle.workers.WorkerExecutor
 import javax.inject.Inject
 
 /**
- * Activates a specific revision of an Azure Container App.
+ * Deactivates a specific revision of an Azure Container App.
  *
- * Delegates to [ActivateRevisionAction] via [WorkerExecutor.noIsolation].
+ * Delegates to [DeactivateRevisionAction] via [WorkerExecutor.noIsolation].
  */
-@DisableCachingByDefault(because = "Activating a revision is not cacheable")
-abstract class ActivateRevisionTask @Inject constructor(
+@DisableCachingByDefault(because = "Deactivating a revision is not cacheable")
+abstract class DeactivateRevision @Inject constructor(
     private val workerExecutor: WorkerExecutor,
 ) : DefaultTask() {
 
-    /** The scoped service identifying which app's revision to activate. */
+    /** The scoped service identifying which app's revision to deactivate. */
     @get:Internal
     abstract val containerAppService: Property<ContainerAppBuildService>
 
@@ -29,10 +29,10 @@ abstract class ActivateRevisionTask @Inject constructor(
     @get:Input
     abstract val revisionName: Property<String>
 
-    /** Submits [ActivateRevisionAction]. */
+    /** Submits [DeactivateRevisionAction]. */
     @TaskAction
     fun run() {
-        workerExecutor.noIsolation().submit(ActivateRevisionAction::class.java) { params ->
+        workerExecutor.noIsolation().submit(DeactivateRevisionAction::class.java) { params ->
             params.service.set(containerAppService)
             params.revisionName.set(revisionName)
         }

@@ -16,7 +16,7 @@ import javax.inject.Inject
  * Delegates to [DeleteContainerAppAction] via [WorkerExecutor.noIsolation].
  */
 @DisableCachingByDefault(because = "Deleting a cloud resource is not cacheable")
-abstract class DeleteContainerAppTask @Inject constructor(
+abstract class DeleteContainerApp @Inject constructor(
     private val workerExecutor: WorkerExecutor,
 ) : DefaultTask() {
 

@@ -18,7 +18,7 @@ import javax.inject.Inject
  * Delegates to [CreateManagedEnvironmentAction] via [WorkerExecutor.noIsolation].
  */
 @DisableCachingByDefault(because = "Creating a cloud resource is not cacheable")
-abstract class CreateManagedEnvironmentTask @Inject constructor(
+abstract class CreateManagedEnvironment @Inject constructor(
     private val workerExecutor: WorkerExecutor,
 ) : DefaultTask() {
 

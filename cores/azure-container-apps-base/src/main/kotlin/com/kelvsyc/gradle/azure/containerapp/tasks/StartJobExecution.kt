@@ -22,7 +22,7 @@ import javax.inject.Inject
  * Delegates to [StartJobExecutionAction] via [WorkerExecutor.noIsolation].
  */
 @DisableCachingByDefault(because = "Starting a job execution is not cacheable")
-abstract class StartJobExecutionTask @Inject constructor(
+abstract class StartJobExecution @Inject constructor(
     private val workerExecutor: WorkerExecutor,
 ) : DefaultTask() {
 

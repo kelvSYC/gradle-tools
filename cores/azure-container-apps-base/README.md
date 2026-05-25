@@ -298,18 +298,18 @@ Each WorkAction has a corresponding `DefaultTask` subclass for convenience:
 
 | Task | Description |
 |---|---|
-| `CreateManagedEnvironmentTask` | Wraps `CreateManagedEnvironmentAction` |
-| `DeleteManagedEnvironmentTask` | Wraps `DeleteManagedEnvironmentAction` |
-| `CreateContainerAppTask` | Wraps `CreateContainerAppAction` |
-| `UpdateContainerAppTask` | Wraps `UpdateContainerAppAction` |
-| `DeleteContainerAppTask` | Wraps `DeleteContainerAppAction` |
-| `ActivateRevisionTask` | Wraps `ActivateRevisionAction` |
-| `DeactivateRevisionTask` | Wraps `DeactivateRevisionAction` |
-| `CreateContainerAppJobTask` | Wraps `CreateContainerAppJobAction` |
-| `UpdateContainerAppJobTask` | Wraps `UpdateContainerAppJobAction` |
-| `DeleteContainerAppJobTask` | Wraps `DeleteContainerAppJobAction` |
-| `StartJobExecutionTask` | Wraps `StartJobExecutionAction` |
-| `StopJobExecutionTask` | Wraps `StopJobExecutionAction` |
+| `CreateManagedEnvironment` | Wraps `CreateManagedEnvironmentAction` |
+| `DeleteManagedEnvironment` | Wraps `DeleteManagedEnvironmentAction` |
+| `CreateContainerApp` | Wraps `CreateContainerAppAction` |
+| `UpdateContainerApp` | Wraps `UpdateContainerAppAction` |
+| `DeleteContainerApp` | Wraps `DeleteContainerAppAction` |
+| `ActivateRevision` | Wraps `ActivateRevisionAction` |
+| `DeactivateRevision` | Wraps `DeactivateRevisionAction` |
+| `CreateContainerAppJob` | Wraps `CreateContainerAppJobAction` |
+| `UpdateContainerAppJob` | Wraps `UpdateContainerAppJobAction` |
+| `DeleteContainerAppJob` | Wraps `DeleteContainerAppJobAction` |
+| `StartJobExecution` | Wraps `StartJobExecutionAction` |
+| `StopJobExecution` | Wraps `StopJobExecutionAction` |
 
 ## Credential Configuration
 

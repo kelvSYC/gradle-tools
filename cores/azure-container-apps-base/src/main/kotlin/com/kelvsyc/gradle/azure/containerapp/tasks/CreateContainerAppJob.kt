@@ -1,7 +1,8 @@
 package com.kelvsyc.gradle.azure.containerapp.tasks
 
 import com.kelvsyc.gradle.azure.containerapp.ContainerAppsEnvironmentBuildService
-import com.kelvsyc.gradle.azure.containerapp.actions.CreateContainerAppAction
+import com.kelvsyc.gradle.azure.containerapp.JobTriggerType
+import com.kelvsyc.gradle.azure.containerapp.actions.CreateContainerAppJobAction
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
@@ -14,12 +15,12 @@ import org.gradle.workers.WorkerExecutor
 import javax.inject.Inject
 
 /**
- * Creates a new Azure Container App within the configured managed environment.
+ * Creates a new Azure Container App Job definition within the configured managed environment.
  *
- * Delegates to [CreateContainerAppAction] via [WorkerExecutor.noIsolation].
+ * Delegates to [CreateContainerAppJobAction] via [WorkerExecutor.noIsolation].
  */
 @DisableCachingByDefault(because = "Creating a cloud resource is not cacheable")
-abstract class CreateContainerAppTask @Inject constructor(
+abstract class CreateContainerAppJob @Inject constructor(
     private val workerExecutor: WorkerExecutor,
 ) : DefaultTask() {
 
@@ -27,9 +28,9 @@ abstract class CreateContainerAppTask @Inject constructor(
     @get:Internal
     abstract val environmentService: Property<ContainerAppsEnvironmentBuildService>
 
-    /** Name of the new container app. */
+    /** Name of the new job. */
     @get:Input
-    abstract val containerAppName: Property<String>
+    abstract val jobName: Property<String>
 
     /** Container image URI. */
     @get:Input
@@ -39,43 +40,36 @@ abstract class CreateContainerAppTask @Inject constructor(
     @get:Input
     abstract val location: Property<String>
 
-    /** Whether to enable external HTTPS ingress. */
+    /** How the job is triggered. */
     @get:Input
-    @get:Optional
-    abstract val ingressEnabled: Property<Boolean>
+    abstract val triggerType: Property<JobTriggerType>
 
-    /** Container port to expose. Required when [ingressEnabled] is `true`. */
+    /** Cron expression for [JobTriggerType.SCHEDULED] jobs. */
     @get:Input
     @get:Optional
-    abstract val targetPort: Property<Int>
+    abstract val cronExpression: Property<String>
 
-    /** Minimum replica count. */
+    /** Number of job replicas per execution. */
     @get:Input
     @get:Optional
-    abstract val minReplicas: Property<Int>
-
-    /** Maximum replica count. */
-    @get:Input
-    @get:Optional
-    abstract val maxReplicas: Property<Int>
+    abstract val replicaCompletionCount: Property<Int>
 
     /** Optional environment variables. */
     @get:Input
     @get:Optional
     abstract val envVars: MapProperty<String, String>
 
-    /** Submits [CreateContainerAppAction]. */
+    /** Submits [CreateContainerAppJobAction]. */
     @TaskAction
     fun run() {
-        workerExecutor.noIsolation().submit(CreateContainerAppAction::class.java) { params ->
+        workerExecutor.noIsolation().submit(CreateContainerAppJobAction::class.java) { params ->
             params.service.set(environmentService)
-            params.containerAppName.set(containerAppName)
+            params.jobName.set(jobName)
             params.imageUri.set(imageUri)
             params.location.set(location)
-            params.ingressEnabled.set(ingressEnabled)
-            params.targetPort.set(targetPort)
-            params.minReplicas.set(minReplicas)
-            params.maxReplicas.set(maxReplicas)
+            params.triggerType.set(triggerType)
+            params.cronExpression.set(cronExpression)
+            params.replicaCompletionCount.set(replicaCompletionCount)
             params.envVars.set(envVars)
         }
     }

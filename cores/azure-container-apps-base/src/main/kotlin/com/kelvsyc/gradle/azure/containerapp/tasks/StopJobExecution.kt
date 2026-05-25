@@ -17,7 +17,7 @@ import javax.inject.Inject
  * Delegates to [StopJobExecutionAction] via [WorkerExecutor.noIsolation].
  */
 @DisableCachingByDefault(because = "Stopping a job execution is not cacheable")
-abstract class StopJobExecutionTask @Inject constructor(
+abstract class StopJobExecution @Inject constructor(
     private val workerExecutor: WorkerExecutor,
 ) : DefaultTask() {
 

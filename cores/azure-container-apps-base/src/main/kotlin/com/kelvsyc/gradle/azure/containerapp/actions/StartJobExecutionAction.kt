@@ -12,7 +12,7 @@ import org.gradle.workers.WorkParameters
  * execution name to [executionNameFile].
  *
  * The execution name can be consumed by downstream tasks (e.g. a polling task) via
- * [StartJobExecutionTask.executionNameFile].
+ * [StartJobExecution.executionNameFile].
  */
 abstract class StartJobExecutionAction : WorkAction<StartJobExecutionAction.Parameters> {
 

@@ -19,7 +19,7 @@ import javax.inject.Inject
  * Delegates to [UpdateContainerAppJobAction] via [WorkerExecutor.noIsolation].
  */
 @DisableCachingByDefault(because = "Deploying to an external service is not cacheable")
-abstract class UpdateContainerAppJobTask @Inject constructor(
+abstract class UpdateContainerAppJob @Inject constructor(
     private val workerExecutor: WorkerExecutor,
 ) : DefaultTask() {
 
