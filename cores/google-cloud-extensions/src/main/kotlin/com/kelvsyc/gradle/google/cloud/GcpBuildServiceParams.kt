@@ -59,4 +59,51 @@ interface GcpBuildServiceParams : BuildServiceParameters {
      * value is the token string. Set via [accessToken].
      */
     val accessTokenRef: Property<CredentialReference>
+
+    /**
+     * Path to a credential config JSON file produced by
+     * `gcloud iam workload-identity-pools create-cred-config`. Used when [credentialSource] is
+     * [GcpCredentialSource.EXTERNAL_ACCOUNT_CONFIG_FILE].
+     *
+     * Set via [externalAccount].
+     */
+    val externalAccountConfigFile: RegularFileProperty
+
+    /**
+     * Reference to where the credential config JSON payload can be found. Used when [credentialSource]
+     * is [GcpCredentialSource.EXTERNAL_ACCOUNT_CONFIG_ENV].
+     *
+     * Stores a [CredentialReference] pointing to an environment variable or system property whose
+     * value is the full credential config JSON string. Set via [externalAccount].
+     */
+    val externalAccountConfigRef: Property<CredentialReference>
+
+    /**
+     * Full workload identity pool provider resource name used as the STS audience. Used when
+     * [credentialSource] is [GcpCredentialSource.WORKLOAD_IDENTITY_OIDC].
+     *
+     * Format: `//iam.googleapis.com/projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/POOL_ID/providers/PROVIDER_ID`.
+     * Set via [workloadIdentity].
+     */
+    val workloadIdentityAudience: Property<String>
+
+    /**
+     * Reference to where the pre-fetched OIDC token can be found. Used when [credentialSource] is
+     * [GcpCredentialSource.WORKLOAD_IDENTITY_OIDC].
+     *
+     * Stores a [CredentialReference] pointing to an environment variable or system property whose
+     * value is the OIDC token string. Resolved lazily at token-refresh time, not at configuration
+     * time. Set via [workloadIdentity].
+     */
+    val workloadIdentityTokenRef: Property<CredentialReference>
+
+    /**
+     * Email of the service account to impersonate via
+     * [com.google.auth.oauth2.ImpersonatedCredentials]. Used when [credentialSource] is
+     * [GcpCredentialSource.WORKLOAD_IDENTITY_OIDC].
+     *
+     * When set, the STS-exchanged token is further exchanged for a service account access token via
+     * the IAM Credentials API. Leave unset to use the STS token directly. Set via [workloadIdentity].
+     */
+    val workloadIdentityServiceAccountEmail: Property<String>
 }
