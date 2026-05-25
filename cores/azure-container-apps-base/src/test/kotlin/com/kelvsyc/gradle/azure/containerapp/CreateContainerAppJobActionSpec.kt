@@ -54,5 +54,42 @@ class CreateContainerAppJobActionSpec : FunSpec() {
 
             verify { jobs.define("my-job") }
         }
+
+        test("execute - creates scheduled job with cron expression") {
+            val project = ProjectBuilder.builder().build()
+            val manager = mockk<ContainerAppsApiManager>()
+            MockContainerAppsEnvironmentBuildService.mockManager = manager
+            val service = project.gradle.sharedServices.registerIfAbsent(
+                "containerAppsEnv",
+                MockContainerAppsEnvironmentBuildService::class,
+            ) { spec ->
+                spec.parameters.resourceGroupName.set("my-rg")
+                spec.parameters.environmentName.set("my-env")
+                spec.parameters.subscriptionId.set("sub-id")
+            }
+
+            val jobs = mockk<Jobs>()
+            val managedEnvs = mockk<ManagedEnvironments>(relaxed = true)
+            val blankDef = mockk<Job.DefinitionStages.Blank>(relaxed = true)
+            every { manager.jobs() } returns jobs
+            every { manager.managedEnvironments() } returns managedEnvs
+            every { jobs.define(any()) } returns blankDef
+            every { blankDef.withRegion(any<String>()) } returns mockk(relaxed = true)
+
+            val params = project.objects.newInstance<CreateContainerAppJobAction.Parameters>()
+            params.service.set(service)
+            params.jobName.set("my-job")
+            params.imageUri.set("mcr.microsoft.com/azuredocs/containerapps-helloworld:latest")
+            params.location.set("eastus")
+            params.triggerType.set(JobTriggerType.SCHEDULED)
+            params.cronExpression.set("0 * * * *")
+
+            val action = object : CreateContainerAppJobAction() {
+                override fun getParameters() = params
+            }
+            action.execute()
+
+            verify { jobs.define("my-job") }
+        }
     }
 }

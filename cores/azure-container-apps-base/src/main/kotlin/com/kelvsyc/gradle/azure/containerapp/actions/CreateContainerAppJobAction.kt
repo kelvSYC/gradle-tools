@@ -3,6 +3,7 @@ package com.kelvsyc.gradle.azure.containerapp.actions
 import com.azure.resourcemanager.appcontainers.models.Container
 import com.azure.resourcemanager.appcontainers.models.EnvironmentVar
 import com.azure.resourcemanager.appcontainers.models.JobConfiguration
+import com.azure.resourcemanager.appcontainers.models.JobConfigurationScheduleTriggerConfig
 import com.azure.resourcemanager.appcontainers.models.JobTemplate
 import com.azure.resourcemanager.appcontainers.models.TriggerType
 import com.kelvsyc.gradle.azure.containerapp.ContainerAppsEnvironmentBuildService
@@ -46,6 +47,9 @@ abstract class CreateContainerAppJobAction : WorkAction<CreateContainerAppJobAct
         /** Cron expression for [JobTriggerType.SCHEDULED] jobs (e.g. `0 * * * *`). */
         val cronExpression: Property<String>
 
+        /** Number of job replicas to run per execution. Defaults to 1 when absent. */
+        val replicaCompletionCount: Property<Int>
+
         /** Optional environment variables to set on the job container. */
         val envVars: MapProperty<String, String>
     }
@@ -76,6 +80,15 @@ abstract class CreateContainerAppJobAction : WorkAction<CreateContainerAppJobAct
 
         val configuration = JobConfiguration()
             .withTriggerType(sdkTriggerType)
+            .also { config ->
+                if (parameters.triggerType.get() == JobTriggerType.SCHEDULED) {
+                    config.withScheduleTriggerConfig(
+                        JobConfigurationScheduleTriggerConfig()
+                            .withCronExpression(parameters.cronExpression.get())
+                            .withReplicaCompletionCount(parameters.replicaCompletionCount.getOrElse(DEFAULT_REPLICA_COMPLETION_COUNT)),
+                    )
+                }
+            }
 
         manager.jobs()
             .define(parameters.jobName.get())
@@ -85,6 +98,10 @@ abstract class CreateContainerAppJobAction : WorkAction<CreateContainerAppJobAct
             .withConfiguration(configuration)
             .withTemplate(template)
             .create()
+    }
+
+    private companion object {
+        private const val DEFAULT_REPLICA_COMPLETION_COUNT = 1
     }
 
 }
