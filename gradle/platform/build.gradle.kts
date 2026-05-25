@@ -32,5 +32,6 @@ dependencies {
         api(libs.vault.java.driver)
         api(libs.woodstox)
         api(libs.azure.resourcemanager.appconfiguration)
+        api(libs.azure.resourcemanager.appcontainers)
     }
 }
