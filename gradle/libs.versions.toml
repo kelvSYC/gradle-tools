@@ -4,6 +4,8 @@ dokkatoo = "2.4.0"
 kotlin = "2.3.0"
 kotlin-tools = "0.4.0"
 moshi = "1.15.2"
+azure-resourcemanager-appcontainers = "1.1.0-beta.1"
+azure-resourcemanager-appconfiguration = "1.2.0-beta.1"
 
 [libraries]
 # BOMs
@@ -42,8 +44,8 @@ azure-storage-common = { module = "com.azure:azure-storage-common" } # version f
 azure-containers-containerregistry = { module = "com.azure:azure-containers-containerregistry" } # version from BOM 'azure-sdk-bom'
 azure-resourcemanager-appservice = { module = "com.azure.resourcemanager:azure-resourcemanager-appservice" } # version from BOM 'azure-sdk-bom'
 azure-data-appconfiguration = { module = "com.azure:azure-data-appconfiguration" } # version from BOM 'azure-sdk-bom'
-azure-resourcemanager-appconfiguration = { module = "com.azure.resourcemanager:azure-resourcemanager-appconfiguration", version = "1.2.0-beta.1" } # not in azure-sdk-bom; pinned explicitly
-azure-resourcemanager-appcontainers = { module = "com.azure.resourcemanager:azure-resourcemanager-appcontainers", version = "1.1.0-beta.1" } # not in azure-sdk-bom; pinned explicitly
+azure-resourcemanager-appconfiguration = { module = "com.azure.resourcemanager:azure-resourcemanager-appconfiguration", version.ref = "azure-resourcemanager-appconfiguration" }
+azure-resourcemanager-appcontainers = { module = "com.azure.resourcemanager:azure-resourcemanager-appcontainers", version.ref = "azure-resourcemanager-appcontainers" }
 aws-appconfig-java = { module = "software.amazon.awssdk:appconfig" } # version from BOM 'aws-java-sdk-bom'
 aws-appconfig-kotlin = { module = "aws.sdk.kotlin:appconfig" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-appconfigdata-java = { module = "software.amazon.awssdk:appconfigdata" } # version from BOM 'aws-java-sdk-bom'
