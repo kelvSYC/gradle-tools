@@ -74,7 +74,7 @@ val job = gradle.sharedServices.registerIfAbsent(
 
 ### Environment ValueSources
 
-**`GetManagedEnvironmentValueSource`** — Returns the provisioning state of a managed environment, or `null` if not found or still provisioning.
+**`GetManagedEnvironmentValueSource`** — Returns the default domain of a managed environment (e.g. `my-env.eastus.azurecontainerapps.io`), or `null` if not found or the domain is not available.
 
 ```kotlin
 val provisioningState: Provider<String> = providers.of(GetManagedEnvironmentValueSource::class) {
@@ -199,8 +199,8 @@ workerExecutor.noIsolation().submit(DeleteManagedEnvironmentAction::class) {
 workerExecutor.noIsolation().submit(CreateContainerAppAction::class) {
     service.set(environment)
     containerAppName.set("my-app")
-    image.set("myregistry.azurecr.io/myapp:1.0.0")
-    environmentVariables.set(mapOf("KEY" to "value"))  // optional
+    imageUri.set("myregistry.azurecr.io/myapp:1.0.0")
+    envVars.set(mapOf("KEY" to "value"))  // optional
 }
 ```
 
@@ -209,8 +209,8 @@ workerExecutor.noIsolation().submit(CreateContainerAppAction::class) {
 ```kotlin
 workerExecutor.noIsolation().submit(UpdateContainerAppAction::class) {
     service.set(app)
-    image.set("myregistry.azurecr.io/myapp:2.0.0")
-    environmentVariables.set(mapOf("KEY" to "new-value"))  // optional
+    imageUri.set("myregistry.azurecr.io/myapp:2.0.0")
+    envVars.set(mapOf("KEY" to "new-value"))  // optional
 }
 ```
 
@@ -250,9 +250,9 @@ workerExecutor.noIsolation().submit(DeactivateRevisionAction::class) {
 workerExecutor.noIsolation().submit(CreateContainerAppJobAction::class) {
     service.set(environment)
     jobName.set("my-job")
-    image.set("myregistry.azurecr.io/myjob:1.0.0")
-    environmentVariables.set(mapOf("KEY" to "value"))  // optional
-    jobTriggerType.set("Schedule")                       // or "Event" or "Manual"
+    imageUri.set("myregistry.azurecr.io/myjob:1.0.0")
+    envVars.set(mapOf("KEY" to "value"))  // optional
+    triggerType.set(JobTriggerType.SCHEDULED)            // or JobTriggerType.EVENT or JobTriggerType.MANUAL
 }
 ```
 
@@ -261,8 +261,8 @@ workerExecutor.noIsolation().submit(CreateContainerAppJobAction::class) {
 ```kotlin
 workerExecutor.noIsolation().submit(UpdateContainerAppJobAction::class) {
     service.set(job)
-    image.set("myregistry.azurecr.io/myjob:2.0.0")
-    environmentVariables.set(mapOf("KEY" to "new-value"))  // optional
+    imageUri.set("myregistry.azurecr.io/myjob:2.0.0")
+    envVars.set(mapOf("KEY" to "new-value"))  // optional
 }
 ```
 
