@@ -24,6 +24,7 @@ dependencies {
     api(platform(libs.kotlin.tools.bom))
     api(platform(libs.kotlinx.coroutines.bom))
     constraints {
+        api(libs.aws.lambda.java.core)
         api(libs.commons.lang)
         api(libs.moshi)
         api(libs.moshi.kotlin)

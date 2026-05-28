@@ -63,6 +63,7 @@ aws-imds-kotlin = { module = "aws.sdk.kotlin:imds" } # version from BOM 'aws-kot
 aws-kms-java = { module = "software.amazon.awssdk:kms" } # version from BOM 'aws-java-sdk-bom'
 aws-kms-kotlin = { module = "aws.sdk.kotlin:kms" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-lambda-java = { module = "software.amazon.awssdk:lambda" } # version from BOM 'aws-java-sdk-bom'
+aws-lambda-java-core = "com.amazonaws:aws-lambda-java-core:1.2.3"
 aws-lambda-kotlin = { module = "aws.sdk.kotlin:lambda" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-s3-java = { module = "software.amazon.awssdk:s3" } # version from BOM 'aws-java-sdk-bom'
 aws-s3-kotlin = { module = "aws.sdk.kotlin:s3" } # version from BOM 'aws-kotlin-sdk-bom'
