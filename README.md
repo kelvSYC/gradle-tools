@@ -18,6 +18,8 @@ Standalone Gradle plugins that solve a specific build problem. Apply them direct
 | `git-core` | `com.kelvsyc.gradle.git-core` | Git archival tasks and JGit extensions for remote repositories |
 | `jfrog-cli-core` | `com.kelvsyc.gradle.jfrog-cli-core` | Gradle tasks wrapping the JFrog CLI |
 | `karakum-core` | `com.kelvsyc.gradle.karakum-core` | Karakum TypeScript → Kotlin external-declaration codegen, with automatic Kotlin/JS and KMP source-set wiring |
+| `aws-lambda-jvm-plugin` | `com.kelvsyc.gradle.aws-lambda-jvm` | Composable JVM Lambda packaging plugins: fat-JAR and thin-JAR deployment ZIPs |
+| `aws-lambda-jvm-deploy-plugin` | `com.kelvsyc.gradle.aws-lambda-jvm.deploy` | Wires the `aws-lambda-jvm-plugin` deployment ZIP to an AWS Lambda upload task |
 
 All plugin IDs are prefixed with `com.kelvsyc.gradle.`.
 
