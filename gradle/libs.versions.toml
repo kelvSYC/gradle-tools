@@ -43,7 +43,7 @@ azure-containers-containerregistry = { module = "com.azure:azure-containers-cont
 azure-resourcemanager-appservice = { module = "com.azure.resourcemanager:azure-resourcemanager-appservice" } # version from BOM 'azure-sdk-bom'
 azure-data-appconfiguration = { module = "com.azure:azure-data-appconfiguration" } # version from BOM 'azure-sdk-bom'
 azure-resourcemanager-appconfiguration = "com.azure.resourcemanager:azure-resourcemanager-appconfiguration:1.2.0-beta.1"
-azure-resourcemanager-appcontainers = "com.azure.resourcemanager:azure-resourcemanager-appcontainers:1.1.0-beta.1"
+azure-resourcemanager-appcontainers = "com.azure.resourcemanager:azure-resourcemanager-appcontainers:1.2.0"
 aws-appconfig-java = { module = "software.amazon.awssdk:appconfig" } # version from BOM 'aws-java-sdk-bom'
 aws-appconfig-kotlin = { module = "aws.sdk.kotlin:appconfig" } # version from BOM 'aws-kotlin-sdk-bom'
 aws-appconfigdata-java = { module = "software.amazon.awssdk:appconfigdata" } # version from BOM 'aws-java-sdk-bom'
