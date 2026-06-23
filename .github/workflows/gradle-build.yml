@@ -155,7 +155,7 @@ jobs:
           artifact-ids: ${{needs.build.outputs.aggregate-jacoco-id}}
           path: jacoco-aggregate
       - name: Report JaCoCo
-        uses: madrapps/jacoco-report@v1.7.2
+        uses: madrapps/jacoco-report@v1.8.0
         with:
           paths: jacoco-aggregate/testCodeCoverageReport.xml
           token: ${{ secrets.GITHUB_TOKEN }}
