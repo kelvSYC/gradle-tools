@@ -120,7 +120,7 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
 pkl-core = "org.pkl-lang:pkl-core:0.31.1"
 moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" }
-mockk = "io.mockk:mockk:1.14.9"
+mockk = "io.mockk:mockk:1.14.11"
 msgpack-core = "org.msgpack:msgpack-core:0.9.12"
 okhttp = { module = "com.squareup.okhttp3:okhttp" } # version from BOM 'okhttp-bom'
 retrofit = { module = "com.squareup.retrofit2:retrofit" } # version from BOM 'retrofit-bom'
