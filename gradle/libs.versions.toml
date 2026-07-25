@@ -118,7 +118,7 @@ kotest-property = { module = "io.kotest:kotest-property" } # version from BOM 'k
 kotest-runner = { module = "io.kotest:kotest-runner-junit5" } # version from BOM 'kotest-bom'
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" } # version from BOM 'kotlinx-coroutines-bom'
 moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
-pkl-core = "org.pkl-lang:pkl-core:0.31.1"
+pkl-core = "org.pkl-lang:pkl-core:0.32.0"
 moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" }
 mockk = "io.mockk:mockk:1.14.11"
 msgpack-core = "org.msgpack:msgpack-core:0.9.12"
