@@ -1,8 +1,21 @@
+import kotlin.jvm.optionals.getOrNull
 import org.jetbrains.dokka.gradle.DokkaExtension
 import java.net.URI
 
 plugins {
     id("org.jetbrains.dokka")
+}
+
+val libs = versionCatalogs.named("libs")
+
+// Dokka's own internal resolver configurations (not derived from `implementation`/`api`, so the
+// `com.kelvsyc.internal:platform` BOM's constraints never reach them) pull in a vulnerable transitive
+// jsoup via dokka-base/analysis-markdown; force the patched version on just those configurations.
+val jsoup = libs.findLibrary("jsoup").getOrNull()
+configurations.matching { it.name.startsWith("dokka") }.configureEach {
+    resolutionStrategy {
+        jsoup?.let { force(it.get()) }
+    }
 }
 
 val gitCommitHash: Provider<String> = providers.exec {
