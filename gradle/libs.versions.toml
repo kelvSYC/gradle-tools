@@ -110,7 +110,7 @@ gson = "com.google.code.gson:gson:2.14.0"
 kotlin-tools-moshi-extensions = { module = "com.kelvsyc.kotlin:moshi-extensions" } # version from BOM 'kotlin-tools-bom'
 kotlin-tools-snakeyaml-extensions = { module = "com.kelvsyc.kotlin:snakeyaml-extensions" } # version from BOM 'kotlin-tools-bom'
 kotlin-tools-xml-extensions = { module = "com.kelvsyc.kotlin:xml-extensions" } # version from BOM 'kotlin-tools-bom'
-jgit = "org.eclipse.jgit:org.eclipse.jgit:7.6.0.202603022253-r"
+jgit = "org.eclipse.jgit:org.eclipse.jgit:7.7.1.202607240634-r"
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core" } # version from BOM 'kotest-bom'
 kotest-assertions-shared = { module = "io.kotest:kotest-assertions-shared" } # version from BOM 'kotest-bom'
 kotest-framework-engine = { module = "io.kotest:kotest-framework-engine" } # version from BOM 'kotest-bom'
