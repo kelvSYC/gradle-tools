@@ -1,7 +1,7 @@
 [versions]
 dokka = "2.2.0"
 dokkatoo = "2.4.0"
-kotlin = "2.3.0"
+kotlin = "2.4.10"
 kotlin-tools = "0.4.0"
 moshi = "1.15.2"
 
