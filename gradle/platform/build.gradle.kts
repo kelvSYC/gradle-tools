@@ -26,6 +26,7 @@ dependencies {
     constraints {
         api(libs.aws.lambda.java.core)
         api(libs.commons.lang)
+        api(libs.httpclient5)
         api(libs.moshi)
         api(libs.moshi.kotlin)
         api(libs.msgpack.core)
