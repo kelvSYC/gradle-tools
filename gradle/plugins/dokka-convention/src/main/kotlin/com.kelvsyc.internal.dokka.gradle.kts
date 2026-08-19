@@ -14,15 +14,15 @@ val libs = versionCatalogs.named("libs")
 // jackson-core/jackson-databind/etc.) directly off dokka-base/dokka-core; force the patched versions
 // on just those configurations.
 val jsoup = libs.findLibrary("jsoup").getOrNull()
-val jacksonVersion = libs.findLibrary("jackson-bom").getOrNull()?.get()?.version
+val jacksonBom = libs.findLibrary("jackson-bom").getOrNull()
 configurations.matching { it.name.startsWith("dokka") }.configureEach {
     resolutionStrategy {
         jsoup?.let { force(it.get()) }
-        eachDependency {
-            if (jacksonVersion != null && requested.group.startsWith("com.fasterxml.jackson")) {
-                useVersion(jacksonVersion)
-            }
-        }
+        // Force the BOM module itself rather than pinning every individual jackson-* artifact to
+        // the same literal version string: jackson-annotations doesn't always ship a patch release
+        // in lockstep with jackson-core/jackson-databind (e.g. 2.22 exists but 2.22.1 doesn't), so
+        // the BOM's own recommended versions must decide each artifact's actual resolved version.
+        jacksonBom?.let { force(it.get()) }
     }
 }
 
