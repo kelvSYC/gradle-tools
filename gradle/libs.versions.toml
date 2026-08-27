@@ -17,7 +17,7 @@ kotlin-gradle-plugins-bom = { module = "org.jetbrains.kotlin:kotlin-gradle-plugi
 kotlin-tools-bom = { module = "com.kelvsyc.kotlin:bom", version.ref = "kotlin-tools" }
 kotlinx-coroutines-bom = "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.11.0"
 kotest-bom = "io.kotest:kotest-bom:6.2.3"
-netty-bom = "io.netty:netty-bom:4.2.16.Final"
+netty-bom = "io.netty:netty-bom:4.2.17.Final"
 okhttp-bom = "com.squareup.okhttp3:okhttp-bom:5.4.0"
 retrofit-bom = "com.squareup.retrofit2:retrofit-bom:3.0.0"
 
@@ -107,6 +107,7 @@ google-cloud-run-proto = { module = "com.google.api.grpc:proto-google-cloud-run-
 google-gax = { module = "com.google.api:gax" } # version from BOM 'google-cloud-libraries-bom'
 google-protobuf-java = { module = "com.google.protobuf:protobuf-java" } # version from BOM 'google-cloud-libraries-bom'
 gson = "com.google.code.gson:gson:2.14.0"
+httpclient5 = "org.apache.httpcomponents.client5:httpclient5:5.6.3"
 kotlin-tools-moshi-extensions = { module = "com.kelvsyc.kotlin:moshi-extensions" } # version from BOM 'kotlin-tools-bom'
 kotlin-tools-snakeyaml-extensions = { module = "com.kelvsyc.kotlin:snakeyaml-extensions" } # version from BOM 'kotlin-tools-bom'
 kotlin-tools-xml-extensions = { module = "com.kelvsyc.kotlin:xml-extensions" } # version from BOM 'kotlin-tools-bom'

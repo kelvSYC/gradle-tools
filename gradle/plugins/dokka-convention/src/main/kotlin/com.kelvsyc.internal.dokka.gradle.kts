@@ -10,11 +10,19 @@ val libs = versionCatalogs.named("libs")
 
 // Dokka's own internal resolver configurations (not derived from `implementation`/`api`, so the
 // `com.kelvsyc.internal:platform` BOM's constraints never reach them) pull in a vulnerable transitive
-// jsoup via dokka-base/analysis-markdown; force the patched version on just those configurations.
+// jsoup via dokka-base/analysis-markdown, and a vulnerable transitive jackson-bom 2.15.3 (with its
+// jackson-core/jackson-databind/etc.) directly off dokka-base/dokka-core; force the patched versions
+// on just those configurations.
 val jsoup = libs.findLibrary("jsoup").getOrNull()
+val jacksonBom = libs.findLibrary("jackson-bom").getOrNull()
 configurations.matching { it.name.startsWith("dokka") }.configureEach {
     resolutionStrategy {
         jsoup?.let { force(it.get()) }
+        // Force the BOM module itself rather than pinning every individual jackson-* artifact to
+        // the same literal version string: jackson-annotations doesn't always ship a patch release
+        // in lockstep with jackson-core/jackson-databind (e.g. 2.22 exists but 2.22.1 doesn't), so
+        // the BOM's own recommended versions must decide each artifact's actual resolved version.
+        jacksonBom?.let { force(it.get()) }
     }
 }
 
