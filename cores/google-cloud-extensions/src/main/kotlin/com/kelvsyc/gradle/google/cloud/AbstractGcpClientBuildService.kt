@@ -74,7 +74,9 @@ abstract class AbstractGcpClientBuildService<C : Any, P : GcpBuildServiceParams>
         GcpCredentialSource.SERVICE_ACCOUNT_JSON_ENV ->
             parameters.credentialsJsonRef.get().resolve().byteInputStream().use(ServiceAccountCredentials::fromStream)
         GcpCredentialSource.ACCESS_TOKEN ->
-            GoogleCredentials.create(AccessToken(parameters.accessTokenRef.get().resolve(), null))
+            GoogleCredentials.create(
+                AccessToken.newBuilder().setTokenValue(parameters.accessTokenRef.get().resolve()).build(),
+            )
         GcpCredentialSource.EXTERNAL_ACCOUNT_CONFIG_FILE ->
             parameters.externalAccountConfigFile.get().asFile.inputStream().use(ExternalAccountCredentials::fromStream)
         GcpCredentialSource.EXTERNAL_ACCOUNT_CONFIG_ENV ->
