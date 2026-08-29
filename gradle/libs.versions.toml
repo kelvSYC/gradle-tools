@@ -108,7 +108,7 @@ google-cloud-run-proto = { module = "com.google.api.grpc:proto-google-cloud-run-
 google-gax = { module = "com.google.api:gax" } # version from BOM 'google-cloud-libraries-bom'
 google-protobuf-java = { module = "com.google.protobuf:protobuf-java" } # version from BOM 'google-cloud-libraries-bom'
 gson = "com.google.code.gson:gson:2.14.0"
-httpclient5 = "org.apache.httpcomponents.client5:httpclient5:5.6.3"
+httpclient5 = "org.apache.httpcomponents.client5:httpclient5:5.6.4"
 kotlin-tools-moshi-extensions = { module = "com.kelvsyc.kotlin:moshi-extensions" } # version from BOM 'kotlin-tools-bom'
 kotlin-tools-snakeyaml-extensions = { module = "com.kelvsyc.kotlin:snakeyaml-extensions" } # version from BOM 'kotlin-tools-bom'
 kotlin-tools-xml-extensions = { module = "com.kelvsyc.kotlin:xml-extensions" } # version from BOM 'kotlin-tools-bom'
