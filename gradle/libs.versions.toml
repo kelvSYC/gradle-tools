@@ -17,7 +17,7 @@ jackson-bom = { module = "com.fasterxml.jackson:jackson-bom", version.ref = "jac
 kotlin-gradle-plugins-bom = { module = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom", version.ref = "kotlin" }
 kotlin-tools-bom = { module = "com.kelvsyc.kotlin:bom", version.ref = "kotlin-tools" }
 kotlinx-coroutines-bom = "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.11.0"
-kotest-bom = "io.kotest:kotest-bom:6.2.3"
+kotest-bom = "io.kotest:kotest-bom:6.2.4"
 netty-bom = "io.netty:netty-bom:4.2.17.Final"
 okhttp-bom = "com.squareup.okhttp3:okhttp-bom:5.4.0"
 retrofit-bom = "com.squareup.retrofit2:retrofit-bom:3.0.0"
