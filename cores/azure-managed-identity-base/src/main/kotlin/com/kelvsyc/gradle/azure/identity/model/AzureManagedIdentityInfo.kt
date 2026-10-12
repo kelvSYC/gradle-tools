@@ -9,7 +9,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = false)
 data class AzureManagedIdentityInfo(
     /** Client ID of the system-assigned managed identity. */
-    @Json(name = "clientId") val clientId: String,
+    @param:Json(name = "clientId") val clientId: String,
     /** Object ID of the system-assigned managed identity. */
-    @Json(name = "objectId") val objectId: String,
+    @param:Json(name = "objectId") val objectId: String,
 )

@@ -23,7 +23,7 @@ data class RepositorySummary(
     /**
      * The full name in `workspace/repo-slug` format.
      */
-    @Json(name = "full_name")
+    @param:Json(name = "full_name")
     val fullName: String? = null,
 
     /**

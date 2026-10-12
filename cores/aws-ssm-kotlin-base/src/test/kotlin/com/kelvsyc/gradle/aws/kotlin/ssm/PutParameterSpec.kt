@@ -21,7 +21,7 @@ class PutParameterSpec : FunSpec({
         val requestSlot = slot<PutParameterRequest>()
         coEvery { client.putParameter(capture(requestSlot)) } returns mockk()
 
-        val task = project.tasks.create("t", PutParameter::class.java)
+        val task = project.tasks.register("t", PutParameter::class.java).get()
         task.service.set(service)
         task.parameterName.set("/my/parameter")
         task.parameterValue.set("new-value")
@@ -46,7 +46,7 @@ class PutParameterSpec : FunSpec({
         val requestSlot = slot<PutParameterRequest>()
         coEvery { client.putParameter(capture(requestSlot)) } returns mockk()
 
-        val task = project.tasks.create("t2", PutParameter::class.java)
+        val task = project.tasks.register("t2", PutParameter::class.java).get()
         task.service.set(service)
         task.parameterName.set("/app/config")
         task.parameterValue.set("config-value")
@@ -69,7 +69,7 @@ class PutParameterSpec : FunSpec({
         val service = project.gradle.sharedServices.registerIfAbsent("ssm3", MockSsmClientBuildService::class)
         coEvery { client.putParameter(any()) } returns mockk()
 
-        val task = project.tasks.create("t3", PutParameter::class.java)
+        val task = project.tasks.register("t3", PutParameter::class.java).get()
         task.service.set(service)
         task.parameterName.set("/test/param")
         task.parameterValue.set("test-value")

@@ -23,7 +23,7 @@ class InvokeFunctionSpec : FunSpec({
         val requestSlot = slot<InvokeRequest>()
         coEvery { client.invoke(capture(requestSlot)) } returns mockk<InvokeResponse>()
 
-        val task = project.tasks.create("t", InvokeFunction::class.java)
+        val task = project.tasks.register("t", InvokeFunction::class.java).get()
         task.service.set(service)
         task.functionName.set("my-fn")
         task.qualifier.set("prod")
@@ -48,7 +48,7 @@ class InvokeFunctionSpec : FunSpec({
             project.gradle.sharedServices.registerIfAbsent("lambda2", MockLambdaClientBuildService::class)
         coEvery { client.invoke(any()) } returns mockk<InvokeResponse>()
 
-        val task = project.tasks.create("t2", InvokeFunction::class.java)
+        val task = project.tasks.register("t2", InvokeFunction::class.java).get()
         task.service.set(service)
         task.functionName.set("my-fn")
 

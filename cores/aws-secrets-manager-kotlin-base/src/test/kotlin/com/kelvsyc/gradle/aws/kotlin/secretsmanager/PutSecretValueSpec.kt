@@ -21,7 +21,7 @@ class PutSecretValueSpec : FunSpec({
         val requestSlot = slot<PutSecretValueRequest>()
         coEvery { client.putSecretValue(capture(requestSlot)) } returns mockk()
 
-        val task = project.tasks.create("t", PutSecretValue::class.java)
+        val task = project.tasks.register("t", PutSecretValue::class.java).get()
         task.service.set(service)
         task.secretId.set("my/secret/name")
         task.secretString.set("{\"username\":\"admin\",\"password\":\"s3cret\"}")
@@ -42,7 +42,7 @@ class PutSecretValueSpec : FunSpec({
             .registerIfAbsent("sm2", MockSecretsManagerClientBuildService::class)
         coEvery { client.putSecretValue(any()) } returns mockk()
 
-        val task = project.tasks.create("t2", PutSecretValue::class.java)
+        val task = project.tasks.register("t2", PutSecretValue::class.java).get()
         task.service.set(service)
         task.secretId.set("test/secret")
         task.secretString.set("test-value")

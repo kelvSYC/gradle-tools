@@ -21,7 +21,7 @@ class SendMailSpec : FunSpec({
         val requestSlot = slot<SendEmailRequest>()
         coEvery { client.sendEmail(capture(requestSlot)) } returns mockk<SendEmailResponse>()
 
-        val task = project.tasks.create("t", SendMail::class.java)
+        val task = project.tasks.register("t", SendMail::class.java).get()
         task.service.set(service)
         task.sender.set("sender@example.com")
         task.recipients.set(listOf("to@example.com"))

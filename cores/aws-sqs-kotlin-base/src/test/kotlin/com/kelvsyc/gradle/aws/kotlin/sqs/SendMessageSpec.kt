@@ -24,7 +24,7 @@ class SendMessageSpec : FunSpec({
 
         val attribute = MessageAttributeValue { dataType = "String"; stringValue = "value" }
 
-        val task = project.tasks.create("t", SendMessage::class.java)
+        val task = project.tasks.register("t", SendMessage::class.java).get()
         task.service.set(service)
         task.queueUrl.set("https://sqs.us-east-1.amazonaws.com/123456789012/test-queue")
         task.messageBody.set("Hello, SQS!")
@@ -48,7 +48,7 @@ class SendMessageSpec : FunSpec({
         val requestSlot = slot<SendMessageRequest>()
         coEvery { client.sendMessage(capture(requestSlot)) } returns mockk<SendMessageResponse>()
 
-        val task = project.tasks.create("t2", SendMessage::class.java)
+        val task = project.tasks.register("t2", SendMessage::class.java).get()
         task.service.set(service)
         task.queueUrl.set("https://sqs.us-east-1.amazonaws.com/123456789012/test-queue.fifo")
         task.messageBody.set("Hello, FIFO!")
@@ -72,7 +72,7 @@ class SendMessageSpec : FunSpec({
         val requestSlot = slot<SendMessageRequest>()
         coEvery { client.sendMessage(capture(requestSlot)) } returns mockk<SendMessageResponse>()
 
-        val task = project.tasks.create("t3", SendMessage::class.java)
+        val task = project.tasks.register("t3", SendMessage::class.java).get()
         task.service.set(service)
         task.queueUrl.set("https://sqs.us-east-1.amazonaws.com/123456789012/test-queue")
         task.messageBody.set("Simple message")

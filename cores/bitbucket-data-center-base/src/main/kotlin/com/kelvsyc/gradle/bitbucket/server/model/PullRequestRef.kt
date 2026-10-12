@@ -18,13 +18,13 @@ data class PullRequestRef(
     /**
      * The short display name of the ref (e.g. `feature/my-branch`).
      */
-    @Json(name = "displayId")
+    @param:Json(name = "displayId")
     val displayId: String? = null,
 
     /**
      * The latest commit hash on this ref.
      */
-    @Json(name = "latestCommit")
+    @param:Json(name = "latestCommit")
     val latestCommit: String? = null,
 
     /**

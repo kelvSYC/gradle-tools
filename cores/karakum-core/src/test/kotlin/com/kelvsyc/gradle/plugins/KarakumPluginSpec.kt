@@ -3,12 +3,14 @@ package com.kelvsyc.gradle.plugins
 import com.kelvsyc.gradle.karakum.KarakumExtension
 import com.kelvsyc.gradle.karakum.KarakumTask
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.register
 import org.gradle.testfixtures.ProjectBuilder
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 class KarakumPluginSpec : FunSpec() {
     init {
@@ -69,6 +71,20 @@ class KarakumPluginSpec : FunSpec() {
                 ext.karakumVersion.set("2.0.0")
 
                 task.karakumCommand.get() shouldBe listOf("npx", "karakum@2.0.0")
+            }
+        }
+
+        context("KarakumPlugin - Kotlin wiring") {
+            test("kotlin multiplatform plugin registers generateKotlinJsExternals and wires it into jsMain") {
+                val project = ProjectBuilder.builder().build()
+                project.pluginManager.apply("org.jetbrains.kotlin.multiplatform")
+                project.pluginManager.apply(KarakumPlugin::class)
+                val kotlin = project.extensions.getByType(KotlinMultiplatformExtension::class.java)
+                kotlin.js { nodejs() }
+
+                project.tasks.findByName("generateKotlinJsExternals") shouldNotBe null
+                kotlin.sourceSets.getByName("jsMain").kotlin.srcDirs shouldContain
+                    project.layout.buildDirectory.dir("generated/karakum/jsMain").get().asFile
             }
         }
     }

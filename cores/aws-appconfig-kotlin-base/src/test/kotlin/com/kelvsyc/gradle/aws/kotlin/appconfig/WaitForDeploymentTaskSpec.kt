@@ -38,7 +38,7 @@ class WaitForDeploymentTaskSpec : FunSpec({
 
         waitForDeploymentAwaitCalled = false
         waitForDeploymentThrowException = false
-        val mockTask = project.tasks.create("t1", TestWaitForDeploymentTask::class.java)
+        val mockTask = project.tasks.register("t1", TestWaitForDeploymentTask::class.java).get()
         mockTask.service.set(service)
         mockTask.applicationId.set("app-123")
         mockTask.environmentId.set("env-456")
@@ -58,7 +58,7 @@ class WaitForDeploymentTaskSpec : FunSpec({
 
         waitForDeploymentAwaitCalled = false
         waitForDeploymentThrowException = true
-        val mockTask = project.tasks.create("t2", TestWaitForDeploymentTask::class.java)
+        val mockTask = project.tasks.register("t2", TestWaitForDeploymentTask::class.java).get()
         mockTask.service.set(service)
         mockTask.applicationId.set("app-123")
         mockTask.environmentId.set("env-456")

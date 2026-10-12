@@ -20,7 +20,7 @@ class UpdateApplicationTaskSpec : FunSpec({
             .registerIfAbsent("appconfig", MockAppConfigClientBuildService::class)
         coEvery { client.updateApplication(any()) } returns mockk()
 
-        val task = project.tasks.create("t", UpdateApplicationTask::class.java)
+        val task = project.tasks.register("t", UpdateApplicationTask::class.java).get()
         task.service.set(service)
         task.applicationId.set("app-123")
 
@@ -39,7 +39,7 @@ class UpdateApplicationTaskSpec : FunSpec({
         val requestSlot = slot<UpdateApplicationRequest>()
         coEvery { client.updateApplication(capture(requestSlot)) } returns mockk()
 
-        val task = project.tasks.create("t2", UpdateApplicationTask::class.java)
+        val task = project.tasks.register("t2", UpdateApplicationTask::class.java).get()
         task.service.set(service)
         task.applicationId.set("app-456")
         task.applicationName.set("new-name")

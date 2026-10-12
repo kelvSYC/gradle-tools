@@ -20,7 +20,7 @@ class DeleteApplicationTaskSpec : FunSpec({
         val requestSlot = slot<DeleteApplicationRequest>()
         coEvery { client.deleteApplication(capture(requestSlot)) } returns mockk()
 
-        val task = project.tasks.create("t", DeleteApplicationTask::class.java)
+        val task = project.tasks.register("t", DeleteApplicationTask::class.java).get()
         task.service.set(service)
         task.applicationId.set("app-123")
 

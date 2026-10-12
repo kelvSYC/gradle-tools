@@ -19,7 +19,7 @@ class DownloadConfigurationTaskSpec : FunSpec({
         val outFile = project.layout.buildDirectory.file("config.txt").get().asFile
         outFile.parentFile.mkdirs()
 
-        val task = project.tasks.create("t", DownloadConfigurationTask::class.java)
+        val task = project.tasks.register("t", DownloadConfigurationTask::class.java).get()
         task.service.set(service)
         task.applicationIdentifier.set("app-123")
         task.environmentIdentifier.set("env-456")
@@ -41,7 +41,7 @@ class DownloadConfigurationTaskSpec : FunSpec({
         val outFile = project.layout.buildDirectory.file("config.txt").get().asFile
         outFile.parentFile.mkdirs()
 
-        val task = project.tasks.create("t", DownloadConfigurationTask::class.java)
+        val task = project.tasks.register("t", DownloadConfigurationTask::class.java).get()
         task.service.set(service)
         task.applicationIdentifier.set("app-123")
         task.environmentIdentifier.set("env-456")

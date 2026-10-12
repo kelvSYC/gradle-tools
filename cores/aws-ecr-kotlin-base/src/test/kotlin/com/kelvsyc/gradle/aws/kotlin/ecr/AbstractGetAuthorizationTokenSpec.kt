@@ -29,7 +29,7 @@ class AbstractGetAuthorizationTokenSpec : FunSpec() {
             coEvery { client.getAuthorizationToken(any<GetAuthorizationTokenRequest>()) } returns response
 
             var capturedToken: String? = null
-            val task = project.tasks.create("abstractGetAuthorizationToken", ConcreteGetAuthorizationToken::class.java)
+            val task = project.tasks.register("abstractGetAuthorizationToken", ConcreteGetAuthorizationToken::class.java).get()
             task.service.set(service)
             task.tokenCapture = { capturedToken = it }
             task.execute()

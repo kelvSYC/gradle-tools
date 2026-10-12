@@ -29,7 +29,7 @@ class EncryptSpec : FunSpec({
         plaintextPath.writeBytes(plaintextBytes)
         val ciphertextPath = project.layout.buildDirectory.file("cipher.bin").get().asFile
 
-        val task = project.tasks.create("encrypt", Encrypt::class.java)
+        val task = project.tasks.register("encrypt", Encrypt::class.java).get()
         task.service.set(service)
         task.keyId.set("alias/my-key")
         task.plaintextFile.set(plaintextPath)

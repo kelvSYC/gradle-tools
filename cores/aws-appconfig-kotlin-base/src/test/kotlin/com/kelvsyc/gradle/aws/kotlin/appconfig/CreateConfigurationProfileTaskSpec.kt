@@ -20,7 +20,7 @@ class CreateConfigurationProfileTaskSpec : FunSpec({
             .registerIfAbsent("appconfig", MockAppConfigClientBuildService::class)
         coEvery { client.createConfigurationProfile(any()) } returns mockk()
 
-        val task = project.tasks.create("t", CreateConfigurationProfileTask::class.java)
+        val task = project.tasks.register("t", CreateConfigurationProfileTask::class.java).get()
         task.service.set(service)
         task.applicationId.set("app-123")
         task.profileName.set("my-config")
@@ -42,7 +42,7 @@ class CreateConfigurationProfileTaskSpec : FunSpec({
         val requestSlot = slot<CreateConfigurationProfileRequest>()
         coEvery { client.createConfigurationProfile(capture(requestSlot)) } returns mockk()
 
-        val task = project.tasks.create("t2", CreateConfigurationProfileTask::class.java)
+        val task = project.tasks.register("t2", CreateConfigurationProfileTask::class.java).get()
         task.service.set(service)
         task.applicationId.set("app-456")
         task.profileName.set("prod-config")

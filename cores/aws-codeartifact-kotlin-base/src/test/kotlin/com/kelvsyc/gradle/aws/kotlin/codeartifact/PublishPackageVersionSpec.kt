@@ -27,7 +27,7 @@ class PublishPackageVersionSpec : FunSpec() {
             val assetFile = Files.createTempFile("publish-test", ".jar")
             Files.writeString(assetFile, "test-content")
 
-            val task = project.tasks.create("publishPackageVersion", PublishPackageVersion::class.java)
+            val task = project.tasks.register("publishPackageVersion", PublishPackageVersion::class.java).get()
             task.service.set(service)
             task.domain.set("my-domain")
             task.domainOwner.set("123456789012")
@@ -66,7 +66,7 @@ class PublishPackageVersionSpec : FunSpec() {
             val assetFile = Files.createTempFile("publish-test", ".jar")
             Files.writeString(assetFile, "test-content")
 
-            val task = project.tasks.create("publishPackageVersion", PublishPackageVersion::class.java)
+            val task = project.tasks.register("publishPackageVersion", PublishPackageVersion::class.java).get()
             task.service.set(service)
             task.domain.set("my-domain")
             task.domainOwner.set("123456789012")
@@ -98,7 +98,7 @@ class PublishPackageVersionSpec : FunSpec() {
             val assetFile = Files.createTempFile("publish-test", ".jar")
             Files.writeString(assetFile, "test-content")
 
-            val task = project.tasks.create("publishPackageVersion", PublishPackageVersion::class.java)
+            val task = project.tasks.register("publishPackageVersion", PublishPackageVersion::class.java).get()
             task.service.set(service)
             task.domain.set("my-domain")
             task.domainOwner.set("123456789012")

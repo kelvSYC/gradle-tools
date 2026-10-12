@@ -20,7 +20,7 @@ class UpdateEnvironmentTaskSpec : FunSpec({
             .registerIfAbsent("appconfig", MockAppConfigClientBuildService::class)
         coEvery { client.updateEnvironment(any()) } returns mockk()
 
-        val task = project.tasks.create("t", UpdateEnvironmentTask::class.java)
+        val task = project.tasks.register("t", UpdateEnvironmentTask::class.java).get()
         task.service.set(service)
         task.applicationId.set("app-123")
         task.environmentId.set("env-456")
@@ -40,7 +40,7 @@ class UpdateEnvironmentTaskSpec : FunSpec({
         val requestSlot = slot<UpdateEnvironmentRequest>()
         coEvery { client.updateEnvironment(capture(requestSlot)) } returns mockk()
 
-        val task = project.tasks.create("t2", UpdateEnvironmentTask::class.java)
+        val task = project.tasks.register("t2", UpdateEnvironmentTask::class.java).get()
         task.service.set(service)
         task.applicationId.set("app-789")
         task.environmentId.set("env-012")

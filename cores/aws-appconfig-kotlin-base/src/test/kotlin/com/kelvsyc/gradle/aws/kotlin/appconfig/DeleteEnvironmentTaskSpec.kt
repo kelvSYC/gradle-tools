@@ -20,7 +20,7 @@ class DeleteEnvironmentTaskSpec : FunSpec({
         val requestSlot = slot<DeleteEnvironmentRequest>()
         coEvery { client.deleteEnvironment(capture(requestSlot)) } returns mockk()
 
-        val task = project.tasks.create("t", DeleteEnvironmentTask::class.java)
+        val task = project.tasks.register("t", DeleteEnvironmentTask::class.java).get()
         task.service.set(service)
         task.applicationId.set("app-123")
         task.environmentId.set("env-456")

@@ -9,7 +9,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = false)
 data class AzureAttestedData(
     /** Encoding of the signature (e.g. `pkcs7`). */
-    @Json(name = "encoding") val encoding: String,
+    @param:Json(name = "encoding") val encoding: String,
     /** Base64-encoded signed document. */
-    @Json(name = "signature") val signature: String,
+    @param:Json(name = "signature") val signature: String,
 )

@@ -31,13 +31,13 @@ data class PaginatedResponse<T>(
     /**
      * Whether this is the last page of results.
      */
-    @Json(name = "isLastPage")
+    @param:Json(name = "isLastPage")
     val isLastPage: Boolean? = null,
 
     /**
      * The start index to use when requesting the next page. Only present when [isLastPage] is `false`.
      */
-    @Json(name = "nextPageStart")
+    @param:Json(name = "nextPageStart")
     val nextPageStart: Int? = null,
 
     /**

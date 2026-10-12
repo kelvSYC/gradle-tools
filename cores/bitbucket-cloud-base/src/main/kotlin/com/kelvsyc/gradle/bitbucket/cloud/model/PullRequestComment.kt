@@ -28,13 +28,13 @@ data class PullRequestComment(
     /**
      * The ISO 8601 timestamp when the comment was created.
      */
-    @Json(name = "created_on")
+    @param:Json(name = "created_on")
     val createdOn: String? = null,
 
     /**
      * The ISO 8601 timestamp when the comment was last updated.
      */
-    @Json(name = "updated_on")
+    @param:Json(name = "updated_on")
     val updatedOn: String? = null,
 
     /**

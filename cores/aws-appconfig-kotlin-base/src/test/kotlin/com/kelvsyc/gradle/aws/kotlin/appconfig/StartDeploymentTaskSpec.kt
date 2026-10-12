@@ -46,7 +46,7 @@ class StartDeploymentTaskSpec : FunSpec({
         val outFile = project.layout.buildDirectory.file("deployment.txt").get().asFile
         outFile.parentFile.mkdirs()
 
-        val task = project.tasks.create("t1", StartDeploymentTask::class.java)
+        val task = project.tasks.register("t1", StartDeploymentTask::class.java).get()
         task.service.set(service)
         task.applicationId.set("app-123")
         task.environmentId.set("env-456")
@@ -73,7 +73,7 @@ class StartDeploymentTaskSpec : FunSpec({
 
         startDeploymentAwaitCalled = false
         startDeploymentAwaitExceptionThrown = false
-        val task = project.tasks.create("t2", TestStartDeploymentTaskWithWaitOverride::class.java)
+        val task = project.tasks.register("t2", TestStartDeploymentTaskWithWaitOverride::class.java).get()
         task.service.set(service)
         task.applicationId.set("app-123")
         task.environmentId.set("env-456")
@@ -99,7 +99,7 @@ class StartDeploymentTaskSpec : FunSpec({
 
         startDeploymentAwaitCalled = false
         startDeploymentAwaitExceptionThrown = true
-        val task = project.tasks.create("t3", TestStartDeploymentTaskWithWaitOverride::class.java)
+        val task = project.tasks.register("t3", TestStartDeploymentTaskWithWaitOverride::class.java).get()
         task.service.set(service)
         task.applicationId.set("app-123")
         task.environmentId.set("env-456")

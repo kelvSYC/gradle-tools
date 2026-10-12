@@ -18,7 +18,7 @@ data class Account(
     /**
      * The account's display name.
      */
-    @Json(name = "display_name")
+    @param:Json(name = "display_name")
     val displayName: String? = null,
 
     /**

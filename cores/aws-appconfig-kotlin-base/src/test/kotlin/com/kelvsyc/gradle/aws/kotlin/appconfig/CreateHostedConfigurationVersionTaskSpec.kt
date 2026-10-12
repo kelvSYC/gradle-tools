@@ -23,7 +23,7 @@ class CreateHostedConfigurationVersionTaskSpec : FunSpec({
         val outFile = project.layout.buildDirectory.file("version.txt").get().asFile
         outFile.parentFile.mkdirs()
 
-        val task = project.tasks.create("t", CreateHostedConfigurationVersionTask::class.java)
+        val task = project.tasks.register("t", CreateHostedConfigurationVersionTask::class.java).get()
         task.service.set(service)
         task.applicationId.set("app-123")
         task.configurationProfileId.set("profile-456")

@@ -29,7 +29,7 @@ class DecryptSpec : FunSpec({
         ciphertextPath.writeBytes(ciphertextBytes)
         val plaintextPath = project.layout.buildDirectory.file("plain.txt").get().asFile
 
-        val task = project.tasks.create("decrypt", Decrypt::class.java)
+        val task = project.tasks.register("decrypt", Decrypt::class.java).get()
         task.service.set(service)
         task.ciphertextFile.set(ciphertextPath)
         task.plaintextFile.set(plaintextPath)

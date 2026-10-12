@@ -20,7 +20,7 @@ class PublishSpec : FunSpec({
         val requestSlot = slot<PublishRequest>()
         coEvery { client.publish(capture(requestSlot)) } returns mockk<PublishResponse>()
 
-        val task = project.tasks.create("t", Publish::class.java)
+        val task = project.tasks.register("t", Publish::class.java).get()
         task.service.set(service)
         task.topicArn.set("arn:aws:sns:us-east-1:123456789012:MyTopic")
         task.message.set("Hello, SNS!")
@@ -41,7 +41,7 @@ class PublishSpec : FunSpec({
         val requestSlot = slot<PublishRequest>()
         coEvery { client.publish(capture(requestSlot)) } returns mockk<PublishResponse>()
 
-        val task = project.tasks.create("t2", Publish::class.java)
+        val task = project.tasks.register("t2", Publish::class.java).get()
         task.service.set(service)
         task.topicArn.set("arn:aws:sns:us-east-1:123456789012:MyTopic")
         task.subject.set("My Subject")
@@ -61,7 +61,7 @@ class PublishSpec : FunSpec({
         val requestSlot = slot<PublishRequest>()
         coEvery { client.publish(capture(requestSlot)) } returns mockk<PublishResponse>()
 
-        val task = project.tasks.create("t3", Publish::class.java)
+        val task = project.tasks.register("t3", Publish::class.java).get()
         task.service.set(service)
         task.topicArn.set("arn:aws:sns:us-east-1:123456789012:MyTopic")
         task.message.set("Hello, SNS!")
@@ -80,7 +80,7 @@ class PublishSpec : FunSpec({
         val requestSlot = slot<PublishRequest>()
         coEvery { client.publish(capture(requestSlot)) } returns mockk<PublishResponse>()
 
-        val task = project.tasks.create("t4", Publish::class.java)
+        val task = project.tasks.register("t4", Publish::class.java).get()
         task.service.set(service)
         task.topicArn.set("arn:aws:sns:us-east-1:123456789012:MyTopic.fifo")
         task.message.set("Hello, FIFO!")

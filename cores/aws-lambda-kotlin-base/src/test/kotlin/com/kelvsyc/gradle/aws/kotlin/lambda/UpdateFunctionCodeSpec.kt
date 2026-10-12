@@ -26,7 +26,7 @@ class UpdateFunctionCodeSpec : FunSpec({
         val expectedBytes = byteArrayOf(0x50, 0x4B, 0x03, 0x04)
         zipPath.writeBytes(expectedBytes)
 
-        val task = project.tasks.create("t", UpdateFunctionCode::class.java)
+        val task = project.tasks.register("t", UpdateFunctionCode::class.java).get()
         task.service.set(service)
         task.functionName.set("my-fn")
         task.zipFile.set(zipPath)

@@ -28,13 +28,13 @@ data class Comment(
     /**
      * The creation timestamp in milliseconds since epoch.
      */
-    @Json(name = "createdDate")
+    @param:Json(name = "createdDate")
     val createdDate: Long? = null,
 
     /**
      * The last-updated timestamp in milliseconds since epoch.
      */
-    @Json(name = "updatedDate")
+    @param:Json(name = "updatedDate")
     val updatedDate: Long? = null,
 
     /**

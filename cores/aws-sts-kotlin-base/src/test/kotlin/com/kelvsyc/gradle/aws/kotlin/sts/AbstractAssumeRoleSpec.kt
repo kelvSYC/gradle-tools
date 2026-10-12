@@ -47,7 +47,7 @@ class AbstractAssumeRoleSpec : FunSpec() {
             every { response.credentials } returns sdkCreds
             coEvery { client.assumeRole(capture(requestSlot)) } returns response
 
-            val task = project.tasks.create("abstractAssumeRole", ConcreteAssumeRole::class.java)
+            val task = project.tasks.register("abstractAssumeRole", ConcreteAssumeRole::class.java).get()
             task.service.set(service)
             task.roleArn.set("arn:aws:iam::123456789012:role/TestRole")
             task.roleSessionName.set("test-session")
@@ -83,7 +83,7 @@ class AbstractAssumeRoleSpec : FunSpec() {
             every { response.credentials } returns sdkCreds
             coEvery { client.assumeRole(capture(requestSlot)) } returns response
 
-            val task = project.tasks.create("abstractAssumeRole", ConcreteAssumeRole::class.java)
+            val task = project.tasks.register("abstractAssumeRole", ConcreteAssumeRole::class.java).get()
             task.service.set(service)
             task.roleArn.set("arn:aws:iam::123456789012:role/TestRole")
             task.roleSessionName.set("test-session")

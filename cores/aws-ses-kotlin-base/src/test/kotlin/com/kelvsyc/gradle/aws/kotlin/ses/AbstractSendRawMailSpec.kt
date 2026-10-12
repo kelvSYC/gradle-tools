@@ -22,7 +22,7 @@ class AbstractSendRawMailSpec : FunSpec({
 
         val rawBytes = "raw email content".toByteArray()
 
-        val task = project.tasks.create("t", AbstractSendRawMail::class.java)
+        val task = project.tasks.register("t", AbstractSendRawMail::class.java).get()
         task.service.set(service)
         task.sender.set("sender@example.com")
         task.message.set(rawBytes)
