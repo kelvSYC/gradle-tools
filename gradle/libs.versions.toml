@@ -112,7 +112,7 @@ httpclient5 = "org.apache.httpcomponents.client5:httpclient5:5.6.4"
 kotlin-tools-moshi-extensions = { module = "com.kelvsyc.kotlin:moshi-extensions" } # version from BOM 'kotlin-tools-bom'
 kotlin-tools-snakeyaml-extensions = { module = "com.kelvsyc.kotlin:snakeyaml-extensions" } # version from BOM 'kotlin-tools-bom'
 kotlin-tools-xml-extensions = { module = "com.kelvsyc.kotlin:xml-extensions" } # version from BOM 'kotlin-tools-bom'
-jgit = "org.eclipse.jgit:org.eclipse.jgit:7.7.1.202607240634-r"
+jgit = "org.eclipse.jgit:org.eclipse.jgit:7.8.0.202609011348-r"
 jsoup = "org.jsoup:jsoup:1.23.1"
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core" } # version from BOM 'kotest-bom'
 kotest-assertions-shared = { module = "io.kotest:kotest-assertions-shared" } # version from BOM 'kotest-bom'
