@@ -56,15 +56,19 @@ abstract class AbstractAwsJavaClientBuildService<C : AwsClient, P : AwsBuildServ
      *
      * | [AwsCredentialSource] | Result |
      * |---|---|
-     * | `DEFAULT_CHAIN` | [DefaultCredentialsProvider] |
+     * | `DEFAULT_CHAIN` | a new [DefaultCredentialsProvider] instance |
      * | `STATIC` (no session token) | [StaticCredentialsProvider] with [AwsBasicCredentials] |
      * | `STATIC` (with session token) | [StaticCredentialsProvider] with [AwsSessionCredentials] |
      * | `PROFILE` | [ProfileCredentialsProvider] for the named profile |
      * | `ANONYMOUS` or unset | [AnonymousCredentialsProvider] |
+     *
+     * The SDK client closes the provider it is given, so `DEFAULT_CHAIN` builds a dedicated instance rather than
+     * using the JVM-wide singleton from `DefaultCredentialsProvider.create()`, which would stay closed for later
+     * builds in the same daemon.
      */
     protected fun resolveCredentialsProvider(): AwsCredentialsProvider =
         when (parameters.credentialSource.orNull) {
-            AwsCredentialSource.DEFAULT_CHAIN -> DefaultCredentialsProvider.create()
+            AwsCredentialSource.DEFAULT_CHAIN -> DefaultCredentialsProvider.builder().build()
             AwsCredentialSource.STATIC -> {
                 val key = parameters.accessKeyIdRef.get().resolve()
                 val secret = parameters.secretAccessKeyRef.get().resolve()
