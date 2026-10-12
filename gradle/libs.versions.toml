@@ -89,7 +89,7 @@ aws-sts-java = { module = "software.amazon.awssdk:sts" } # version from BOM 'aws
 aws-sts-kotlin = { module = "aws.sdk.kotlin:sts" } # version from BOM 'aws-kotlin-sdk-bom'
 caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.4"
 commons-io = "commons-io:commons-io:2.22.0"
-commons-lang = "org.apache.commons:commons-lang3:3.20.0"
+commons-lang = "org.apache.commons:commons-lang3:3.21.0"
 google-auth-library-credentials = { module = "com.google.auth:google-auth-library-credentials" } # version from BOM 'google-cloud-libraries-bom'
 google-auth-library-oauth2-http = { module = "com.google.auth:google-auth-library-oauth2-http" } # version from BOM 'google-cloud-libraries-bom'
 google-cloud-artifact-registry = { module = "com.google.cloud:google-cloud-artifact-registry" } # version from BOM 'google-cloud-libraries-bom'
