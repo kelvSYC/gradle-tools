@@ -38,7 +38,7 @@ data class BuildStatus(
     /**
      * The creation timestamp in milliseconds since epoch.
      */
-    @Json(name = "dateAdded")
+    @param:Json(name = "dateAdded")
     val dateAdded: Long? = null,
 ) : Serializable {
     companion object {

@@ -22,7 +22,7 @@ class BatchDeleteImageSpec : FunSpec() {
             val requestSlot = slot<BatchDeleteImageRequest>()
             coEvery { client.batchDeleteImage(capture(requestSlot)) } returns mockk<BatchDeleteImageResponse>()
 
-            val task = project.tasks.create("batchDeleteImage", BatchDeleteImage::class.java)
+            val task = project.tasks.register("batchDeleteImage", BatchDeleteImage::class.java).get()
             task.service.set(service)
             task.repositoryName.set("my-repo")
             task.imageTags.set(setOf("v1.0", "v1.1"))

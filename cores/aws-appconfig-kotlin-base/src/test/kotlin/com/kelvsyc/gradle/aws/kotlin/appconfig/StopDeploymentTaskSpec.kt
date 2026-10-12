@@ -21,7 +21,7 @@ class StopDeploymentTaskSpec : FunSpec({
         val requestSlot = slot<StopDeploymentRequest>()
         coEvery { client.stopDeployment(capture(requestSlot)) } returns mockk()
 
-        val task = project.tasks.create("t", StopDeploymentTask::class.java)
+        val task = project.tasks.register("t", StopDeploymentTask::class.java).get()
         task.service.set(service)
         task.applicationId.set("app-123")
         task.environmentId.set("env-456")

@@ -38,7 +38,7 @@ data class Repository(
     /**
      * The SCM type, typically `git`.
      */
-    @Json(name = "scmId")
+    @param:Json(name = "scmId")
     val scmId: String? = null,
 
     /**

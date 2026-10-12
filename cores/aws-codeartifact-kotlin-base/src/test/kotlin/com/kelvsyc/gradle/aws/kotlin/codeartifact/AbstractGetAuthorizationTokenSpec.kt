@@ -29,7 +29,7 @@ class AbstractGetAuthorizationTokenSpec : FunSpec() {
             coEvery { response.authorizationToken } returns "my-token"
             coEvery { client.getAuthorizationToken(capture(requestSlot)) } returns response
 
-            val task = project.tasks.create("abstractGetAuthorizationToken", ConcreteGetAuthorizationToken::class.java)
+            val task = project.tasks.register("abstractGetAuthorizationToken", ConcreteGetAuthorizationToken::class.java).get()
             task.service.set(service)
             task.domain.set("my-domain")
             task.domainOwner.set("123456789012")
@@ -56,7 +56,7 @@ class AbstractGetAuthorizationTokenSpec : FunSpec() {
             coEvery { response.authorizationToken } returns null
             coEvery { client.getAuthorizationToken(any()) } returns response
 
-            val task = project.tasks.create("abstractGetAuthorizationToken", ConcreteGetAuthorizationToken::class.java)
+            val task = project.tasks.register("abstractGetAuthorizationToken", ConcreteGetAuthorizationToken::class.java).get()
             task.service.set(service)
             task.domain.set("my-domain")
             task.domainOwner.set("123456789012")

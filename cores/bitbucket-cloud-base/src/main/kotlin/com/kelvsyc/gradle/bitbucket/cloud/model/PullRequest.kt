@@ -53,25 +53,25 @@ data class PullRequest(
     /**
      * Whether the source branch should be closed after merge.
      */
-    @Json(name = "close_source_branch")
+    @param:Json(name = "close_source_branch")
     val closeSourceBranch: Boolean? = null,
 
     /**
      * The merge commit, present when the pull request has been merged.
      */
-    @Json(name = "merge_commit")
+    @param:Json(name = "merge_commit")
     val mergeCommit: CommitSummary? = null,
 
     /**
      * The ISO 8601 timestamp when the pull request was created.
      */
-    @Json(name = "created_on")
+    @param:Json(name = "created_on")
     val createdOn: String? = null,
 
     /**
      * The ISO 8601 timestamp when the pull request was last updated.
      */
-    @Json(name = "updated_on")
+    @param:Json(name = "updated_on")
     val updatedOn: String? = null,
 
     /**

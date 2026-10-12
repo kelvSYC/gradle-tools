@@ -20,7 +20,7 @@ class DeleteConfigurationProfileTaskSpec : FunSpec({
         val requestSlot = slot<DeleteConfigurationProfileRequest>()
         coEvery { client.deleteConfigurationProfile(capture(requestSlot)) } returns mockk()
 
-        val task = project.tasks.create("t", DeleteConfigurationProfileTask::class.java)
+        val task = project.tasks.register("t", DeleteConfigurationProfileTask::class.java).get()
         task.service.set(service)
         task.applicationId.set("app-123")
         task.configurationProfileId.set("cp-456")

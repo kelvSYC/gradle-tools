@@ -4,6 +4,11 @@ updates:
     directory: /
     schedule:
       interval: daily
+    ignore:
+      # The Kotlin version is dictated by the Gradle wrapper's embedded Kotlin (gradle-kotlin-dsl-plugins
+      # pins kotlin-stdlib strictly); bump it by hand alongside the wrapper instead.
+      - dependency-name: "org.jetbrains.kotlin:kotlin-gradle-plugins-bom"
+      - dependency-name: "org.jetbrains.kotlin.multiplatform"
   - package-ecosystem: github-actions
     directory: /
     schedule:

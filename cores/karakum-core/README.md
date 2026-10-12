@@ -54,6 +54,8 @@ When a Kotlin plugin is detected, `KarakumPlugin` registers a generation task an
 
 Registered when `kotlin("js")` is applied. Outputs to `build/generated/karakum/main`; wired into the `main` source set automatically.
 
+> **Note:** Kotlin Gradle plugin 2.4+ refuses to apply `kotlin("js")` (it now fails with "'kotlin-js' Gradle plugin is deprecated"), so this task applies only to builds on KGP 2.3 or earlier. On newer Kotlin, use `kotlin("multiplatform")` with a `js()` target and the `generateKotlinJsExternals` task below.
+
 ### `generateKotlinJsExternals` (Kotlin Multiplatform)
 
 Registered when `kotlin("multiplatform")` is applied. Outputs to `build/generated/karakum/jsMain`; wired into the `jsMain` source set when a JS target is configured.

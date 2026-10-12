@@ -38,13 +38,13 @@ data class CommitStatus(
     /**
      * The ISO 8601 timestamp when the status was created.
      */
-    @Json(name = "created_on")
+    @param:Json(name = "created_on")
     val createdOn: String? = null,
 
     /**
      * The ISO 8601 timestamp when the status was last updated.
      */
-    @Json(name = "updated_on")
+    @param:Json(name = "updated_on")
     val updatedOn: String? = null,
 
     /**

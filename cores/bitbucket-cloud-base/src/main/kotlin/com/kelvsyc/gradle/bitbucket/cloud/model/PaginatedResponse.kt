@@ -23,7 +23,7 @@ data class PaginatedResponse<T>(
     /**
      * The maximum number of items per page.
      */
-    @Json(name = "pagelen")
+    @param:Json(name = "pagelen")
     val pageLen: Int? = null,
 
     /**

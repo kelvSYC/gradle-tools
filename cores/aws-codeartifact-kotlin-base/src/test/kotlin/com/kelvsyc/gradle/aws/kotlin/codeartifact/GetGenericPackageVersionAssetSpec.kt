@@ -25,7 +25,7 @@ class GetGenericPackageVersionAssetSpec : FunSpec() {
 
             val outputFile = Files.createTempFile("asset-test", ".zip")
 
-            val task = project.tasks.create("getAsset", GetGenericPackageVersionAsset::class.java)
+            val task = project.tasks.register("getAsset", GetGenericPackageVersionAsset::class.java).get()
             task.service.set(service)
             task.domain.set("my-domain")
             task.domainOwner.set("123456789012")

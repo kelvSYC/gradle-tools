@@ -9,17 +9,17 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = false)
 data class AzureComputeMetadata(
     /** Azure subscription ID in which the VM is deployed. */
-    @Json(name = "subscriptionId") val subscriptionId: String? = null,
+    @param:Json(name = "subscriptionId") val subscriptionId: String? = null,
     /** Resource group containing the VM. */
-    @Json(name = "resourceGroupName") val resourceGroupName: String? = null,
+    @param:Json(name = "resourceGroupName") val resourceGroupName: String? = null,
     /** Name of the VM. */
-    @Json(name = "name") val name: String? = null,
+    @param:Json(name = "name") val name: String? = null,
     /** Azure region where the VM is located. */
-    @Json(name = "location") val location: String? = null,
+    @param:Json(name = "location") val location: String? = null,
     /** Unique identifier for the VM. */
-    @Json(name = "vmId") val vmId: String? = null,
+    @param:Json(name = "vmId") val vmId: String? = null,
     /** VM size (SKU). */
-    @Json(name = "vmSize") val vmSize: String? = null,
+    @param:Json(name = "vmSize") val vmSize: String? = null,
     /** OS type (`Linux` or `Windows`). */
-    @Json(name = "osType") val osType: String? = null,
+    @param:Json(name = "osType") val osType: String? = null,
 )

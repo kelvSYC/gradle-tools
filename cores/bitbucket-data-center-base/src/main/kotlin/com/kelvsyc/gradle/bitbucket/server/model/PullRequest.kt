@@ -33,13 +33,13 @@ data class PullRequest(
     /**
      * The source ref (branch the PR is from).
      */
-    @Json(name = "fromRef")
+    @param:Json(name = "fromRef")
     val fromRef: PullRequestRef? = null,
 
     /**
      * The destination ref (branch the PR targets).
      */
-    @Json(name = "toRef")
+    @param:Json(name = "toRef")
     val toRef: PullRequestRef? = null,
 
     /**
@@ -70,13 +70,13 @@ data class PullRequest(
     /**
      * The creation timestamp in milliseconds since epoch.
      */
-    @Json(name = "createdDate")
+    @param:Json(name = "createdDate")
     val createdDate: Long? = null,
 
     /**
      * The last-updated timestamp in milliseconds since epoch.
      */
-    @Json(name = "updatedDate")
+    @param:Json(name = "updatedDate")
     val updatedDate: Long? = null,
 ) : Serializable {
     companion object {

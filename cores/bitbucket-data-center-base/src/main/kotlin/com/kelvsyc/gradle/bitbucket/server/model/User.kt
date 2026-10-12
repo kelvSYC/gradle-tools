@@ -23,13 +23,13 @@ data class User(
     /**
      * The user's display name.
      */
-    @Json(name = "displayName")
+    @param:Json(name = "displayName")
     val displayName: String? = null,
 
     /**
      * The user's email address.
      */
-    @Json(name = "emailAddress")
+    @param:Json(name = "emailAddress")
     val emailAddress: String? = null,
 
     /**

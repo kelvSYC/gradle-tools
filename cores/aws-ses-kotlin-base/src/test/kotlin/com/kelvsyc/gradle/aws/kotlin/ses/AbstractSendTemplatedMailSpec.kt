@@ -21,7 +21,7 @@ class AbstractSendTemplatedMailSpec : FunSpec({
         val requestSlot = slot<SendTemplatedEmailRequest>()
         coEvery { client.sendTemplatedEmail(capture(requestSlot)) } returns mockk<SendTemplatedEmailResponse>()
 
-        val task = project.tasks.create("t", AbstractSendTemplatedMail::class.java)
+        val task = project.tasks.register("t", AbstractSendTemplatedMail::class.java).get()
         task.service.set(service)
         task.sender.set("sender@example.com")
         task.recipients.set(listOf("to@example.com"))

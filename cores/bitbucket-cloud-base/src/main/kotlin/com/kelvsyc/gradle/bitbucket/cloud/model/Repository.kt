@@ -28,7 +28,7 @@ data class Repository(
     /**
      * The full name in `workspace/repo-slug` format.
      */
-    @Json(name = "full_name")
+    @param:Json(name = "full_name")
     val fullName: String? = null,
 
     /**
@@ -39,13 +39,13 @@ data class Repository(
     /**
      * Whether the repository is private.
      */
-    @Json(name = "is_private")
+    @param:Json(name = "is_private")
     val isPrivate: Boolean? = null,
 
     /**
      * The repository's main branch.
      */
-    @Json(name = "mainbranch")
+    @param:Json(name = "mainbranch")
     val mainBranch: Branch? = null,
 
     /**
@@ -66,13 +66,13 @@ data class Repository(
     /**
      * The ISO 8601 timestamp when the repository was created.
      */
-    @Json(name = "created_on")
+    @param:Json(name = "created_on")
     val createdOn: String? = null,
 
     /**
      * The ISO 8601 timestamp when the repository was last updated.
      */
-    @Json(name = "updated_on")
+    @param:Json(name = "updated_on")
     val updatedOn: String? = null,
 
     /**
