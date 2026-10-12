@@ -5,7 +5,7 @@ import com.kelvsyc.gradle.karakum.KarakumTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
@@ -44,7 +44,7 @@ class KarakumPlugin : Plugin<Project> {
     }
 
     private fun wireKotlinJs(project: Project, extension: KarakumExtension) {
-        val kotlin = project.extensions.getByType(KotlinJsProjectExtension::class.java)
+        val kotlin = project.extensions.getByType(KotlinProjectExtension::class.java)
         upgradeToManagedNpx(project, extension)
 
         val generateTask = project.tasks.register("generateKotlinExternals", KarakumTask::class.java) {
