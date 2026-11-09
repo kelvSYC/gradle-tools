@@ -60,7 +60,8 @@ configurations.compileOnlyApi {
 
 fun ExternalModuleDependency.gradlePublicApi() {
     capabilities { requireCapability("org.gradle.experimental:gradle-public-api-internal") }
-    // The API pins jspecify strictly, which clashes with the newer version Caffeine brings.
+    // The API pins jspecify strictly, which clashes with the newer version Caffeine brings. Each variant
+    // declares jspecify itself, so the API's nullness annotations stay visible to the compiler.
     exclude(group = "org.jspecify")
 }
 
@@ -69,9 +70,11 @@ dependencies {
     compileOnly("org.gradle.experimental:gradle-public-api:9.8.2") { gradlePublicApi() }
     // Provided by Gradle at runtime; previously came from gradleKotlinDsl().
     compileOnly(kotlin("reflect"))
+    compileOnly(libs.jspecify)
 
     "gradle99CompileOnly"("org.gradle.experimental:gradle-public-api:9.9.0") { gradlePublicApi() }
     "gradle99CompileOnly"(kotlin("reflect"))
+    "gradle99CompileOnly"(libs.jspecify)
     "gradle99Api"(kotlin("stdlib", libs.versions.kotlin.asProvider().get()))
     "gradle99Implementation"(platform("com.kelvsyc.internal:platform"))
     "gradle99Implementation"(libs.caffeine)
