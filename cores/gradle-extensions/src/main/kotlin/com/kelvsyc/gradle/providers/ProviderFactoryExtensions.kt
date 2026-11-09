@@ -1,3 +1,6 @@
+@file:JvmName("ProviderFactoryExtensionsKt")
+@file:JvmMultifileClass
+
 package com.kelvsyc.gradle.providers
 
 import org.gradle.api.file.RegularFile
@@ -13,19 +16,6 @@ internal fun <T : Any, P : ValueSourceParameters> ProviderFactory.ofKt(
     valueSourceType: KClass<out ValueSource<T, P>>,
     configuration: ValueSourceSpec<P>.() -> Unit
 ) = of(valueSourceType.java) { configuration(it) }
-
-/**
- * Returns a [Provider] that provides a constant value.
- *
- * The returned [Provider] is absent if `null` is supplied.
- */
-fun <T : Any> ProviderFactory.ofNullable(value: T?): Provider<T> = provider { value }
-
-/**
- * Returns a [Provider] whose value is always absent.
- */
-val ProviderFactory.absent: Provider<Nothing>
-    get() = provider { null }
 
 /**
  * Returns a [Provider] providing a [Properties][java.util.Properties] object read from a file.
