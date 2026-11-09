@@ -6,6 +6,14 @@ import org.gradle.testfixtures.ProjectBuilder
 
 class ProviderExtensionsSpec : FunSpec() {
     init {
+        test("cached preserves a primitive-backed value") {
+            val project = ProjectBuilder.builder().build()
+
+            val result = project.providers.provider { 42 }.cached(project.objects)
+
+            result.get() shouldBeEqual 42
+        }
+
         test("cached") {
             val project = ProjectBuilder.builder().build()
             val input = listOf(1, 2).iterator()
