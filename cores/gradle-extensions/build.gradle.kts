@@ -102,6 +102,8 @@ tasks.withType<PublishToMavenRepository>().matching { it.name.endsWith("ToVarian
 }
 
 tasks.test {
+    // The version tests read this directly, so without it a new nightly would be served from the build cache.
+    inputs.property("additionalGradleVersions", providers.environmentVariable("ADDITIONAL_GRADLE_VERSIONS").orElse(""))
     dependsOn("publishMavenPublicationToVariantTestRepository")
     val repo = variantTestRepo
     // maven-metadata.xml changes on every publish, so only track the artifacts themselves.
