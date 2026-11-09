@@ -10,14 +10,31 @@ dependencies {
 }
 ```
 
+### Supported Gradle versions
+
+Gradle 9.8 and 9.9. Both are served by the same dependency: Gradle Module Metadata selects the build for the Gradle
+version running your build. Resolving through a Maven POM alone gets the Gradle 9.8 build.
+
+A configuration that requests no attributes at all fails with "cannot choose between variants", because Gradle has
+nothing to choose by. The `jacoco-report-aggregation` and `test-report-aggregation` plugins create such configurations.
+Request the running version on them:
+
+```kotlin
+configurations.aggregateCodeCoverageReportResults {
+    attributes {
+        attribute(GradlePluginApiVersion.GRADLE_PLUGIN_API_VERSION_ATTRIBUTE, objects.named(GradleVersion.current().version))
+    }
+}
+```
+
 ## Provider Extensions
 
 ### `ProviderFactory` extensions (`ProviderFactoryExtensions`)
 
 | Extension | Description |
 |---|---|
-| `ofNullable(value)` | Returns a `Provider` with a constant value, or absent if `null` |
-| `absent` | Returns an always-absent `Provider` |
+| `ofNullable(value)` | Returns a `Provider` with a constant value, or absent if `null`. Deprecated on Gradle 9.9+: use `presentIfNotNull(value)` |
+| `absent` | Returns an always-absent `Provider`. Deprecated on Gradle 9.9+: use `absent()` |
 | `propertiesFile(file)` | Returns a `Provider<Properties>` backed by a `.properties` file |
 | `propertiesFile(Provider<RegularFile>)` | Lazy variant of the above |
 | `checksum(file, algorithm)` | Returns a `Provider<String>` with the hex-encoded checksum of a file |
