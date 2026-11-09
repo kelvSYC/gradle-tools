@@ -1,5 +1,3 @@
-import org.gradle.api.attributes.plugin.GradlePluginApiVersion
-
 plugins {
     `jvm-ecosystem`
     `test-report-aggregation`
@@ -57,10 +55,3 @@ val collectIntegrationTestReports = tasks.register<Sync>("collectIntegrationTest
 
 @Suppress("UnusedPrivateProperty")
 val integrationTestReportArtifacts = collectIntegrationTestReports
-
-// This configuration requests no attributes, so Gradle cannot choose between per-Gradle-version variants.
-configurations.aggregateTestReportResults {
-    attributes {
-        attribute(GradlePluginApiVersion.GRADLE_PLUGIN_API_VERSION_ATTRIBUTE, objects.named(GradleVersion.current().version))
-    }
-}

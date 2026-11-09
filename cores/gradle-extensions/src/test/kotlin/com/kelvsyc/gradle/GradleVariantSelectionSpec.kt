@@ -17,13 +17,19 @@ class GradleVariantSelectionSpec : FunSpec() {
     private val coordinates = "com.kelvsyc.gradle:gradle-extensions:+"
     private val deprecationMessage = "Use Gradle's ProviderFactory"
 
-    private val repositories = """
+    // The dynamic version must only ever be looked up in the repository holding the build under test.
+    private fun repositoriesBlock(fixtureSettings: String = "") = """
         repositories {
-            maven(uri("$repo"))
+            exclusiveContent {
+                forRepository { maven(uri("$repo")) { $fixtureSettings } }
+                filter { includeGroup("com.kelvsyc.gradle") }
+            }
             mavenCentral()
             gradlePluginPortal()
         }
     """.trimIndent()
+
+    private val repositories = repositoriesBlock()
 
     private val printClasspaths = """
         fun jars(name: String) = configurations.getByName(name).files.map { it.name }
@@ -159,6 +165,21 @@ class GradleVariantSelectionSpec : FunSpec() {
             }
         }
 
+        versions.forEach { version ->
+            test("a configuration requesting no attributes resolves on $version") {
+                val detached = """
+                    val detached = configurations.detachedConfiguration(dependencies.create("$coordinates"))
+                    println("DETACHED=" + detached.files.map { it.name }.filter { it.startsWith("gradle-extensions") }.joinToString(","))
+                """.trimIndent()
+
+                val output = run(javaLibraryConsumer(extra = detached), version, "help")
+
+                val jars = printed(output, "DETACHED")
+                jars.size shouldBe 1
+                jars.single().endsWith("-gradle99.jar") shouldBe (version == "9.9.0")
+            }
+        }
+
         test("configuration cache does not change selection") {
             val output = run(kotlinDslConsumer(), "9.9.0", "compileKotlin", "--configuration-cache")
 
@@ -166,13 +187,9 @@ class GradleVariantSelectionSpec : FunSpec() {
         }
 
         test("maven-only consumer gets the baseline") {
-            val mavenOnly = """
-                repositories {
-                    maven(uri("$repo")) { metadataSources { mavenPom(); artifact(); ignoreGradleMetadataRedirection() } }
-                    mavenCentral()
-                    gradlePluginPortal()
-                }
-            """.trimIndent()
+            val mavenOnly = repositoriesBlock(
+                "metadataSources { mavenPom(); artifact(); ignoreGradleMetadataRedirection() }",
+            )
 
             val output = run(javaLibraryConsumer(repositoryBlock = mavenOnly), "9.9.0", "help")
 

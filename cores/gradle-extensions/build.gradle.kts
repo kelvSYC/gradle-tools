@@ -34,6 +34,12 @@ configurations.configureEach {
             attribute(GRADLE_PLUGIN_API_VERSION_ATTRIBUTE, objects.named("9.9"))
         }
     }
+    // Gradle can only rank variants that all declare a version, including when the consumer requests no attributes.
+    if (name in setOf("apiElements", "runtimeElements", "sourcesElements")) {
+        attributes {
+            attribute(GRADLE_PLUGIN_API_VERSION_ATTRIBUTE, objects.named("9.8"))
+        }
+    }
     if (name == gradle99.apiElementsConfigurationName || name == gradle99.runtimeElementsConfigurationName) {
         // Match what KGP sets on apiElements/runtimeElements, or Gradle cannot rank the variants.
         attributes {
