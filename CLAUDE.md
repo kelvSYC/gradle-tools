@@ -83,4 +83,6 @@ The Gradle daemon is pinned to JDK 21 (`gradle/gradle-daemon-jvm.properties`). *
 
 The Kotlin version (`kotlin` in `gradle/libs.versions.toml`) must equal the Gradle wrapper's embedded Kotlin version (see the [compatibility matrix](https://docs.gradle.org/current/userguide/compatibility.html#kotlin)). `gradle-kotlin-dsl-plugins` pins `kotlin-stdlib` strictly to that version, so a higher catalog value fails dependency resolution and a lower one is silently overridden. Bump both together; Dependabot ignores Kotlin for this reason.
 
+Kotlin `apiVersion`/`languageVersion` in the convention plugins must not exceed the embedded Kotlin of the oldest Gradle version a core promises to support.
+
 Tests run on JDK 21 via toolchain. Convention plugins wire the required mockk/ByteBuddy JVM args (`-XX:+EnableDynamicAgentLoading`, `-Dnet.bytebuddy.experimental=true`, `-javaagent:[byte-buddy-agent]`). **Do not remove these.**

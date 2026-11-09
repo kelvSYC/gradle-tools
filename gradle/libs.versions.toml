@@ -2,7 +2,7 @@
 dokka = "2.2.0"
 dokkatoo = "2.4.0"
 jackson = "2.22.4"
-kotlin = "2.4.10"
+kotlin = "2.4.21"
 kotlin-tools = "0.5.1"
 moshi = "1.15.2"
 

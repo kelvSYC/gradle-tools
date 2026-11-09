@@ -63,12 +63,18 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
     }.map { it.metadata.installationPath })
 }
 
+// Consumers always run inside Gradle, which supplies kotlin-stdlib. Publishing a version here would conflict with
+// Gradle's Kotlin DSL plugins on older Gradle releases, which pin it strictly to their embedded Kotlin.
+extra["kotlin.stdlib.default.dependency"] = "false"
+
 val libs = versionCatalogs.named("libs")
 
 dependencies {
     implementation(platform("com.kelvsyc.internal:platform"))
     compileOnlyApi(gradleApi())
     compileOnlyApi(gradleKotlinDsl())
+    compileOnly(kotlin("stdlib"))
+    testImplementation(kotlin("stdlib"))
     testRuntimeOnly(gradleApi())
     testRuntimeOnly(gradleKotlinDsl())
 

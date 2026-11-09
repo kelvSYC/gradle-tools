@@ -74,6 +74,23 @@ class GradleVariantSelectionSpec : FunSpec() {
         "src/main/kotlin/Use.kt" to usage,
     )
 
+    // Build-logic projects often have Gradle's Kotlin DSL plugins on the same classpath as this library. Those plugins
+    // pin kotlin-stdlib strictly to the Kotlin embedded in the running Gradle.
+    private fun buildLogicConsumer() = mapOf(
+        "build.gradle.kts" to """
+            import org.gradle.kotlin.dsl.support.expectedKotlinDslPluginsVersion
+
+            plugins { `kotlin-dsl` }
+            $repositories
+            dependencies {
+                implementation("org.gradle.kotlin:gradle-kotlin-dsl-plugins:${'$'}expectedKotlinDslPluginsVersion")
+                implementation("$coordinates")
+            }
+            $printClasspaths
+        """.trimIndent(),
+        "src/main/kotlin/Use.kt" to usage,
+    )
+
     private fun javaLibraryConsumer(repositoryBlock: String = repositories, extra: String = "") = mapOf(
         "build.gradle.kts" to """
             plugins {
@@ -133,6 +150,14 @@ class GradleVariantSelectionSpec : FunSpec() {
                     jars.forEach { it.endsWith("-gradle99.jar") shouldBe wantGradle99 }
                     output.contains(deprecationMessage) shouldBe wantGradle99
                 }
+            }
+
+            test("build-logic with kotlin-dsl-plugins on $version resolves") {
+                val output = run(buildLogicConsumer(), version, "compileKotlin")
+
+                val jars = printed(output, "JARS")
+                jars.shouldNotBeEmpty()
+                jars.forEach { it.endsWith("-gradle99.jar") shouldBe wantGradle99 }
             }
 
             test("buildscript on $version can call the helpers") {
