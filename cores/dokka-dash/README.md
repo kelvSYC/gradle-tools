@@ -3,6 +3,10 @@
 A Gradle plugin that packages the HTML output of a [Dokka](https://kotl.in/dokka) documentation build into a
 [Dash](https://kapeli.com/dash) docset.
 
+## Supported Gradle versions
+
+Gradle 8.14 and later, running on JDK 21 or newer.
+
 ## Applying the Plugin
 
 ```kotlin

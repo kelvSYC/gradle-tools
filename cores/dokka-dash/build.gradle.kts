@@ -21,6 +21,7 @@ gradlePlugin {
 dependencies {
     implementation(libs.gson)
 
+    testImplementation(gradleTestKit())
     testImplementation(libs.mockk)
     testImplementation(libs.sqlite.jdbc)
 }
