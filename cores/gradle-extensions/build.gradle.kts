@@ -75,6 +75,7 @@ dependencies {
     testCompileOnly(gradleApi())
     testCompileOnly(gradleKotlinDsl())
 
+    testImplementation(gradleTestKit())
     testImplementation(libs.kotest.property)
     testImplementation(libs.mockk)
 }
@@ -85,7 +86,21 @@ publishing {
     repositories.maven(variantTestRepo) { name = "variantTest" }
 }
 
+// GradleVariantSelectionSpec resolves a dynamic version, so the repository must hold exactly one release.
+val cleanVariantTestRepo = tasks.register<Delete>("cleanVariantTestRepo") { delete(variantTestRepo) }
+tasks.withType<PublishToMavenRepository>().matching { it.name.endsWith("ToVariantTestRepository") }.configureEach {
+    dependsOn(cleanVariantTestRepo)
+}
+
 tasks.test {
+    dependsOn("publishMavenPublicationToVariantTestRepository")
+    val repo = variantTestRepo
+    // maven-metadata.xml changes on every publish, so only track the artifacts themselves.
+    inputs.files(repo.map { it.asFileTree.matching { include("**/*.jar", "**/*.module") } })
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+        .withPropertyName("variantTestArtifacts")
+    jvmArgumentProviders.add(CommandLineArgumentProvider { listOf("-DvariantTest.repo=${repo.get().asFile.path}") })
+
     // FIXME https://github.com/gradle/gradle/issues/18647
     jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
 }
