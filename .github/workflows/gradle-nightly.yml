@@ -1,0 +1,37 @@
+name: Gradle Nightly Compatibility
+
+# Early warning only: nightlies can break for reasons unrelated to this repository, so this never gates pull requests.
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  compatibility:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          filter: tree:0
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          java-version: '21'
+          distribution: 'zulu'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+      - name: Resolve Gradle nightly
+        run: echo "ADDITIONAL_GRADLE_VERSIONS=$(curl -fsSL https://services.gradle.org/versions/nightly | jq -r .version)" >> "$GITHUB_ENV"
+      - name: Run version tests
+        run: >-
+          ./gradlew
+          :gradle-extensions:test --tests '*GradleVariantSelectionSpec*'
+          :dokka-dash:test --tests '*DokkaDashGradleVersionSpec*'
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

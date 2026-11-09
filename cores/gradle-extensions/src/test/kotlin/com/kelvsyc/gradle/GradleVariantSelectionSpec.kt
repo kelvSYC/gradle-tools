@@ -109,6 +109,10 @@ class GradleVariantSelectionSpec : FunSpec() {
         "src/main/kotlin/Use.kt" to usage,
     )
 
+    // Extra versions, such as a nightly, supplied by the compatibility workflow.
+    private fun additionalGradleVersions() =
+        System.getenv("ADDITIONAL_GRADLE_VERSIONS")?.split(",")?.map(String::trim)?.filter(String::isNotEmpty).orEmpty()
+
     private fun run(files: Map<String, String>, version: String, vararg arguments: String): String {
         val dir = createTempDirectory("variant-test").toFile()
         try {
@@ -131,7 +135,7 @@ class GradleVariantSelectionSpec : FunSpec() {
         output.lineSequence().first { it.startsWith("$key=") }.removePrefix("$key=").split(",").filter(String::isNotEmpty)
 
     init {
-        val versions = listOf("9.8.2", "9.9.0")
+        val versions = listOf("9.8.2", "9.9.0") + additionalGradleVersions()
         val consumers = mapOf(
             "buildscript" to (::buildscriptConsumer to "help"),
             "kotlin-dsl" to (::kotlinDslConsumer to "compileKotlin"),
@@ -139,7 +143,7 @@ class GradleVariantSelectionSpec : FunSpec() {
         )
 
         versions.forEach { version ->
-            val wantGradle99 = version == "9.9.0"
+            val wantGradle99 = version != "9.8.2"
 
             consumers.forEach { (name, consumer) ->
                 test("$name on $version selects the expected variant") {
@@ -201,7 +205,7 @@ class GradleVariantSelectionSpec : FunSpec() {
 
                 val jars = printed(output, "DETACHED")
                 jars.size shouldBe 1
-                jars.single().endsWith("-gradle99.jar") shouldBe (version == "9.9.0")
+                jars.single().endsWith("-gradle99.jar") shouldBe (version != "9.8.2")
             }
         }
 
