@@ -43,6 +43,10 @@ configurations.configureEach {
     }
 }
 
+detekt {
+    source.from("src/baseline/kotlin", "src/gradle99/kotlin")
+}
+
 // This library compiles against specific Gradle API versions, not the Gradle running the build.
 configurations.compileOnlyApi {
     withDependencies { removeIf { it is FileCollectionDependency } }
@@ -62,7 +66,7 @@ dependencies {
 
     "gradle99CompileOnly"("org.gradle.experimental:gradle-public-api:9.9.0") { gradlePublicApi() }
     "gradle99CompileOnly"(kotlin("reflect"))
-    "gradle99Api"(kotlin("stdlib"))
+    "gradle99Api"(kotlin("stdlib", libs.versions.kotlin.asProvider().get()))
     "gradle99Implementation"(platform("com.kelvsyc.internal:platform"))
     "gradle99Implementation"(libs.caffeine)
 
@@ -73,6 +77,12 @@ dependencies {
 
     testImplementation(libs.kotest.property)
     testImplementation(libs.mockk)
+}
+
+val variantTestRepo = layout.buildDirectory.dir("variant-test-repo")
+
+publishing {
+    repositories.maven(variantTestRepo) { name = "variantTest" }
 }
 
 tasks.test {
