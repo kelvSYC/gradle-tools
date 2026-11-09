@@ -81,7 +81,7 @@ class GradleVariantSelectionSpec : FunSpec() {
                 kotlin("jvm") version "2.4.10"
             }
             $repositoryBlock
-            kotlin { jvmToolchain(25) }
+            kotlin { jvmToolchain(21) }
             dependencies {
                 compileOnly(gradleApi())
                 implementation("$coordinates")

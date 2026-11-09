@@ -21,7 +21,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v6
         with:
-          java-version: '25'
+          java-version: '21'
           distribution: 'zulu'
       - name: Generate and submit dependency graph
         uses: gradle/actions/dependency-submission@v6
