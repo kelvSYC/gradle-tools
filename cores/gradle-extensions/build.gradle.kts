@@ -53,11 +53,6 @@ detekt {
     source.from("src/baseline/kotlin", "src/gradle99/kotlin")
 }
 
-// This library compiles against specific Gradle API versions, not the Gradle running the build.
-configurations.compileOnlyApi {
-    withDependencies { removeIf { it is FileCollectionDependency } }
-}
-
 fun ExternalModuleDependency.gradlePublicApi() {
     capabilities { requireCapability("org.gradle.experimental:gradle-public-api-internal") }
     // The API pins jspecify strictly, which clashes with the newer version Caffeine brings. Each variant
@@ -66,12 +61,6 @@ fun ExternalModuleDependency.gradlePublicApi() {
 }
 
 dependencies {
-    // Deliberately pinned: the oldest Gradle version this library supports.
-    compileOnly("org.gradle.experimental:gradle-public-api:9.8.2") { gradlePublicApi() }
-    // Provided by Gradle at runtime; previously came from gradleKotlinDsl().
-    compileOnly(kotlin("reflect"))
-    compileOnly(libs.jspecify)
-
     "gradle99CompileOnly"("org.gradle.experimental:gradle-public-api:9.9.0") { gradlePublicApi() }
     "gradle99CompileOnly"(kotlin("reflect"))
     "gradle99CompileOnly"(libs.jspecify)

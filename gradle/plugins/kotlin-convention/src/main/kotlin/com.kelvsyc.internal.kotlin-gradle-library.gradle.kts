@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import kotlin.jvm.optionals.getOrNull
 
 plugins {
@@ -68,12 +69,32 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
 extra["kotlin.stdlib.default.dependency"] = "false"
 
 val libs = versionCatalogs.named("libs")
+val tier = gradleTier()
+
+// Published code compiles against its tier's Gradle API and Kotlin, not the Gradle running the build.
+tasks.named<KotlinCompile>("compileKotlin") {
+    compilerOptions {
+        apiVersion.set(tier.kotlinVersion)
+        languageVersion.set(tier.kotlinVersion)
+        // Gradle 9.0's JSpecify annotations mark some results non-null that later releases mark nullable, such as
+        // ValueSource.obtain(), and Kotlin enforces JSpecify strictly by default. Report these as warnings, as Kotlin
+        // already does for the JSR-305 annotations of Gradle 8.14.
+        if (tier == GradleTier.GRADLE_9_0) {
+            freeCompilerArgs.add("-Xjspecify-annotations=warn")
+        }
+    }
+}
 
 dependencies {
     implementation(platform("com.kelvsyc.internal:platform"))
-    compileOnlyApi(gradleApi())
-    compileOnlyApi(gradleKotlinDsl())
-    compileOnly(kotlin("stdlib"))
+    compileOnly("org.gradle.experimental:gradle-public-api:${tier.publicApiVersion}") { gradlePublicApi() }
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:${tier.embeddedKotlin}")
+    compileOnly("org.jetbrains.kotlin:kotlin-reflect:${tier.embeddedKotlin}")
+    compileOnly(libs.findLibrary("jspecify").get())
+
+    // Unit tests compile and run against the Gradle running the build.
+    testCompileOnly(gradleApi())
+    testCompileOnly(gradleKotlinDsl())
     testImplementation(kotlin("stdlib"))
     testRuntimeOnly(gradleApi())
     testRuntimeOnly(gradleKotlinDsl())

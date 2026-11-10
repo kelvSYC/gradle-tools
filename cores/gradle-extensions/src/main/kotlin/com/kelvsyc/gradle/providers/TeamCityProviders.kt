@@ -79,7 +79,7 @@ abstract class TeamCityProviders @Inject constructor(layout: ProjectLayout, prov
      * `teamcity.build.id` system property.
      */
     val buildId = buildProperties.getting("teamcity.build.id")
-        .map { it.toLongOrNull() }
+        .map { it?.toLongOrNull() }
 
     /**
      * Provides the build configuration ID (e.g. `MyProject_MyBuildConfig`). Sourced from the
@@ -174,7 +174,7 @@ abstract class TeamCityProviders @Inject constructor(layout: ProjectLayout, prov
      * `teamcity.build.branch.is_default` system property.
      */
     val isDefaultBranch = buildProperties.getting("teamcity.build.branch.is_default")
-        .map { it.toBooleanStrictOrNull() }
+        .map { it?.toBooleanStrictOrNull() }
 
     /**
      * Provides the path to the configuration parameters file. This file contains TeamCity configuration parameters
