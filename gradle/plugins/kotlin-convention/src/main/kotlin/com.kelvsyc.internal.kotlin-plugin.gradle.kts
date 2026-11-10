@@ -68,6 +68,9 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
 val libs = versionCatalogs.named("libs")
 val tier = gradleTier()
 
+// main compiles against the variants of its dependencies that a consumer on the tier's oldest Gradle resolves.
+compileMainForGradleTier(tier)
+
 // Published code compiles against its tier's Gradle API and Kotlin, not the Gradle running the build.
 // `kotlin-dsl` and `java-gradle-plugin` add the running Gradle's API as file dependencies, and `kotlin-dsl` adds its
 // embedded Kotlin, so main's compile classpath drops both.

@@ -1,5 +1,8 @@
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency
+import org.gradle.api.attributes.plugin.GradlePluginApiVersion
+import org.gradle.api.tasks.SourceSet
+import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.kotlin.dsl.exclude
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
@@ -51,4 +54,25 @@ fun ExternalModuleDependency.gradlePublicApi() {
     // The API pins jspecify strictly, which clashes with newer versions elsewhere on the classpath. Consumers declare
     // jspecify themselves, so the API's nullness annotations stay visible to the compiler.
     exclude(group = "org.jspecify")
+}
+
+/**
+ * Requests the oldest Gradle this project's tier supports as the `org.gradle.plugin.api-version` of `main`'s compile
+ * classpath, so that `main` compiles against the variants of its dependencies that a consumer on that Gradle would
+ * get, and a dependency of a newer tier fails resolution.
+ *
+ * Without it the compile classpath requests no version, and dependencies with several variants (`gradle-extensions`)
+ * resolve to the one for the newest Gradle. `main`'s runtime classpath and every other source set keep resolving for
+ * the Gradle running the build.
+ */
+fun Project.compileMainForGradleTier(tier: GradleTier) {
+    val main = extensions.getByType(SourceSetContainer::class.java).getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+    configurations.named(main.compileClasspathConfigurationName) {
+        attributes {
+            attribute(
+                GradlePluginApiVersion.GRADLE_PLUGIN_API_VERSION_ATTRIBUTE,
+                objects.named(GradlePluginApiVersion::class.java, tier.minimum),
+            )
+        }
+    }
 }

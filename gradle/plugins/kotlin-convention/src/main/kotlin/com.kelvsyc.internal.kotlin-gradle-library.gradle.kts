@@ -71,6 +71,9 @@ extra["kotlin.stdlib.default.dependency"] = "false"
 val libs = versionCatalogs.named("libs")
 val tier = gradleTier()
 
+// main compiles against the variants of its dependencies that a consumer on the tier's oldest Gradle resolves.
+compileMainForGradleTier(tier)
+
 // Published code compiles against its tier's Gradle API and Kotlin, not the Gradle running the build.
 tasks.named<KotlinCompile>("compileKotlin") {
     compilerOptions {
