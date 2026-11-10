@@ -5,6 +5,7 @@ import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.gradle.testkit.runner.GradleRunner
+import org.gradle.util.GradleVersion
 import java.io.File
 import kotlin.io.path.createTempDirectory
 
@@ -74,6 +75,23 @@ class GradleVariantSelectionSpec : FunSpec() {
         "src/main/kotlin/Use.kt" to usage,
     )
 
+    // Build-logic projects often have Gradle's Kotlin DSL plugins on the same classpath as this library. Those plugins
+    // pin kotlin-stdlib strictly to the Kotlin embedded in the running Gradle.
+    private fun buildLogicConsumer() = mapOf(
+        "build.gradle.kts" to """
+            import org.gradle.kotlin.dsl.support.expectedKotlinDslPluginsVersion
+
+            plugins { `kotlin-dsl` }
+            $repositories
+            dependencies {
+                implementation("org.gradle.kotlin:gradle-kotlin-dsl-plugins:${'$'}expectedKotlinDslPluginsVersion")
+                implementation("$coordinates")
+            }
+            $printClasspaths
+        """.trimIndent(),
+        "src/main/kotlin/Use.kt" to usage,
+    )
+
     private fun javaLibraryConsumer(repositoryBlock: String = repositories, extra: String = "") = mapOf(
         "build.gradle.kts" to """
             plugins {
@@ -81,7 +99,7 @@ class GradleVariantSelectionSpec : FunSpec() {
                 kotlin("jvm") version "2.4.10"
             }
             $repositoryBlock
-            kotlin { jvmToolchain(25) }
+            kotlin { jvmToolchain(21) }
             dependencies {
                 compileOnly(gradleApi())
                 implementation("$coordinates")
@@ -114,7 +132,8 @@ class GradleVariantSelectionSpec : FunSpec() {
         output.lineSequence().first { it.startsWith("$key=") }.removePrefix("$key=").split(",").filter(String::isNotEmpty)
 
     init {
-        val versions = listOf("9.8.2", "9.9.0")
+        // The running Gradle is included so that a wrapper bump exercises the new version automatically.
+        val versions = listOf("9.8.2", "9.9.0", GradleVersion.current().version).distinct()
         val consumers = mapOf(
             "buildscript" to (::buildscriptConsumer to "help"),
             "kotlin-dsl" to (::kotlinDslConsumer to "compileKotlin"),
@@ -122,7 +141,7 @@ class GradleVariantSelectionSpec : FunSpec() {
         )
 
         versions.forEach { version ->
-            val wantGradle99 = version == "9.9.0"
+            val wantGradle99 = version != "9.8.2"
 
             consumers.forEach { (name, consumer) ->
                 test("$name on $version selects the expected variant") {
@@ -133,6 +152,14 @@ class GradleVariantSelectionSpec : FunSpec() {
                     jars.forEach { it.endsWith("-gradle99.jar") shouldBe wantGradle99 }
                     output.contains(deprecationMessage) shouldBe wantGradle99
                 }
+            }
+
+            test("build-logic with kotlin-dsl-plugins on $version resolves") {
+                val output = run(buildLogicConsumer(), version, "compileKotlin")
+
+                val jars = printed(output, "JARS")
+                jars.shouldNotBeEmpty()
+                jars.forEach { it.endsWith("-gradle99.jar") shouldBe wantGradle99 }
             }
 
             test("buildscript on $version can call the helpers") {
@@ -176,7 +203,7 @@ class GradleVariantSelectionSpec : FunSpec() {
 
                 val jars = printed(output, "DETACHED")
                 jars.size shouldBe 1
-                jars.single().endsWith("-gradle99.jar") shouldBe (version == "9.9.0")
+                jars.single().endsWith("-gradle99.jar") shouldBe (version != "9.8.2")
             }
         }
 
