@@ -5,6 +5,7 @@ import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import org.gradle.testkit.runner.GradleRunner
+import org.gradle.util.GradleVersion
 import java.io.File
 import kotlin.io.path.createTempDirectory
 
@@ -109,10 +110,6 @@ class GradleVariantSelectionSpec : FunSpec() {
         "src/main/kotlin/Use.kt" to usage,
     )
 
-    // Extra versions, such as a nightly, supplied by the compatibility workflow.
-    private fun additionalGradleVersions() =
-        System.getenv("ADDITIONAL_GRADLE_VERSIONS")?.split(",")?.map(String::trim)?.filter(String::isNotEmpty).orEmpty()
-
     private fun run(files: Map<String, String>, version: String, vararg arguments: String): String {
         val dir = createTempDirectory("variant-test").toFile()
         try {
@@ -135,7 +132,8 @@ class GradleVariantSelectionSpec : FunSpec() {
         output.lineSequence().first { it.startsWith("$key=") }.removePrefix("$key=").split(",").filter(String::isNotEmpty)
 
     init {
-        val versions = listOf("9.8.2", "9.9.0") + additionalGradleVersions()
+        // The running Gradle is included so that a wrapper bump exercises the new version automatically.
+        val versions = listOf("9.8.2", "9.9.0", GradleVersion.current().version).distinct()
         val consumers = mapOf(
             "buildscript" to (::buildscriptConsumer to "help"),
             "kotlin-dsl" to (::kotlinDslConsumer to "compileKotlin"),

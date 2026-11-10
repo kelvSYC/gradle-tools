@@ -25,8 +25,3 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.sqlite.jdbc)
 }
-
-tasks.test {
-    // The version tests read this directly, so without it a new nightly would be served from the build cache.
-    inputs.property("additionalGradleVersions", providers.environmentVariable("ADDITIONAL_GRADLE_VERSIONS").orElse(""))
-}

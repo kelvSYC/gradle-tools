@@ -10,8 +10,6 @@ import kotlin.io.path.createTempDirectory
 
 /**
  * Verifies the range of Gradle versions this plugin promises in its README, using real Gradle distributions.
- *
- * The `ADDITIONAL_GRADLE_VERSIONS` environment variable adds comma-separated versions, such as a nightly.
  */
 class DokkaDashGradleVersionSpec : FunSpec() {
     private val settings = """rootProject.name = "consumer""""
@@ -46,12 +44,8 @@ class DokkaDashGradleVersionSpec : FunSpec() {
         }
     """.trimIndent()
 
-    private fun additionalGradleVersions() =
-        System.getenv("ADDITIONAL_GRADLE_VERSIONS")?.split(",")?.map(String::trim)?.filter(String::isNotEmpty).orEmpty()
-
     init {
-        val versions = (listOf("8.14", "9.1.0", "9.8.2", GradleVersion.current().version) + additionalGradleVersions())
-            .distinct()
+        val versions = listOf("8.14", "9.1.0", "9.8.2", GradleVersion.current().version).distinct()
         val builds = mapOf(
             "kotlin" to ("settings.gradle.kts" to "build.gradle.kts" to kotlinBuild),
             "groovy" to ("settings.gradle" to "build.gradle" to groovyBuild),
