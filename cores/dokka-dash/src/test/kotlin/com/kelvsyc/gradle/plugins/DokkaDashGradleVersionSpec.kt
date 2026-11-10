@@ -45,7 +45,7 @@ class DokkaDashGradleVersionSpec : FunSpec() {
     """.trimIndent()
 
     init {
-        val versions = listOf("8.14", "9.1.0", "9.8.2", GradleVersion.current().version).distinct()
+        val versions = listOf("8.14", "9.0.0", "9.8.2", GradleVersion.current().version).distinct()
         val builds = mapOf(
             "kotlin" to ("settings.gradle.kts" to "build.gradle.kts" to kotlinBuild),
             "groovy" to ("settings.gradle" to "build.gradle" to groovyBuild),
