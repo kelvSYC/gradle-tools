@@ -91,6 +91,8 @@ abstract class VerifyGradleLinkage : DefaultTask() {
  *
  * The runtime dependencies are resolved as a consumer on that Gradle would resolve them: with `runtimeClasspath`'s
  * attributes, and `org.gradle.plugin.api-version` set to [GradleTier.minimum].
+ *
+ * The project's `check` task depends on it.
  */
 fun Project.registerGradleLinkageCheck(tier: GradleTier) {
     val main = extensions.getByType(SourceSetContainer::class.java).named(SourceSet.MAIN_SOURCE_SET_NAME)
@@ -132,13 +134,14 @@ fun Project.registerGradleLinkageCheck(tier: GradleTier) {
         }
     }
 
-    tasks.register("verifyGradleLinkage", VerifyGradleLinkage::class.java) {
+    val verify = tasks.register("verifyGradleLinkage", VerifyGradleLinkage::class.java) {
         group = LifecycleBasePlugin.VERIFICATION_GROUP
         description = "Checks that main and its runtime dependencies link against Gradle ${tier.minimum}."
         classesToCheck.from(main.map { it.output }, linkageClasspath)
         this.baseline.from(baseline)
         report.set(layout.buildDirectory.file("reports/gradle-linkage/report.txt"))
     }
+    tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME) { dependsOn(verify) }
 }
 
 private fun AttributeContainer.copyFrom(source: AttributeContainer) {

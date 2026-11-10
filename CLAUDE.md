@@ -100,5 +100,6 @@ Each core has a minimum Gradle, set by `com.kelvsyc.gradle.minimumGradle` in the
 - `gradle-extensions` additionally publishes a `gradle99` variant (Gradle 9.9+, Kotlin 2.4) with its existing deprecations.
 - Each core publishes its tier as `org.gradle.plugin.api-version`, so an older Gradle rejects it at dependency resolution rather than failing at run time.
 - Published dependencies exclude `kotlin-stdlib`, `-jdk7`, `-jdk8` and `kotlin-reflect`; Gradle supplies them.
+- `verifyGradleLinkage` (a task in each core, run by its `check` and by root `./gradlew :check`) checks every reference from a core and every jar it ships against its tier's minimum Gradle API and that Gradle's Kotlin stdlib/reflect. The report is at `build/reports/gradle-linkage/report.txt`.
 - `aggregation/compat` (`TierCompatibilitySpec`, run by root `:test`) publishes a few cores to `build/compat-repo` and runs real Gradle distributions via TestKit: consumer resolution (including Kotlin-source build-logic with `gradle-kotlin-dsl-plugins`), rejection of a 9.0-tier core on 8.14, and one runtime smoke test per tier. Root `:test` downloads Gradle 8.14, 9.0.0 and 9.4.1 the first time, so it needs network.
 - `GradleVariantSelectionSpec` (`gradle-extensions`) and `DokkaDashGradleVersionSpec` (`dokka-dash`) test their cores across Gradle versions.
