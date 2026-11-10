@@ -75,7 +75,7 @@ dependencies {
     "gradle99CompileOnly"("org.gradle.experimental:gradle-public-api:9.9.0") { gradlePublicApi() }
     "gradle99CompileOnly"(kotlin("reflect"))
     "gradle99CompileOnly"(libs.jspecify)
-    "gradle99Api"(kotlin("stdlib", libs.versions.kotlin.asProvider().get()))
+    "gradle99CompileOnly"(kotlin("stdlib"))
     "gradle99Implementation"(platform("com.kelvsyc.internal:platform"))
     "gradle99Implementation"(libs.caffeine)
 

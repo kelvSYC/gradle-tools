@@ -17,6 +17,9 @@ version running your build. Resolving through a Maven POM alone gets the Gradle 
 
 Earlier Gradle versions are not supported.
 
+New per-version builds are added only when Gradle removes something this library uses or adds something worth using,
+not for each Gradle release.
+
 ## Provider Extensions
 
 ### `ProviderFactory` extensions (`ProviderFactoryExtensions`)

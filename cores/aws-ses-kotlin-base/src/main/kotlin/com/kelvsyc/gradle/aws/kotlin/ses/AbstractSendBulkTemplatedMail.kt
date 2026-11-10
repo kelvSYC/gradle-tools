@@ -18,7 +18,6 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.newInstance
 import org.gradle.work.DisableCachingByDefault
 import javax.inject.Inject
 
@@ -104,7 +103,7 @@ abstract class AbstractSendBulkTemplatedMail @Inject constructor(
      * Registers a new destination entry. The supplied [name] serves as a logical identifier.
      */
     fun registerEntry(name: String, action: Action<in Entry>) {
-        val entry = objects.newInstance<Entry>().also { action.execute(it) }
+        val entry = objects.newInstance(Entry::class.java).also { action.execute(it) }
         entries.put(name, entry)
     }
 

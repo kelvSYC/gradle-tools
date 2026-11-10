@@ -9,7 +9,6 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.newInstance
 import org.gradle.work.DisableCachingByDefault
 import software.amazon.awssdk.services.sns.SnsClient
 import software.amazon.awssdk.services.sns.model.MessageAttributeValue
@@ -89,7 +88,7 @@ abstract class AbstractPublishBatch @Inject constructor(
      */
     fun registerEntry(name: String, configureAction: Action<in Entry>) {
         entries.put(name, providers.provider {
-            objects.newInstance<Entry>(name).also { configureAction.execute(it) }
+            objects.newInstance(Entry::class.java, name).also { configureAction.execute(it) }
         })
     }
 

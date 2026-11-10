@@ -7,9 +7,6 @@ import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.bundling.Zip
-import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.register
 import javax.inject.Inject
 
 /**
@@ -42,11 +39,11 @@ abstract class AwsLambdaJvmFatPackagePlugin @Inject constructor(
     }
 
     private fun configurePackaging(project: Project, extension: AwsLambdaJvmExtension) {
-        val mainOutput = project.extensions.getByType<JavaPluginExtension>()
+        val mainOutput = project.extensions.getByType(JavaPluginExtension::class.java)
             .sourceSets.named("main").map { it.output }
         val runtimeClasspath = project.configurations.named("runtimeClasspath")
 
-        val fatJar = project.tasks.register<Jar>("lambdaFatJar") {
+        val fatJar = project.tasks.register("lambdaFatJar", Jar::class.java) {
             archiveBaseName.convention(extension.archiveBaseName)
             duplicatesStrategy = DuplicatesStrategy.EXCLUDE
             from(mainOutput)
@@ -56,7 +53,7 @@ abstract class AwsLambdaJvmFatPackagePlugin @Inject constructor(
             exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA", "META-INF/LICENSE*")
         }
 
-        val zip = project.tasks.register<Zip>("lambdaDeploymentZip") {
+        val zip = project.tasks.register("lambdaDeploymentZip", Zip::class.java) {
             archiveBaseName.convention(extension.archiveBaseName)
             from(fatJar)
         }

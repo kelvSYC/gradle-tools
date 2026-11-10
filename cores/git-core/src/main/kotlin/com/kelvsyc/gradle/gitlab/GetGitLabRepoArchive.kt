@@ -10,7 +10,6 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.submit
 import org.gradle.work.DisableCachingByDefault
 import org.gradle.workers.WorkerExecutor
 import javax.inject.Inject
@@ -86,7 +85,7 @@ abstract class GetGitLabRepoArchive @Inject constructor(private val workers: Wor
     @TaskAction
     fun run() {
         val queue = workers.noIsolation()
-        queue.submit(GitLabRepoArchiveAction::class) {
+        queue.submit(GitLabRepoArchiveAction::class.java) {
             glabCommand.set(this@GetGitLabRepoArchive.glabCommand)
             hostname.set(this@GetGitLabRepoArchive.hostname)
             this@GetGitLabRepoArchive.tokenRef.orNull?.let { token.set(it.resolve()) }

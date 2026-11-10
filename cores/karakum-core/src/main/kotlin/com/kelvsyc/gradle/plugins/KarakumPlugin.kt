@@ -4,7 +4,6 @@ import com.kelvsyc.gradle.karakum.KarakumExtension
 import com.kelvsyc.gradle.karakum.KarakumTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
@@ -30,7 +29,7 @@ class KarakumPlugin : Plugin<Project> {
                 .orElse(listOf("npx", "karakum"))
         )
 
-        project.tasks.withType<KarakumTask>().configureEach {
+        project.tasks.withType(KarakumTask::class.java).configureEach {
             karakumCommand.convention(extension.karakumCommand)
         }
 
@@ -66,7 +65,7 @@ class KarakumPlugin : Plugin<Project> {
     }
 
     private fun upgradeToManagedNpx(project: Project, extension: KarakumExtension) {
-        project.rootProject.plugins.withType<NodeJsRootPlugin> {
+        project.rootProject.plugins.withType(NodeJsRootPlugin::class.java) {
             val nodeJsRoot = project.rootProject.extensions.getByType(NodeJsRootExtension::class.java)
             val managedNpx = project.layout.file(
                 nodeJsRoot.nodeJsSetupTaskProvider.flatMap { task ->

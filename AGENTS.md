@@ -77,7 +77,7 @@ Detekt 1.23.x's bundled Kotlin compiler cannot parse JVM version "25.x" and thro
 
 ### Test JVM Args (ByteBuddy / mockk) ⚠️
 
-Tests run on JDK 25 but mockk/ByteBuddy requires these JVM args (already wired in convention plugins):
+Tests run on JDK 21, and mockk/ByteBuddy requires these JVM args (already wired in convention plugins):
 ```
 -XX:+EnableDynamicAgentLoading
 -Dnet.bytebuddy.experimental=true

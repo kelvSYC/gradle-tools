@@ -30,12 +30,7 @@ jobs:
         with:
           fetch-depth: 0
           filter: tree:0
-      - name: Set up JDK 25 (Kotlin compilation toolchain)
-        uses: actions/setup-java@v6
-        with:
-          java-version: '25'
-          distribution: 'zulu'
-      - name: Set up JDK 21 (Gradle/Detekt runtime)
+      - name: Set up JDK 21
         uses: actions/setup-java@v6
         with:
           java-version: '21'
@@ -117,12 +112,7 @@ jobs:
         with:
           fetch-depth: 0
           filter: tree:0
-      - name: Set up JDK 25 (Kotlin compilation toolchain)
-        uses: actions/setup-java@v6
-        with:
-          java-version: '25'
-          distribution: 'zulu'
-      - name: Set up JDK 21 (Gradle/Detekt runtime)
+      - name: Set up JDK 21
         uses: actions/setup-java@v6
         with:
           java-version: '21'
@@ -183,12 +173,7 @@ jobs:
         with:
           fetch-depth: 0
           filter: tree:0
-      - name: Set up JDK 25 (Kotlin compilation toolchain)
-        uses: actions/setup-java@v6
-        with:
-          java-version: '25'
-          distribution: 'zulu'
-      - name: Set up JDK 21 (Gradle/Detekt runtime)
+      - name: Set up JDK 21
         uses: actions/setup-java@v6
         with:
           java-version: '21'
