@@ -14,7 +14,6 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.gradle.work.DisableCachingByDefault
-import org.gradle.kotlin.dsl.newInstance
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import software.amazon.awssdk.transfer.s3.S3TransferManager
 import software.amazon.awssdk.transfer.s3.model.UploadFileRequest
@@ -80,7 +79,7 @@ abstract class AbstractBatchUploadToS3 @Inject constructor(
      */
     fun registerArtifact(name: String, configureAction: Action<in Artifact>) {
         artifacts.put(name, providers.provider {
-            objects.newInstance<Artifact>(name).also { configureAction.execute(it) }
+            objects.newInstance(Artifact::class.java, name).also { configureAction.execute(it) }
         })
     }
 

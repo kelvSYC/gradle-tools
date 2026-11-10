@@ -8,7 +8,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.submit
 import org.gradle.work.DisableCachingByDefault
 import org.gradle.workers.WorkerExecutor
 import javax.inject.Inject
@@ -67,7 +66,7 @@ abstract class CollectBuildEnvironment @Inject constructor(private val workers: 
 
     @TaskAction
     fun run() {
-        workers.noIsolation().submit(CollectBuildEnvironmentAction::class) {
+        workers.noIsolation().submit(CollectBuildEnvironmentAction::class.java) {
             jfCommand.set(this@CollectBuildEnvironment.jfCommand)
             buildName.set(this@CollectBuildEnvironment.buildName)
             buildNumber.set(this@CollectBuildEnvironment.buildNumber)

@@ -35,7 +35,6 @@ import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.work.DisableCachingByDefault
-import org.gradle.kotlin.dsl.newInstance
 import javax.inject.Inject
 
 @DisableCachingByDefault(because = "Downloading from an external service is not cacheable")
@@ -55,7 +54,7 @@ abstract class AbstractBatchDownloadFromS3 @Inject constructor(private val objec
     abstract val artifacts: MapProperty<String, Artifact>
 
     fun registerArtifact(name: String, action: Action<in Artifact>) {
-        val artifact = objects.newInstance<Artifact>().also { action.execute(it) }
+        val artifact = objects.newInstance(Artifact::class.java).also { action.execute(it) }
         artifacts.put(name, artifact)
     }
 

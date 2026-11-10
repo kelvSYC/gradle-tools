@@ -6,20 +6,19 @@ import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.tasks.Jar
-import org.gradle.kotlin.dsl.named
 
 fun TaskContainer.classes(sourceSet: SourceSet) = named(sourceSet.classesTaskName)
 
 inline fun <reified T : Task> TaskContainer.compile(sourceSet: SourceSet, language: String) =
-    named<T>(sourceSet.getCompileTaskName(language))
+    named(sourceSet.getCompileTaskName(language), T::class.java)
 
-fun TaskContainer.compileJava(sourceSet: SourceSet) = named<JavaCompile>(sourceSet.compileJavaTaskName)
+fun TaskContainer.compileJava(sourceSet: SourceSet) = named(sourceSet.compileJavaTaskName, JavaCompile::class.java)
 
-fun TaskContainer.jar(sourceSet: SourceSet) = named<Jar>(sourceSet.jarTaskName)
+fun TaskContainer.jar(sourceSet: SourceSet) = named(sourceSet.jarTaskName, Jar::class.java)
 
-fun TaskContainer.javadocJar(sourceSet: SourceSet) = named<Jar>(sourceSet.javadocJarTaskName)
+fun TaskContainer.javadocJar(sourceSet: SourceSet) = named(sourceSet.javadocJarTaskName, Jar::class.java)
 
 inline fun <reified T : Copy> TaskContainer.processResources(sourceSet: SourceSet) =
-    named<T>(sourceSet.processResourcesTaskName)
+    named(sourceSet.processResourcesTaskName, T::class.java)
 
-fun TaskContainer.sourcesJar(sourceSet: SourceSet) = named<Jar>(sourceSet.sourcesJarTaskName)
+fun TaskContainer.sourcesJar(sourceSet: SourceSet) = named(sourceSet.sourcesJarTaskName, Jar::class.java)

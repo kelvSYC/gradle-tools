@@ -6,7 +6,6 @@ import com.kelvsyc.gradle.aws.java.lambda.UpdateFunctionCodeTask
 import com.kelvsyc.gradle.aws.jvm.lambda.AwsLambdaJvmExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.register
 
 /**
  * Atomic plugin that registers an `uploadLambdaFunction` task wired to the deployment ZIP produced
@@ -54,7 +53,7 @@ class AwsLambdaJvmUploadPlugin : Plugin<Project> {
             }
         }
 
-        project.tasks.register<UpdateFunctionCodeTask>("uploadLambdaFunction") {
+        project.tasks.register("uploadLambdaFunction", UpdateFunctionCodeTask::class.java) {
             service.set(lambdaService)
             functionName.set(deployExtension.functionName)
             zipFile.set(packagingExtension.deploymentZipFile)
