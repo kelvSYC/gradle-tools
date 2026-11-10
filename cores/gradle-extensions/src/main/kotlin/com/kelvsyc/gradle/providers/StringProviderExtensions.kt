@@ -23,7 +23,7 @@ val Provider<String>.orElseEmpty
  *
  * @see [String.toIntOrNull]
  */
-val Provider<String>.asInt
+val Provider<String>.asInt: Provider<Int>
     get() = map(String::toIntOrNull)
 
 /**
@@ -31,5 +31,5 @@ val Provider<String>.asInt
  *
  * @see [String.toBooleanStrictOrNull]
  */
-val Provider<String>.asBoolean
+val Provider<String>.asBoolean: Provider<Boolean>
     get() = map(String::toBooleanStrictOrNull)

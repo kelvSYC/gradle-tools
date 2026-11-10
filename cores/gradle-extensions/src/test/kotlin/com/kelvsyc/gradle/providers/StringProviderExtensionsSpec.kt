@@ -55,7 +55,7 @@ class StringProviderExtensionsSpec : FunSpec() {
 
                 val result = provider.asInt
 
-                result.get()!! shouldBeEqual it
+                result.get() shouldBeEqual it
             }
         }
 
@@ -67,7 +67,7 @@ class StringProviderExtensionsSpec : FunSpec() {
 
                 val result = provider.asBoolean
 
-                result.get()!! shouldBeEqual it
+                result.get() shouldBeEqual it
             }
         }
     }

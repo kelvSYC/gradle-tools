@@ -1,6 +1,7 @@
 package com.kelvsyc.gradle.providers
 
 import org.gradle.api.file.ProjectLayout
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
 import java.io.File
 import javax.inject.Inject
@@ -20,16 +21,16 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
      * Provides `true` if Gradle is running in a CI/CD job. Defaults to `false` when the `CI` environment variable is
      * absent.
      */
-    val ci = providers.environmentVariable("CI")
-        .map(String::toBooleanStrictOrNull)
+    val ci: Provider<Boolean> = providers.environmentVariable("CI")
+        .map<Boolean>(String::toBooleanStrictOrNull)
         .orElse(false)
 
     /**
      * Provides `true` if Gradle is running in GitLab CI/CD. Defaults to `false` when the `GITLAB_CI` environment
      * variable is absent.
      */
-    val gitlabCI = providers.environmentVariable("GITLAB_CI")
-        .map(String::toBooleanStrictOrNull)
+    val gitlabCI: Provider<Boolean> = providers.environmentVariable("GITLAB_CI")
+        .map<Boolean>(String::toBooleanStrictOrNull)
         .orElse(false)
 
     /**
@@ -69,7 +70,7 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides the port of the GitLab instance URL.
      */
-    val serverPort = providers.environmentVariable("CI_SERVER_PORT")
+    val serverPort: Provider<Int> = providers.environmentVariable("CI_SERVER_PORT")
         .map(String::toIntOrNull)
 
     /**
@@ -85,7 +86,7 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides the SSH port of the GitLab instance, used for Git operations over SSH.
      */
-    val serverShellSshPort = providers.environmentVariable("CI_SERVER_SHELL_SSH_PORT")
+    val serverShellSshPort: Provider<Int> = providers.environmentVariable("CI_SERVER_SHELL_SSH_PORT")
         .map(String::toIntOrNull)
 
     /**
@@ -106,19 +107,19 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides the major version number of the GitLab instance.
      */
-    val serverVersionMajor = providers.environmentVariable("CI_SERVER_VERSION_MAJOR")
+    val serverVersionMajor: Provider<Int> = providers.environmentVariable("CI_SERVER_VERSION_MAJOR")
         .map(String::toIntOrNull)
 
     /**
      * Provides the minor version number of the GitLab instance.
      */
-    val serverVersionMinor = providers.environmentVariable("CI_SERVER_VERSION_MINOR")
+    val serverVersionMinor: Provider<Int> = providers.environmentVariable("CI_SERVER_VERSION_MINOR")
         .map(String::toIntOrNull)
 
     /**
      * Provides the patch version number of the GitLab instance.
      */
-    val serverVersionPatch = providers.environmentVariable("CI_SERVER_VERSION_PATCH")
+    val serverVersionPatch: Provider<Int> = providers.environmentVariable("CI_SERVER_VERSION_PATCH")
         .map(String::toIntOrNull)
 
     // endregion
@@ -159,7 +160,7 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides whether the job is running for a protected reference.
      */
-    val commitRefProtected = providers.environmentVariable("CI_COMMIT_REF_PROTECTED")
+    val commitRefProtected: Provider<Boolean> = providers.environmentVariable("CI_COMMIT_REF_PROTECTED")
         .map(String::toBooleanStrictOrNull)
 
     /**
@@ -209,13 +210,13 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides whether debug logging (tracing) is enabled.
      */
-    val debugTrace = providers.environmentVariable("CI_DEBUG_TRACE")
+    val debugTrace: Provider<Boolean> = providers.environmentVariable("CI_DEBUG_TRACE")
         .map(String::toBooleanStrictOrNull)
 
     /**
      * Provides whether service container logging is enabled.
      */
-    val debugServices = providers.environmentVariable("CI_DEBUG_SERVICES")
+    val debugServices: Provider<Boolean> = providers.environmentVariable("CI_DEBUG_SERVICES")
         .map(String::toBooleanStrictOrNull)
 
     /**
@@ -236,14 +237,14 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
      * Provides whether the job is executed in a disposable environment (created and destroyed per job). `true` for all
      * executors except `shell` and `ssh`.
      */
-    val disposableEnvironment = providers.environmentVariable("CI_DISPOSABLE_ENVIRONMENT")
+    val disposableEnvironment: Provider<Boolean> = providers.environmentVariable("CI_DISPOSABLE_ENVIRONMENT")
         .map(String::toBooleanStrictOrNull)
 
     /**
      * Provides whether the job is executed in a shared environment that persists across invocations. `true` for
      * `shell` and `ssh` executors.
      */
-    val sharedEnvironment = providers.environmentVariable("CI_SHARED_ENVIRONMENT")
+    val sharedEnvironment: Provider<Boolean> = providers.environmentVariable("CI_SHARED_ENVIRONMENT")
         .map(String::toBooleanStrictOrNull)
 
     // endregion
@@ -253,7 +254,7 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides whether the pipeline runs during a deploy freeze window.
      */
-    val deployFreeze = providers.environmentVariable("CI_DEPLOY_FREEZE")
+    val deployFreeze: Provider<Boolean> = providers.environmentVariable("CI_DEPLOY_FREEZE")
         .map(String::toBooleanStrictOrNull)
 
     // endregion
@@ -263,7 +264,7 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides the ID of the environment for the job. Only set if `environment:name` is configured.
      */
-    val environmentId = providers.environmentVariable("CI_ENVIRONMENT_ID")
+    val environmentId: Provider<Long> = providers.environmentVariable("CI_ENVIRONMENT_ID")
         .map(String::toLongOrNull)
 
     /**
@@ -298,7 +299,7 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides whether FIPS mode is enabled on the GitLab instance.
      */
-    val fipsMode = providers.environmentVariable("CI_GITLAB_FIPS_MODE")
+    val fipsMode: Provider<Boolean> = providers.environmentVariable("CI_GITLAB_FIPS_MODE")
         .map(String::toBooleanStrictOrNull)
 
     // endregion
@@ -308,13 +309,13 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides whether the project has open requirements.
      */
-    val hasOpenRequirements = providers.environmentVariable("CI_HAS_OPEN_REQUIREMENTS")
+    val hasOpenRequirements: Provider<Boolean> = providers.environmentVariable("CI_HAS_OPEN_REQUIREMENTS")
         .map(String::toBooleanStrictOrNull)
 
     /**
      * Provides the internal ID of the job, unique across the entire GitLab instance.
      */
-    val jobId = providers.environmentVariable("CI_JOB_ID")
+    val jobId: Provider<Long> = providers.environmentVariable("CI_JOB_ID")
         .map(String::toLongOrNull)
 
     /**
@@ -325,7 +326,7 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides whether the job was started manually.
      */
-    val jobManual = providers.environmentVariable("CI_JOB_MANUAL")
+    val jobManual: Provider<Boolean> = providers.environmentVariable("CI_JOB_MANUAL")
         .map(String::toBooleanStrictOrNull)
 
     /**
@@ -352,7 +353,7 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides the job timeout in seconds.
      */
-    val jobTimeout = providers.environmentVariable("CI_JOB_TIMEOUT")
+    val jobTimeout: Provider<Int> = providers.environmentVariable("CI_JOB_TIMEOUT")
         .map(String::toIntOrNull)
 
     /**
@@ -368,13 +369,13 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides the index of the job in a parallel job set. Only set if the job uses `parallel`.
      */
-    val nodeIndex = providers.environmentVariable("CI_NODE_INDEX")
+    val nodeIndex: Provider<Int> = providers.environmentVariable("CI_NODE_INDEX")
         .map(String::toIntOrNull)
 
     /**
      * Provides the total number of instances running in parallel. `1` if `parallel` is not used.
      */
-    val nodeTotal = providers.environmentVariable("CI_NODE_TOTAL")
+    val nodeTotal: Provider<Int> = providers.environmentVariable("CI_NODE_TOTAL")
         .map(String::toIntOrNull)
 
     // endregion
@@ -384,7 +385,7 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides whether the pipeline has a Kubernetes cluster available for deployments.
      */
-    val kubernetesActive = providers.environmentVariable("CI_KUBERNETES_ACTIVE")
+    val kubernetesActive: Provider<Boolean> = providers.environmentVariable("CI_KUBERNETES_ACTIVE")
         .map(String::toBooleanStrictOrNull)
 
     // endregion
@@ -408,13 +409,13 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides the instance-level ID of the current pipeline, unique across all projects.
      */
-    val pipelineId = providers.environmentVariable("CI_PIPELINE_ID")
+    val pipelineId: Provider<Long> = providers.environmentVariable("CI_PIPELINE_ID")
         .map(String::toLongOrNull)
 
     /**
      * Provides the project-level IID of the current pipeline, unique only within the project.
      */
-    val pipelineIid = providers.environmentVariable("CI_PIPELINE_IID")
+    val pipelineIid: Provider<Long> = providers.environmentVariable("CI_PIPELINE_IID")
         .map(String::toLongOrNull)
 
     /**
@@ -425,7 +426,7 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides whether the pipeline was triggered with a trigger token.
      */
-    val pipelineTriggered = providers.environmentVariable("CI_PIPELINE_TRIGGERED")
+    val pipelineTriggered: Provider<Boolean> = providers.environmentVariable("CI_PIPELINE_TRIGGERED")
         .map(String::toBooleanStrictOrNull)
 
     /**
@@ -465,7 +466,7 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides the ID of the current project, unique across all projects on the instance.
      */
-    val projectId = providers.environmentVariable("CI_PROJECT_ID")
+    val projectId: Provider<Long> = providers.environmentVariable("CI_PROJECT_ID")
         .map(String::toLongOrNull)
 
     /**
@@ -481,7 +482,7 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides the project namespace ID.
      */
-    val projectNamespaceId = providers.environmentVariable("CI_PROJECT_NAMESPACE_ID")
+    val projectNamespaceId: Provider<Long> = providers.environmentVariable("CI_PROJECT_NAMESPACE_ID")
         .map(String::toLongOrNull)
 
     /**
@@ -569,7 +570,7 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides the unique ID of the runner being used.
      */
-    val runnerId = providers.environmentVariable("CI_RUNNER_ID")
+    val runnerId: Provider<Long> = providers.environmentVariable("CI_RUNNER_ID")
         .map(String::toLongOrNull)
 
     /**
@@ -625,7 +626,7 @@ abstract class GitLabCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides the numeric ID of the user who started the pipeline.
      */
-    val userId = providers.environmentVariable("GITLAB_USER_ID")
+    val userId: Provider<Long> = providers.environmentVariable("GITLAB_USER_ID")
         .map(String::toLongOrNull)
 
     /**

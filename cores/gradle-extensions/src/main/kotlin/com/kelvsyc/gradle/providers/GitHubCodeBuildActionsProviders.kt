@@ -1,5 +1,6 @@
 package com.kelvsyc.gradle.providers
 
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
 import javax.inject.Inject
 
@@ -49,7 +50,7 @@ abstract class GitHubCodeBuildActionsProviders @Inject constructor(providers: Pr
      * Provides whether a buildspec override is configured in the self-hosted runner request labels. Defaults to `false`
      * when the environment variable is absent.
      */
-    val runnerWithBuildspec = providers.environmentVariable("CODEBUILD_RUNNER_WITH_BUILDSPEC")
-        .map { it.toBooleanStrictOrNull() }
+    val runnerWithBuildspec: Provider<Boolean> = providers.environmentVariable("CODEBUILD_RUNNER_WITH_BUILDSPEC")
+        .map<Boolean> { it.toBooleanStrictOrNull() }
         .orElse(false)
 }

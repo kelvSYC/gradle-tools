@@ -1,6 +1,7 @@
 package com.kelvsyc.gradle.providers
 
 import org.gradle.api.file.ProjectLayout
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
 import java.io.File
 import javax.inject.Inject
@@ -17,16 +18,16 @@ abstract class CircleCIProviders @Inject constructor(layout: ProjectLayout, prov
      * Provides `true` if Gradle is running in a CI environment. Defaults to `false` when the `CI` environment variable
      * is absent.
      */
-    val ci = providers.environmentVariable("CI")
-        .map(String::toBooleanStrictOrNull)
+    val ci: Provider<Boolean> = providers.environmentVariable("CI")
+        .map<Boolean>(String::toBooleanStrictOrNull)
         .orElse(false)
 
     /**
      * Provides `true` if the current environment is CircleCI. Defaults to `false` when the `CIRCLECI` environment
      * variable is absent.
      */
-    val circleCI = providers.environmentVariable("CIRCLECI")
-        .map(String::toBooleanStrictOrNull)
+    val circleCI: Provider<Boolean> = providers.environmentVariable("CIRCLECI")
+        .map<Boolean>(String::toBooleanStrictOrNull)
         .orElse(false)
 
     /**
@@ -37,7 +38,7 @@ abstract class CircleCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides the number of the current job, unique for each job.
      */
-    val buildNum = providers.environmentVariable("CIRCLE_BUILD_NUM")
+    val buildNum: Provider<Int> = providers.environmentVariable("CIRCLE_BUILD_NUM")
         .map(String::toIntOrNull)
 
     /**
@@ -53,13 +54,13 @@ abstract class CircleCIProviders @Inject constructor(layout: ProjectLayout, prov
     /**
      * Provides the index of the current parallel run instance, ranging from 0 to (`nodeTotal` - 1).
      */
-    val nodeIndex = providers.environmentVariable("CIRCLE_NODE_INDEX")
+    val nodeIndex: Provider<Int> = providers.environmentVariable("CIRCLE_NODE_INDEX")
         .map(String::toIntOrNull)
 
     /**
      * Provides the total number of parallel runs, as configured by the `parallelism` key.
      */
-    val nodeTotal = providers.environmentVariable("CIRCLE_NODE_TOTAL")
+    val nodeTotal: Provider<Int> = providers.environmentVariable("CIRCLE_NODE_TOTAL")
         .map(String::toIntOrNull)
 
     /**
@@ -76,7 +77,7 @@ abstract class CircleCIProviders @Inject constructor(layout: ProjectLayout, prov
      * Provides the number of the associated pull request. Only available on forked PRs (GitHub OAuth and Bitbucket
      * Cloud only).
      */
-    val prNumber = providers.environmentVariable("CIRCLE_PR_NUMBER")
+    val prNumber: Provider<Int> = providers.environmentVariable("CIRCLE_PR_NUMBER")
         .map(String::toIntOrNull)
 
     /**
@@ -95,7 +96,7 @@ abstract class CircleCIProviders @Inject constructor(layout: ProjectLayout, prov
      * Provides the largest job number on the current branch that is less than the current job number. Not always set
      * and not deterministic.
      */
-    val previousBuildNum = providers.environmentVariable("CIRCLE_PREVIOUS_BUILD_NUM")
+    val previousBuildNum: Provider<Int> = providers.environmentVariable("CIRCLE_PREVIOUS_BUILD_NUM")
         .map(String::toIntOrNull)
 
     /**
