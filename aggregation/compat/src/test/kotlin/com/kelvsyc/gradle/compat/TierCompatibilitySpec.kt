@@ -6,6 +6,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
+import io.kotest.matchers.string.shouldStartWith
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.util.GradleVersion
@@ -135,6 +136,34 @@ class TierCompatibilitySpec : FunSpec() {
         """.trimIndent(),
     )
 
+    // gradle-extensions reaches the build script only through aws-sts-java-base's published metadata, which must still
+    // let Gradle pick the gradle-extensions variant for the Gradle it is running.
+    private val awsStsJavaBaseBuildScript = mapOf(
+        "build.gradle" to """
+            import com.kelvsyc.gradle.aws.java.sts.StsClientBuildService
+
+            buildscript {
+                repositories {
+                    exclusiveContent {
+                        forRepository { maven { url = uri("$repo") } }
+                        filter { includeGroup("com.kelvsyc.gradle") }
+                    }
+                    mavenCentral()
+                }
+                dependencies {
+                    ${platforms("classpath")}
+                    classpath("com.kelvsyc.gradle:aws-sts-java-base:+")
+                    constraints {
+                        ${coreConstraints("classpath")}
+                    }
+                }
+            }
+
+            println("CLASS=" + StsClientBuildService.name)
+            println("JAR=" + buildscript.configurations.classpath.files*.name.find { it.startsWith("gradle-extensions") })
+        """.trimIndent(),
+    )
+
     // The service is configured entirely in code, so no ambient AWS configuration, credential chain or IMDS lookup is
     // consulted, and the SDK makes a real, signed call to a closed local port.
     private val awsStsKotlinBaseRun = mapOf(
@@ -235,6 +264,18 @@ class TierCompatibilitySpec : FunSpec() {
                 val output = run(awsStsKotlinBaseBuildScript, version, "help").output
 
                 output shouldContain "CLASS=com.kelvsyc.gradle.aws.kotlin.sts.StsClientBuildService"
+            }
+        }
+
+        listOf("8.14", current).distinct().forEach { version ->
+            test("build script resolves gradle-extensions through aws-sts-java-base on $version") {
+                val output = run(awsStsJavaBaseBuildScript, version, "help").output
+                val jar = output.lineSequence().single { it.startsWith("JAR=") }.removePrefix("JAR=")
+                println("aws-sts-java-base on $version uses $jar")
+
+                output shouldContain "CLASS=com.kelvsyc.gradle.aws.java.sts.StsClientBuildService"
+                jar shouldStartWith "gradle-extensions-"
+                if (version == "8.14") jar shouldNotContain "gradle99" else jar shouldContain "gradle99"
             }
         }
 

@@ -13,6 +13,9 @@ kotlin {
 // Cores the consumers in TierCompatibilitySpec resolve, with every core they depend on.
 val compatCores = listOf(
     "clients-base",
+    "gradle-extensions",
+    "aws-java-extensions",
+    "aws-sts-java-base",
     "nexus-base",
     "aws-kotlin-extensions",
     "aws-sts-kotlin-base",
@@ -24,6 +27,7 @@ val compatRepo = layout.settingsDirectory.dir("../build/compat-repo")
 val consumerPlatforms = listOf(
     libs.okhttp.bom,
     libs.retrofit.bom,
+    libs.aws.java.sdk.bom,
     libs.aws.kotlin.sdk.bom,
     libs.kotlinx.coroutines.bom,
 ).map { bom -> bom.map { "${it.module}:${it.versionConstraint.requiredVersion}" } }
