@@ -6,7 +6,6 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.submit
 import org.gradle.work.DisableCachingByDefault
 import org.gradle.workers.WorkerExecutor
 import javax.inject.Inject
@@ -48,7 +47,7 @@ abstract class CleanBuildInfo @Inject constructor(private val workers: WorkerExe
 
     @TaskAction
     fun run() {
-        workers.noIsolation().submit(CleanBuildInfoAction::class) {
+        workers.noIsolation().submit(CleanBuildInfoAction::class.java) {
             jfCommand.set(this@CleanBuildInfo.jfCommand)
             buildName.set(this@CleanBuildInfo.buildName)
             buildNumber.set(this@CleanBuildInfo.buildNumber)

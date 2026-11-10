@@ -16,7 +16,6 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.newInstance
 import org.gradle.work.DisableCachingByDefault
 import javax.inject.Inject
 
@@ -97,7 +96,7 @@ abstract class AbstractPublishBatch @Inject constructor(
      * Registers a new entry. The supplied [name] is used as the batch entry id.
      */
     fun registerEntry(name: String, action: Action<in Entry>) {
-        val entry = objects.newInstance<Entry>().also { action.execute(it) }
+        val entry = objects.newInstance(Entry::class.java).also { action.execute(it) }
         entries.put(name, entry)
     }
 

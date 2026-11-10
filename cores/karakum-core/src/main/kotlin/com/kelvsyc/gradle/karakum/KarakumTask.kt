@@ -15,7 +15,6 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.submit
 import org.gradle.workers.WorkerExecutor
 import javax.inject.Inject
 
@@ -73,7 +72,7 @@ abstract class KarakumTask @Inject constructor(private val workers: WorkerExecut
 
     @TaskAction
     fun run() {
-        workers.noIsolation().submit(RunKarakumAction::class) {
+        workers.noIsolation().submit(RunKarakumAction::class.java) {
             karakumCommand.set(this@KarakumTask.karakumCommand)
             inputFiles.from(this@KarakumTask.inputFiles)
             if (this@KarakumTask.configFile.isPresent) {

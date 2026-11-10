@@ -33,7 +33,6 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.newInstance
 import org.gradle.work.DisableCachingByDefault
 import javax.inject.Inject
 
@@ -122,7 +121,7 @@ abstract class AbstractBatchPublishPackageVersion @Inject constructor(
      * @param action Configures the artifact's coordinates, content, and checksum.
      */
     fun registerArtifact(name: String, action: Action<in Artifact>) {
-        val artifact = objects.newInstance<Artifact>().also { action.execute(it) }
+        val artifact = objects.newInstance(Artifact::class.java).also { action.execute(it) }
         artifacts.put(name, artifact)
     }
 

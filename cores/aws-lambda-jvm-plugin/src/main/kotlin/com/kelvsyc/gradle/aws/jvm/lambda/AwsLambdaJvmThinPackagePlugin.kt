@@ -5,9 +5,6 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.bundling.Zip
-import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.register
 
 /**
  * Registers tasks that package a JVM Lambda function as a thin JAR with a separate `lib/` directory.
@@ -39,16 +36,16 @@ class AwsLambdaJvmThinPackagePlugin : Plugin<Project> {
     }
 
     private fun configurePackaging(project: Project, extension: AwsLambdaJvmExtension) {
-        val mainOutput = project.extensions.getByType<JavaPluginExtension>()
+        val mainOutput = project.extensions.getByType(JavaPluginExtension::class.java)
             .sourceSets.named("main").map { it.output }
         val runtimeClasspath = project.configurations.named("runtimeClasspath")
 
-        val jar = project.tasks.register<Jar>("lambdaJar") {
+        val jar = project.tasks.register("lambdaJar", Jar::class.java) {
             archiveBaseName.convention(extension.archiveBaseName)
             from(mainOutput)
         }
 
-        val zip = project.tasks.register<Zip>("lambdaDeploymentZip") {
+        val zip = project.tasks.register("lambdaDeploymentZip", Zip::class.java) {
             archiveBaseName.convention(extension.archiveBaseName)
             from(jar)
             into("lib") {

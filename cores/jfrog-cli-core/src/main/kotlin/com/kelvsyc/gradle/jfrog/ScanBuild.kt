@@ -8,7 +8,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.submit
 import org.gradle.work.DisableCachingByDefault
 import org.gradle.workers.WorkerExecutor
 import javax.inject.Inject
@@ -76,7 +75,7 @@ abstract class ScanBuild @Inject constructor(private val workers: WorkerExecutor
 
     @TaskAction
     fun run() {
-        workers.noIsolation().submit(ScanBuildAction::class) {
+        workers.noIsolation().submit(ScanBuildAction::class.java) {
             jfCommand.set(this@ScanBuild.jfCommand)
             serverUrl.set(this@ScanBuild.serverUrl)
             accessToken.set(this@ScanBuild.accessTokenRef.get().resolve())
