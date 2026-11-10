@@ -1,6 +1,9 @@
 package com.kelvsyc.gradle.compat
 
+import io.kotest.assertions.assertSoftly
+import io.kotest.assertions.withClue
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
 import org.gradle.testkit.runner.BuildResult
@@ -94,7 +97,91 @@ class TierCompatibilitySpec : FunSpec() {
         """.trimIndent(),
     )
 
-    private fun runner(files: Map<String, String>, version: String, vararg args: String): Pair<File, GradleRunner> {
+    // Groovy has no metadata version check at all, so nothing but the core's own bytecode can fail on old Gradle.
+    private val nexusBaseRun = mapOf(
+        "build.gradle" to """
+            import com.kelvsyc.gradle.nexus.BatchDownloadFromNexus
+            import com.kelvsyc.gradle.nexus.NexusClientBuildService
+
+            buildscript {
+                repositories {
+                    exclusiveContent {
+                        forRepository { maven { url = uri("$repo") } }
+                        filter { includeGroup("com.kelvsyc.gradle") }
+                    }
+                    mavenCentral()
+                }
+                dependencies {
+                    ${platforms("classpath")}
+                    classpath("com.kelvsyc.gradle:nexus-base:+")
+                    constraints {
+                        ${coreConstraints("classpath")}
+                    }
+                }
+            }
+
+            def nexus = gradle.sharedServices.registerIfAbsent("nexus", NexusClientBuildService) {
+                parameters.baseUrl.set("http://127.0.0.1:9")
+            }
+
+            tasks.register("download", BatchDownloadFromNexus) {
+                service.set(nexus)
+                registerArtifact("artifact") { artifact ->
+                    artifact.repository.set("raw")
+                    artifact.path.set("artifact.txt")
+                    artifact.outputFile.set(project.layout.buildDirectory.file("artifact.txt"))
+                }
+            }
+        """.trimIndent(),
+    )
+
+    // The service is configured entirely in code, so no ambient AWS configuration, credential chain or IMDS lookup is
+    // consulted, and the SDK makes a real, signed call to a closed local port.
+    private val awsStsKotlinBaseRun = mapOf(
+        "build.gradle.kts" to """
+            import aws.sdk.kotlin.runtime.auth.credentials.StaticCredentialsProvider
+            import aws.sdk.kotlin.services.sts.StsClient
+            import aws.smithy.kotlin.runtime.auth.awscredentials.Credentials
+            import aws.smithy.kotlin.runtime.net.url.Url
+            import com.kelvsyc.gradle.aws.kotlin.sts.GetCallerIdentityValueSource
+            import com.kelvsyc.gradle.aws.kotlin.sts.StsClientBuildService
+
+            buildscript {
+                $repositories
+                dependencies {
+                    ${platforms("classpath")}
+                    classpath("com.kelvsyc.gradle:aws-sts-kotlin-base:+")
+                    constraints {
+                        ${coreConstraints("classpath")}
+                    }
+                }
+            }
+
+            abstract class LocalStsClientBuildService : StsClientBuildService() {
+                override fun createClient(): StsClient = StsClient {
+                    region = "us-east-1"
+                    endpointUrl = Url.parse("http://127.0.0.1:9")
+                    credentialsProvider = StaticCredentialsProvider(Credentials("test", "test"))
+                }
+            }
+
+            val sts = gradle.sharedServices.registerIfAbsent("sts", LocalStsClientBuildService::class) {}
+
+            val identity = providers.of(GetCallerIdentityValueSource::class) {
+                parameters {
+                    service.set(sts)
+                }
+            }
+
+            tasks.register("identity") {
+                doLast {
+                    println(identity.get())
+                }
+            }
+        """.trimIndent(),
+    )
+
+    private fun runner(files: Map<String, String>, version: String, args: Array<out String>): Pair<File, GradleRunner> {
         val dir = createTempDirectory("compat-test").toFile()
         File(dir, "settings.gradle.kts").writeText("""rootProject.name = "consumer"""")
         files.forEach { (path, content) ->
@@ -108,7 +195,7 @@ class TierCompatibilitySpec : FunSpec() {
 
     /** Runs a build of [files] on Gradle [version] with [args], expecting it to succeed. */
     fun run(files: Map<String, String>, version: String, vararg args: String): BuildResult {
-        val (dir, runner) = runner(files, version, *args)
+        val (dir, runner) = runner(files, version, args)
         try {
             return runner.build()
         } finally {
@@ -118,7 +205,7 @@ class TierCompatibilitySpec : FunSpec() {
 
     /** Runs a build of [files] on Gradle [version] with [args], expecting it to fail. */
     fun runAndFail(files: Map<String, String>, version: String, vararg args: String): BuildResult {
-        val (dir, runner) = runner(files, version, *args)
+        val (dir, runner) = runner(files, version, args)
         try {
             return runner.buildAndFail()
         } finally {
@@ -151,6 +238,18 @@ class TierCompatibilitySpec : FunSpec() {
             }
         }
 
+        listOf("8.14", current).distinct().forEach { version ->
+            test("nexus-base runs on $version") {
+                runAndFail(nexusBaseRun, version, "download", "--stacktrace").output.shouldReachNetworkOnly()
+            }
+        }
+
+        listOf("9.0.0", current).distinct().forEach { version ->
+            test("aws-sts-kotlin-base runs on $version") {
+                runAndFail(awsStsKotlinBaseRun, version, "identity", "--stacktrace").output.shouldReachNetworkOnly()
+            }
+        }
+
         test("aws-sts-kotlin-base is rejected on 8.14 at resolution") {
             val output = runAndFail(awsStsKotlinBase, "8.14", "compileKotlin").output
 
@@ -158,4 +257,21 @@ class TierCompatibilitySpec : FunSpec() {
             output shouldNotContain "NoClassDefFoundError"
         }
     }
+}
+
+/**
+ * Asserts that a build got as far as a network call to a closed local port, and failed there rather than on a class or
+ * member missing from the Kotlin stdlib or another library.
+ */
+private fun String.shouldReachNetworkOnly() = assertSoftly {
+    withClue("connection error in output:\n$this") {
+        listOf("ConnectException", "Connection refused", "Failed to connect").any { it in this } shouldBe true
+    }
+    listOf(
+        "NoClassDefFoundError",
+        "NoSuchMethodError",
+        "NoSuchFieldError",
+        "IncompatibleClassChangeError",
+        "LinkageError",
+    ).forEach { this shouldNotContain it }
 }
