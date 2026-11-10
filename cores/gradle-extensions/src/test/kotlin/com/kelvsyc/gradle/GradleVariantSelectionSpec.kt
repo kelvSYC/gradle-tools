@@ -133,7 +133,7 @@ class GradleVariantSelectionSpec : FunSpec() {
 
     init {
         // The running Gradle is included so that a wrapper bump exercises the new version automatically.
-        val versions = listOf("9.8.2", "9.9.0", GradleVersion.current().version).distinct()
+        val versions = listOf("8.14", "9.0.0", "9.8.2", "9.9.0", GradleVersion.current().version).distinct()
         val consumers = mapOf(
             "buildscript" to (::buildscriptConsumer to "help"),
             "kotlin-dsl" to (::kotlinDslConsumer to "compileKotlin"),
@@ -141,7 +141,7 @@ class GradleVariantSelectionSpec : FunSpec() {
         )
 
         versions.forEach { version ->
-            val wantGradle99 = version != "9.8.2"
+            val wantGradle99 = GradleVersion.version(version) >= GradleVersion.version("9.9.0")
 
             consumers.forEach { (name, consumer) ->
                 test("$name on $version selects the expected variant") {
@@ -203,7 +203,7 @@ class GradleVariantSelectionSpec : FunSpec() {
 
                 val jars = printed(output, "DETACHED")
                 jars.size shouldBe 1
-                jars.single().endsWith("-gradle99.jar") shouldBe (version != "9.8.2")
+                jars.single().endsWith("-gradle99.jar") shouldBe (GradleVersion.version(version) >= GradleVersion.version("9.9.0"))
             }
         }
 

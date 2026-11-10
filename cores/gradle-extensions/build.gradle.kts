@@ -2,7 +2,9 @@ import org.gradle.api.attributes.java.TargetJvmEnvironment.STANDARD_JVM
 import org.gradle.api.attributes.java.TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE
 import org.gradle.api.attributes.plugin.GradlePluginApiVersion.GRADLE_PLUGIN_API_VERSION_ATTRIBUTE
 import org.jetbrains.dokka.gradle.DokkaExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.kelvsyc.internal.dokka")
@@ -37,7 +39,7 @@ configurations.configureEach {
     // Gradle can only rank variants that all declare a version, including when the consumer requests no attributes.
     if (name in setOf("apiElements", "runtimeElements", "sourcesElements")) {
         attributes {
-            attribute(GRADLE_PLUGIN_API_VERSION_ATTRIBUTE, objects.named("9.8"))
+            attribute(GRADLE_PLUGIN_API_VERSION_ATTRIBUTE, objects.named("8.14"))
         }
     }
     if (name == gradle99.apiElementsConfigurationName || name == gradle99.runtimeElementsConfigurationName) {
@@ -46,6 +48,14 @@ configurations.configureEach {
             attribute(TARGET_JVM_ENVIRONMENT_ATTRIBUTE, objects.named(STANDARD_JVM))
             attribute(KotlinPlatformType.attribute, KotlinPlatformType.jvm)
         }
+    }
+}
+
+// Shared code is written for the 8.14 baseline's Kotlin; the 9.9 variant compiles against Gradle 9.9's own Kotlin.
+tasks.named<KotlinCompile>("compileGradle99Kotlin") {
+    compilerOptions {
+        apiVersion.set(KotlinVersion.KOTLIN_2_4)
+        languageVersion.set(KotlinVersion.KOTLIN_2_4)
     }
 }
 

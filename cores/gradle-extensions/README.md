@@ -12,8 +12,8 @@ dependencies {
 
 ### Supported Gradle versions
 
-Gradle 9.8 and 9.9. Both are served by the same dependency: Gradle Module Metadata selects the build for the Gradle
-version running your build. Resolving through a Maven POM alone gets the Gradle 9.8 build.
+Gradle 8.14 and later. All are served by the same dependency: Gradle Module Metadata selects the build for the Gradle
+version running your build. Resolving through a Maven POM alone gets the Gradle 8.14 baseline build.
 
 Earlier Gradle versions are not supported.
 
