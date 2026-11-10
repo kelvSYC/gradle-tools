@@ -68,6 +68,10 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
 val libs = versionCatalogs.named("libs")
 val tier = gradleTier()
 
+// Published variants require no Kotlin stdlib, and declare the oldest Gradle they support.
+excludeKotlinStdlibFromPublishedDependencies()
+declareGradleTier(tier)
+
 // main compiles against the variants of its dependencies that a consumer on the tier's oldest Gradle resolves.
 compileMainForGradleTier(tier)
 
