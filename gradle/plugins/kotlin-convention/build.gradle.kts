@@ -10,6 +10,7 @@ kotlin {
 
 dependencies {
     implementation(platform("com.kelvsyc.internal:platform"))
+    implementation(libs.asm)
     implementation(libs.dependency.analysis.plugin)
     implementation(libs.detekt.plugin)
     implementation(libs.gradlex.dependency.conflict.resolution.plugin)

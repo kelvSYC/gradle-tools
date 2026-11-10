@@ -78,6 +78,9 @@ declareGradleTier(tier)
 // main compiles against the variants of its dependencies that a consumer on the tier's oldest Gradle resolves.
 compileMainForGradleTier(tier)
 
+// Everything main and its runtime dependencies reference in Gradle and Kotlin must exist in the tier's oldest Gradle.
+registerGradleLinkageCheck(tier)
+
 // Published code compiles against its tier's Gradle API and Kotlin, not the Gradle running the build.
 tasks.named<KotlinCompile>("compileKotlin") {
     compilerOptions {

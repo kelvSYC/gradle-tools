@@ -75,6 +75,9 @@ declareGradleTier(tier)
 // main compiles against the variants of its dependencies that a consumer on the tier's oldest Gradle resolves.
 compileMainForGradleTier(tier)
 
+// Everything main and its runtime dependencies reference in Gradle and Kotlin must exist in the tier's oldest Gradle.
+registerGradleLinkageCheck(tier)
+
 // Published code compiles against its tier's Gradle API and Kotlin, not the Gradle running the build.
 // `kotlin-dsl` and `java-gradle-plugin` add the running Gradle's API as file dependencies, and `kotlin-dsl` adds its
 // embedded Kotlin, so main's compile classpath drops both.
