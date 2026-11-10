@@ -12,7 +12,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputFile
-import org.gradle.kotlin.dsl.newInstance
 import org.gradle.work.DisableCachingByDefault
 import software.amazon.awssdk.services.codeartifact.model.GetPackageVersionAssetRequest
 import software.amazon.awssdk.services.codeartifact.model.PackageFormat
@@ -96,7 +95,7 @@ abstract class AbstractBatchGetGenericPackageVersionAsset @Inject constructor(
      * @param action Configures the artifact's coordinates and output file.
      */
     fun registerArtifact(name: String, action: Action<in Artifact>) {
-        val artifact = objects.newInstance<Artifact>().also { action.execute(it) }
+        val artifact = objects.newInstance(Artifact::class.java).also { action.execute(it) }
         artifacts.put(name, artifact)
     }
 

@@ -24,7 +24,6 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.newInstance
 import org.gradle.work.DisableCachingByDefault
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
@@ -83,7 +82,7 @@ abstract class AbstractBatchUpdateFunctionCode @Inject constructor(
      * @param action Configures the function name, zip file, and publish flag.
      */
     fun registerArtifact(name: String, action: Action<in Artifact>) {
-        val artifact = objects.newInstance<Artifact>().also { action.execute(it) }
+        val artifact = objects.newInstance(Artifact::class.java).also { action.execute(it) }
         artifacts.put(name, artifact)
     }
 

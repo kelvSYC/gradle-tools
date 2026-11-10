@@ -9,7 +9,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.submit
 import org.gradle.work.DisableCachingByDefault
 import org.gradle.workers.WorkerExecutor
 import javax.inject.Inject
@@ -77,7 +76,7 @@ abstract class PublishBuildInfo @Inject constructor(private val workers: WorkerE
 
     @TaskAction
     fun run() {
-        workers.noIsolation().submit(PublishBuildInfoAction::class) {
+        workers.noIsolation().submit(PublishBuildInfoAction::class.java) {
             jfCommand.set(this@PublishBuildInfo.jfCommand)
             serverUrl.set(this@PublishBuildInfo.serverUrl)
             accessToken.set(this@PublishBuildInfo.accessTokenRef.get().resolve())

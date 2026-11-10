@@ -12,7 +12,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.newInstance
 import org.gradle.work.DisableCachingByDefault
 import software.amazon.awssdk.services.ses.SesClient
 import software.amazon.awssdk.services.ses.model.BulkEmailDestination
@@ -100,7 +99,7 @@ abstract class AbstractSendBulkTemplatedMail @Inject constructor(
      */
     fun registerEntry(name: String, configureAction: Action<in Entry>) {
         entries.put(name, providers.provider {
-            objects.newInstance<Entry>(name).also { configureAction.execute(it) }
+            objects.newInstance(Entry::class.java, name).also { configureAction.execute(it) }
         })
     }
 

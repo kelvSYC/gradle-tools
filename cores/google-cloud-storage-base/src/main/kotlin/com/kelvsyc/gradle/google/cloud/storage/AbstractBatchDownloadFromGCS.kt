@@ -19,7 +19,6 @@ import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFiles
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.newInstance
 import org.gradle.work.DisableCachingByDefault
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -72,7 +71,7 @@ abstract class AbstractBatchDownloadFromGCS @Inject constructor(
      */
     fun registerArtifact(name: String, configureAction: Action<in Artifact>) {
         artifacts.put(name, providers.provider {
-            objects.newInstance<Artifact>(name).also { configureAction.execute(it) }
+            objects.newInstance(Artifact::class.java, name).also { configureAction.execute(it) }
         })
     }
 

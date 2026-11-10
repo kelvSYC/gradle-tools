@@ -6,7 +6,6 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.submit
 import org.gradle.work.DisableCachingByDefault
 import org.gradle.workers.WorkerExecutor
 import javax.inject.Inject
@@ -47,7 +46,7 @@ abstract class AddGitInfoToBuild @Inject constructor(private val workers: Worker
 
     @TaskAction
     fun run() {
-        workers.noIsolation().submit(AddGitInfoToBuildAction::class) {
+        workers.noIsolation().submit(AddGitInfoToBuildAction::class.java) {
             jfCommand.set(this@AddGitInfoToBuild.jfCommand)
             buildName.set(this@AddGitInfoToBuild.buildName)
             buildNumber.set(this@AddGitInfoToBuild.buildNumber)

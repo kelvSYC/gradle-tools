@@ -38,7 +38,6 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.gradle.work.DisableCachingByDefault
-import org.gradle.kotlin.dsl.newInstance
 import javax.inject.Inject
 
 @DisableCachingByDefault(because = "Uploading to an external service is not cacheable")
@@ -59,7 +58,7 @@ abstract class AbstractBatchUploadToS3 @Inject constructor(private val objects: 
     abstract val artifacts: MapProperty<String, Artifact>
 
     fun registerArtifact(name: String, action: Action<in Artifact>) {
-        val artifact = objects.newInstance<Artifact>().also { action.execute(it) }
+        val artifact = objects.newInstance(Artifact::class.java).also { action.execute(it) }
         artifacts.put(name, artifact)
     }
 

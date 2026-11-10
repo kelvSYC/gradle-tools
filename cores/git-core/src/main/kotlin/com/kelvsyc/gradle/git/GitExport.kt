@@ -13,7 +13,6 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.work.DisableCachingByDefault
-import org.gradle.kotlin.dsl.submit
 import org.gradle.workers.WorkerExecutor
 import java.io.File
 import javax.inject.Inject
@@ -83,7 +82,7 @@ abstract class GitExport @Inject constructor(
     @TaskAction
     fun run() {
         val queue = workers.noIsolation()
-        queue.submit(GitRemoteArchiveAction::class) {
+        queue.submit(GitRemoteArchiveAction::class.java) {
             gitCommand.set(this@GitExport.gitCommand)
             remoteUrl.set(this@GitExport.remoteUrl)
             ref.set(this@GitExport.ref)

@@ -12,7 +12,6 @@ import org.gradle.api.services.ServiceReference
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFiles
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.newInstance
 import org.gradle.work.DisableCachingByDefault
 import org.gradle.workers.WorkerExecutor
 import javax.inject.Inject
@@ -64,7 +63,7 @@ abstract class BatchDownloadFromAzureBlobStorage @Inject constructor(
      */
     fun registerArtifact(name: String, configureAction: Action<in Artifact>) {
         artifacts.put(name, providers.provider {
-            objects.newInstance<Artifact>(name).also { configureAction.execute(it) }
+            objects.newInstance(Artifact::class.java, name).also { configureAction.execute(it) }
         })
     }
 
