@@ -56,6 +56,9 @@ tasks.register("test") {
 tasks.register("check") {
     dependsOn("test")
     dependsOn("detekt")
+    components.forEach {
+        dependsOn(gradle.includedBuild(it).task(":verifyGradleLinkage"))
+    }
 }
 
 tasks.register("jacoco") {
