@@ -50,6 +50,7 @@ tasks.register("detekt") {
 
 tasks.register("test") {
     dependsOn(gradle.includedBuild("aggregation").task(":testing:testAggregateTestReport"))
+    dependsOn(gradle.includedBuild("aggregation").task(":compat:test"))
 }
 
 tasks.register("check") {

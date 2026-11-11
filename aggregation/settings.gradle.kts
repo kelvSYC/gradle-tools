@@ -36,6 +36,7 @@ dependencyResolutionManagement {
     }
 }
 
+include("compat")
 include("dokka")
 include("jacoco")
 include("testing")

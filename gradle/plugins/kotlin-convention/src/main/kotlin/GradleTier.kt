@@ -1,5 +1,6 @@
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ExternalModuleDependency
+import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.attributes.plugin.GradlePluginApiVersion
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
@@ -54,6 +55,51 @@ fun ExternalModuleDependency.gradlePublicApi() {
     // The API pins jspecify strictly, which clashes with newer versions elsewhere on the classpath. Consumers declare
     // jspecify themselves, so the API's nullness annotations stay visible to the compiler.
     exclude(group = "org.jspecify")
+}
+
+/**
+ * Excludes the Kotlin standard library and `kotlin-reflect` from the transitive dependencies of every dependency that
+ * this project publishes.
+ *
+ * Consumers always run inside Gradle, which supplies both. On a tier's oldest Gradle, build-logic with Gradle's Kotlin
+ * DSL plugins on its classpath cannot use a newer stdlib than Gradle's own, which third-party libraries often ask for.
+ *
+ * This covers the `api`, `implementation` and `runtimeOnly` configurations of every source set except `test` and
+ * the `integrationTest*` ones, which are not published.
+ */
+fun Project.excludeKotlinStdlibFromPublishedDependencies() {
+    val modules = listOf("kotlin-stdlib", "kotlin-stdlib-jdk7", "kotlin-stdlib-jdk8", "kotlin-reflect")
+    extensions.getByType(SourceSetContainer::class.java)
+        .matching { it.name != SourceSet.TEST_SOURCE_SET_NAME && !it.name.startsWith("integrationTest") }
+        .configureEach {
+            val published = setOf(apiConfigurationName, implementationConfigurationName, runtimeOnlyConfigurationName)
+            configurations.matching { it.name in published }.configureEach {
+                dependencies.withType(ModuleDependency::class.java).configureEach {
+                    modules.forEach { exclude(group = "org.jetbrains.kotlin", module = it) }
+                }
+            }
+        }
+}
+
+/**
+ * Declares the oldest Gradle this project's tier supports as the `org.gradle.plugin.api-version` of its published
+ * variants, so that older Gradle releases reject it at dependency resolution instead of failing at run time.
+ *
+ * A core's own build script runs after this, so a core that tags its variants itself (`gradle-extensions`) keeps its
+ * own value.
+ */
+fun Project.declareGradleTier(tier: GradleTier) {
+    val published = setOf("apiElements", "runtimeElements", "sourcesElements")
+    configurations.matching { it.name in published }.configureEach {
+        attributes {
+            if (!contains(GradlePluginApiVersion.GRADLE_PLUGIN_API_VERSION_ATTRIBUTE)) {
+                attribute(
+                    GradlePluginApiVersion.GRADLE_PLUGIN_API_VERSION_ATTRIBUTE,
+                    objects.named(GradlePluginApiVersion::class.java, tier.minimum),
+                )
+            }
+        }
+    }
 }
 
 /**

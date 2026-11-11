@@ -15,7 +15,7 @@ Critical gotchas and quick reference for automated agents (OpenCode, etc.) worki
 Root commands (aggregate across all components):
 ```bash
 ./gradlew :build          # Full build + tests + coverage
-./gradlew :test           # Tests only
+./gradlew :test           # Tests only (first run downloads Gradle 8.14, 9.0.0 and 9.4.1 for aggregation/compat; needs network)
 ./gradlew :detekt         # Lint only
 ./gradlew :publish        # Publish to GitHub Packages
 ```
