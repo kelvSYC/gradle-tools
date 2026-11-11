@@ -1,5 +1,6 @@
 package com.kelvsyc.gradle.providers
 
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
 import javax.inject.Inject
 
@@ -136,7 +137,7 @@ abstract class GoogleCloudBuildProviders @Inject constructor(providers: Provider
     /**
      * Provides the number of the pull request. Only available for GitHub pull request triggers.
      */
-    val prNumber = providers.environmentVariable("_PR_NUMBER")
+    val prNumber: Provider<Int> = providers.environmentVariable("_PR_NUMBER")
         .map(String::toIntOrNull)
 
     // endregion

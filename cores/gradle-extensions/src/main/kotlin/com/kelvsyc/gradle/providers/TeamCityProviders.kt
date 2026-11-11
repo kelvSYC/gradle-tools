@@ -2,6 +2,7 @@ package com.kelvsyc.gradle.providers
 
 import java.io.File
 import org.gradle.api.file.ProjectLayout
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
 import javax.inject.Inject
 
@@ -48,7 +49,7 @@ abstract class TeamCityProviders @Inject constructor(layout: ProjectLayout, prov
      * Provides `true` if the build is a personal build. Absent when the `BUILD_IS_PERSONAL` environment variable is
      * not set.
      */
-    val isPersonal = providers.environmentVariable("BUILD_IS_PERSONAL")
+    val isPersonal: Provider<Boolean> = providers.environmentVariable("BUILD_IS_PERSONAL")
         .map { it.toBooleanStrictOrNull() }
 
     /**
@@ -78,7 +79,7 @@ abstract class TeamCityProviders @Inject constructor(layout: ProjectLayout, prov
      * Provides the internal numeric build ID, unique across the TeamCity server. Sourced from the
      * `teamcity.build.id` system property.
      */
-    val buildId = buildProperties.getting("teamcity.build.id")
+    val buildId: Provider<Long> = buildProperties.getting("teamcity.build.id")
         .map { it.toLongOrNull() }
 
     /**
@@ -173,7 +174,7 @@ abstract class TeamCityProviders @Inject constructor(layout: ProjectLayout, prov
      * Provides `true` if the build runs on the default branch. Sourced from the
      * `teamcity.build.branch.is_default` system property.
      */
-    val isDefaultBranch = buildProperties.getting("teamcity.build.branch.is_default")
+    val isDefaultBranch: Provider<Boolean> = buildProperties.getting("teamcity.build.branch.is_default")
         .map { it.toBooleanStrictOrNull() }
 
     /**

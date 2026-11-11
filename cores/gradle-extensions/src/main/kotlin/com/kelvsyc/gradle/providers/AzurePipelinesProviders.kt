@@ -1,6 +1,7 @@
 package com.kelvsyc.gradle.providers
 
 import org.gradle.api.file.ProjectLayout
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
 import java.io.File
 import javax.inject.Inject
@@ -21,8 +22,8 @@ abstract class AzurePipelinesProviders @Inject constructor(layout: ProjectLayout
      * Provides `true` if a build task runs the script. Defaults to `false` when the `TF_BUILD` environment variable is
      * absent.
      */
-    val tfBuild = providers.environmentVariable("TF_BUILD")
-        .map(String::toBooleanStrictOrNull)
+    val tfBuild: Provider<Boolean> = providers.environmentVariable("TF_BUILD")
+        .map<Boolean>(String::toBooleanStrictOrNull)
         .orElse(false)
 
     /**
@@ -58,7 +59,7 @@ abstract class AzurePipelinesProviders @Inject constructor(layout: ProjectLayout
     /**
      * Provides the ID of the agent.
      */
-    val agentId = providers.environmentVariable("AGENT_ID")
+    val agentId: Provider<Int> = providers.environmentVariable("AGENT_ID")
         .map(String::toIntOrNull)
 
     /**
@@ -133,7 +134,7 @@ abstract class AzurePipelinesProviders @Inject constructor(layout: ProjectLayout
     /**
      * Provides the ID of the record for the completed build.
      */
-    val buildId = providers.environmentVariable("BUILD_BUILDID")
+    val buildId: Provider<Long> = providers.environmentVariable("BUILD_BUILDID")
         .map(String::toLongOrNull)
 
     /**
@@ -170,7 +171,7 @@ abstract class AzurePipelinesProviders @Inject constructor(layout: ProjectLayout
     /**
      * Provides the version of the build pipeline.
      */
-    val definitionVersion = providers.environmentVariable("BUILD_DEFINITIONVERSION")
+    val definitionVersion: Provider<Int> = providers.environmentVariable("BUILD_DEFINITIONVERSION")
         .map(String::toIntOrNull)
 
     /**
@@ -236,7 +237,7 @@ abstract class AzurePipelinesProviders @Inject constructor(layout: ProjectLayout
     /**
      * Provides the value of the "Checkout submodules" setting from the repository tab. Git only.
      */
-    val repositoryGitSubmoduleCheckout = providers.environmentVariable("BUILD_REPOSITORY_GIT_SUBMODULECHECKOUT")
+    val repositoryGitSubmoduleCheckout: Provider<Boolean> = providers.environmentVariable("BUILD_REPOSITORY_GIT_SUBMODULECHECKOUT")
         .map(String::toBooleanStrictOrNull)
 
     /**
@@ -273,7 +274,7 @@ abstract class AzurePipelinesProviders @Inject constructor(layout: ProjectLayout
     /**
      * Provides the value selected for Clean in the source repository settings.
      */
-    val repositoryClean = providers.environmentVariable("BUILD_REPOSITORY_CLEAN")
+    val repositoryClean: Provider<Boolean> = providers.environmentVariable("BUILD_REPOSITORY_CLEAN")
         .map(String::toBooleanStrictOrNull)
 
     // endregion
@@ -283,13 +284,13 @@ abstract class AzurePipelinesProviders @Inject constructor(layout: ProjectLayout
     /**
      * Provides the BuildID of the triggering build, if this build was triggered by another build.
      */
-    val triggeredByBuildId = providers.environmentVariable("BUILD_TRIGGEREDBY_BUILDID")
+    val triggeredByBuildId: Provider<Long> = providers.environmentVariable("BUILD_TRIGGEREDBY_BUILDID")
         .map(String::toLongOrNull)
 
     /**
      * Provides the DefinitionID of the triggering build pipeline, if this build was triggered by another build.
      */
-    val triggeredByDefinitionId = providers.environmentVariable("BUILD_TRIGGEREDBY_DEFINITIONID")
+    val triggeredByDefinitionId: Provider<Int> = providers.environmentVariable("BUILD_TRIGGEREDBY_DEFINITIONID")
         .map(String::toIntOrNull)
 
     /**
@@ -325,7 +326,7 @@ abstract class AzurePipelinesProviders @Inject constructor(layout: ProjectLayout
     /**
      * Provides the attempt number for the current stage, starting at 1.
      */
-    val stageAttempt = providers.environmentVariable("SYSTEM_STAGEATTEMPT")
+    val stageAttempt: Provider<Int> = providers.environmentVariable("SYSTEM_STAGEATTEMPT")
         .map(String::toIntOrNull)
 
     /**
@@ -355,7 +356,7 @@ abstract class AzurePipelinesProviders @Inject constructor(layout: ProjectLayout
     /**
      * Provides whether detailed debug logging is enabled for the pipeline.
      */
-    val debug = providers.environmentVariable("SYSTEM_DEBUG")
+    val debug: Provider<Boolean> = providers.environmentVariable("SYSTEM_DEBUG")
         .map(String::toBooleanStrictOrNull)
 
     /**
@@ -371,7 +372,7 @@ abstract class AzurePipelinesProviders @Inject constructor(layout: ProjectLayout
     /**
      * Provides the ID of the build pipeline.
      */
-    val systemDefinitionId = providers.environmentVariable("SYSTEM_DEFINITIONID")
+    val systemDefinitionId: Provider<Int> = providers.environmentVariable("SYSTEM_DEFINITIONID")
         .map(String::toIntOrNull)
 
     /**
@@ -401,7 +402,7 @@ abstract class AzurePipelinesProviders @Inject constructor(layout: ProjectLayout
     /**
      * Provides the attempt number for the current job, starting at 1.
      */
-    val jobAttempt = providers.environmentVariable("SYSTEM_JOBATTEMPT")
+    val jobAttempt: Provider<Int> = providers.environmentVariable("SYSTEM_JOBATTEMPT")
         .map(String::toIntOrNull)
 
     /**
@@ -426,20 +427,20 @@ abstract class AzurePipelinesProviders @Inject constructor(layout: ProjectLayout
     /**
      * Provides whether the pull request is from a fork of the repository.
      */
-    val pullRequestIsFork = providers.environmentVariable("SYSTEM_PULLREQUEST_ISFORK")
+    val pullRequestIsFork: Provider<Boolean> = providers.environmentVariable("SYSTEM_PULLREQUEST_ISFORK")
         .map(String::toBooleanStrictOrNull)
 
     /**
      * Provides the ID of the pull request that caused this build. Only set for builds caused by a Git PR affected by a
      * branch policy.
      */
-    val pullRequestId = providers.environmentVariable("SYSTEM_PULLREQUEST_PULLREQUESTID")
+    val pullRequestId: Provider<Int> = providers.environmentVariable("SYSTEM_PULLREQUEST_PULLREQUESTID")
         .map(String::toIntOrNull)
 
     /**
      * Provides the number of the pull request. Populated for GitHub pull requests where the PR ID and PR number differ.
      */
-    val pullRequestNumber = providers.environmentVariable("SYSTEM_PULLREQUEST_PULLREQUESTNUMBER")
+    val pullRequestNumber: Provider<Int> = providers.environmentVariable("SYSTEM_PULLREQUEST_PULLREQUESTNUMBER")
         .map(String::toIntOrNull)
 
     /**
@@ -479,7 +480,7 @@ abstract class AzurePipelinesProviders @Inject constructor(layout: ProjectLayout
     /**
      * Provides the ID of the environment targeted in the deployment job.
      */
-    val environmentId = providers.environmentVariable("ENVIRONMENT_ID")
+    val environmentId: Provider<Int> = providers.environmentVariable("ENVIRONMENT_ID")
         .map(String::toIntOrNull)
 
     /**
@@ -490,7 +491,7 @@ abstract class AzurePipelinesProviders @Inject constructor(layout: ProjectLayout
     /**
      * Provides the ID of the specific resource within the environment targeted in the deployment job.
      */
-    val environmentResourceId = providers.environmentVariable("ENVIRONMENT_RESOURCEID")
+    val environmentResourceId: Provider<Int> = providers.environmentVariable("ENVIRONMENT_RESOURCEID")
         .map(String::toIntOrNull)
 
     /**

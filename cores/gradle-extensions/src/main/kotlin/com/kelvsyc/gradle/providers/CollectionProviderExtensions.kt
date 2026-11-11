@@ -14,7 +14,7 @@ import java.util.*
  * generic providers of maps, and thus will never be used on objects with a declared type of
  * [MapProperty][org.gradle.api.provider.MapProperty].
  */
-fun <K : Any, V : Any> Provider<Map<K, V>>.getting(key: K) = map { it[key] }
+fun <K : Any, V : Any> Provider<Map<K, V>>.getting(key: K): Provider<V> = map { it[key] }
 
 /**
  * Returns a provider resolving to the value of the specified key.
@@ -22,7 +22,7 @@ fun <K : Any, V : Any> Provider<Map<K, V>>.getting(key: K) = map { it[key] }
  * The returned provider has no value if the key provider has no value, if this provider has no value, or if the mapping
  * has no value for this key.
  */
-fun <K : Any, V : Any> Provider<Map<K, V>>.getting(key: Provider<K>) = zip(key, Map<K, V>::get)
+fun <K : Any, V : Any> Provider<Map<K, V>>.getting(key: Provider<K>): Provider<V> = zip(key, Map<K, V>::get)
 
 /**
  * Maps the elements of the collection provided by this provider.

@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import kotlin.jvm.optionals.getOrNull
 
 plugins {
@@ -65,9 +66,39 @@ tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
 }
 
 val libs = versionCatalogs.named("libs")
+val tier = gradleTier()
+
+// main compiles against the variants of its dependencies that a consumer on the tier's oldest Gradle resolves.
+compileMainForGradleTier(tier)
+
+// Published code compiles against its tier's Gradle API and Kotlin, not the Gradle running the build.
+// `kotlin-dsl` and `java-gradle-plugin` add the running Gradle's API as file dependencies, and `kotlin-dsl` adds its
+// embedded Kotlin, so main's compile classpath drops both.
+configurations.named { it == "compileOnly" || it == "compileOnlyApi" }.configureEach {
+    withDependencies { removeIf { it is FileCollectionDependency } }
+}
+configurations.compileOnly {
+    setExtendsFrom(extendsFrom.filterNot { it.name == "embeddedKotlin" })
+}
+
+tasks.named<KotlinCompile>("compileKotlin") {
+    compilerOptions {
+        apiVersion.set(tier.kotlinVersion)
+        languageVersion.set(tier.kotlinVersion)
+    }
+}
 
 dependencies {
     implementation(platform("com.kelvsyc.internal:platform"))
+    compileOnly("org.gradle.experimental:gradle-public-api:${tier.publicApiVersion}") { gradlePublicApi() }
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib:${tier.embeddedKotlin}")
+    compileOnly("org.jetbrains.kotlin:kotlin-reflect:${tier.embeddedKotlin}")
+    compileOnly(libs.findLibrary("jspecify").get())
+
+    // Unit tests run against the Gradle running the build.
+    testImplementation(gradleApi())
+    testImplementation(gradleKotlinDsl())
+    testImplementation(kotlin("stdlib"))
 
     libs.findLibrary("kotest-assertions-core").getOrNull()?.let { testImplementation(it) }
     libs.findLibrary("kotest-framework-engine").getOrNull()?.let { testImplementation(it) }

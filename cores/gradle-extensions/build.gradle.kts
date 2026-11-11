@@ -2,7 +2,9 @@ import org.gradle.api.attributes.java.TargetJvmEnvironment.STANDARD_JVM
 import org.gradle.api.attributes.java.TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE
 import org.gradle.api.attributes.plugin.GradlePluginApiVersion.GRADLE_PLUGIN_API_VERSION_ATTRIBUTE
 import org.jetbrains.dokka.gradle.DokkaExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.kelvsyc.internal.dokka")
@@ -37,7 +39,7 @@ configurations.configureEach {
     // Gradle can only rank variants that all declare a version, including when the consumer requests no attributes.
     if (name in setOf("apiElements", "runtimeElements", "sourcesElements")) {
         attributes {
-            attribute(GRADLE_PLUGIN_API_VERSION_ATTRIBUTE, objects.named("9.8"))
+            attribute(GRADLE_PLUGIN_API_VERSION_ATTRIBUTE, objects.named("8.14"))
         }
     }
     if (name == gradle99.apiElementsConfigurationName || name == gradle99.runtimeElementsConfigurationName) {
@@ -49,13 +51,16 @@ configurations.configureEach {
     }
 }
 
-detekt {
-    source.from("src/baseline/kotlin", "src/gradle99/kotlin")
+// Shared code is written for the 8.14 baseline's Kotlin; the 9.9 variant compiles against Gradle 9.9's own Kotlin.
+tasks.named<KotlinCompile>("compileGradle99Kotlin") {
+    compilerOptions {
+        apiVersion.set(KotlinVersion.KOTLIN_2_4)
+        languageVersion.set(KotlinVersion.KOTLIN_2_4)
+    }
 }
 
-// This library compiles against specific Gradle API versions, not the Gradle running the build.
-configurations.compileOnlyApi {
-    withDependencies { removeIf { it is FileCollectionDependency } }
+detekt {
+    source.from("src/baseline/kotlin", "src/gradle99/kotlin")
 }
 
 fun ExternalModuleDependency.gradlePublicApi() {
@@ -66,12 +71,6 @@ fun ExternalModuleDependency.gradlePublicApi() {
 }
 
 dependencies {
-    // Deliberately pinned: the oldest Gradle version this library supports.
-    compileOnly("org.gradle.experimental:gradle-public-api:9.8.2") { gradlePublicApi() }
-    // Provided by Gradle at runtime; previously came from gradleKotlinDsl().
-    compileOnly(kotlin("reflect"))
-    compileOnly(libs.jspecify)
-
     "gradle99CompileOnly"("org.gradle.experimental:gradle-public-api:9.9.0") { gradlePublicApi() }
     "gradle99CompileOnly"(kotlin("reflect"))
     "gradle99CompileOnly"(libs.jspecify)

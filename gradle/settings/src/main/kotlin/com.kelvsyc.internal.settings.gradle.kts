@@ -34,3 +34,16 @@ dependencyResolutionManagement {
         from(files("../../gradle/libs.versions.toml"))
     }
 }
+
+// Cores compile against org.gradle.experimental:gradle-public-api, which only Gradle's own repository hosts.
+// Declared here rather than in a project convention: a project-level repository would hide the ones above.
+val gradleLibsReleases = java.net.URI("https://repo.gradle.org/gradle/libs-releases")
+gradle.settingsEvaluated {
+    dependencyResolutionManagement.repositories {
+        if (none { it is MavenArtifactRepository && it.url == gradleLibsReleases }) {
+            maven(gradleLibsReleases) {
+                content { includeGroup("org.gradle.experimental") }
+            }
+        }
+    }
+}

@@ -1,5 +1,6 @@
 package com.kelvsyc.gradle.providers
 
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
 import javax.inject.Inject
 
@@ -14,7 +15,7 @@ abstract class GitLabCIMergeRequestProviders @Inject constructor(providers: Prov
     /**
      * Provides whether the merge request has been approved.
      */
-    val approved = providers.environmentVariable("CI_MERGE_REQUEST_APPROVED")
+    val approved: Provider<Boolean> = providers.environmentVariable("CI_MERGE_REQUEST_APPROVED")
         .map(String::toBooleanStrictOrNull)
 
     /**
@@ -30,13 +31,13 @@ abstract class GitLabCIMergeRequestProviders @Inject constructor(providers: Prov
     /**
      * Provides the version of the merge request diff.
      */
-    val diffId = providers.environmentVariable("CI_MERGE_REQUEST_DIFF_ID")
+    val diffId: Provider<Long> = providers.environmentVariable("CI_MERGE_REQUEST_DIFF_ID")
         .map(String::toLongOrNull)
 
     /**
      * Provides whether the merge request is a draft.
      */
-    val draft = providers.environmentVariable("CI_MERGE_REQUEST_DRAFT")
+    val draft: Provider<Boolean> = providers.environmentVariable("CI_MERGE_REQUEST_DRAFT")
         .map(String::toBooleanStrictOrNull)
 
     /**
@@ -52,19 +53,19 @@ abstract class GitLabCIMergeRequestProviders @Inject constructor(providers: Prov
     /**
      * Provides whether the merge request description was truncated (exceeds 2700 characters).
      */
-    val descriptionIsTruncated = providers.environmentVariable("CI_MERGE_REQUEST_DESCRIPTION_IS_TRUNCATED")
+    val descriptionIsTruncated: Provider<Boolean> = providers.environmentVariable("CI_MERGE_REQUEST_DESCRIPTION_IS_TRUNCATED")
         .map(String::toBooleanStrictOrNull)
 
     /**
      * Provides the instance-level ID of the merge request, unique across all projects.
      */
-    val id = providers.environmentVariable("CI_MERGE_REQUEST_ID")
+    val id: Provider<Long> = providers.environmentVariable("CI_MERGE_REQUEST_ID")
         .map(String::toLongOrNull)
 
     /**
      * Provides the project-level IID of the merge request (the number shown in the URL).
      */
-    val iid = providers.environmentVariable("CI_MERGE_REQUEST_IID")
+    val iid: Provider<Int> = providers.environmentVariable("CI_MERGE_REQUEST_IID")
         .map(String::toIntOrNull)
 
     /**
@@ -80,7 +81,7 @@ abstract class GitLabCIMergeRequestProviders @Inject constructor(providers: Prov
     /**
      * Provides the ID of the merge request's project.
      */
-    val projectId = providers.environmentVariable("CI_MERGE_REQUEST_PROJECT_ID")
+    val projectId: Provider<Long> = providers.environmentVariable("CI_MERGE_REQUEST_PROJECT_ID")
         .map(String::toLongOrNull)
 
     /**
@@ -106,7 +107,7 @@ abstract class GitLabCIMergeRequestProviders @Inject constructor(providers: Prov
     /**
      * Provides whether the source branch is protected.
      */
-    val sourceBranchProtected = providers.environmentVariable("CI_MERGE_REQUEST_SOURCE_BRANCH_PROTECTED")
+    val sourceBranchProtected: Provider<Boolean> = providers.environmentVariable("CI_MERGE_REQUEST_SOURCE_BRANCH_PROTECTED")
         .map(String::toBooleanStrictOrNull)
 
     /**
@@ -117,7 +118,7 @@ abstract class GitLabCIMergeRequestProviders @Inject constructor(providers: Prov
     /**
      * Provides the ID of the source project.
      */
-    val sourceProjectId = providers.environmentVariable("CI_MERGE_REQUEST_SOURCE_PROJECT_ID")
+    val sourceProjectId: Provider<Long> = providers.environmentVariable("CI_MERGE_REQUEST_SOURCE_PROJECT_ID")
         .map(String::toLongOrNull)
 
     /**
@@ -133,7 +134,7 @@ abstract class GitLabCIMergeRequestProviders @Inject constructor(providers: Prov
     /**
      * Provides whether "squash on merge" is enabled for this merge request.
      */
-    val squashOnMerge = providers.environmentVariable("CI_MERGE_REQUEST_SQUASH_ON_MERGE")
+    val squashOnMerge: Provider<Boolean> = providers.environmentVariable("CI_MERGE_REQUEST_SQUASH_ON_MERGE")
         .map(String::toBooleanStrictOrNull)
 
     /**
@@ -144,7 +145,7 @@ abstract class GitLabCIMergeRequestProviders @Inject constructor(providers: Prov
     /**
      * Provides whether the target branch is protected.
      */
-    val targetBranchProtected = providers.environmentVariable("CI_MERGE_REQUEST_TARGET_BRANCH_PROTECTED")
+    val targetBranchProtected: Provider<Boolean> = providers.environmentVariable("CI_MERGE_REQUEST_TARGET_BRANCH_PROTECTED")
         .map(String::toBooleanStrictOrNull)
 
     /**

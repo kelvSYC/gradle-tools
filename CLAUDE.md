@@ -83,6 +83,19 @@ The Gradle daemon is pinned to JDK 21 (`gradle/gradle-daemon-jvm.properties`). *
 
 The Kotlin version (`kotlin` in `gradle/libs.versions.toml`) must equal the Gradle wrapper's embedded Kotlin version (see the [compatibility matrix](https://docs.gradle.org/current/userguide/compatibility.html#kotlin)). `gradle-kotlin-dsl-plugins` pins `kotlin-stdlib` strictly to that version, so a higher catalog value fails dependency resolution and a lower one is silently overridden. Bump both together; Dependabot ignores Kotlin for this reason.
 
-Kotlin `apiVersion`/`languageVersion` in the convention plugins (2.3) determine which Kotlin standard library APIs code may call. `gradle-extensions` stays within the embedded Kotlin of its oldest supported Gradle. `dokka-dash` promises Gradle 8.14, whose embedded Kotlin is older than 2.3, so that promise rests on `DokkaDashGradleVersionSpec` and its code must avoid newer standard library APIs.
-
 Tests run on JDK 21 via toolchain. Convention plugins wire the required mockk/ByteBuddy JVM args (`-XX:+EnableDynamicAgentLoading`, `-Dnet.bytebuddy.experimental=true`, `-javaagent:[byte-buddy-agent]`). **Do not remove these.**
+
+### Gradle Compatibility Tiers
+
+Each core has a minimum Gradle, set by `com.kelvsyc.gradle.minimumGradle` in the core's `gradle.properties` (absent means `8.14`) and defined in `gradle/plugins/kotlin-convention/src/main/kotlin/GradleTier.kt`. There are two tiers:
+
+| Tier | Cores | Compiled against | Kotlin `apiVersion`/`languageVersion` |
+|------|-------|------------------|---------------------------------------|
+| 8.14 (default) | 49 | `org.gradle.experimental:gradle-public-api:8.14` | 2.0 (Gradle 8.14 embeds Kotlin 2.0.21) |
+| 9.0 | the 13 `aws-*-kotlin-base`, `aws-kotlin-extensions`, `google-cloud-artifact-registry-base` | `gradle-public-api:9.0.0` | 2.2 |
+
+- **The rule:** the build's own tooling (convention plugins, settings, build scripts) uses the newest Kotlin the wrapper's Gradle allows; published code compiles against its tier's baseline.
+- Kotlin language 2.0 is deprecated as of Kotlin 2.4. When a future Gradle ships a Kotlin that drops 2.0, the 8.14 tier must be revisited.
+- The 9.0 tier's floor comes from third-party code: `kotlinx-coroutines` 1.11 and the AWS SDK need Kotlin stdlib classes first shipped in Gradle 9.0. These cores support build scripts from Gradle 9.0, but Kotlin-source build-logic (e.g. `kotlin-dsl` convention plugins) only from Gradle 9.4, because the AWS SDK ships Kotlin 2.4 metadata that the Kotlin 2.2 compiler in Gradle 9.0 to 9.3 cannot read. That Kotlin-source minimum follows the Kotlin version the AWS SDK is built with, so SDK upgrades can raise it.
+- `gradle-extensions` additionally publishes a `gradle99` variant (Gradle 9.9+, Kotlin 2.4) with its existing deprecations.
+- `GradleVariantSelectionSpec` (`gradle-extensions`) and `DokkaDashGradleVersionSpec` (`dokka-dash`) test their cores across Gradle versions.

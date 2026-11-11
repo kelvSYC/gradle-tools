@@ -1,6 +1,7 @@
 package com.kelvsyc.gradle.providers
 
 import org.gradle.api.file.ProjectLayout
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
 import java.io.File
 import javax.inject.Inject
@@ -15,8 +16,8 @@ abstract class GitHubActionsProviders @Inject constructor(layout: ProjectLayout,
     /**
      * Provides `true` if Gradle is running in CI. Defaults to `false` when the `CI` environment variable is absent.
      */
-    val ci = providers.environmentVariable("CI")
-        .map(String::toBooleanStrictOrNull)
+    val ci: Provider<Boolean> = providers.environmentVariable("CI")
+        .map<Boolean>(String::toBooleanStrictOrNull)
         .orElse(false)
 
     /**
@@ -41,8 +42,8 @@ abstract class GitHubActionsProviders @Inject constructor(layout: ProjectLayout,
      * Provides `true` when GitHub Actions is running a workflow. Defaults to `false` when the `GITHUB_ACTIONS`
      * environment variable is absent.
      */
-    val actions = providers.environmentVariable("GITHUB_ACTIONS")
-        .map(String::toBooleanStrictOrNull)
+    val actions: Provider<Boolean> = providers.environmentVariable("GITHUB_ACTIONS")
+        .map<Boolean>(String::toBooleanStrictOrNull)
         .orElse(false)
 
     /**
@@ -140,7 +141,7 @@ abstract class GitHubActionsProviders @Inject constructor(layout: ProjectLayout,
      * Provides `true` if branch protections or rulesets are configured for the ref that triggered the workflow run.
      * Absent when the environment variable is unset.
      */
-    val refProtected = providers.environmentVariable("GITHUB_REF_PROTECTED")
+    val refProtected: Provider<Boolean> = providers.environmentVariable("GITHUB_REF_PROTECTED")
         .map(String::toBooleanStrictOrNull)
 
     /**
@@ -171,26 +172,26 @@ abstract class GitHubActionsProviders @Inject constructor(layout: ProjectLayout,
     /**
      * Provides the number of days that workflow run logs and artifacts are kept.
      */
-    val retentionDays = providers.environmentVariable("GITHUB_RETENTION_DAYS")
+    val retentionDays: Provider<Int> = providers.environmentVariable("GITHUB_RETENTION_DAYS")
         .map(String::toIntOrNull)
 
     /**
      * Provides the attempt number of the current workflow run, starting at 1 and incrementing with each re-run.
      */
-    val runAttempt = providers.environmentVariable("GITHUB_RUN_ATTEMPT")
+    val runAttempt: Provider<Int> = providers.environmentVariable("GITHUB_RUN_ATTEMPT")
         .map(String::toIntOrNull)
 
     /**
      * Provides the unique numeric ID of the workflow run. Does not change on re-run.
      */
-    val runId = providers.environmentVariable("GITHUB_RUN_ID")
+    val runId: Provider<Long> = providers.environmentVariable("GITHUB_RUN_ID")
         .map(String::toLongOrNull)
 
     /**
      * Provides the unique run number for this workflow, starting at 1 and incrementing with each new run. Does not
      * change on re-run.
      */
-    val runNumber = providers.environmentVariable("GITHUB_RUN_NUMBER")
+    val runNumber: Provider<Int> = providers.environmentVariable("GITHUB_RUN_NUMBER")
         .map(String::toIntOrNull)
 
     /**
