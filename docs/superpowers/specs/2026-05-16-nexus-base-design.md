@@ -33,7 +33,7 @@ No intermediate extensions layer is needed — Nexus is a single vendor with one
 
 ### Convention plugin
 
-`com.kelvsyc.internal.kotlin-gradle-library` — same as `artifactory-base` and all other service
+`com.kelvsyc.internal.gradle-tools.kotlin-gradle-library` — same as `artifactory-base` and all other service
 base components.
 
 ### Dependencies

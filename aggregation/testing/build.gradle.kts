@@ -20,7 +20,7 @@ reporting {
     }
 }
 
-// Integration test reports (from components that apply `com.kelvsyc.internal.gradle-integration-test`) are
+// Integration test reports (from components that apply `com.kelvsyc.internal.gradle-tools.gradle-integration-test`) are
 // surfaced separately as a copy task. The `test-report-aggregation` plugin's variant resolution does not
 // gracefully handle a testsuite name that only some dependencies expose, so we collect the raw JUnit XML
 // files directly from each opted-in core. CI globs the same locations independently for JUnit annotation.

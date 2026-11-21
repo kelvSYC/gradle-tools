@@ -85,7 +85,7 @@ The root `settings.gradle.kts` composes three layers of included builds:
 1. **`gradle/`** — Internal build infrastructure (not published):
    - `gradle/platform` — BOM centralizing all dependency versions
    - `gradle/settings` — Settings plugin (`com.kelvsyc.internal`) wiring platform/catalog into every component build
-   - `gradle/plugins` — Convention plugins: `kotlin-library`, `kotlin-gradle-library`, `kotlin-plugin`, `kotlin-multiplatform-jvm-library`, `github-publishing`, `jacoco`, `dokka`. The `github-publishing` plugin strips the internal platform BOM (`com.kelvsyc.internal:platform`) from published POM and Gradle module metadata so that consumers don't see an unresolvable dependency. The convention plugins still declare `implementation(platform(...))` for local resolution — the stripping happens at publication time via `pom.withXml` and a `GenerateModuleMetadata` post-processing action (`StripInternalPlatform`).
+   - `gradle/plugins` — Convention plugins (IDs `com.kelvsyc.internal.gradle-tools.*`): `kotlin-gradle-library`, `kotlin-gradle-plugin`, `gradle-integration-test`, `github-publishing`, `jacoco`, `dokka`. The `github-publishing` plugin strips the internal platform BOM (`com.kelvsyc.internal:platform`) from published POM and Gradle module metadata so that consumers don't see an unresolvable dependency. The convention plugins still declare `implementation(platform(...))` for local resolution — the stripping happens at publication time via `pom.withXml` and a `GenerateModuleMetadata` post-processing action (`StripInternalPlatform`).
 
 2. **`cores/`** — Published Gradle plugins (group `com.kelvsyc.gradle`). Each is an independent included build. Types:
    - `*-extensions` — Gradle API utility libraries
@@ -189,7 +189,7 @@ When a `WorkAction` or task parameter holds a `Property<SomeBuildService>`, it *
 
 When adding a new `*-base` component that defines a `BuildService`:
 
-1. Apply `id("com.kelvsyc.internal.gradle-integration-test")` in the component's `build.gradle.kts`.
+1. Apply `id("com.kelvsyc.internal.gradle-tools.gradle-integration-test")` in the component's `build.gradle.kts`.
 2. Create `src/integrationTest/kotlin/.../fixtures/<Service>ProbeTask.kt` — a minimal `DefaultTask` that holds `@get:Internal abstract val service: Property<YourBuildService>` and calls `service.get()` in its `@TaskAction`.
 3. Create `src/integrationTest/kotlin/.../BuildServiceConfigurationCacheSpec.kt` — at minimum, one test case with no parameters to prove the empty-params round-trip works. Follow the pattern established in `artifactory-base` and `bitbucket-cloud-base`.
 4. Add the component name to **both**:

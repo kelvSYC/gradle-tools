@@ -8,7 +8,7 @@ import kotlin.io.path.createTempDirectory
 /**
  * Utilities shared by the integration-test specs in this module.
  *
- * The convention plugin `com.kelvsyc.internal.gradle-integration-test` exposes the host component's runtime
+ * The convention plugin `com.kelvsyc.internal.gradle-tools.gradle-integration-test` exposes the host component's runtime
  * classpath (plus the `integrationTest` source set output) via the `integration-test.host-classpath` system
  * property. Specs emit that classpath into the generated TestKit project's `buildscript { }` block so the
  * daemon can resolve the host component's types and the synthetic fixture classes living in this source set.
