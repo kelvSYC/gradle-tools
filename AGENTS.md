@@ -93,17 +93,48 @@ The root `settings.gradle.kts` composes three layers of included builds:
 
 3. **`aggregation/`** — Publishes BOM and version catalog; aggregates Dokka docs, JaCoCo coverage, and test reports.
 
+### Shared Build Conventions
+
+The catalog, platform BOM, semver versioning, repositories, toolchain resolver and publishing conventions come from [gradle-build-conventions](https://github.com/kelvSYC/gradle-build-conventions) (group `com.kelvsyc.internal`, published to GitHub Packages). Its settings plugin `com.kelvsyc.internal.settings` provides:
+
+- the foojay toolchain resolver and the repositories (Maven Central, GitHub Packages for gradle-build-conventions, Gradle `libs-releases` for `org.gradle.experimental`)
+- the `libs` version catalog (`com.kelvsyc.internal:catalog`) and the platform BOM (`libs.conventions.platform`), whose dependency versions are therefore not declared in this repository
+- project versions from git tags (`com.kelvsyc.internal.semver`): past the latest tag the version is an implicit `-SNAPSHOT` of the next version, and uncommitted or untracked changes append `+dirty`. CI publishes snapshots with `-Dsemver.stage=snapshot -Dsemver.scope=patch`
+- versionless resolution of plugin IDs in exactly the `com.kelvsyc.internal` namespace; the local plugins live in `com.kelvsyc.internal.gradle-tools.*`, which resolve from the included `gradle/plugins` build
+
+`gradle/settings` applies it with `apply(plugin = "com.kelvsyc.internal.settings")` rather than a `plugins {}` block: generating a precompiled settings plugin's accessors applies its `plugins {}` block to a stand-in `Settings` after settings evaluation, where Gradle rejects the repositories the shared plugin declares.
+
+The shared plugin owns the `libs` catalog, so gradle-tools' own entries (the kotlin-tools pins) live in `gradle/libs.versions.toml` and are exposed as the `local` catalog (`local.kotlin.tools.*`). Gradle itself imports `gradle/libs.versions.toml` under the default name `libs` in a build whose directory contains one (the repository root), which would clash with the shared catalog, so the root build renames that default import to `local`. Inside `gradle/settings` itself, before the shared plugin is applied, the same file is registered as `libs` to resolve the shared settings plugin. The shared platform does not manage kotlin-tools, so those entries carry an explicit `version.ref`.
+
+The shared version is pinned once, as `gradle-build-conventions` in `gradle/libs.versions.toml`; the thin settings plugin depends on `com.kelvsyc.internal:settings-plugin` at that version, which in turn selects the catalog and platform versions. Dependabot bumps it (`.github/dependabot.yml` gives it the GitHub Packages registries of gradle-build-conventions and kotlin-tools, with the `DEPENDABOT_PACKAGES_TOKEN` Dependabot secret, a token with `read:packages`, as credentials). A manual bump is that one line.
+
+A bump PR from Dependabot completes itself (`.github/workflows/conventions-bump.yml`): it moves the Gradle wrapper to the Gradle version the new release is built for (`.github/scripts/follow-conventions-gradle.sh`, reading the release's catalog and refreshing the wrapper's checksum), pushes that to the PR, and enables GitHub auto-merge, so the PR merges once the required checks pass. Dependabot's release-age cooldown exempts `com.kelvsyc.internal:*` and `com.kelvsyc.kotlin:*` (our own releases). kotlin-tools bumps arrive as ordinary Dependabot PRs and are not auto-merged, and Dependabot does not propose standalone Gradle wrapper updates: the wrapper follows the conventions. The push and the auto-merge use the `CONVENTIONS_TOKEN` personal access token, stored in both the Dependabot and Actions secrets (a run started by Dependabot sees only the former, one started by the token's own push only the latter); only those two steps get it, not the Gradle build. A push or merge made with `GITHUB_TOKEN` triggers no workflows, so neither CI on the wrapper change nor the snapshot publish after the merge would run.
+
+Resolving the shared plugin requires GitHub Packages credentials even to configure the build: the `gpr.user`/`gpr.key` Gradle properties (for example in `~/.gradle/gradle.properties`), else `GITHUB_ACTOR`/`GITHUB_TOKEN`. CI jobs that run Gradle need `packages: read` permission and both variables set.
+
 ### Component Settings Pattern
 
 Every component's `settings.gradle.kts`:
 ```kotlin
 pluginManagement {
     includeBuild("../../gradle/settings")
-    repositories { /* identical GitHub Packages block in every settings file */ }
+    // Gradle resolves the included settings plugin's external dependencies with this build's plugin repositories.
+    repositories {
+        gradlePluginPortal()
+        maven("https://maven.pkg.github.com/kelvSYC/gradle-build-conventions") {
+            name = "GitHubPackagesBuildConventions"
+            credentials {
+                username = providers.gradleProperty("gpr.user").orNull ?: System.getenv("GITHUB_ACTOR")
+                password = providers.gradleProperty("gpr.key").orNull ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
 }
+
 plugins { id("com.kelvsyc.internal.gradle-tools.settings") }
 includeBuild("../clients-base")  // inter-core dependency, as needed
 ```
+The `repositories` block is needed because the included settings plugin depends on the shared settings plugin from GitHub Packages, and Gradle resolves those dependencies with the applying build's plugin repositories. Keep the `pluginManagement { repositories { ... } }` block byte-identical in every settings file (root, aggregation, metadata, `gradle/plugins`, every core); only the `includeBuild` path differs. The `gradle/settings` build is the one that supplies the plugin and declares its own repositories instead (see its `settings.gradle.kts`).
 
 ### Testing
 
@@ -115,7 +146,7 @@ The Gradle daemon is pinned to JDK 21 (`gradle/gradle-daemon-jvm.properties`). *
 
 `cores/` components target JDK 21. **Use LTS JDKs only; a core goes above JDK 21 only if it needs newer Java for its own reasons.** Lowering the target widens the range of Gradle versions and JDKs a core works on; raising it strands consumers.
 
-The Kotlin version (`kotlin` in `gradle/libs.versions.toml`) must equal the Gradle wrapper's embedded Kotlin version (see the [compatibility matrix](https://docs.gradle.org/current/userguide/compatibility.html#kotlin)). `gradle-kotlin-dsl-plugins` pins `kotlin-stdlib` strictly to that version, so a higher catalog value fails dependency resolution and a lower one is silently overridden. Bump both together; Dependabot ignores Kotlin for this reason.
+The Kotlin version comes from the shared catalog (`kotlin`, owned by gradle-build-conventions; see Shared Build Conventions) and must equal the Gradle wrapper's embedded Kotlin version (see the [compatibility matrix](https://docs.gradle.org/current/userguide/compatibility.html#kotlin)). `gradle-kotlin-dsl-plugins` pins `kotlin-stdlib` strictly to that version, so a higher value fails dependency resolution and a lower one is silently overridden. The wrapper follows the conventions release, which carries the matching Kotlin version, so the two move together through the single `gradle-build-conventions` pin.
 
 Tests run on JDK 21 via toolchain. Convention plugins wire the required mockk/ByteBuddy JVM args (`-XX:+EnableDynamicAgentLoading`, `-Dnet.bytebuddy.experimental=true`, `-javaagent:[byte-buddy-agent]`). **Do not remove these.**
 
@@ -126,7 +157,7 @@ Each core has a minimum Gradle, set by `com.kelvsyc.gradle.minimumGradle` in the
 | Tier | Cores | Compiled against | Kotlin `apiVersion`/`languageVersion` |
 |------|-------|------------------|---------------------------------------|
 | 8.14 (default) | 49 | `org.gradle.experimental:gradle-public-api:8.14` | 2.0 (Gradle 8.14 embeds Kotlin 2.0.21) |
-| 9.0 | the 13 `aws-*-kotlin-base`, `aws-kotlin-extensions`, `google-cloud-artifact-registry-base` | `gradle-public-api:9.0.0` | 2.2 |
+| 9.0 | 15: the 13 `aws-*-kotlin-base`, `aws-kotlin-extensions`, `google-cloud-artifact-registry-base` | `gradle-public-api:9.0.0` | 2.2 |
 
 - **The rule:** the build's own tooling (convention plugins, settings, build scripts) uses the newest Kotlin the wrapper's Gradle allows; published code compiles against its tier's baseline.
 - Kotlin language 2.0 is deprecated as of Kotlin 2.4. When a future Gradle ships a Kotlin that drops 2.0, the 8.14 tier must be revisited.
@@ -159,11 +190,15 @@ Do not remove these from convention plugins.
 
 ### Publishing Requires Env Vars ⚠️
 
-`./gradlew :publish` requires `GITHUB_ACTOR` and `GITHUB_TOKEN`. Without them, it fails silently or with obscure errors.
+`./gradlew :publish` requires credentials: the `gpr.user`/`gpr.key` Gradle properties, else `GITHUB_ACTOR` and `GITHUB_TOKEN`. Without them, it fails.
+
+### Building Requires GitHub Packages Credentials ⚠️
+
+The shared build conventions and kotlin-tools are resolved from GitHub Packages when the build is configured, so every Gradle invocation needs credentials with `read:packages` (see Shared Build Conventions).
 
 ### Component Settings Pattern ⚠️
 
-Do not modify the `pluginManagement`/`plugins` lines in each component's `settings.gradle.kts` (see Component Settings Pattern under Architecture) — they wire up the composite build.
+Do not modify the `pluginManagement`/`plugins` blocks in each settings file (see Component Settings Pattern under Architecture) — they wire up the composite build, and the GitHub Packages `repositories` block must stay identical everywhere.
 
 ## Configuration Cache (CC) Rules for BuildService Components ⚠️
 
