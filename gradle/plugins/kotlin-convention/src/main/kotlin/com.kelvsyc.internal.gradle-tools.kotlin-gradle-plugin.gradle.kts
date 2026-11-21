@@ -96,7 +96,7 @@ tasks.named<KotlinCompile>("compileKotlin") {
 }
 
 dependencies {
-    implementation(platform("com.kelvsyc.internal:platform"))
+    implementation(platform(libs.findLibrary("conventions-platform").get()))
     compileOnly("org.gradle.experimental:gradle-public-api:${tier.publicApiVersion}") { gradlePublicApi() }
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib:${tier.embeddedKotlin}")
     compileOnly("org.jetbrains.kotlin:kotlin-reflect:${tier.embeddedKotlin}")

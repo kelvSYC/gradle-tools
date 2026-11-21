@@ -12,7 +12,7 @@ configure<DokkaExtension> {
 }
 
 dependencies {
-    api(libs.kotlin.tools.moshi.extensions)
+    api(local.kotlin.tools.moshi.extensions)
     api(libs.moshi)
     implementation(libs.moshi.kotlin)
 

@@ -12,7 +12,7 @@ configure<DokkaExtension> {
 }
 
 dependencies {
-    api(libs.kotlin.tools.snakeyaml.extensions)
+    api(local.kotlin.tools.snakeyaml.extensions)
 
     testImplementation(libs.kotest.property)
     testImplementation(libs.mockk)

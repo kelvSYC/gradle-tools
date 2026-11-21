@@ -83,8 +83,7 @@ This is a **composite build** of Gradle plugins and Kotlin libraries, published 
 The root `settings.gradle.kts` composes three layers of included builds:
 
 1. **`gradle/`** — Internal build infrastructure (not published):
-   - `gradle/platform` — BOM centralizing all dependency versions
-   - `gradle/settings` — Settings plugin (`com.kelvsyc.internal`) wiring platform/catalog into every component build
+   - `gradle/settings` — Thin settings plugin (`com.kelvsyc.internal.gradle-tools.settings`): applies the shared settings plugin `com.kelvsyc.internal.settings` from [gradle-build-conventions](https://github.com/kelvSYC/gradle-build-conventions) (repositories, the `libs` catalog and platform `libs.conventions.platform`, semver), includes `gradle/plugins` and registers `gradle/libs.versions.toml` as the `local` catalog
    - `gradle/plugins` — Convention plugins (IDs `com.kelvsyc.internal.gradle-tools.*`): `kotlin-gradle-library`, `kotlin-gradle-plugin`, `gradle-integration-test`, `github-publishing`, `jacoco`, `dokka`. The `github-publishing` plugin strips the internal platform BOM (`com.kelvsyc.internal:platform`) from published POM and Gradle module metadata so that consumers don't see an unresolvable dependency. The convention plugins still declare `implementation(platform(...))` for local resolution — the stripping happens at publication time via `pom.withXml` and a `GenerateModuleMetadata` post-processing action (`StripInternalPlatform`).
 
 2. **`cores/`** — Published Gradle plugins (group `com.kelvsyc.gradle`). Each is an independent included build. Types:
@@ -98,14 +97,17 @@ The root `settings.gradle.kts` composes three layers of included builds:
 
 Every component's `settings.gradle.kts`:
 ```kotlin
-pluginManagement { includeBuild("../../gradle/settings") }
-plugins { id("com.kelvsyc.internal") }
+pluginManagement {
+    includeBuild("../../gradle/settings")
+    repositories { /* identical GitHub Packages block in every settings file */ }
+}
+plugins { id("com.kelvsyc.internal.gradle-tools.settings") }
 includeBuild("../clients-base")  // inter-core dependency, as needed
 ```
 
 ### Testing
 
-Tests use [Kotest](https://kotest.io/) with JUnit Platform. Gradle plugin tests use the `gradle-testkit-jacoco` plugin for TestKit + JaCoCo integration. Versioning is driven by git tags via the internal semver settings plugin (`com.kelvsyc.internal.semver`, in `gradle/plugins/semver-convention`).
+Tests use [Kotest](https://kotest.io/) with JUnit Platform. Gradle plugin tests use the `gradle-testkit-jacoco` plugin for TestKit + JaCoCo integration. Versioning is driven by git tags via the shared semver settings plugin (`com.kelvsyc.internal.semver`, applied by the shared settings plugin).
 
 ### JDK Constraints (do not change)
 

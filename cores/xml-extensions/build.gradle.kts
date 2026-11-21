@@ -12,7 +12,7 @@ configure<DokkaExtension> {
 }
 
 dependencies {
-    api(libs.kotlin.tools.xml.extensions)
+    api(local.kotlin.tools.xml.extensions)
 
     testImplementation(libs.kotest.property)
     testImplementation(libs.mockk)

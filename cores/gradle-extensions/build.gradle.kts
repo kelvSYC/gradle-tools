@@ -75,7 +75,7 @@ dependencies {
     "gradle99CompileOnly"(kotlin("reflect"))
     "gradle99CompileOnly"(libs.jspecify)
     "gradle99CompileOnly"(kotlin("stdlib"))
-    "gradle99Implementation"(platform("com.kelvsyc.internal:platform"))
+    "gradle99Implementation"(platform(libs.conventions.platform))
     "gradle99Implementation"(libs.caffeine)
 
     implementation(libs.caffeine)

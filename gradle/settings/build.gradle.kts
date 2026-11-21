@@ -2,12 +2,12 @@ plugins {
     `kotlin-dsl`
 }
 
-group = "com.kelvsyc.internal"
+group = "com.kelvsyc.internal.gradle-tools"
 
 kotlin {
     jvmToolchain(21)
 }
 
 dependencies {
-    implementation("com.kelvsyc.internal:semver-convention")
+    implementation(libs.conventions.settings.plugin)
 }
