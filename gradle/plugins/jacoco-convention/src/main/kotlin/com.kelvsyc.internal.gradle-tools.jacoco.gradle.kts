@@ -7,9 +7,8 @@ jacoco {
     toolVersion = "0.8.13" // FIXME Get from version catalog
 }
 
-tasks.test {
-    finalizedBy(tasks.jacocoTestReport)
-}
+// Tests still record execution data (build/jacoco/test.exec), which CI merges into one report across every core
+// (:mergeShardReports); the per-core report is built only when asked for (./gradlew :<core>:jacocoTestReport).
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
