@@ -3,7 +3,7 @@ import org.jetbrains.dokka.gradle.DokkaExtension
 /**
  * What every core adds to the shared conventions: gradlex dependency conflict resolution (with slf4j-simple as the
  * logging implementation) and reproducible builds, a link to the Gradle API in its Dokka documentation, the compat
- * repository that aggregation/compat resolves the cores from, and `verifyPublishedDependencyVersions` for root `check`.
+ * repository that aggregation/compat resolves the cores from.
  *
  * Applied after the shared kind (`com.kelvsyc.internal.kotlin-gradle-library` or `-plugin`), which applies
  * `java-library`.
@@ -57,14 +57,5 @@ pluginManager.withPlugin("maven-publish") {
             repository = compatRepository
             dependsOn(cleanCompatRepository)
         }
-    }
-
-    // The shared publishing plugin fails module metadata generation when a published dependency has no version, and a
-    // core's `check` depends on that generation, but root `check` runs only selected tasks of each core: this one is
-    // among them.
-    tasks.register("verifyPublishedDependencyVersions") {
-        group = "verification"
-        description = "Generates the Gradle module metadata of every publication, which fails on a versionless dependency."
-        dependsOn(tasks.withType<GenerateModuleMetadata>())
     }
 }
