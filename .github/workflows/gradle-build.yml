@@ -82,8 +82,13 @@ jobs:
         # compiled it as a dependency, so that the build job can prefer the former.
         if: always()
         run: |
+          # nullglob drops a pattern that matches nothing, so a shard archives only the cores it ran tests or compiled
+          # for; compat's results, a fixed path, exist only on shard 1.
           shopt -s nullglob
-          primary=(cores/*/build/test-results cores/*/build/jacoco/test.exec aggregation/compat/build/test-results)
+          primary=(cores/*/build/test-results cores/*/build/jacoco/test.exec)
+          if [ -d aggregation/compat/build/test-results ]; then
+            primary+=(aggregation/compat/build/test-results)
+          fi
           fallback=()
           for core in cores/*; do
             if [ -f "$core/build/jacoco/test.exec" ]; then
