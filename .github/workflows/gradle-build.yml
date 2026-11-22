@@ -47,31 +47,19 @@ jobs:
           build-scan-terms-of-use-agree: "yes"
       - name: Verify
         # :check (tests, detekt, verifyGradleLinkage, verifyPomDependencyVersions) of this shard's cores, and the compat
-        # tests on shard 1. Not :build, which also assembles publishable artifacts and so generates Dokka HTML and
-        # Javadoc for every component: PRs only need correctness verification, and the docs and publish jobs below
-        # build what they need. The build job merges the shards' test and coverage reports.
-        run: ./gradlew :check -Pcheck.shard=${{ matrix.shard }}/${{ strategy.job-total }}
+        # tests on the shard they are assigned to. Not :build, which also assembles publishable artifacts and so
+        # generates Dokka HTML and Javadoc for every component: PRs only need correctness verification, and the docs
+        # and publish jobs below build what they need. The build job merges the shards' test and coverage reports.
+        # check.shard.integration counts the integration tests in the assignment; the next step must pass the same.
+        run: ./gradlew :check -Pcheck.shard=${{ matrix.shard }}/${{ strategy.job-total }} -Pcheck.shard.integration=true
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Integration Tests
-        # Blocking step: TestKit probes for configuration-cache and WorkerExecutor serialization
-        # boundaries. Runs after Verify so unit-test feedback comes first, on the last shard only.
-        # When adding a new *-base component with a BuildService, also add it here and to the
-        # integrationTestComponents set in aggregation/testing/build.gradle.kts.
-        if: matrix.shard == strategy.job-total
-        run: >-
-          ./gradlew
-          :artifactory-base:integrationTest
-          :aws-imds-java-base:integrationTest
-          :aws-s3-java-base:integrationTest
-          :aws-secrets-manager-java-base:integrationTest
-          :aws-sns-java-base:integrationTest
-          :aws-sns-kotlin-base:integrationTest
-          :azure-blob-storage-base:integrationTest
-          :bitbucket-cloud-base:integrationTest
-          :bitbucket-data-center-base:integrationTest
-          :google-cloud-storage-base:integrationTest
+        # Blocking step: TestKit probes for configuration-cache and WorkerExecutor serialization boundaries, on the
+        # shard they are assigned to (a no-op on the others). Runs after Verify so unit-test feedback comes first. The
+        # cores with integration tests are listed in the root build.gradle.kts.
+        run: ./gradlew :shardIntegrationTest -Pcheck.shard=${{ matrix.shard }}/${{ strategy.job-total }} -Pcheck.shard.integration=true
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -83,7 +71,7 @@ jobs:
         if: always()
         run: |
           # nullglob drops a pattern that matches nothing, so a shard archives only the cores it ran tests or compiled
-          # for; compat's results, a fixed path, exist only on shard 1.
+          # for (integration-test results included); compat's results, a fixed path, exist only on its shard.
           shopt -s nullglob
           primary=(cores/*/build/test-results cores/*/build/jacoco/test.exec)
           if [ -d aggregation/compat/build/test-results ]; then
