@@ -1,141 +1,18 @@
+# gradle-tools-specific entries only. Everything else (libraries, plugins, the platform) comes from the shared catalog
+# that the com.kelvsyc.internal.settings plugin registers as `libs`; this file is registered as the `local` catalog
+# (see gradle/settings) in every build that applies the gradle-tools settings plugin. The gradle/settings build itself
+# has no shared plugin applied yet, so there it is the `libs` catalog and resolves the shared settings plugin.
+# gradle-build-conventions pins the shared build conventions version once: the settings plugin's version determines
+# the shared catalog and platform versions.
 [versions]
-dokka = "2.3.0"
-dokkatoo = "2.4.0"
-jackson = "2.23.0"
-kotlin = "2.4.21"
+gradle-build-conventions = "0.2.0"
 kotlin-tools = "0.5.1"
-moshi = "1.15.2"
 
 [libraries]
-# BOMs
-aws-java-sdk-bom = "software.amazon.awssdk:bom:2.59.0"
-aws-kotlin-sdk-bom = "aws.sdk.kotlin:bom:1.9.24"
-azure-sdk-bom = "com.azure:azure-sdk-bom:1.3.10"
-google-cloud-libraries-bom = "com.google.cloud:libraries-bom:26.93.0"
-opentelemetry-bom = "io.opentelemetry:opentelemetry-bom:1.68.0"
-jackson-bom = { module = "com.fasterxml.jackson:jackson-bom", version.ref = "jackson" }
-kotlin-gradle-plugins-bom = { module = "org.jetbrains.kotlin:kotlin-gradle-plugins-bom", version.ref = "kotlin" }
-kotlin-tools-bom = { module = "com.kelvsyc.kotlin:bom", version.ref = "kotlin-tools" }
-kotlinx-coroutines-bom = "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.11.0"
-kotest-bom = "io.kotest:kotest-bom:6.2.6"
-netty-bom = "io.netty:netty-bom:4.2.19.Final"
-okhttp-bom = "com.squareup.okhttp3:okhttp-bom:5.5.1"
-retrofit-bom = "com.squareup.retrofit2:retrofit-bom:3.0.0"
-
-# Internal
-asm = "org.ow2.asm:asm:9.11.1"
-dependency-analysis-plugin = "com.autonomousapps:dependency-analysis-gradle-plugin:3.20.2"
-detekt-plugin = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8"
-dokka-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka"}
-dokkatoo-plugin = { module = "dev.adamko.dokkatoo:dokkatoo-plugin", version.ref = "dokkatoo" }
-gradlex-dependency-conflict-resolution-plugin = "org.gradlex:jvm-dependency-conflict-resolution:2.1.2"
-gradlex-reproducible-builds-plugin = "org.gradlex:reproducible-builds:1.0"
-kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin" } # version from BOM 'kotlin-gradle-plugins-bom'
+conventions-settings-plugin = { module = "com.kelvsyc.internal:settings-plugin", version.ref = "gradle-build-conventions" }
 
 # API Dependencies
-artifactory-client-api = "org.jfrog.artifactory.client:artifactory-java-client-api:2.21.2"
-artifactory-client-impl = "org.jfrog.artifactory.client:artifactory-java-client-services:2.21.2"
-azure-core = { module = "com.azure:azure-core" } # version from BOM 'azure-sdk-bom'
-azure-identity = { module = "com.azure:azure-identity" } # version from BOM 'azure-sdk-bom'
-azure-storage-blob = { module = "com.azure:azure-storage-blob" } # version from BOM 'azure-sdk-bom'
-azure-security-keyvault-secrets = { module = "com.azure:azure-security-keyvault-secrets" } # version from BOM 'azure-sdk-bom'
-azure-messaging-servicebus = { module = "com.azure:azure-messaging-servicebus" } # version from BOM 'azure-sdk-bom'
-azure-storage-common = { module = "com.azure:azure-storage-common" } # version from BOM 'azure-sdk-bom'
-azure-containers-containerregistry = { module = "com.azure:azure-containers-containerregistry" } # version from BOM 'azure-sdk-bom'
-azure-resourcemanager-appservice = { module = "com.azure.resourcemanager:azure-resourcemanager-appservice" } # version from BOM 'azure-sdk-bom'
-azure-data-appconfiguration = { module = "com.azure:azure-data-appconfiguration" } # version from BOM 'azure-sdk-bom'
-azure-resourcemanager-appconfiguration = "com.azure.resourcemanager:azure-resourcemanager-appconfiguration:1.2.0-beta.2"
-azure-resourcemanager-appcontainers = "com.azure.resourcemanager:azure-resourcemanager-appcontainers:1.3.0"
-aws-appconfig-java = { module = "software.amazon.awssdk:appconfig" } # version from BOM 'aws-java-sdk-bom'
-aws-appconfig-kotlin = { module = "aws.sdk.kotlin:appconfig" } # version from BOM 'aws-kotlin-sdk-bom'
-aws-appconfigdata-java = { module = "software.amazon.awssdk:appconfigdata" } # version from BOM 'aws-java-sdk-bom'
-aws-appconfigdata-kotlin = { module = "aws.sdk.kotlin:appconfigdata" } # version from BOM 'aws-kotlin-sdk-bom'
-aws-auth-java = { module = "software.amazon.awssdk:auth" } # version from BOM 'aws-java-sdk-bom'
-aws-config-kotlin = { module = "aws.sdk.kotlin:aws-config" } # version from BOM 'aws-kotlin-sdk-bom'
-aws-core-java = { module = "software.amazon.awssdk:aws-core" } # version from BOM 'aws-java-sdk-bom'
-aws-http-client-spi-java = { module = "software.amazon.awssdk:http-client-spi" } # version from BOM 'aws-java-sdk-bom'
-aws-core-kotlin = { module = "aws.sdk.kotlin:aws-core" } # version from BOM 'aws-kotlin-sdk-bom'
-aws-regions-java = { module = "software.amazon.awssdk:regions" } # version from BOM 'aws-java-sdk-bom'
-aws-codeartifact-java = { module = "software.amazon.awssdk:codeartifact" } # version from BOM 'aws-java-sdk-bom'
-aws-codeartifact-kotlin = { module = "aws.sdk.kotlin:codeartifact" } # version from BOM 'aws-kotlin-sdk-bom'
-aws-ecr-java = { module = "software.amazon.awssdk:ecr" } # version from BOM 'aws-java-sdk-bom'
-aws-ecr-kotlin = { module = "aws.sdk.kotlin:ecr" } # version from BOM 'aws-kotlin-sdk-bom'
-aws-imds-java = { module = "software.amazon.awssdk:imds" } # version from BOM 'aws-java-sdk-bom'
-aws-imds-kotlin = { module = "aws.sdk.kotlin:imds" } # version from BOM 'aws-kotlin-sdk-bom'
-aws-kms-java = { module = "software.amazon.awssdk:kms" } # version from BOM 'aws-java-sdk-bom'
-aws-kms-kotlin = { module = "aws.sdk.kotlin:kms" } # version from BOM 'aws-kotlin-sdk-bom'
-aws-lambda-java = { module = "software.amazon.awssdk:lambda" } # version from BOM 'aws-java-sdk-bom'
-aws-lambda-java-core = "com.amazonaws:aws-lambda-java-core:1.4.1"
-aws-lambda-kotlin = { module = "aws.sdk.kotlin:lambda" } # version from BOM 'aws-kotlin-sdk-bom'
-aws-s3-java = { module = "software.amazon.awssdk:s3" } # version from BOM 'aws-java-sdk-bom'
-aws-s3-kotlin = { module = "aws.sdk.kotlin:s3" } # version from BOM 'aws-kotlin-sdk-bom'
-aws-s3-transfer-manager-java = { module = "software.amazon.awssdk:s3-transfer-manager" } # version from BOM 'aws-java-sdk-bom'
-aws-sdk-core-java = { module = "software.amazon.awssdk:sdk-core" } # version from BOM 'aws-java-sdk-bom'
-aws-secrets-manager-caching-java = "com.amazonaws.secretsmanager:aws-secretsmanager-caching-java:2.2.1"
-aws-secrets-manager-java = { module = "software.amazon.awssdk:secretsmanager" } # version from BOM 'aws-java-sdk-bom'
-aws-secrets-manager-kotlin = { module = "aws.sdk.kotlin:secretsmanager" } # version from BOM 'aws-kotlin-sdk-bom'
-aws-ses-java = { module = "software.amazon.awssdk:ses" } # version from BOM 'aws-java-sdk-bom'
-aws-ses-kotlin = { module = "aws.sdk.kotlin:ses" } # version from BOM 'aws-kotlin-sdk-bom'
-aws-smithy-client = { module = "aws.smithy.kotlin:smithy-client" } # version from BOM 'aws-kotlin-sdk-bom'
-aws-smithy-credentials = { module = "aws.smithy.kotlin:aws-credentials" } # version from BOM 'aws-kotlin-sdk-bom'
-aws-smithy-http = { module = "aws.smithy.kotlin:http" } # version from BOM 'aws-kotlin-sdk-bom'
-aws-smithy-runtime-core = { module = "aws.smithy.kotlin:runtime-core" } # version from BOM 'aws-kotlin-sdk-bom'
-aws-sns-java = { module = "software.amazon.awssdk:sns" } # version from BOM 'aws-java-sdk-bom'
-aws-sns-kotlin = { module = "aws.sdk.kotlin:sns" } # version from BOM 'aws-kotlin-sdk-bom'
-aws-sqs-java = { module = "software.amazon.awssdk:sqs" } # version from BOM 'aws-java-sdk-bom'
-aws-sqs-kotlin = { module = "aws.sdk.kotlin:sqs" } # version from BOM 'aws-kotlin-sdk-bom'
-aws-ssm-java = { module = "software.amazon.awssdk:ssm" } # version from BOM 'aws-java-sdk-bom'
-aws-ssm-kotlin = { module = "aws.sdk.kotlin:ssm" } # version from BOM 'aws-kotlin-sdk-bom'
-aws-sts-java = { module = "software.amazon.awssdk:sts" } # version from BOM 'aws-java-sdk-bom'
-aws-sts-kotlin = { module = "aws.sdk.kotlin:sts" } # version from BOM 'aws-kotlin-sdk-bom'
-caffeine = "com.github.ben-manes.caffeine:caffeine:3.3.1"
-commons-io = "commons-io:commons-io:2.22.0"
-commons-lang = "org.apache.commons:commons-lang3:3.22.0"
-google-auth-library-credentials = { module = "com.google.auth:google-auth-library-credentials" } # version from BOM 'google-cloud-libraries-bom'
-google-auth-library-oauth2-http = { module = "com.google.auth:google-auth-library-oauth2-http" } # version from BOM 'google-cloud-libraries-bom'
-google-cloud-artifact-registry = { module = "com.google.cloud:google-cloud-artifact-registry" } # version from BOM 'google-cloud-libraries-bom'
-google-cloud-artifact-registry-proto = { module = "com.google.api.grpc:proto-google-cloud-artifact-registry-v1" } # version from BOM 'google-cloud-libraries-bom'
-google-cloud-core = { module = "com.google.cloud:google-cloud-core" } # version from BOM 'google-cloud-libraries-bom'
-google-cloud-functions = { module = "com.google.cloud:google-cloud-functions" } # version from BOM 'google-cloud-libraries-bom'
-google-cloud-functions-proto = { module = "com.google.api.grpc:proto-google-cloud-functions-v2" } # version from BOM 'google-cloud-libraries-bom'
-google-cloud-pubsub = { module = "com.google.cloud:google-cloud-pubsub" } # version from BOM 'google-cloud-libraries-bom'
-google-cloud-pubsub-proto = { module = "com.google.api.grpc:proto-google-cloud-pubsub-v1" } # version from BOM 'google-cloud-libraries-bom'
-google-cloud-kms = { module = "com.google.cloud:google-cloud-kms" } # version from BOM 'google-cloud-libraries-bom'
-google-cloud-secret-manager = { module = "com.google.cloud:google-cloud-secretmanager" } # version from BOM 'google-cloud-libraries-bom'
-google-cloud-secret-manager-proto = { module = "com.google.api.grpc:proto-google-cloud-secretmanager-v1" } # version from BOM 'google-cloud-libraries-bom'
-google-cloud-storage = { module = "com.google.cloud:google-cloud-storage" } # version from BOM 'google-cloud-libraries-bom'
-google-cloud-run = { module = "com.google.cloud:google-cloud-run" } # version from BOM 'google-cloud-libraries-bom'
-google-cloud-run-proto = { module = "com.google.api.grpc:proto-google-cloud-run-v2" } # version from BOM 'google-cloud-libraries-bom'
-google-gax = { module = "com.google.api:gax" } # version from BOM 'google-cloud-libraries-bom'
-google-protobuf-java = { module = "com.google.protobuf:protobuf-java" } # version from BOM 'google-cloud-libraries-bom'
-gson = "com.google.code.gson:gson:2.15.0"
-httpclient5 = "org.apache.httpcomponents.client5:httpclient5:5.6.5"
-kotlin-tools-moshi-extensions = { module = "com.kelvsyc.kotlin:moshi-extensions" } # version from BOM 'kotlin-tools-bom'
-kotlin-tools-snakeyaml-extensions = { module = "com.kelvsyc.kotlin:snakeyaml-extensions" } # version from BOM 'kotlin-tools-bom'
-kotlin-tools-xml-extensions = { module = "com.kelvsyc.kotlin:xml-extensions" } # version from BOM 'kotlin-tools-bom'
-jgit = "org.eclipse.jgit:org.eclipse.jgit:7.8.1.202611041320-r"
-jsoup = "org.jsoup:jsoup:1.24.1"
-jspecify = "org.jspecify:jspecify:1.0.1"
-kotest-assertions-core = { module = "io.kotest:kotest-assertions-core" } # version from BOM 'kotest-bom'
-kotest-assertions-shared = { module = "io.kotest:kotest-assertions-shared" } # version from BOM 'kotest-bom'
-kotest-framework-engine = { module = "io.kotest:kotest-framework-engine" } # version from BOM 'kotest-bom'
-kotest-property = { module = "io.kotest:kotest-property" } # version from BOM 'kotest-bom'
-kotest-runner = { module = "io.kotest:kotest-runner-junit5" } # version from BOM 'kotest-bom'
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core" } # version from BOM 'kotlinx-coroutines-bom'
-moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
-pkl-core = "org.pkl-lang:pkl-core:0.33.0"
-moshi-kotlin = { module = "com.squareup.moshi:moshi-kotlin", version.ref = "moshi" }
-mockk = "io.mockk:mockk:1.14.12"
-msgpack-core = "org.msgpack:msgpack-core:0.9.12"
-okhttp = { module = "com.squareup.okhttp3:okhttp" } # version from BOM 'okhttp-bom'
-retrofit = { module = "com.squareup.retrofit2:retrofit" } # version from BOM 'retrofit-bom'
-retrofit-converter-moshi = { module = "com.squareup.retrofit2:converter-moshi" } # version from BOM 'retrofit-bom'
-sqlite-jdbc = "org.xerial:sqlite-jdbc:3.53.4.0"
-vault-java-driver = { module = "io.github.jopenlibs:vault-java-driver", version = "7.0.0" }
-woodstox = "com.fasterxml.woodstox:woodstox-core:7.3.0"
-
-[plugins]
-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-dokkatoo-html = { id = "dev.adamko.dokkatoo-html", version.ref = "dokkatoo" }
-gradle-testkit-jacoco = "io.github.gmazzo.gradle.testkit.jacoco:1.1.2"
-kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+# Explicit versions: the shared platform does not manage kotlin-tools.
+kotlin-tools-moshi-extensions = { module = "com.kelvsyc.kotlin:moshi-extensions", version.ref = "kotlin-tools" }
+kotlin-tools-snakeyaml-extensions = { module = "com.kelvsyc.kotlin:snakeyaml-extensions", version.ref = "kotlin-tools" }
+kotlin-tools-xml-extensions = { module = "com.kelvsyc.kotlin:xml-extensions", version.ref = "kotlin-tools" }

@@ -7,10 +7,10 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("com.kelvsyc.internal.dokka")
-    id("com.kelvsyc.internal.jacoco")
-    id("com.kelvsyc.internal.kotlin-gradle-library")
-    id("com.kelvsyc.internal.github-publishing")
+    id("com.kelvsyc.internal.gradle-tools.dokka")
+    id("com.kelvsyc.internal.gradle-tools.jacoco")
+    id("com.kelvsyc.internal.gradle-tools.kotlin-gradle-library")
+    id("com.kelvsyc.internal.gradle-tools.github-publishing")
 }
 
 configure<DokkaExtension> {
@@ -75,7 +75,7 @@ dependencies {
     "gradle99CompileOnly"(kotlin("reflect"))
     "gradle99CompileOnly"(libs.jspecify)
     "gradle99CompileOnly"(kotlin("stdlib"))
-    "gradle99Implementation"(platform("com.kelvsyc.internal:platform"))
+    "gradle99Implementation"(platform(libs.conventions.platform))
     "gradle99Implementation"(libs.caffeine)
 
     implementation(libs.caffeine)

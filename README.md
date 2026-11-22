@@ -151,6 +151,11 @@ Single component:
 
 Requires JDK 21+ (the Gradle daemon is pinned to JDK 21).
 
+The shared build conventions ([gradle-build-conventions](https://github.com/kelvSYC/gradle-build-conventions)) and
+kotlin-tools are resolved from GitHub Packages when the build is configured, so every Gradle invocation needs
+credentials with `read:packages`: the `gpr.user`/`gpr.key` Gradle properties (for example in
+`~/.gradle/gradle.properties`), else the `GITHUB_ACTOR`/`GITHUB_TOKEN` environment variables.
+
 ## License
 
 See [LICENSE](LICENSE) for details.

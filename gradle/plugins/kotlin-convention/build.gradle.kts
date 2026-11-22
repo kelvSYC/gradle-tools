@@ -2,14 +2,14 @@ plugins {
     `kotlin-dsl`
 }
 
-group = "com.kelvsyc.internal"
+group = "com.kelvsyc.internal.gradle-tools"
 
 kotlin {
     jvmToolchain(21)
 }
 
 dependencies {
-    implementation(platform("com.kelvsyc.internal:platform"))
+    implementation(platform(libs.conventions.platform))
     implementation(libs.asm)
     implementation(libs.dependency.analysis.plugin)
     implementation(libs.detekt.plugin)

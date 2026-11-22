@@ -33,7 +33,7 @@ val consumerPlatforms = listOf(
 ).map { bom -> bom.map { "${it.module}:${it.versionConstraint.requiredVersion}" } }
 
 dependencies {
-    testImplementation(platform("com.kelvsyc.internal:platform"))
+    testImplementation(platform(libs.conventions.platform))
     testImplementation(gradleTestKit())
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.kotest.framework.engine)

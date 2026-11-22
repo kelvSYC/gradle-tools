@@ -5,7 +5,7 @@ import kotlin.jvm.optionals.getOrNull
  * Gradle's configuration cache and `WorkerExecutor` serialization boundaries against the host component's
  * `BuildService` and `WorkAction` types.
  *
- * Consumers apply this plugin alongside `com.kelvsyc.internal.kotlin-gradle-library`.
+ * Consumers apply this plugin alongside `com.kelvsyc.internal.gradle-tools.kotlin-gradle-library`.
  *
  * The host component's runtime classpath plus the `integrationTest` source set output is exposed to the
  * `integrationTest` task as the `integration-test.host-classpath` system property, so spec code can emit a

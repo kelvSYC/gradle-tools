@@ -1,10 +1,10 @@
 pluginManagement {
-    includeBuild("../gradle/plugins")
+    includeBuild("../gradle/settings")
+    // Gradle resolves the included settings plugin's external dependencies with this build's plugin repositories.
     repositories {
         gradlePluginPortal()
-        mavenCentral()
-        maven("https://maven.pkg.github.com/kelvSYC/kotlin-tools") {
-            name = "GitHubPackages"
+        maven("https://maven.pkg.github.com/kelvSYC/gradle-build-conventions") {
+            name = "GitHubPackagesBuildConventions"
             credentials {
                 username = providers.gradleProperty("gpr.user").orNull ?: System.getenv("GITHUB_ACTOR")
                 password = providers.gradleProperty("gpr.key").orNull ?: System.getenv("GITHUB_TOKEN")
@@ -14,26 +14,7 @@ pluginManagement {
 }
 
 plugins {
-    id("com.kelvsyc.internal.semver")
-}
-
-dependencyResolutionManagement {
-    repositories {
-        mavenCentral()
-        maven("https://maven.pkg.github.com/kelvSYC/kotlin-tools") {
-            name = "GitHubPackages"
-            credentials {
-                username = providers.gradleProperty("gpr.user").orNull ?: System.getenv("GITHUB_ACTOR")
-                password = providers.gradleProperty("gpr.key").orNull ?: System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
-
-    includeBuild("../gradle/platform")
-
-    versionCatalogs.register("libs") {
-        from(files("../gradle/libs.versions.toml"))
-    }
+    id("com.kelvsyc.internal.gradle-tools.settings")
 }
 
 include("compat")
