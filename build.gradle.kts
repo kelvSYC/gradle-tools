@@ -58,7 +58,7 @@ tasks.register("check") {
     dependsOn("detekt")
     components.forEach {
         dependsOn(gradle.includedBuild(it).task(":verifyGradleLinkage"))
-        dependsOn(gradle.includedBuild(it).task(":verifyPublishedDependencyVersions"))
+        dependsOn(gradle.includedBuild(it).task(":verifyPomDependencyVersions"))
     }
 }
 

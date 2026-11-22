@@ -18,7 +18,7 @@ Guidance for coding agents (and humans) working in this Gradle composite build: 
 
 ```bash
 ./gradlew :build          # Build all components + BOM, catalog, docs, coverage
-./gradlew :check          # Tests, compat tests, detekt, verifyGradleLinkage and verifyPublishedDependencyVersions of every component (no docs/coverage)
+./gradlew :check          # Tests, compat tests, detekt, verifyGradleLinkage and verifyPomDependencyVersions of every component (no docs/coverage)
 ./gradlew :test           # Run tests across all components
 ./gradlew :detekt         # Lint all components
 ./gradlew :publish        # Publish to GitHub Packages (requires gpr.user/gpr.key or GITHUB_ACTOR/GITHUB_TOKEN)
@@ -132,11 +132,11 @@ Shared (from gradle-build-conventions, resolved at the pinned version):
 
 - `com.kelvsyc.internal.kotlin-gradle-library` — Kotlin JVM library compiled against the Gradle API; publishes a `maven` publication. `com.kelvsyc.internal.kotlin-gradle-plugin` — the same for Gradle plugins, with `kotlin-dsl` and `java-gradle-plugin` (`pluginMaven` plus a marker per plugin). Both apply the core's Gradle tier (see Gradle Compatibility Tiers; the tier is exposed read-only as `kelvsycGradle.tier`), JDK 21 with no release override, Kotlin 2.3 for every compilation but `main`, the stdlib exclusions, `org.gradle.plugin.api-version`, `verifyGradleLinkage`, the Dependency Analysis plugin, Kotest on the JUnit Platform and the mockk/ByteBuddy test JVM args. Neither sets the group: the gradle-tools settings plugin sets `com.kelvsyc.gradle` as every build's default.
 - `com.kelvsyc.internal.dokka` — Dokka HTML (built by `assemble`) and a Dokka Javadoc jar, with JDK, Kotlin stdlib and GitHub source links derived from the `origin` remote.
-- `com.kelvsyc.internal.github-publishing` — the `GitHubPackages` repository, its URL derived from the `origin` git remote. It publishes resolved dependency versions (`RequireDependencyVersions` fails module metadata generation if one is missing; a core's own `check` depends on that generation, and root `:check` reaches it through each core's `verifyPublishedDependencyVersions`) and strips the internal platform BOM (`com.kelvsyc.internal:platform`) from the POM and Gradle module metadata.
+- `com.kelvsyc.internal.github-publishing` — the `GitHubPackages` repository, its URL derived from the `origin` git remote. It publishes resolved dependency versions (`verifyPomDependencyVersions`, which `check` depends on, fails if a publication's generated POM has a dependency without a version — POM generation needs no artifacts, so this builds no jars or docs; `RequireDependencyVersions` makes module metadata generation, and so `publish`, fail likewise) and strips the internal platform BOM (`com.kelvsyc.internal:platform`) from the POM and Gradle module metadata.
 
 Local (in `gradle/plugins`):
 
-- `com.kelvsyc.internal.gradle-tools.core` — gradlex `jvm-dependency-conflict-resolution` (with `enforceSlf4JSimple()`) and `reproducible-builds`; the Gradle API link (`https://docs.gradle.org/current/kotlin-dsl/gradle`) in the Dokka documentation; the compat repository (see Gradle Compatibility Tiers); and `verifyPublishedDependencyVersions`, which generates every publication's module metadata and so runs `RequireDependencyVersions`. Root `:check` does not run each core's `check`, only selected tasks (`verifyGradleLinkage`, `verifyPublishedDependencyVersions`, detekt and, through the aggregate reports, the tests), so a new per-core verification must be added to root `check` as well.
+- `com.kelvsyc.internal.gradle-tools.core` — gradlex `jvm-dependency-conflict-resolution` (with `enforceSlf4JSimple()`) and `reproducible-builds`; the Gradle API link (`https://docs.gradle.org/current/kotlin-dsl/gradle`) in the Dokka documentation; the compat repository (see Gradle Compatibility Tiers). Root `:check` does not run each core's `check`, only selected tasks (`verifyGradleLinkage`, `verifyPomDependencyVersions`, detekt and, through the aggregate reports, the tests), so a new per-core verification must be added to root `check` as well.
 - `com.kelvsyc.internal.gradle-tools.detekt` — detekt with `gradle/detekt.yml` (see JDK Constraints).
 - `com.kelvsyc.internal.gradle-tools.jacoco` — JaCoCo, with an HTML report after `test`.
 - `com.kelvsyc.internal.gradle-tools.gradle-integration-test` — the `integrationTest` source set and task (see Rule 3 below).
