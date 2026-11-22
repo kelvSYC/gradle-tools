@@ -19,6 +19,9 @@ jobs:
     permissions:
       contents: read
       packages: read
+    outputs:
+      # The number of shards, for the build job to check that it received every shard's results. Every leg writes the same.
+      shards: ${{ strategy.job-total }}
     strategy:
       # Every shard runs to the end, so that the build job reports every test result.
       fail-fast: false
@@ -98,7 +101,10 @@ jobs:
         with:
           name: shard-${{ matrix.shard }}
           path: shard-results
-          retention-days: 1
+          # Long enough to re-run failed shards and merge them with the other shards' results; a re-run replaces its
+          # shard's earlier artifact.
+          retention-days: 7
+          overwrite: true
 
   # The repository's required status check, and what the jobs below need: passes only if every shard passed, and
   # produces the reports of the whole root check from the shards' results.
@@ -140,11 +146,20 @@ jobs:
           pattern: shard-*
           path: shard-results
       - name: Unpack Shard Results
-        # Every shard's primary.tar first; fallback.tar never replaces a file already unpacked.
+        # Fails unless every shard's results arrived (an earlier attempt's may have expired, or a shard never uploaded),
+        # so that the reports are never built from part of the shards. Every shard's primary.tar first; fallback.tar
+        # never replaces a file already unpacked.
         run: |
           shopt -s nullglob
+          archives=(shard-results/shard-*/primary.tar)
+          if [ "${#archives[@]}" -ne "$SHARDS" ]; then
+            echo "::error::Received the results of ${#archives[@]} of ${SHARDS:-?} shards; re-run all jobs."
+            exit 1
+          fi
           for archive in shard-results/*/primary.tar; do tar -xf "$archive"; done
           for archive in shard-results/*/fallback.tar; do tar -xf "$archive" --skip-old-files; done
+        env:
+          SHARDS: ${{ needs.shard.outputs.shards }}
       - name: Merge Shard Reports
         # Builds the aggregate test, coverage and integration-test reports from the unpacked results. Runs no tests.
         run: ./gradlew :mergeShardReports
@@ -180,6 +195,7 @@ jobs:
           name: jacoco-aggregate
           path: aggregation/jacoco/build/reports/jacoco/mergeShardCoverageReport
       - name: Require Every Shard to Pass
+        # The Unpack Shard Results step has already failed this job if a shard's results are missing.
         if: always()
         run: |
           if [ "$SHARD_RESULT" != success ]; then

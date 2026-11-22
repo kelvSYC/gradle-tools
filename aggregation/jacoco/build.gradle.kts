@@ -21,7 +21,8 @@ reporting {
 
 // The aggregate coverage report built from execution data and classes already on disk, without depending on any test
 // task. CI runs the root `check` in shards, copies every shard's results into place and runs this (through the root
-// `mergeShardReports`). Like testCodeCoverageReport, it covers every core's main classes.
+// `mergeShardReports`). It covers every core's main classes; unlike testCodeCoverageReport, which analyses gradle-extensions'
+// gradle99 variant, it analyses gradle-extensions' main (baseline) classes, the ones its tests run against.
 tasks.register<JacocoReport>("mergeShardCoverageReport") {
     description = "Builds the aggregate coverage report from the cores' execution data on disk, without running tests."
     group = "verification"

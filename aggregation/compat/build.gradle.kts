@@ -48,7 +48,8 @@ tasks.test {
     val repo = compatRepo
     val platforms = consumerPlatforms
     // One spec class per Gradle version, each in its own test JVM, so that every version's distribution download, daemon
-    // start and dependency resolution overlap.
+    // start and dependency resolution overlap. Gradle caps the forks at max-workers (4 on CI's 4 vCPUs), so a fifth version
+    // would share a JVM with another there.
     maxParallelForks = 4
     // TestKit's distributions and dependency caches live outside the build directory when CI caches them. Not an input.
     val testKitDir = providers.environmentVariable("COMPAT_TESTKIT_DIR")

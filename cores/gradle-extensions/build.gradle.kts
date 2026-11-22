@@ -110,7 +110,8 @@ tasks.test {
         .withPathSensitivity(PathSensitivity.RELATIVE)
         .withPropertyName("variantTestArtifacts")
     // One GradleVariantSelectionSpec subclass per Gradle version (com.kelvsyc.gradle.variantselection), each in its own
-    // test JVM, so that every version's distribution download, daemon start and dependency resolution overlap.
+    // test JVM, so that every version's distribution download, daemon start and dependency resolution overlap. Gradle caps
+    // the forks at max-workers (4 on CI's 4 vCPUs), so there two of the versions share a JVM and run one after the other.
     maxParallelForks = 5
     // Each version's TestKit directory is a subdirectory. Not an input.
     val testKitDir = layout.buildDirectory.dir("variant-testkit")
