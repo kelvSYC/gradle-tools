@@ -13,5 +13,4 @@ dependencies {
     implementation(libs.detekt.plugin)
     implementation(libs.dokka.plugin)
     implementation(libs.gradlex.dependency.conflict.resolution.plugin)
-    implementation(libs.gradlex.reproducible.builds.plugin)
 }

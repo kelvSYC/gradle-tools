@@ -2,7 +2,7 @@ import org.jetbrains.dokka.gradle.DokkaExtension
 
 /**
  * What every core adds to the shared conventions: gradlex dependency conflict resolution (with slf4j-simple as the
- * logging implementation) and reproducible builds, a link to the Gradle API in its Dokka documentation, the compat
+ * logging implementation), a link to the Gradle API in its Dokka documentation, the compat
  * repository that aggregation/compat resolves the cores from.
  *
  * Applied after the shared kind (`com.kelvsyc.internal.kotlin-gradle-library` or `-plugin`), which applies
@@ -12,7 +12,6 @@ import org.jetbrains.dokka.gradle.DokkaExtension
 plugins {
     `java-library`
     id("org.gradlex.jvm-dependency-conflict-resolution")
-    id("org.gradlex.reproducible-builds")
 }
 
 jvmDependencyConflicts {
