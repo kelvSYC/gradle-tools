@@ -10,11 +10,8 @@ kotlin {
 
 dependencies {
     implementation(platform(libs.conventions.platform))
-    implementation(libs.asm)
-    implementation(libs.dependency.analysis.plugin)
     implementation(libs.detekt.plugin)
+    implementation(libs.dokka.plugin)
     implementation(libs.gradlex.dependency.conflict.resolution.plugin)
     implementation(libs.gradlex.reproducible.builds.plugin)
-    implementation(libs.kotlin.dsl.plugins)
-    implementation(libs.kotlin.plugin)
 }

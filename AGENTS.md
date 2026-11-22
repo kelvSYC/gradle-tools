@@ -18,10 +18,10 @@ Guidance for coding agents (and humans) working in this Gradle composite build: 
 
 ```bash
 ./gradlew :build          # Build all components + BOM, catalog, docs, coverage
-./gradlew :check          # Run tests + detekt across all components (no docs/coverage)
+./gradlew :check          # Tests, compat tests, detekt, verifyGradleLinkage and verifyPublishedDependencyVersions of every component (no docs/coverage)
 ./gradlew :test           # Run tests across all components
 ./gradlew :detekt         # Lint all components
-./gradlew :publish        # Publish to GitHub Packages (requires GITHUB_ACTOR, GITHUB_TOKEN)
+./gradlew :publish        # Publish to GitHub Packages (requires gpr.user/gpr.key or GITHUB_ACTOR/GITHUB_TOKEN)
 ```
 
 Single component (from repo root):
@@ -84,20 +84,20 @@ The root `settings.gradle.kts` composes three layers of included builds:
 
 1. **`gradle/`** — Internal build infrastructure (not published):
    - `gradle/settings` — Thin settings plugin (`com.kelvsyc.internal.gradle-tools.settings`): applies the shared settings plugin `com.kelvsyc.internal.settings` from [gradle-build-conventions](https://github.com/kelvSYC/gradle-build-conventions) (repositories, the `libs` catalog and platform `libs.conventions.platform`, semver), includes `gradle/plugins` and registers `gradle/libs.versions.toml` as the `local` catalog
-   - `gradle/plugins` — Convention plugins (IDs `com.kelvsyc.internal.gradle-tools.*`): `kotlin-gradle-library`, `kotlin-gradle-plugin`, `gradle-integration-test`, `github-publishing`, `jacoco`, `dokka`. The `github-publishing` plugin strips the internal platform BOM (`com.kelvsyc.internal:platform`) from published POM and Gradle module metadata so that consumers don't see an unresolvable dependency. The convention plugins still declare `implementation(platform(...))` for local resolution — the stripping happens at publication time via `pom.withXml` and a `GenerateModuleMetadata` post-processing action (`StripInternalPlatform`).
+   - `gradle/plugins` — Local convention plugins (IDs `com.kelvsyc.internal.gradle-tools.*`), applied by the cores next to the shared ones (see Core Convention Plugins): `core`, `detekt` and `jacoco` (every core) and `gradle-integration-test` (cores with integration tests)
 
 2. **`cores/`** — Published Gradle plugins (group `com.kelvsyc.gradle`). Each is an independent included build. Types:
    - `*-extensions` — Gradle API utility libraries
    - `clients-base` — Base service for SDK client management (prerequisite for most AWS/GCP plugins)
    - `*-base` — Plugins for specific cloud services (Artifactory, AWS S3/SQS/SNS/SES/SecretsManager/CodeArtifact/IMDS, GCP Artifact Registry/Storage, Git)
 
-3. **`aggregation/`** — Publishes BOM and version catalog; aggregates Dokka docs, JaCoCo coverage, and test reports.
+3. **`aggregation/`** — Aggregates Dokka docs, JaCoCo coverage and test reports, and runs the compat tests. **`metadata/`** publishes the BOM and version catalog.
 
 ### Shared Build Conventions
 
-The catalog, platform BOM, semver versioning, repositories, toolchain resolver and publishing conventions come from [gradle-build-conventions](https://github.com/kelvSYC/gradle-build-conventions) (group `com.kelvsyc.internal`, published to GitHub Packages). Its settings plugin `com.kelvsyc.internal.settings` provides:
+The catalog, platform BOM, semver versioning, repositories, toolchain resolver, and the Gradle-plugin kind, Dokka and publishing conventions come from [gradle-build-conventions](https://github.com/kelvSYC/gradle-build-conventions) (group `com.kelvsyc.internal`, published to GitHub Packages). Its settings plugin `com.kelvsyc.internal.settings` provides:
 
-- the foojay toolchain resolver and the repositories (Maven Central, GitHub Packages for gradle-build-conventions, Gradle `libs-releases` for `org.gradle.experimental`)
+- the foojay toolchain resolver and the repositories (Maven Central, GitHub Packages for gradle-build-conventions and kotlin-tools, Gradle `libs-releases` for `org.gradle.experimental`)
 - the `libs` version catalog (`com.kelvsyc.internal:catalog`) and the platform BOM (`libs.conventions.platform`), whose dependency versions are therefore not declared in this repository
 - project versions from git tags (`com.kelvsyc.internal.semver`): past the latest tag the version is an implicit `-SNAPSHOT` of the next version, and uncommitted or untracked changes append `+dirty`. CI publishes snapshots with `-Dsemver.stage=snapshot -Dsemver.scope=patch`
 - versionless resolution of plugin IDs in exactly the `com.kelvsyc.internal` namespace; the local plugins live in `com.kelvsyc.internal.gradle-tools.*`, which resolve from the included `gradle/plugins` build
@@ -111,6 +111,35 @@ The shared version is pinned once, as `gradle-build-conventions` in `gradle/libs
 A bump PR from Dependabot completes itself (`.github/workflows/conventions-bump.yml`): it moves the Gradle wrapper to the Gradle version the new release is built for (`.github/scripts/follow-conventions-gradle.sh`, reading the release's catalog and refreshing the wrapper's checksum), pushes that to the PR, and enables GitHub auto-merge, so the PR merges once the required checks pass. Dependabot's release-age cooldown exempts `com.kelvsyc.internal:*` and `com.kelvsyc.kotlin:*` (our own releases). kotlin-tools bumps arrive as ordinary Dependabot PRs and are not auto-merged, and Dependabot does not propose standalone Gradle wrapper updates: the wrapper follows the conventions. The push and the auto-merge use the `CONVENTIONS_TOKEN` personal access token, stored in both the Dependabot and Actions secrets (a run started by Dependabot sees only the former, one started by the token's own push only the latter); only those two steps get it, not the Gradle build. A push or merge made with `GITHUB_TOKEN` triggers no workflows, so neither CI on the wrapper change nor the snapshot publish after the merge would run.
 
 Resolving the shared plugin requires GitHub Packages credentials even to configure the build: the `gpr.user`/`gpr.key` Gradle properties (for example in `~/.gradle/gradle.properties`), else `GITHUB_ACTOR`/`GITHUB_TOKEN`. CI jobs that run Gradle need `packages: read` permission and both variables set.
+
+### Core Convention Plugins
+
+Every core's `build.gradle.kts` applies, in this order:
+
+```kotlin
+plugins {
+    id("com.kelvsyc.internal.dokka")
+    id("com.kelvsyc.internal.gradle-tools.jacoco")
+    id("com.kelvsyc.internal.kotlin-gradle-library") // or com.kelvsyc.internal.kotlin-gradle-plugin
+    id("com.kelvsyc.internal.gradle-tools.core")
+    id("com.kelvsyc.internal.gradle-tools.detekt")
+    id("com.kelvsyc.internal.gradle-tools.gradle-integration-test") // only cores with integration tests
+    id("com.kelvsyc.internal.github-publishing")
+}
+```
+
+Shared (from gradle-build-conventions, resolved at the pinned version):
+
+- `com.kelvsyc.internal.kotlin-gradle-library` — Kotlin JVM library compiled against the Gradle API; publishes a `maven` publication. `com.kelvsyc.internal.kotlin-gradle-plugin` — the same for Gradle plugins, with `kotlin-dsl` and `java-gradle-plugin` (`pluginMaven` plus a marker per plugin). Both apply the core's Gradle tier (see Gradle Compatibility Tiers; the tier is exposed read-only as `kelvsycGradle.tier`), JDK 21 with no release override, Kotlin 2.3 for every compilation but `main`, the stdlib exclusions, `org.gradle.plugin.api-version`, `verifyGradleLinkage`, the Dependency Analysis plugin, Kotest on the JUnit Platform and the mockk/ByteBuddy test JVM args. Neither sets the group: the gradle-tools settings plugin sets `com.kelvsyc.gradle` as every build's default.
+- `com.kelvsyc.internal.dokka` — Dokka HTML (built by `assemble`) and a Dokka Javadoc jar, with JDK, Kotlin stdlib and GitHub source links derived from the `origin` remote.
+- `com.kelvsyc.internal.github-publishing` — the `GitHubPackages` repository, its URL derived from the `origin` git remote. It publishes resolved dependency versions (`RequireDependencyVersions` fails module metadata generation if one is missing; a core's own `check` depends on that generation, and root `:check` reaches it through each core's `verifyPublishedDependencyVersions`) and strips the internal platform BOM (`com.kelvsyc.internal:platform`) from the POM and Gradle module metadata.
+
+Local (in `gradle/plugins`):
+
+- `com.kelvsyc.internal.gradle-tools.core` — gradlex `jvm-dependency-conflict-resolution` (with `enforceSlf4JSimple()`) and `reproducible-builds`; the Gradle API link (`https://docs.gradle.org/current/kotlin-dsl/gradle`) in the Dokka documentation; the compat repository (see Gradle Compatibility Tiers); and `verifyPublishedDependencyVersions`, which generates every publication's module metadata and so runs `RequireDependencyVersions`. Root `:check` does not run each core's `check`, only selected tasks (`verifyGradleLinkage`, `verifyPublishedDependencyVersions`, detekt and, through the aggregate reports, the tests), so a new per-core verification must be added to root `check` as well.
+- `com.kelvsyc.internal.gradle-tools.detekt` — detekt with `gradle/detekt.yml` (see JDK Constraints).
+- `com.kelvsyc.internal.gradle-tools.jacoco` — JaCoCo, with an HTML report after `test`.
+- `com.kelvsyc.internal.gradle-tools.gradle-integration-test` — the `integrationTest` source set and task (see Rule 3 below).
 
 ### Component Settings Pattern
 
@@ -142,17 +171,17 @@ Tests use [Kotest](https://kotest.io/) with JUnit Platform. Gradle plugin tests 
 
 ### JDK Constraints (do not change)
 
-The Gradle daemon is pinned to JDK 21 (`gradle/gradle-daemon-jvm.properties`). **Do not change `toolchainVersion` to 25** — Detekt 1.23.x cannot parse JVM version "25.x". Convention plugins override `jvmTarget = "22"` and `jdkHome` to JDK 21 for detekt tasks.
+The Gradle daemon is pinned to JDK 21 (`gradle/gradle-daemon-jvm.properties`). **Do not change `toolchainVersion` to 25** — Detekt 1.23.x cannot parse JVM version "25.x". The `com.kelvsyc.internal.gradle-tools.detekt` plugin overrides `jvmTarget = "22"` and `jdkHome` to JDK 21 for detekt tasks.
 
 `cores/` components target JDK 21. **Use LTS JDKs only; a core goes above JDK 21 only if it needs newer Java for its own reasons.** Lowering the target widens the range of Gradle versions and JDKs a core works on; raising it strands consumers.
 
 The Kotlin version comes from the shared catalog (`kotlin`, owned by gradle-build-conventions; see Shared Build Conventions) and must equal the Gradle wrapper's embedded Kotlin version (see the [compatibility matrix](https://docs.gradle.org/current/userguide/compatibility.html#kotlin)). `gradle-kotlin-dsl-plugins` pins `kotlin-stdlib` strictly to that version, so a higher value fails dependency resolution and a lower one is silently overridden. The wrapper follows the conventions release, which carries the matching Kotlin version, so the two move together through the single `gradle-build-conventions` pin.
 
-Tests run on JDK 21 via toolchain. Convention plugins wire the required mockk/ByteBuddy JVM args (`-XX:+EnableDynamicAgentLoading`, `-Dnet.bytebuddy.experimental=true`, `-javaagent:[byte-buddy-agent]`). **Do not remove these.**
+Tests run on JDK 21 via toolchain. The shared Gradle-plugin kinds wire the required mockk/ByteBuddy JVM args (`-XX:+EnableDynamicAgentLoading`, `-Dnet.bytebuddy.experimental=true`, `-javaagent:[byte-buddy-agent]`). **Do not remove these.**
 
 ### Gradle Compatibility Tiers
 
-Each core has a minimum Gradle, set by `com.kelvsyc.gradle.minimumGradle` in the core's `gradle.properties` (absent means `8.14`) and defined in `gradle/plugins/kotlin-convention/src/main/kotlin/GradleTier.kt`. There are two tiers:
+Each core has a minimum Gradle, set by `com.kelvsyc.gradle.minimumGradle` in the core's `gradle.properties` (absent means `8.14`, any other value than `8.14` or `9.0` fails the build) and defined by the shared Gradle-plugin kinds (`GradleTier` in gradle-build-conventions), so a new tier is a gradle-build-conventions release. The property is read per build, so it belongs in the core's own `gradle.properties`. There are two tiers:
 
 | Tier | Cores | Compiled against | Kotlin `apiVersion`/`languageVersion` |
 |------|-------|------------------|---------------------------------------|
@@ -166,7 +195,7 @@ Each core has a minimum Gradle, set by `com.kelvsyc.gradle.minimumGradle` in the
 - Each core publishes its tier as `org.gradle.plugin.api-version`, so an older Gradle rejects it at dependency resolution rather than failing at run time.
 - Published dependencies exclude `kotlin-stdlib`, `-jdk7`, `-jdk8` and `kotlin-reflect`; Gradle supplies them.
 - `verifyGradleLinkage` (a task in each core, run by its `check` and by root `./gradlew :check`) checks every reference from a core and every jar it ships against its tier's minimum Gradle API and that Gradle's Kotlin stdlib/reflect. The report is at `build/reports/gradle-linkage/report.txt`.
-- `aggregation/compat` (`TierCompatibilitySpec`, run by root `:test`) publishes a few cores to `build/compat-repo` and runs real Gradle distributions via TestKit: consumer resolution (including Kotlin-source build-logic with `gradle-kotlin-dsl-plugins`), rejection of a 9.0-tier core on 8.14, and one runtime smoke test per tier. Root `:test` downloads Gradle 8.14, 9.0.0 and 9.4.1 the first time, so it needs network.
+- `aggregation/compat` (`TierCompatibilitySpec`, run by root `:test`) publishes a few cores to `build/compat-repo` (each core's `publish<Name>PublicationToCompatRepository` task, from `com.kelvsyc.internal.gradle-tools.core`; the repository is not a publishing repository, so `publish` never writes to it) and runs real Gradle distributions via TestKit: consumer resolution (including Kotlin-source build-logic with `gradle-kotlin-dsl-plugins`), rejection of a 9.0-tier core on 8.14, and one runtime smoke test per tier. Root `:test` downloads Gradle 8.14, 9.0.0 and 9.4.1 the first time, so it needs network.
 - `GradleVariantSelectionSpec` (`gradle-extensions`) and `DokkaDashGradleVersionSpec` (`dokka-dash`) test their cores across Gradle versions.
 
 ## Critical Gotchas
@@ -175,22 +204,22 @@ Each core has a minimum Gradle, set by `com.kelvsyc.gradle.minimumGradle` in the
 
 The Gradle daemon is pinned to JDK 21 (`gradle/gradle-daemon-jvm.properties`). **Do not change to 25.**
 
-Detekt 1.23.x's bundled Kotlin compiler cannot parse JVM version "25.x" and throws `IllegalArgumentException`. Workaround is already in place in convention plugins (`jvmTarget = "22"` and `jdkHome` overrides) — don't remove them.
+Detekt 1.23.x's bundled Kotlin compiler cannot parse JVM version "25.x" and throws `IllegalArgumentException`. Workaround is already in place in `com.kelvsyc.internal.gradle-tools.detekt` (`jvmTarget = "22"` and `jdkHome` overrides) — don't remove them.
 
 ### Test JVM Args (ByteBuddy / mockk) ⚠️
 
-Tests run on JDK 21, and mockk/ByteBuddy requires these JVM args (already wired in convention plugins):
+Tests run on JDK 21, and mockk/ByteBuddy requires these JVM args (already wired in the shared Gradle-plugin kinds):
 ```
 -XX:+EnableDynamicAgentLoading
 -Dnet.bytebuddy.experimental=true
 -javaagent:[byte-buddy-agent jar path]
 ```
 
-Do not remove these from convention plugins.
+Do not remove these from the conventions.
 
-### Publishing Requires Env Vars ⚠️
+### Publishing Requires Credentials ⚠️
 
-`./gradlew :publish` requires credentials: the `gpr.user`/`gpr.key` Gradle properties, else `GITHUB_ACTOR` and `GITHUB_TOKEN`. Without them, it fails.
+`./gradlew :publish` requires credentials: the `gpr.user`/`gpr.key` Gradle properties, else `GITHUB_ACTOR` and `GITHUB_TOKEN`. Without them, it fails. The repository URL is derived from the `origin` git remote, so `origin` must point at the GitHub repository.
 
 ### Building Requires GitHub Packages Credentials ⚠️
 

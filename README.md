@@ -132,8 +132,8 @@ dependencyResolutionManagement {
 }
 ```
 
-A published BOM and version catalog are available from the `aggregation/` build for coordinating
-dependency versions across multiple components.
+Components publish the versions of their dependencies. A published BOM and version catalog are available from the
+`metadata/` build for aligning versions across multiple components.
 
 ## Building from source
 
