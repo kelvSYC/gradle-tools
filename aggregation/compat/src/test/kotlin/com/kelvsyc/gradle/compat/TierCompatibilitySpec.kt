@@ -9,22 +9,28 @@ import io.kotest.matchers.string.shouldNotContain
 import io.kotest.matchers.string.shouldStartWith
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
-import org.gradle.util.GradleVersion
 import java.io.File
 import kotlin.io.path.createTempDirectory
 
 /**
  * Verifies that freshly published cores can be used on the oldest Gradle of their tier, and are refused on older Gradle.
  *
+ * Each subclass covers one Gradle version, so that Gradle forks the subclasses into parallel test JVMs and the versions'
+ * distribution download, daemon start and dependency resolution overlap. A subclass's TestKit directory is its own, as
+ * TestKit directories must not be shared between concurrent builds.
+ *
  * The consumers are build-logic projects with Gradle's Kotlin DSL plugins on their classpath. Those plugins pin
  * kotlin-stdlib strictly to the Kotlin embedded in the running Gradle, so any stdlib requirement a core publishes,
  * directly or through its dependencies, above that version fails resolution.
  */
-class TierCompatibilitySpec : FunSpec() {
+abstract class TierCompatibilitySpec : FunSpec() {
     private val repo = System.getProperty("compat.repo").replace("\\", "/")
 
     // The third-party BOMs that consumers managing versions with them import.
     private val platforms = System.getProperty("compat.platforms").split(",").filter(String::isNotEmpty)
+
+    // Persistent across runs when the build points it at a cached directory; one subdirectory per Gradle version.
+    private val testKitRoot = File(System.getProperty("compat.testKitDir"))
 
     // Constraints on the other cores, standing in for gradle-tools' BOM.
     private fun coreConstraints(configuration: String) = File(repo, "com/kelvsyc/gradle").list().orEmpty().sorted()
@@ -219,6 +225,7 @@ class TierCompatibilitySpec : FunSpec() {
         return dir to GradleRunner.create()
             .withProjectDir(dir)
             .withGradleVersion(version)
+            .withTestKitDir(File(testKitRoot, version))
             .withArguments(*args)
     }
 
@@ -242,62 +249,48 @@ class TierCompatibilitySpec : FunSpec() {
         }
     }
 
-    init {
-        val current = GradleVersion.current().version
+    protected fun nexusBaseResolves(version: String) = test("build-logic resolves nexus-base on $version") {
+        run(nexusBase, version, "compileKotlin")
+    }
 
-        listOf("8.14", current).distinct().forEach { version ->
-            test("build-logic resolves nexus-base on $version") {
-                run(nexusBase, version, "compileKotlin")
-            }
+    protected fun awsStsKotlinBaseBuildLogicResolves(version: String) =
+        test("build-logic resolves aws-sts-kotlin-base on $version") {
+            run(awsStsKotlinBase, version, "compileKotlin")
         }
 
-        // The AWS SDK ships Kotlin 2.4 metadata, which only the Kotlin 2.3 compiler of Gradle 9.4 and later can read.
-        // Kotlin-source build-logic therefore needs Gradle 9.4, while build scripts work from the tier's 9.0.
-        listOf("9.4.1", current).distinct().forEach { version ->
-            test("build-logic resolves aws-sts-kotlin-base on $version") {
-                run(awsStsKotlinBase, version, "compileKotlin")
-            }
+    protected fun awsStsKotlinBaseBuildScriptResolves(version: String) =
+        test("build script resolves aws-sts-kotlin-base on $version") {
+            val output = run(awsStsKotlinBaseBuildScript, version, "help").output
+
+            output shouldContain "CLASS=com.kelvsyc.gradle.aws.kotlin.sts.StsClientBuildService"
         }
 
-        listOf("9.0.0", current).distinct().forEach { version ->
-            test("build script resolves aws-sts-kotlin-base on $version") {
-                val output = run(awsStsKotlinBaseBuildScript, version, "help").output
+    protected fun gradleExtensionsResolvesThroughAwsStsJavaBase(version: String, expectGradle99Variant: Boolean) =
+        test("build script resolves gradle-extensions through aws-sts-java-base on $version") {
+            val output = run(awsStsJavaBaseBuildScript, version, "help").output
+            val jar = output.lineSequence().single { it.startsWith("JAR=") }.removePrefix("JAR=")
+            println("aws-sts-java-base on $version uses $jar")
 
-                output shouldContain "CLASS=com.kelvsyc.gradle.aws.kotlin.sts.StsClientBuildService"
-            }
+            output shouldContain "CLASS=com.kelvsyc.gradle.aws.java.sts.StsClientBuildService"
+            jar shouldStartWith "gradle-extensions-"
+            if (expectGradle99Variant) jar shouldContain "gradle99" else jar shouldNotContain "gradle99"
         }
 
-        listOf("8.14", current).distinct().forEach { version ->
-            test("build script resolves gradle-extensions through aws-sts-java-base on $version") {
-                val output = run(awsStsJavaBaseBuildScript, version, "help").output
-                val jar = output.lineSequence().single { it.startsWith("JAR=") }.removePrefix("JAR=")
-                println("aws-sts-java-base on $version uses $jar")
+    protected fun nexusBaseRuns(version: String) = test("nexus-base runs on $version") {
+        runAndFail(nexusBaseRun, version, "download", "--stacktrace").output.shouldReachNetworkOnly()
+    }
 
-                output shouldContain "CLASS=com.kelvsyc.gradle.aws.java.sts.StsClientBuildService"
-                jar shouldStartWith "gradle-extensions-"
-                if (version == "8.14") jar shouldNotContain "gradle99" else jar shouldContain "gradle99"
-            }
-        }
+    protected fun awsStsKotlinBaseRuns(version: String) = test("aws-sts-kotlin-base runs on $version") {
+        runAndFail(awsStsKotlinBaseRun, version, "identity", "--stacktrace").output.shouldReachNetworkOnly()
+    }
 
-        listOf("8.14", current).distinct().forEach { version ->
-            test("nexus-base runs on $version") {
-                runAndFail(nexusBaseRun, version, "download", "--stacktrace").output.shouldReachNetworkOnly()
-            }
-        }
-
-        listOf("9.0.0", current).distinct().forEach { version ->
-            test("aws-sts-kotlin-base runs on $version") {
-                runAndFail(awsStsKotlinBaseRun, version, "identity", "--stacktrace").output.shouldReachNetworkOnly()
-            }
-        }
-
-        test("aws-sts-kotlin-base is rejected on 8.14 at resolution") {
-            val output = runAndFail(awsStsKotlinBase, "8.14", "compileKotlin").output
+    protected fun awsStsKotlinBaseIsRejectedAtResolution(version: String) =
+        test("aws-sts-kotlin-base is rejected on $version at resolution") {
+            val output = runAndFail(awsStsKotlinBase, version, "compileKotlin").output
 
             output shouldContain "org.gradle.plugin.api-version"
             output shouldNotContain "NoClassDefFoundError"
         }
-    }
 }
 
 /**

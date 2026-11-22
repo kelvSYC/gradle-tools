@@ -47,6 +47,12 @@ tasks.test {
     }
     val repo = compatRepo
     val platforms = consumerPlatforms
+    // One spec class per Gradle version, each in its own test JVM, so that every version's distribution download, daemon
+    // start and dependency resolution overlap.
+    maxParallelForks = 4
+    // TestKit's distributions and dependency caches live outside the build directory when CI caches them. Not an input.
+    val testKitDir = providers.environmentVariable("COMPAT_TESTKIT_DIR")
+        .orElse(layout.buildDirectory.dir("compat-testkit").map { it.asFile.path })
     // maven-metadata.xml changes on every publish, so only track the artifacts themselves.
     inputs.files(repo.asFileTree.matching { include("**/*.jar", "**/*.module") })
         .withPathSensitivity(PathSensitivity.RELATIVE)
@@ -54,6 +60,7 @@ tasks.test {
     jvmArgumentProviders.add(CommandLineArgumentProvider {
         listOf(
             "-Dcompat.repo=${repo.asFile.path}",
+            "-Dcompat.testKitDir=${testKitDir.get()}",
             "-Dcompat.platforms=${platforms.joinToString(",") { it.get() }}",
         )
     })
