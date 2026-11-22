@@ -18,8 +18,3 @@ dependencies {
     api(libs.vault.java.driver)
     testImplementation(libs.mockk)
 }
-
-tasks.test {
-    // Required for ProjectBuilder / MockK on JDK 25
-    jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
-}

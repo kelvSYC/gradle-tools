@@ -110,7 +110,4 @@ tasks.test {
         .withPathSensitivity(PathSensitivity.RELATIVE)
         .withPropertyName("variantTestArtifacts")
     jvmArgumentProviders.add(CommandLineArgumentProvider { listOf("-DvariantTest.repo=${repo.get().asFile.path}") })
-
-    // FIXME https://github.com/gradle/gradle/issues/18647
-    jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
 }

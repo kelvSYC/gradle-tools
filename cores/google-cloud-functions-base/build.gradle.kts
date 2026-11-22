@@ -23,7 +23,3 @@ dependencies {
     implementation(libs.okhttp)
     testImplementation(libs.mockk)
 }
-
-tasks.test {
-    jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
-}
