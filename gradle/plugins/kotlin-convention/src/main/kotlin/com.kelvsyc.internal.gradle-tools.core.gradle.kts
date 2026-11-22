@@ -2,8 +2,8 @@ import org.jetbrains.dokka.gradle.DokkaExtension
 
 /**
  * What every core adds to the shared conventions: gradlex dependency conflict resolution (with slf4j-simple as the
- * logging implementation) and reproducible builds, a link to the Gradle API in its Dokka documentation, and the compat
- * repository that aggregation/compat resolves the cores from.
+ * logging implementation) and reproducible builds, a link to the Gradle API in its Dokka documentation, the compat
+ * repository that aggregation/compat resolves the cores from, and `verifyPublishedDependencyVersions` for root `check`.
  *
  * Applied after the shared kind (`com.kelvsyc.internal.kotlin-gradle-library` or `-plugin`), which applies
  * `java-library`.
@@ -38,13 +38,12 @@ pluginManager.withPlugin("org.jetbrains.dokka") {
 pluginManager.withPlugin("maven-publish") {
     val compatRepositoryDir = layout.settingsDirectory.dir("../../build/compat-repo")
     // Created through the project's repository handler, then removed from it again: dependencies never resolve from it.
+    // This relies on the settings allowing project repositories (no FAIL_ON_PROJECT_REPOS or PREFER_SETTINGS mode).
     val compatRepository = repositories.maven(compatRepositoryDir) { name = "compat" }
     repositories.remove(compatRepository)
 
     // The compat tests resolve each core at a dynamic version, so the repository must hold exactly one release of it.
-    val compatModuleDir = layout.settingsDirectory.dir(
-        provider { "../../build/compat-repo/${group.toString().replace('.', '/')}/${project.name}" }
-    )
+    val compatModuleDir = compatRepositoryDir.dir(provider { "${group.toString().replace('.', '/')}/${project.name}" })
     val cleanCompatRepository = tasks.register<Delete>("cleanCompatRepository") {
         delete(compatModuleDir)
     }
@@ -58,5 +57,14 @@ pluginManager.withPlugin("maven-publish") {
             repository = compatRepository
             dependsOn(cleanCompatRepository)
         }
+    }
+
+    // The shared publishing plugin fails module metadata generation when a published dependency has no version, and a
+    // core's `check` depends on that generation, but root `check` runs only selected tasks of each core: this one is
+    // among them.
+    tasks.register("verifyPublishedDependencyVersions") {
+        group = "verification"
+        description = "Generates the Gradle module metadata of every publication, which fails on a versionless dependency."
+        dependsOn(tasks.withType<GenerateModuleMetadata>())
     }
 }
