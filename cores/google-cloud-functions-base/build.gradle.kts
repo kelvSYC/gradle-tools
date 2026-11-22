@@ -1,10 +1,12 @@
 import org.jetbrains.dokka.gradle.DokkaExtension
 
 plugins {
-    id("com.kelvsyc.internal.gradle-tools.dokka")
+    id("com.kelvsyc.internal.dokka")
     id("com.kelvsyc.internal.gradle-tools.jacoco")
-    id("com.kelvsyc.internal.gradle-tools.kotlin-gradle-library")
-    id("com.kelvsyc.internal.gradle-tools.github-publishing")
+    id("com.kelvsyc.internal.kotlin-gradle-library")
+    id("com.kelvsyc.internal.gradle-tools.core")
+    id("com.kelvsyc.internal.gradle-tools.detekt")
+    id("com.kelvsyc.internal.github-publishing")
 }
 
 configure<DokkaExtension> {

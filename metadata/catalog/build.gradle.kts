@@ -1,6 +1,6 @@
 plugins {
     `version-catalog`
-    id("com.kelvsyc.internal.gradle-tools.github-publishing")
+    id("com.kelvsyc.internal.github-publishing")
 }
 
 group = "com.kelvsyc.gradle"

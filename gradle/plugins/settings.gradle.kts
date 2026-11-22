@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.support.expectedKotlinDslPluginsVersion
-
 pluginManagement {
     includeBuild("../settings")
     // Gradle resolves the included settings plugin's external dependencies with this build's plugin repositories.
@@ -22,15 +20,7 @@ plugins {
 dependencyResolutionManagement {
     // The convention plugins depend on Gradle plugins (detekt, gradlex and others), resolved from the Plugin Portal.
     repositories.gradlePluginPortal()
-
-    versionCatalogs.named("libs") {
-        // Add entry for the `kotlin-dsl` plugin, using the expectedKotlinDslPluginsVersion constant
-        library("kotlin-dsl-plugins", "org.gradle.kotlin", "gradle-kotlin-dsl-plugins")
-            .version(expectedKotlinDslPluginsVersion)
-    }
 }
 
-include("dokka-convention")
 include("jacoco-convention")
 include("kotlin-convention")
-include("publishing-convention")

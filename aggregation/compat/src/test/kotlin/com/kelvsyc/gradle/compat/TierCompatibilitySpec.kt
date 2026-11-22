@@ -23,10 +23,10 @@ import kotlin.io.path.createTempDirectory
 class TierCompatibilitySpec : FunSpec() {
     private val repo = System.getProperty("compat.repo").replace("\\", "/")
 
-    // Published cores leave third-party versions to BOMs, which consumers import themselves.
+    // The third-party BOMs that consumers managing versions with them import.
     private val platforms = System.getProperty("compat.platforms").split(",").filter(String::isNotEmpty)
 
-    // Published cores also leave the versions of other cores to our BOM. These constraints stand in for it.
+    // Constraints on the other cores, standing in for gradle-tools' BOM.
     private fun coreConstraints(configuration: String) = File(repo, "com/kelvsyc/gradle").list().orEmpty().sorted()
         .joinToString("\n") { "$configuration(\"com.kelvsyc.gradle:$it:+\")" }
 

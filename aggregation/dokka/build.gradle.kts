@@ -1,5 +1,5 @@
 plugins {
-    id("com.kelvsyc.internal.gradle-tools.dokka")
+    id("com.kelvsyc.internal.dokka")
 }
 
 group = "com.kelvsyc.gradle"

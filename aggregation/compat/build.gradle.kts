@@ -23,7 +23,7 @@ val compatCores = listOf(
 
 val compatRepo = layout.settingsDirectory.dir("../build/compat-repo")
 
-// Published cores leave versions of third-party dependencies to BOMs, so consumers import these platforms.
+// Consumers import these platforms, as consumers that manage versions with the third-party BOMs do.
 val consumerPlatforms = listOf(
     libs.okhttp.bom,
     libs.retrofit.bom,
