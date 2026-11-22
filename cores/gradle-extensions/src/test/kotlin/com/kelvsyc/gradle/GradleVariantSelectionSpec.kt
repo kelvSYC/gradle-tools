@@ -12,9 +12,16 @@ import kotlin.io.path.createTempDirectory
 /**
  * Verifies which variant of this library real builds select. Once the wrapper is on Gradle 9.9 this is the only
  * coverage of the baseline variant, because no build in this repository resolves it any more.
+ *
+ * Each subclass covers one Gradle version, so that Gradle forks the subclasses into parallel test JVMs and the versions'
+ * distribution download, daemon start and dependency resolution overlap. A subclass's TestKit directory is its own, as
+ * TestKit directories must not be shared between concurrent builds.
  */
-class GradleVariantSelectionSpec : FunSpec() {
+abstract class GradleVariantSelectionSpec : FunSpec() {
     private val repo = System.getProperty("variantTest.repo").replace("\\", "/")
+
+    // One subdirectory per Gradle version.
+    private val testKitRoot = File(System.getProperty("variantTest.testKitDir"))
     private val coordinates = "com.kelvsyc.gradle:gradle-extensions:+"
     private val deprecationMessage = "Use Gradle's ProviderFactory"
 
@@ -120,6 +127,7 @@ class GradleVariantSelectionSpec : FunSpec() {
             return GradleRunner.create()
                 .withProjectDir(dir)
                 .withGradleVersion(version)
+                .withTestKitDir(File(testKitRoot, version))
                 .withArguments(*arguments)
                 .build()
                 .output
@@ -131,98 +139,94 @@ class GradleVariantSelectionSpec : FunSpec() {
     private fun printed(output: String, key: String) =
         output.lineSequence().first { it.startsWith("$key=") }.removePrefix("$key=").split(",").filter(String::isNotEmpty)
 
-    init {
-        // The running Gradle is included so that a wrapper bump exercises the new version automatically.
-        val versions = listOf("8.14", "9.0.0", "9.8.2", "9.9.0", GradleVersion.current().version).distinct()
-        val consumers = mapOf(
-            "buildscript" to (::buildscriptConsumer to "help"),
-            "kotlin-dsl" to (::kotlinDslConsumer to "compileKotlin"),
-            "java-library" to ({ javaLibraryConsumer() } to "compileKotlin"),
-        )
+    private val consumers = mapOf(
+        "buildscript" to (::buildscriptConsumer to "help"),
+        "kotlin-dsl" to (::kotlinDslConsumer to "compileKotlin"),
+        "java-library" to ({ javaLibraryConsumer() } to "compileKotlin"),
+    )
 
-        versions.forEach { version ->
-            val wantGradle99 = GradleVersion.version(version) >= GradleVersion.version("9.9.0")
+    // Every test that runs on each Gradle version.
+    protected fun versionTests(version: String) {
+        val wantGradle99 = GradleVersion.version(version) >= GradleVersion.version("9.9.0")
 
-            consumers.forEach { (name, consumer) ->
-                test("$name on $version selects the expected variant") {
-                    val output = run(consumer.first(), version, consumer.second)
-
-                    val jars = printed(output, "JARS")
-                    jars.shouldNotBeEmpty()
-                    jars.forEach { it.endsWith("-gradle99.jar") shouldBe wantGradle99 }
-                    output.contains(deprecationMessage) shouldBe wantGradle99
-                }
-            }
-
-            test("build-logic with kotlin-dsl-plugins on $version resolves") {
-                val output = run(buildLogicConsumer(), version, "compileKotlin")
+        consumers.forEach { (name, consumer) ->
+            test("$name on $version selects the expected variant") {
+                val output = run(consumer.first(), version, consumer.second)
 
                 val jars = printed(output, "JARS")
                 jars.shouldNotBeEmpty()
                 jars.forEach { it.endsWith("-gradle99.jar") shouldBe wantGradle99 }
-            }
-
-            test("buildscript on $version can call the helpers") {
-                val output = run(buildscriptConsumer(), version, "help")
-
-                output shouldContain "VALUE=x"
-                output shouldContain "ABSENT=false"
-            }
-
-            test("sources resolve on $version without ambiguity") {
-                val sources = """
-                    val sources = configurations.runtimeClasspath.get().incoming.artifactView {
-                        withVariantReselection()
-                        lenient(true)
-                        attributes {
-                            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.DOCUMENTATION))
-                            attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType.SOURCES))
-                            attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling.EXTERNAL))
-                            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
-                        }
-                    }.files
-                    println("SOURCES=" + sources.map { it.name }.filter { it.startsWith("gradle-extensions") }.joinToString(","))
-                """.trimIndent()
-
-                val output = run(javaLibraryConsumer(extra = sources), version, "help")
-
-                val jars = printed(output, "SOURCES")
-                jars.size shouldBe 1
-                jars.single().endsWith("-gradle99-sources.jar") shouldBe wantGradle99
+                output.contains(deprecationMessage) shouldBe wantGradle99
             }
         }
 
-        versions.forEach { version ->
-            test("a configuration requesting no attributes resolves on $version") {
-                val detached = """
-                    val detached = configurations.detachedConfiguration(dependencies.create("$coordinates"))
-                    println("DETACHED=" + detached.files.map { it.name }.filter { it.startsWith("gradle-extensions") }.joinToString(","))
-                """.trimIndent()
+        test("build-logic with kotlin-dsl-plugins on $version resolves") {
+            val output = run(buildLogicConsumer(), version, "compileKotlin")
 
-                val output = run(javaLibraryConsumer(extra = detached), version, "help")
-
-                val jars = printed(output, "DETACHED")
-                jars.size shouldBe 1
-                jars.single().endsWith("-gradle99.jar") shouldBe (GradleVersion.version(version) >= GradleVersion.version("9.9.0"))
-            }
+            val jars = printed(output, "JARS")
+            jars.shouldNotBeEmpty()
+            jars.forEach { it.endsWith("-gradle99.jar") shouldBe wantGradle99 }
         }
 
+        test("buildscript on $version can call the helpers") {
+            val output = run(buildscriptConsumer(), version, "help")
+
+            output shouldContain "VALUE=x"
+            output shouldContain "ABSENT=false"
+        }
+
+        test("sources resolve on $version without ambiguity") {
+            val sources = """
+                val sources = configurations.runtimeClasspath.get().incoming.artifactView {
+                    withVariantReselection()
+                    lenient(true)
+                    attributes {
+                        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.DOCUMENTATION))
+                        attribute(DocsType.DOCS_TYPE_ATTRIBUTE, objects.named(DocsType.SOURCES))
+                        attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling.EXTERNAL))
+                        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+                    }
+                }.files
+                println("SOURCES=" + sources.map { it.name }.filter { it.startsWith("gradle-extensions") }.joinToString(","))
+            """.trimIndent()
+
+            val output = run(javaLibraryConsumer(extra = sources), version, "help")
+
+            val jars = printed(output, "SOURCES")
+            jars.size shouldBe 1
+            jars.single().endsWith("-gradle99-sources.jar") shouldBe wantGradle99
+        }
+
+        test("a configuration requesting no attributes resolves on $version") {
+            val detached = """
+                val detached = configurations.detachedConfiguration(dependencies.create("$coordinates"))
+                println("DETACHED=" + detached.files.map { it.name }.filter { it.startsWith("gradle-extensions") }.joinToString(","))
+            """.trimIndent()
+
+            val output = run(javaLibraryConsumer(extra = detached), version, "help")
+
+            val jars = printed(output, "DETACHED")
+            jars.size shouldBe 1
+            jars.single().endsWith("-gradle99.jar") shouldBe (GradleVersion.version(version) >= GradleVersion.version("9.9.0"))
+        }
+    }
+
+    protected fun configurationCacheDoesNotChangeSelection(version: String) =
         test("configuration cache does not change selection") {
-            val output = run(kotlinDslConsumer(), "9.9.0", "compileKotlin", "--configuration-cache")
+            val output = run(kotlinDslConsumer(), version, "compileKotlin", "--configuration-cache")
 
             printed(output, "JARS").forEach { it.endsWith("-gradle99.jar") shouldBe true }
         }
 
-        test("maven-only consumer gets the baseline") {
-            val mavenOnly = repositoriesBlock(
-                "metadataSources { mavenPom(); artifact(); ignoreGradleMetadataRedirection() }",
-            )
+    protected fun mavenOnlyConsumerGetsTheBaseline(version: String) = test("maven-only consumer gets the baseline") {
+        val mavenOnly = repositoriesBlock(
+            "metadataSources { mavenPom(); artifact(); ignoreGradleMetadataRedirection() }",
+        )
 
-            val output = run(javaLibraryConsumer(repositoryBlock = mavenOnly), "9.9.0", "help")
+        val output = run(javaLibraryConsumer(repositoryBlock = mavenOnly), version, "help")
 
-            val jars = printed(output, "JARS")
-            jars.shouldNotBeEmpty()
-            jars.forEach { it.contains("gradle99") shouldBe false }
-        }
+        val jars = printed(output, "JARS")
+        jars.shouldNotBeEmpty()
+        jars.forEach { it.contains("gradle99") shouldBe false }
     }
 }
