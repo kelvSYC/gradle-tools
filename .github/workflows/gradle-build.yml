@@ -46,20 +46,17 @@ jobs:
           build-scan-terms-of-use-url: "https://gradle.com/help/legal-terms-of-use"
           build-scan-terms-of-use-agree: "yes"
       - name: Verify
-        # :check (tests, detekt, verifyGradleLinkage, verifyPomDependencyVersions) of this shard's cores, and the compat
-        # tests on the shard they are assigned to. Not :build, which also assembles publishable artifacts and so
-        # generates Dokka HTML and Javadoc for every component: PRs only need correctness verification, and the docs
-        # and publish jobs below build what they need. The build job merges the shards' test and coverage reports.
-        # check.shard.integration counts the integration tests in the assignment; the next step must pass the same.
-        run: ./gradlew :check -Pcheck.shard=${{ matrix.shard }}/${{ strategy.job-total }} -Pcheck.shard.integration=true
-        env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Integration Tests
-        # Blocking step: TestKit probes for configuration-cache and WorkerExecutor serialization boundaries, on the
-        # shard they are assigned to (a no-op on the others). Runs after Verify so unit-test feedback comes first. The
-        # cores with integration tests are listed in the root build.gradle.kts.
-        run: ./gradlew :shardIntegrationTest -Pcheck.shard=${{ matrix.shard }}/${{ strategy.job-total }} -Pcheck.shard.integration=true
+        # :check (tests, detekt, verifyGradleLinkage, verifyPomDependencyVersions) of this shard's cores, the compat
+        # tests on the shard they are assigned to and, through :shardIntegrationTest, the integration tests (TestKit
+        # probes of configuration-cache and WorkerExecutor serialization boundaries) on theirs, in one invocation so
+        # that no shard configures the build twice. check.shard.integration counts the integration tests in the
+        # assignment. Not :build, which also assembles publishable artifacts and so generates Dokka HTML and Javadoc
+        # for every component: PRs only need correctness verification, and the docs and publish jobs below build what
+        # they need. The build job merges the shards' test, coverage and integration-test reports.
+        run: >-
+          ./gradlew :check :shardIntegrationTest
+          -Pcheck.shard=${{ matrix.shard }}/${{ strategy.job-total }}
+          -Pcheck.shard.integration=true
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

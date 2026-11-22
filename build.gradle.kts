@@ -166,8 +166,8 @@ tasks.register("check") {
 
 // The integration tests, of every core with them, or with -Pcheck.shard of the shard that owns the integration-test
 // unit (none on the others). The shard's assignment counts that unit only with -Pcheck.shard.integration=true, so a
-// sharded invocation of this task without it fails rather than run no integration tests on any shard. A separate
-// invocation from `check`, so that unit-test feedback comes first; pass both the same properties.
+// sharded invocation of this task without it fails rather than run no integration tests on any shard. CI runs it in
+// the same invocation as the shard's `check`.
 tasks.register("shardIntegrationTest") {
     description = "Runs the integration tests, or with -Pcheck.shard those of the shard that owns them."
     group = "verification"
