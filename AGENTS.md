@@ -140,7 +140,7 @@ Local (in `gradle/plugins`):
 
 - `com.kelvsyc.internal.gradle-tools.core` — gradlex `jvm-dependency-conflict-resolution` (with `enforceSlf4JSimple()`) and `reproducible-builds`; the Gradle API link (`https://docs.gradle.org/current/kotlin-dsl/gradle`) in the Dokka documentation; the compat repository (see Gradle Compatibility Tiers). Root `:check` does not run each core's `check`, only selected tasks (`verifyGradleLinkage`, `verifyPomDependencyVersions`, detekt and, through the aggregate reports, the tests), so a new per-core verification must be added to root `check` as well, next to `verifyGradleLinkage`, where it covers the cores of the shard (see Sharding) or, unsharded, every core.
 - `com.kelvsyc.internal.gradle-tools.detekt` — detekt with `gradle/detekt.yml` (see JDK Constraints).
-- `com.kelvsyc.internal.gradle-tools.jacoco` — JaCoCo, with an HTML report after `test`.
+- `com.kelvsyc.internal.gradle-tools.jacoco` — JaCoCo: tests record execution data (`build/jacoco/test.exec`) for the aggregate report. A core's own HTML report is not part of `check`; build it with `./gradlew :<core>:jacocoTestReport`.
 - `com.kelvsyc.internal.gradle-tools.gradle-integration-test` — the `integrationTest` source set and task (see Rule 3 below).
 
 ### Component Settings Pattern
