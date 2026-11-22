@@ -4,14 +4,20 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
-import org.gradle.util.GradleVersion
 import java.io.File
 import kotlin.io.path.createTempDirectory
 
 /**
  * Verifies the range of Gradle versions this plugin promises in its README, using real Gradle distributions.
+ *
+ * Each subclass covers one Gradle version, so that Gradle forks the subclasses into parallel test JVMs and the versions'
+ * distribution download, daemon start and dependency resolution overlap. A subclass's TestKit directory is its own, as
+ * TestKit directories must not be shared between concurrent builds.
  */
-class DokkaDashGradleVersionSpec : FunSpec() {
+abstract class DokkaDashGradleVersionSpec : FunSpec() {
+    // One subdirectory per Gradle version.
+    private val testKitRoot = File(System.getProperty("gradleVersionTest.testKitDir"))
+
     private val settings = """rootProject.name = "consumer""""
 
     private val kotlinBuild = """
@@ -44,36 +50,35 @@ class DokkaDashGradleVersionSpec : FunSpec() {
         }
     """.trimIndent()
 
-    init {
-        val versions = listOf("8.14", "9.0.0", "9.8.2", GradleVersion.current().version).distinct()
-        val builds = mapOf(
-            "kotlin" to ("settings.gradle.kts" to "build.gradle.kts" to kotlinBuild),
-            "groovy" to ("settings.gradle" to "build.gradle" to groovyBuild),
-        )
+    private val builds = mapOf(
+        "kotlin" to ("settings.gradle.kts" to "build.gradle.kts" to kotlinBuild),
+        "groovy" to ("settings.gradle" to "build.gradle" to groovyBuild),
+    )
 
-        versions.forEach { version ->
-            builds.forEach { (dsl, build) ->
-                test("$dsl on $version generates a docset") {
-                    val (fileNames, script) = build
-                    val dir = createTempDirectory("dash-version-test").toFile()
-                    try {
-                        File(dir, fileNames.first).writeText(settings)
-                        File(dir, fileNames.second).writeText(script)
-                        File(dir, "dokka").mkdirs()
-                        File(dir, "dokka/index.html").writeText("<html></html>")
+    // Every test that runs on each Gradle version.
+    protected fun versionTests(version: String) {
+        builds.forEach { (dsl, build) ->
+            test("$dsl on $version generates a docset") {
+                val (fileNames, script) = build
+                val dir = createTempDirectory("dash-version-test").toFile()
+                try {
+                    File(dir, fileNames.first).writeText(settings)
+                    File(dir, fileNames.second).writeText(script)
+                    File(dir, "dokka").mkdirs()
+                    File(dir, "dokka/index.html").writeText("<html></html>")
 
-                        val result = GradleRunner.create()
-                            .withProjectDir(dir)
-                            .withPluginClasspath()
-                            .withGradleVersion(version)
-                            .withArguments("docset")
-                            .build()
+                    val result = GradleRunner.create()
+                        .withProjectDir(dir)
+                        .withPluginClasspath()
+                        .withGradleVersion(version)
+                        .withTestKitDir(File(testKitRoot, version))
+                        .withArguments("docset")
+                        .build()
 
-                        result.task(":docset")?.outcome shouldBe TaskOutcome.SUCCESS
-                        File(dir, "build/d/x.docset/Contents/Resources/docSet.dsidx").exists() shouldBe true
-                    } finally {
-                        dir.deleteRecursively()
-                    }
+                    result.task(":docset")?.outcome shouldBe TaskOutcome.SUCCESS
+                    File(dir, "build/d/x.docset/Contents/Resources/docSet.dsidx").exists() shouldBe true
+                } finally {
+                    dir.deleteRecursively()
                 }
             }
         }

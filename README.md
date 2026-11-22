@@ -139,6 +139,8 @@ Components publish the versions of their dependencies. A published BOM and versi
 
 ```bash
 ./gradlew :build          # Build all components
+./gradlew :check          # Tests, compat tests, detekt and verifications
+./gradlew :check -Pcheck.shard=1/4  # One of four shards of :check, as CI runs it
 ./gradlew :test           # Run tests
 ./gradlew :detekt         # Lint
 ```

@@ -1,6 +1,11 @@
-package com.kelvsyc.gradle.compat
+package com.kelvsyc.gradle.compat.versions
 
+import com.kelvsyc.gradle.compat.TierCompatibilitySpec
 import org.gradle.util.GradleVersion
+
+// One subclass per Gradle version. Gradle hands test classes to its test JVMs in turn, in the order it finds them, so
+// these are the only classes in this package: found one after another, they go to distinct JVMs as long as there are no
+// more versions than test JVMs (maxParallelForks, capped at max-workers).
 
 // The oldest Gradle of the 8.x tier, which the tier's cores must still resolve and run on.
 class Gradle814CompatibilitySpec : TierCompatibilitySpec() {

@@ -12,8 +12,112 @@ on:
       - main
 
 jobs:
+  # The root check, split into shards (-Pcheck.shard=<shard>/<shards>). Adding a shard is adding it to the matrix.
+  shard:
+    name: build (${{ matrix.shard }}/${{ strategy.job-total }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    outputs:
+      # The number of shards, for the build job to check that it received every shard's results. Every leg writes the same.
+      shards: ${{ strategy.job-total }}
+    strategy:
+      # Every shard runs to the end, so that the build job reports every test result.
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          filter: tree:0
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          java-version: '21'
+          distribution: 'zulu'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          build-scan-publish: true
+          build-scan-terms-of-use-url: "https://gradle.com/help/legal-terms-of-use"
+          build-scan-terms-of-use-agree: "yes"
+      - name: Verify
+        # :check (tests, detekt, verifyGradleLinkage, verifyPomDependencyVersions) of this shard's cores, and the compat
+        # tests on shard 1. Not :build, which also assembles publishable artifacts and so generates Dokka HTML and
+        # Javadoc for every component: PRs only need correctness verification, and the docs and publish jobs below
+        # build what they need. The build job merges the shards' test and coverage reports.
+        run: ./gradlew :check -Pcheck.shard=${{ matrix.shard }}/${{ strategy.job-total }}
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Integration Tests
+        # Blocking step: TestKit probes for configuration-cache and WorkerExecutor serialization
+        # boundaries. Runs after Verify so unit-test feedback comes first, on the last shard only.
+        # When adding a new *-base component with a BuildService, also add it here and to the
+        # integrationTestComponents set in aggregation/testing/build.gradle.kts.
+        if: matrix.shard == strategy.job-total
+        run: >-
+          ./gradlew
+          :artifactory-base:integrationTest
+          :aws-imds-java-base:integrationTest
+          :aws-s3-java-base:integrationTest
+          :aws-secrets-manager-java-base:integrationTest
+          :aws-sns-java-base:integrationTest
+          :aws-sns-kotlin-base:integrationTest
+          :azure-blob-storage-base:integrationTest
+          :bitbucket-cloud-base:integrationTest
+          :bitbucket-data-center-base:integrationTest
+          :google-cloud-storage-base:integrationTest
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Package Shard Results
+        # What the build job needs to merge the reports, at the paths Gradle wrote them to: test results (XML and
+        # binary), JaCoCo execution data, and the main classes the execution data was recorded against. A core's
+        # classes go to primary.tar from the shard that ran its tests, and to fallback.tar from any other shard that
+        # compiled it as a dependency, so that the build job can prefer the former.
+        if: always()
+        run: |
+          # nullglob drops a pattern that matches nothing, so a shard archives only the cores it ran tests or compiled
+          # for; compat's results, a fixed path, exist only on shard 1.
+          shopt -s nullglob
+          primary=(cores/*/build/test-results cores/*/build/jacoco/test.exec)
+          if [ -d aggregation/compat/build/test-results ]; then
+            primary+=(aggregation/compat/build/test-results)
+          fi
+          fallback=()
+          for core in cores/*; do
+            if [ -f "$core/build/jacoco/test.exec" ]; then
+              primary+=("$core"/build/classes/*/main)
+            else
+              fallback+=("$core"/build/classes/*/main)
+            fi
+          done
+          mkdir -p shard-results
+          tar -cf shard-results/primary.tar --files-from /dev/null "${primary[@]}"
+          tar -cf shard-results/fallback.tar --files-from /dev/null "${fallback[@]}"
+      - name: Upload Shard Results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: shard-${{ matrix.shard }}
+          path: shard-results
+          # Long enough to re-run failed shards and merge them with the other shards' results; a re-run replaces its
+          # shard's earlier artifact.
+          retention-days: 7
+          overwrite: true
+
+  # The repository's required status check, and what the jobs below need: passes only if every shard passed, and
+  # produces the reports of the whole root check from the shards' results.
   build:
     runs-on: ubuntu-latest
+    needs: shard
+    # Also after a failed shard, to publish its test results and to fail this check rather than skip it.
+    if: always()
     permissions:
       contents: read
       checks: write
@@ -41,33 +145,29 @@ jobs:
           build-scan-publish: true
           build-scan-terms-of-use-url: "https://gradle.com/help/legal-terms-of-use"
           build-scan-terms-of-use-agree: "yes"
-      - name: Verify
-        # :check (test + detekt) + :jacoco (aggregate coverage report), not :build - :build also
-        # assembles publishable artifacts (javadocJar/sourcesJar), which pulls in Dokka HTML+Javadoc
-        # generation for every component. PRs only need correctness verification; Dokka only matters
-        # for the docs/publish jobs below, which already run on push to main.
-        run: ./gradlew :check :jacoco
+      - name: Download Shard Results
+        uses: actions/download-artifact@v8
+        with:
+          pattern: shard-*
+          path: shard-results
+      - name: Unpack Shard Results
+        # Fails unless every shard's results arrived (an earlier attempt's may have expired, or a shard never uploaded),
+        # so that the reports are never built from part of the shards. Every shard's primary.tar first; fallback.tar
+        # never replaces a file already unpacked.
+        run: |
+          shopt -s nullglob
+          archives=(shard-results/shard-*/primary.tar)
+          if [ "${#archives[@]}" -ne "$SHARDS" ]; then
+            echo "::error::Received the results of ${#archives[@]} of ${SHARDS:-?} shards; re-run all jobs."
+            exit 1
+          fi
+          for archive in shard-results/*/primary.tar; do tar -xf "$archive"; done
+          for archive in shard-results/*/fallback.tar; do tar -xf "$archive" --skip-old-files; done
         env:
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Integration Tests
-        # Blocking step: TestKit probes for configuration-cache and WorkerExecutor serialization
-        # boundaries. Runs after Verify so unit-test feedback comes first.
-        # When adding a new *-base component with a BuildService, also add it here and to the
-        # integrationTestComponents set in aggregation/testing/build.gradle.kts.
-        run: >-
-          ./gradlew
-          :artifactory-base:integrationTest
-          :aws-imds-java-base:integrationTest
-          :aws-s3-java-base:integrationTest
-          :aws-secrets-manager-java-base:integrationTest
-          :aws-sns-java-base:integrationTest
-          :aws-sns-kotlin-base:integrationTest
-          :azure-blob-storage-base:integrationTest
-          :bitbucket-cloud-base:integrationTest
-          :bitbucket-data-center-base:integrationTest
-          :google-cloud-storage-base:integrationTest
-          :aggregation:testing:collectIntegrationTestReports
+          SHARDS: ${{ needs.shard.outputs.shards }}
+      - name: Merge Shard Reports
+        # Builds the aggregate test, coverage and integration-test reports from the unpacked results. Runs no tests.
+        run: ./gradlew :mergeShardReports
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -80,10 +180,11 @@ jobs:
           fail_on_failure: false
       - name: Upload Aggregate Test Report
         id: upload-aggregate-test
+        if: needs.shard.result == 'success'
         uses: actions/upload-artifact@v7
         with:
           name: test-aggregate
-          path: aggregation/testing/build/reports/tests/test/aggregated-results
+          path: aggregation/testing/build/reports/tests/test/merged-shards
       - name: Upload Integration Test Reports
         id: upload-integration-test
         if: always()
@@ -93,10 +194,21 @@ jobs:
           path: aggregation/testing/build/reports/tests/integrationTest/raw
       - name: Upload Aggregate JaCoCo Code Coverage Report
         id: upload-aggregate-jacoco
+        if: needs.shard.result == 'success'
         uses: actions/upload-artifact@v7
         with:
           name: jacoco-aggregate
-          path: aggregation/jacoco/build/reports/jacoco/testCodeCoverageReport
+          path: aggregation/jacoco/build/reports/jacoco/mergeShardCoverageReport
+      - name: Require Every Shard to Pass
+        # The Unpack Shard Results step has already failed this job if a shard's results are missing.
+        if: always()
+        run: |
+          if [ "$SHARD_RESULT" != success ]; then
+            echo "::error::A shard of the root check did not pass: $SHARD_RESULT"
+            exit 1
+          fi
+        env:
+          SHARD_RESULT: ${{ needs.shard.result }}
 
   docs:
     runs-on: ubuntu-latest
@@ -151,7 +263,7 @@ jobs:
       - name: Report JaCoCo
         uses: madrapps/jacoco-report@v1.8.0
         with:
-          paths: jacoco-aggregate/testCodeCoverageReport.xml
+          paths: jacoco-aggregate/mergeShardCoverageReport.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           title: Aggregate Code Coverage
           update-comment: true
