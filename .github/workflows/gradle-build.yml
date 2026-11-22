@@ -41,17 +41,6 @@ jobs:
           build-scan-publish: true
           build-scan-terms-of-use-url: "https://gradle.com/help/legal-terms-of-use"
           build-scan-terms-of-use-agree: "yes"
-      - name: Locate the compat TestKit directory
-        # aggregation/compat runs real Gradle distributions through TestKit; keeping its directory between runs
-        # saves the dependency resolution and Kotlin DSL jar generation of every version (distributions are in
-        # the Gradle user home, which setup-gradle caches).
-        run: echo "COMPAT_TESTKIT_DIR=$RUNNER_TEMP/compat-testkit" >> "$GITHUB_ENV"
-      - name: Cache the compat TestKit directory
-        uses: actions/cache@v5
-        with:
-          path: ${{ env.COMPAT_TESTKIT_DIR }}
-          key: compat-testkit-${{ runner.os }}-${{ hashFiles('aggregation/compat/src/test/**', 'aggregation/compat/build.gradle.kts', 'gradle/wrapper/gradle-wrapper.properties', 'gradle/libs.versions.toml') }}
-          restore-keys: compat-testkit-${{ runner.os }}-
       - name: Verify
         # :check (test + detekt) + :jacoco (aggregate coverage report), not :build - :build also
         # assembles publishable artifacts (javadocJar/sourcesJar), which pulls in Dokka HTML+Javadoc
