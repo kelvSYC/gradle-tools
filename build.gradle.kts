@@ -4,20 +4,25 @@ val components = file("cores").listFiles { dir -> dir.isDirectory && dir.resolve
     ?.map { it.name }.orEmpty().sorted()
 
 // The cores with integration tests (TestKit probes of configuration-cache and WorkerExecutor serialization boundaries),
-// which root `shardIntegrationTest` runs. When adding a new *-base component with a BuildService, also add it here and
-// to the integrationTestComponents set in aggregation/testing/build.gradle.kts.
-val integrationTestComponents = listOf(
-    "artifactory-base",
-    "aws-imds-java-base",
-    "aws-s3-java-base",
-    "aws-secrets-manager-java-base",
-    "aws-sns-java-base",
-    "aws-sns-kotlin-base",
-    "azure-blob-storage-base",
-    "bitbucket-cloud-base",
-    "bitbucket-data-center-base",
-    "google-cloud-storage-base",
-)
+// which root `shardIntegrationTest` runs: those with an `integrationTest` source directory. Applying the
+// `gradle-integration-test` convention without sources, or having sources without applying it, fails the build.
+val integrationConvention = "com.kelvsyc.internal.gradle-tools.gradle-integration-test"
+val integrationTestComponents = components.filter { core ->
+    val dir = file("cores/$core")
+    val hasSources = dir.resolve("src/integrationTest").isDirectory
+    val appliesConvention = dir.resolve("build.gradle.kts").readText().contains(integrationConvention)
+    if (appliesConvention && !hasSources) {
+        throw InvalidUserDataException(
+            "Core '$core' applies $integrationConvention but has no src/integrationTest sources; add them or remove the plugin."
+        )
+    }
+    if (hasSources && !appliesConvention) {
+        throw InvalidUserDataException(
+            "Core '$core' has src/integrationTest sources but does not apply $integrationConvention."
+        )
+    }
+    hasSources
+}
 
 // The units that shards are made of, besides one per core.
 val compatUnit = "aggregation/compat"
