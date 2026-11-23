@@ -94,7 +94,7 @@ The root `settings.gradle.kts` composes three layers of included builds:
    - `clients-base` — Base service for SDK client management (prerequisite for most AWS/GCP plugins)
    - `*-base` — Plugins for specific cloud services (Artifactory, AWS S3/SQS/SNS/SES/SecretsManager/CodeArtifact/IMDS, GCP Artifact Registry/Storage, Git)
 
-3. **`aggregation/`** — Aggregates Dokka docs, JaCoCo coverage and test reports, and runs the compat tests. **`metadata/`** publishes the BOM and version catalog.
+3. **`aggregation/`** — Aggregates Dokka docs, JaCoCo coverage and test reports, and runs the compat tests. **`metadata/`** publishes the BOM and version catalog; both list every core's library and read the plugin IDs (marker constraints, catalog plugin aliases) from the cores' `plugins.register("<name>") { id = "..." }` declarations, failing if a registration does not have that shape.
 
 ### Shared Build Conventions
 
