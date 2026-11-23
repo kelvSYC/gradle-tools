@@ -34,7 +34,7 @@ tasks.register<TestReport>("mergeShardTestReports") {
 // gracefully handle a testsuite name that only some dependencies expose, so we collect the raw JUnit XML
 // files directly from each opted-in core. CI globs the same locations independently for JUnit annotation.
 // When adding a new *-base component with a BuildService, also add it here and to the
-// Integration Tests step in .github/workflows/gradle-build.yml.
+// integrationTestComponents list in the root build.gradle.kts.
 val integrationTestComponents = setOf(
     "artifactory-base",
     "aws-imds-java-base",
