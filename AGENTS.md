@@ -24,7 +24,7 @@ Guidance for coding agents (and humans) working in this Gradle composite build: 
 ./gradlew :mergeShardReports        # Aggregate test/coverage reports from shard results on disk; run separately from :check
 ./gradlew :test           # Run tests across all components
 ./gradlew :detekt         # Lint all components
-./gradlew :publish        # Publish to GitHub Packages (requires gpr.user/gpr.key or GITHUB_ACTOR/GITHUB_TOKEN)
+./gradlew :publish        # Publish to GitHub Packages (requires `GitHubPackagesUsername`/`GitHubPackagesPassword`)
 ```
 
 Single component (from repo root):
@@ -238,7 +238,7 @@ Do not remove these from the conventions.
 
 ### Publishing Requires Credentials ⚠️
 
-`./gradlew :publish` requires credentials: the `gpr.user`/`gpr.key` Gradle properties, else `GITHUB_ACTOR` and `GITHUB_TOKEN`. Without them, it fails. The repository URL is derived from the `origin` git remote, so `origin` must point at the GitHub repository.
+`./gradlew :publish` requires credentials: the `GitHubPackagesUsername`/`GitHubPackagesPassword` Gradle properties (for example in `~/.gradle/gradle.properties`, or as `ORG_GRADLE_PROJECT_GitHubPackagesUsername`/`ORG_GRADLE_PROJECT_GitHubPackagesPassword` environment variables). The publishing repository reads them at execution, which keeps the publish tasks configuration-cache compatible. Without them, it fails. Resolving dependencies from GitHub Packages is separate and still uses the `gpr.user`/`gpr.key` Gradle properties, else `GITHUB_ACTOR`/`GITHUB_TOKEN` (see Building Requires GitHub Packages Credentials). The repository URL is derived from the `origin` git remote, so `origin` must point at the GitHub repository.
 
 ### Building Requires GitHub Packages Credentials ⚠️
 
