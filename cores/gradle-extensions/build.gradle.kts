@@ -92,18 +92,24 @@ dependencies {
 
 val variantTestRepo = layout.buildDirectory.dir("variant-test-repo")
 
-publishing {
-    repositories.maven(variantTestRepo) { name = "variantTest" }
-}
+// The variant tests resolve the core from build/variant-test-repo. The repository is not one of the publishing
+// repositories, so `publish` stays the GitHub Packages release path: a standalone task publishes to it instead.
+// Created through the project's repository handler, then removed from it again: dependencies never resolve from it.
+val variantTestRepository = repositories.maven(variantTestRepo) { name = "variantTest" }
+repositories.remove(variantTestRepository)
 
 // GradleVariantSelectionSpec resolves a dynamic version, so the repository must hold exactly one release.
 val cleanVariantTestRepo = tasks.register<Delete>("cleanVariantTestRepo") { delete(variantTestRepo) }
-tasks.withType<PublishToMavenRepository>().matching { it.name.endsWith("ToVariantTestRepository") }.configureEach {
+val publishToVariantTestRepository = tasks.register<PublishToMavenRepository>("publishMavenPublicationToVariantTestRepository") {
+    group = "publishing"
+    description = "Publishes Maven publication 'maven' to the variant test repository."
+    publication = publishing.publications.getByName<MavenPublication>("maven")
+    repository = variantTestRepository
     dependsOn(cleanVariantTestRepo)
 }
 
 tasks.test {
-    dependsOn("publishMavenPublicationToVariantTestRepository")
+    dependsOn(publishToVariantTestRepository)
     val repo = variantTestRepo
     // maven-metadata.xml changes on every publish, so only track the artifacts themselves.
     inputs.files(repo.map { it.asFileTree.matching { include("**/*.jar", "**/*.module") } })
