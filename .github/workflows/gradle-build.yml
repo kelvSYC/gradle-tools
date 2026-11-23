@@ -52,7 +52,7 @@ jobs:
         # that no shard configures the build twice. check.shard.integration counts the integration tests in the
         # assignment. Not :build, which also assembles publishable artifacts and so generates Dokka HTML and Javadoc
         # for every component: PRs only need correctness verification, and the docs and publish jobs below build what
-        # they need. The build job merges the shards' test, coverage and integration-test reports.
+        # they need. The build job merges the shards' test and integration-test reports and, on pushes, the coverage report.
         run: >-
           ./gradlew :check :shardIntegrationTest
           -Pcheck.shard=${{ matrix.shard }}/${{ strategy.job-total }}
@@ -62,26 +62,32 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Package Shard Results
         # What the build job needs to merge the reports, at the paths Gradle wrote them to: test results (XML and
-        # binary), JaCoCo execution data, and the main classes the execution data was recorded against. A core's
-        # classes go to primary.tar from the shard that ran its tests, and to fallback.tar from any other shard that
-        # compiled it as a dependency, so that the build job can prefer the former.
+        # binary) and, on pushes only (coverage reports are not produced for pull requests), JaCoCo execution data and
+        # the main classes the execution data was recorded against. A core's classes go to primary.tar from the shard
+        # that ran its tests, and to fallback.tar from any other shard that compiled it as a dependency, so that the
+        # build job can prefer the former.
         if: always()
+        env:
+          COVERAGE: ${{ github.event_name == 'push' }}
         run: |
           # nullglob drops a pattern that matches nothing, so a shard archives only the cores it ran tests or compiled
           # for (integration-test results included); compat's results, a fixed path, exist only on its shard.
           shopt -s nullglob
-          primary=(cores/*/build/test-results cores/*/build/jacoco/test.exec)
+          primary=(cores/*/build/test-results)
           if [ -d aggregation/compat/build/test-results ]; then
             primary+=(aggregation/compat/build/test-results)
           fi
           fallback=()
-          for core in cores/*; do
-            if [ -f "$core/build/jacoco/test.exec" ]; then
-              primary+=("$core"/build/classes/*/main)
-            else
-              fallback+=("$core"/build/classes/*/main)
-            fi
-          done
+          if [ "$COVERAGE" = true ]; then
+            primary+=(cores/*/build/jacoco/test.exec)
+            for core in cores/*; do
+              if [ -f "$core/build/jacoco/test.exec" ]; then
+                primary+=("$core"/build/classes/*/main)
+              else
+                fallback+=("$core"/build/classes/*/main)
+              fi
+            done
+          fi
           mkdir -p shard-results
           tar -cf shard-results/primary.tar --files-from /dev/null "${primary[@]}"
           tar -cf shard-results/fallback.tar --files-from /dev/null "${fallback[@]}"
@@ -109,7 +115,6 @@ jobs:
       packages: read
       pull-requests: write
     outputs:
-      aggregate-jacoco-id: ${{ steps.upload-aggregate-jacoco.outputs.artifact-id }}
       aggregate-test-id: ${{ steps.upload-aggregate-test.outputs.artifact-id }}
       integration-test-id: ${{ steps.upload-integration-test.outputs.artifact-id }}
 
@@ -151,8 +156,9 @@ jobs:
         env:
           SHARDS: ${{ needs.shard.outputs.shards }}
       - name: Merge Shard Reports
-        # Builds the aggregate test, coverage and integration-test reports from the unpacked results. Runs no tests.
-        run: ./gradlew :mergeShardReports
+        # Builds the aggregate test and integration-test reports from the unpacked results and, on pushes, the
+        # coverage report. Runs no tests.
+        run: ./gradlew ${{ github.event_name == 'push' && ':mergeShardReports' || ':mergeShardTestReports' }}
         env:
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -179,7 +185,7 @@ jobs:
           path: aggregation/testing/build/reports/tests/integrationTest/raw
       - name: Upload Aggregate JaCoCo Code Coverage Report
         id: upload-aggregate-jacoco
-        if: needs.shard.result == 'success'
+        if: github.event_name == 'push' && needs.shard.result == 'success'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: jacoco-aggregate
@@ -233,30 +239,6 @@ jobs:
         with:
           name: kdoc-aggregate
           path: aggregation/dokka/build/dokka/html
-
-  jacoco:
-    runs-on: ubuntu-latest
-    needs: build
-    permissions:
-      contents: read
-      pull-requests: write
-
-    steps:
-      - name: Download Aggregate JaCoCo Code Coverage Artifact
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        with:
-          artifact-ids: ${{needs.build.outputs.aggregate-jacoco-id}}
-          path: jacoco-aggregate
-      - name: Report JaCoCo
-        uses: madrapps/jacoco-report@e51ce1f46f7f8b5331593f935e59cbaf44b84920 # v1.8.0
-        with:
-          paths: jacoco-aggregate/mergeShardCoverageReport.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: Aggregate Code Coverage
-          update-comment: true
-          # FIXME Remove after improvements are made
-          min-coverage-overall: 0
-          min-coverage-changed-files: 0
 
   publish:
     runs-on: ubuntu-latest

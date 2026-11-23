@@ -207,9 +207,14 @@ tasks.register("shardAssignment") {
 
 // Builds the aggregate test, coverage and integration-test reports from the results of earlier sharded `check` runs
 // that are already on disk (CI copies every shard's results into place first). Runs no tests.
-tasks.register("mergeShardReports") {
+tasks.register("mergeShardTestReports") {
     dependsOn(gradle.includedBuild("aggregation").task(":testing:mergeShardTestReports"))
     dependsOn(gradle.includedBuild("aggregation").task(":testing:collectIntegrationTestReports"))
+}
+
+// The test reports and the coverage report. CI runs only mergeShardTestReports on pull requests.
+tasks.register("mergeShardReports") {
+    dependsOn("mergeShardTestReports")
     dependsOn(gradle.includedBuild("aggregation").task(":jacoco:mergeShardCoverageReport"))
 }
 
