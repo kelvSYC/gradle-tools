@@ -14,8 +14,10 @@ val integrationTestComponents = listOf(
     "aws-sns-java-base",
     "aws-sns-kotlin-base",
     "azure-blob-storage-base",
+    "azure-container-registry-base",
     "bitbucket-cloud-base",
     "bitbucket-data-center-base",
+    "gitea-base",
     "google-cloud-storage-base",
 )
 
