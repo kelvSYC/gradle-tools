@@ -1,82 +1,74 @@
 #!/usr/bin/env python3
 """Generates gradle/shard-weights.properties, the relative costs the root build shards `check` by.
 
-Usage: gradle/shard-weights.py <ops-log> [--integration-weight N]
+Usage: gradle/shard-weights.py <artifacts-dir> [--overhead SECONDS]
 
-<ops-log> is the JSON-lines build-operation log of a cold, unsharded root `check`, written by
-`./gradlew :check --rerun-tasks -Dorg.gradle.internal.operations.trace=<base>` as `<base>-log.txt`.
-A unit's weight is the sum of the durations, in seconds, of the tasks it owns:
+<artifacts-dir> holds the `shard-<n>` artifacts of one CI run of the root check, as downloaded by
+`gh run download <run-id> -R kelvSYC/gradle-tools -p 'shard-*' -D <artifacts-dir>`: each
+`shard-<n>/primary.tar` has the JUnit XML results of the tests that shard ran. A unit's weight is
+the summed `time` of its test suites, in seconds:
 
-- a core: every task of its included build, except integration-test tasks;
-- `aggregation/compat`: the tasks of the `aggregation` build's `compat` project;
-- `integrationTest`: the integration-test tasks of every core (task names containing
-  `integrationTest` or `IntegrationTest`).
+- a core: its `test` suites, plus --overhead (default 30) for the rest of its tasks (compilation,
+  detekt, linkage and POM checks); a core without test results weighs the overhead alone;
+- `aggregation/compat`: its `test` suites;
+- `integrationTest`: the `integrationTest` suites of every core.
 
-The tasks of a build run in parallel, so the sums are inflated by contention, but they are comparable
-with each other. If the log has no integration-test tasks (root `check` does not run them), pass
-`--integration-weight`. The file is written next to this script.
+The file is written next to this script. The archives are only read, never extracted.
 """
 
 import argparse
-import json
 import pathlib
-import sys
+import tarfile
+import xml.etree.ElementTree as ET
 
-TASK_DETAILS = "org.gradle.api.internal.tasks.execution.ExecuteTaskBuildOperationDetails"
 COMPAT_UNIT = "aggregation/compat"
 INTEGRATION_UNIT = "integrationTest"
-MILLIS_PER_SECOND = 1000
+DEFAULT_OVERHEAD = 30
+RESULTS_DIR = "test-results"
 
 
-def is_integration_task(task_path):
-    name = task_path.rsplit(":", 1)[-1]
-    return "integrationTest" in name or "IntegrationTest" in name
-
-
-def unit_of(build, task_path, cores):
-    if build == "aggregation":
-        return COMPAT_UNIT if task_path.startswith(":compat:") else None
-    if build in cores:
-        return INTEGRATION_UNIT if is_integration_task(task_path) else build
+def unit_of(member, cores):
+    """The unit of a `.../build/test-results/<suite>/TEST-*.xml` archive member, or None."""
+    parts = member.split("/")
+    if not parts[-1].startswith("TEST-") or not parts[-1].endswith(".xml") or RESULTS_DIR not in parts:
+        return None
+    suite = parts[parts.index(RESULTS_DIR) + 1]
+    if parts[:2] == ["aggregation", "compat"]:
+        return COMPAT_UNIT if suite == "test" else None
+    if parts[0] == "cores" and parts[1] in cores:
+        return {"test": parts[1], INTEGRATION_UNIT: INTEGRATION_UNIT}.get(suite)
     return None
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("ops_log", type=pathlib.Path)
-    parser.add_argument("--integration-weight", type=int)
+    parser.add_argument("artifacts_dir", type=pathlib.Path)
+    parser.add_argument("--overhead", type=float, default=DEFAULT_OVERHEAD)
     args = parser.parse_args()
 
     gradle_dir = pathlib.Path(__file__).resolve().parent
-    cores_dir = gradle_dir.parent / "cores"
-    cores = {path.name for path in cores_dir.iterdir() if (path / "settings.gradle.kts").exists()}
+    cores = {path.name for path in (gradle_dir.parent / "cores").iterdir() if (path / "settings.gradle.kts").exists()}
 
-    started = {}
-    weights = {}
-    with args.ops_log.open() as log:
-        for line in log:
-            op = json.loads(line)
-            if op.get("detailsClassName") == TASK_DETAILS:
-                details = op["details"]
-                started[op["id"]] = (details["buildPath"].lstrip(":"), details["taskPath"], op["startTime"])
-            elif "endTime" in op and op["id"] in started:
-                build, task_path, start = started.pop(op["id"])
-                unit = unit_of(build, task_path, cores)
+    archives = sorted(args.artifacts_dir.glob("shard-*/primary.tar"))
+    if not archives:
+        parser.error(f"no shard-*/primary.tar under {args.artifacts_dir}")
+
+    # By member path, so that a suite archived by two shards counts once.
+    suites = {}
+    for archive in archives:
+        with tarfile.open(archive) as tar:
+            for member in tar.getmembers():
+                unit = unit_of(member.name, cores) if member.isfile() else None
                 if unit is not None:
-                    weights[unit] = weights.get(unit, 0) + (op["endTime"] - start) / MILLIS_PER_SECOND
+                    suites[member.name] = (unit, float(ET.parse(tar.extractfile(member)).getroot().get("time", "0")))
 
-    if args.integration_weight is not None:
-        weights[INTEGRATION_UNIT] = args.integration_weight
-    elif INTEGRATION_UNIT not in weights:
-        sys.exit("The log has no integration-test tasks; pass --integration-weight.")
-
-    missing = sorted(cores - weights.keys())
-    if missing:
-        print(f"Not in the log, so sharded with the median weight: {', '.join(missing)}", file=sys.stderr)
+    weights = {core: args.overhead for core in cores}
+    for unit, time in suites.values():
+        weights[unit] = weights.get(unit, 0) + time
 
     lines = [
         "# Relative cost of each unit of the root check, by which -Pcheck.shard assigns units to shards.",
-        "# Generated by gradle/shard-weights.py from a build-operation trace; see Sharding in AGENTS.md.",
+        "# Generated by gradle/shard-weights.py from the shard artifacts of a CI run; see Sharding in AGENTS.md.",
     ]
     lines += [f"{unit}={max(1, round(weight))}" for unit, weight in sorted(weights.items())]
     (gradle_dir / "shard-weights.properties").write_text("\n".join(lines) + "\n")

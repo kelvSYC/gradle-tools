@@ -56,7 +56,7 @@ fun assignShards(weights: Map<String, Double>, count: Int): Map<String, Int> {
  *
  * Every core, `aggregation/compat` and, with `-Pcheck.shard.integration=true`, the integration tests are units, which
  * [assignShards] assigns to shards with the weights in `gradle/shard-weights.properties` ([unitWeights]). The weights
- * are the relative costs of the units, measured from a build-operation trace by `gradle/shard-weights.py`.
+ * are the relative costs of the units, measured from CI test results by `gradle/shard-weights.py`.
  */
 class CheckShard(val index: Int, val count: Int, val weights: Map<String, Double>) {
     val assignment = assignShards(weights, count)
