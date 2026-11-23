@@ -22,5 +22,4 @@ dependencyResolutionManagement {
     repositories.gradlePluginPortal()
 }
 
-include("jacoco-convention")
 include("kotlin-convention")

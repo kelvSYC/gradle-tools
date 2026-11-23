@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("com.kelvsyc.internal.dokka")
-    id("com.kelvsyc.internal.gradle-tools.jacoco")
+    id("com.kelvsyc.internal.jacoco")
     id("com.kelvsyc.internal.kotlin-gradle-library")
     id("com.kelvsyc.internal.gradle-tools.core")
     id("com.kelvsyc.internal.gradle-tools.detekt")

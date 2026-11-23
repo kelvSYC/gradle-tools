@@ -1,5 +1,6 @@
 plugins {
     id("jacoco-report-aggregation")
+    id("com.kelvsyc.internal.jacoco")
 }
 
 group = "com.kelvsyc.gradle"
