@@ -87,7 +87,7 @@ The root `settings.gradle.kts` composes three layers of included builds:
 
 1. **`gradle/`** — Internal build infrastructure (not published):
    - `gradle/settings` — Thin settings plugin (`com.kelvsyc.internal.gradle-tools.settings`): applies the shared settings plugin `com.kelvsyc.internal.settings` from [gradle-build-conventions](https://github.com/kelvSYC/gradle-build-conventions) (repositories, the `libs` catalog and platform `libs.conventions.platform`, semver), includes `gradle/plugins` and registers `gradle/libs.versions.toml` as the `local` catalog
-   - `gradle/plugins` — Local convention plugins (IDs `com.kelvsyc.internal.gradle-tools.*`), applied by the cores next to the shared ones (see Core Convention Plugins): `core`, `detekt` and `jacoco` (every core) and `gradle-integration-test` (cores with integration tests)
+   - `gradle/plugins` — Local convention plugins (IDs `com.kelvsyc.internal.gradle-tools.*`), applied by the cores next to the shared ones (see Core Convention Plugins): `core` and `detekt` (every core) and `gradle-integration-test` (cores with integration tests)
 
 2. **`cores/`** — Published Gradle plugins (group `com.kelvsyc.gradle`). Each is an independent included build. Types:
    - `*-extensions` — Gradle API utility libraries
@@ -124,7 +124,7 @@ Every core's `build.gradle.kts` applies, in this order:
 ```kotlin
 plugins {
     id("com.kelvsyc.internal.dokka")
-    id("com.kelvsyc.internal.gradle-tools.jacoco")
+    id("com.kelvsyc.internal.jacoco")
     id("com.kelvsyc.internal.kotlin-gradle-library") // or com.kelvsyc.internal.kotlin-gradle-plugin
     id("com.kelvsyc.internal.gradle-tools.core")
     id("com.kelvsyc.internal.gradle-tools.detekt")
@@ -143,7 +143,7 @@ Local (in `gradle/plugins`):
 
 - `com.kelvsyc.internal.gradle-tools.core` — gradlex `jvm-dependency-conflict-resolution` (with `enforceSlf4JSimple()`); the Gradle API link (`https://docs.gradle.org/current/kotlin-dsl/gradle`) in the Dokka documentation; the compat repository (see Gradle Compatibility Tiers). Root `:check` does not run each core's `check`, only selected tasks (`verifyGradleLinkage`, `verifyPomDependencyVersions`, detekt and, through the aggregate reports, the tests), so a new per-core verification must be added to root `check` as well, next to `verifyGradleLinkage`, where it covers the cores of the shard (see Sharding) or, unsharded, every core.
 - `com.kelvsyc.internal.gradle-tools.detekt` — detekt with `gradle/detekt.yml` (see JDK Constraints).
-- `com.kelvsyc.internal.gradle-tools.jacoco` — JaCoCo: tests record execution data (`build/jacoco/test.exec`) for the aggregate report. A core's own HTML report is not part of `check`; build it with `./gradlew :<core>:jacocoTestReport`. The agent stays on the test tasks in every CI run, pull requests included, because switching it off would change the test tasks' inputs and break build-cache reuse between `main` and pull-request runs; only the reports are limited to `main` (see Sharding).
+- `com.kelvsyc.internal.jacoco` (shared, from gradle-build-conventions) — Applies Gradle's `jacoco`, sets `toolVersion` to the shared catalog's `jacoco`, and, with the `java` plugin, makes `jacocoTestReport` depend on `test` with XML and HTML reports required. `aggregation/jacoco` applies it too, so the merged report uses the JaCoCo version that recorded the data. Tests record execution data (`build/jacoco/test.exec`) for the aggregate report. A core's own report is not part of `check`; build it with `./gradlew :<core>:jacocoTestReport`. The agent stays on the test tasks in every CI run, pull requests included, because switching it off would change the test tasks' inputs and break build-cache reuse between `main` and pull-request runs; only the reports are limited to `main` (see Sharding).
 - `com.kelvsyc.internal.gradle-tools.gradle-integration-test` — the `integrationTest` source set and task (see Rule 3 below).
 
 ### Component Settings Pattern
@@ -172,7 +172,7 @@ The `repositories` block is needed because the included settings plugin depends 
 
 ### Testing
 
-Tests use [Kotest](https://kotest.io/) with JUnit Platform. Gradle plugin tests use the `gradle-testkit-jacoco` plugin for TestKit + JaCoCo integration. Versioning is driven by git tags via the shared semver settings plugin (`com.kelvsyc.internal.semver`, applied by the shared settings plugin).
+Tests use [Kotest](https://kotest.io/) with JUnit Platform. TestKit runs record no coverage. Versioning is driven by git tags via the shared semver settings plugin (`com.kelvsyc.internal.semver`, applied by the shared settings plugin).
 
 ### Sharding
 
