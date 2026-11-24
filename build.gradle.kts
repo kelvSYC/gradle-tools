@@ -28,18 +28,14 @@ val integrationTestComponents = components.filter { core ->
 val compatUnit = "aggregation/compat"
 val integrationTestUnit = "integrationTest"
 
-/**
- * The weight of each of `units`, from `weights`, or the median of the cores' weights for a unit missing from it.
- */
-fun unitWeights(units: List<String>, weights: Map<String, Double>): Map<String, Double> {
-    val coreWeights = components.mapNotNull { weights[it] }.sorted()
-    val median = when {
-        coreWeights.isEmpty() -> 1.0
-        coreWeights.size % 2 == 1 -> coreWeights[coreWeights.size / 2]
-        else -> (coreWeights[coreWeights.size / 2 - 1] + coreWeights[coreWeights.size / 2]) / 2
-    }
-    return units.associateWith { weights[it] ?: median }
-}
+// The cost of the heavy units in light-core equivalents (every other core counts 1), estimated from CI test times
+// (heavy unit's seconds / median light core's); revisit when a shard finishes minutes after the others.
+val heavyUnitWeights = mapOf(
+    "gradle-extensions" to 27.0,
+    integrationTestUnit to 14.0,
+    compatUnit to 12.0,
+    "dokka-dash" to 7.0
+)
 
 /**
  * Assigns each unit of `weights` to one of `count` shards (1-based) by greedy longest-processing-time: heaviest unit
@@ -60,8 +56,7 @@ fun assignShards(weights: Map<String, Double>, count: Int): Map<String, Int> {
  * Shard `index` of `count` (1-based) of the root `check`, from `-Pcheck.shard=<index>/<count>`.
  *
  * Every core, `aggregation/compat` and, with `-Pcheck.shard.integration=true`, the integration tests are units, which
- * [assignShards] assigns to shards with the weights in `gradle/shard-weights.properties` ([unitWeights]). The weights
- * are the relative costs of the units, measured from CI test results by `gradle/shard-weights.py`.
+ * [assignShards] assigns to shards with the weights of [heavyUnitWeights] (1 for every other unit).
  */
 class CheckShard(val index: Int, val count: Int, val weights: Map<String, Double>) {
     val assignment = assignShards(weights, count)
@@ -83,15 +78,8 @@ val checkShard = providers.gradleProperty("check.shard").map { value ->
         it.toBooleanStrictOrNull()
             ?: throw InvalidUserDataException("check.shard.integration must be true or false, but is '$it'.")
     } ?: false
-    val weightsFile = layout.projectDirectory.file("gradle/shard-weights.properties")
-    val properties = java.util.Properties().apply { load(providers.fileContents(weightsFile).asText.get().reader()) }
-    val weights = properties.stringPropertyNames().associateWith { name ->
-        val weight = properties.getProperty(name)
-        weight.toDoubleOrNull()
-            ?: throw InvalidUserDataException("gradle/shard-weights.properties: $name must be a number, but is '$weight'.")
-    }
     val units = components + compatUnit + if (integration) listOf(integrationTestUnit) else emptyList()
-    CheckShard(index, count, unitWeights(units, weights))
+    CheckShard(index, count, units.associateWith { heavyUnitWeights[it] ?: 1.0 })
 }.orNull
 
 // The cores the root `check` covers.
