@@ -39,6 +39,9 @@ abstract class AntJUnitReport : AbstractAntTask() {
         format.convention("noframes")
     }
 
+    /** Clears [outputDirectory], so that pages of removed test classes or an earlier format do not survive. */
+    override fun prepare() = clearDirectory(outputDirectory)
+
     override fun AntScope.elements() {
         task("junitreport", "todir" to temporaryDir) {
             element("fileset", "dir" to resultsDirectory, "includes" to includes.get().joinToString(","))

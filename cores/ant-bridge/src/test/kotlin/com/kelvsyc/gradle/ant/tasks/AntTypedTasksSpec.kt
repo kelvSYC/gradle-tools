@@ -4,13 +4,17 @@ import com.kelvsyc.gradle.ant.AntElement
 import com.kelvsyc.gradle.ant.AntIsolation
 import com.kelvsyc.gradle.clients.CredentialReference
 import com.kelvsyc.gradle.plugins.AntBridgePlugin
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldContain
+import org.gradle.api.InvalidUserDataException
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.testfixtures.ProjectBuilder
 import java.io.File
 
@@ -134,6 +138,57 @@ class AntTypedTasksSpec : FunSpec({
             mapOf("dir" to project.file("results").absolutePath, "includes" to "TEST-*.xml")
         element.children[1].attributes shouldBe
             mapOf("format" to "noframes", "todir" to project.file("report").absolutePath)
+    }
+
+    fun Task.runActions() = actions.forEach { it.execute(this) }
+
+    test("an output directory holding the task's inputs fails before anything is deleted") {
+        val project = project()
+        val source = project.dir("src")
+        File(source, "a.xml").writeText("<a/>")
+        val xslt = project.tasks.register("xslt", AntXslt::class.java).get()
+        xslt.sourceDirectory.set(source)
+        xslt.stylesheet.set(project.file("style.xsl").also { it.writeText("<x/>") })
+        xslt.outputDirectory.set(source)
+        shouldThrow<InvalidUserDataException> { xslt.runActions() }.message shouldContain "a.xml"
+        File(source, "a.xml").exists() shouldBe true
+
+        val jars = project.dir("jars")
+        val jar = File(jars, "lib.jar").also { it.writeText("not a jar") }
+        val sign = project.tasks.register("sign", AntSignJar::class.java).get()
+        sign.jars.from(jar)
+        sign.keystore.set(project.file("keystore").also { it.writeText("") })
+        sign.alias.set("a")
+        sign.storePassword.set(CredentialReference.Literal("s"))
+        sign.outputDirectory.set(jars)
+        shouldThrow<InvalidUserDataException> { sign.runActions() }
+        jar.exists() shouldBe true
+
+        val regexp = project.tasks.register("regexp", AntReplaceRegexp::class.java).get()
+        regexp.sourceDirectory.set(source)
+        regexp.outputDirectory.set(project.layout.projectDirectory)
+        regexp.match.set("a")
+        regexp.replace.set("b")
+        shouldThrow<InvalidUserDataException> { regexp.runActions() }
+        File(source, "a.xml").exists() shouldBe true
+    }
+
+    test("files with the same name fail instead of overwriting each other's outputs") {
+        val project = project()
+        val first = File(project.dir("one"), "x.txt").also { it.writeText("1") }
+        val second = File(project.dir("two"), "x.txt").also { it.writeText("2") }
+        val checksum = project.tasks.register("checksum", AntChecksum::class.java).get()
+        checksum.files.from(first, second)
+        checksum.outputDirectory.set(project.dir("sums"))
+        shouldThrow<InvalidUserDataException> { checksum.runActions() }.message shouldContain "x.txt"
+
+        val sign = project.tasks.register("sign", AntSignJar::class.java).get()
+        sign.jars.from(File(project.dir("a"), "lib.jar"), File(project.dir("b"), "lib.jar"))
+        sign.keystore.set(project.file("keystore").also { it.writeText("") })
+        sign.alias.set("a")
+        sign.storePassword.set(CredentialReference.Literal("s"))
+        sign.outputDirectory.set(project.dir("signed"))
+        shouldThrow<InvalidUserDataException> { sign.runActions() }.message shouldContain "lib.jar"
     }
 
     test("typed tasks default to class-loader isolation and get the plugin's classpath") {

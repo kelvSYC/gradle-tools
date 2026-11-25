@@ -68,8 +68,14 @@ abstract class AntSignJar : AbstractAntTask() {
     @get:OutputDirectory
     abstract val outputDirectory: DirectoryProperty
 
-    /** Clears [outputDirectory], so that outputs of removed inputs do not survive. */
-    override fun prepare() = clearDirectory(outputDirectory)
+    /**
+     * Fails if two of [jars] share a name, as their signed copies would clash, then clears [outputDirectory], so that
+     * outputs of removed inputs do not survive.
+     */
+    override fun prepare() {
+        requireDistinctNames(jars.files, "jars to sign")
+        clearDirectory(outputDirectory)
+    }
 
     override fun AntScope.elements() {
         val storePass = storePassword.get().resolve()

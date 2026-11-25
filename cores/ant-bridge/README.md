@@ -266,6 +266,11 @@ that is absent when the key is not defined. In the Groovy DSL, use `.map { it['k
 
 Each extends `AbstractAntTask` (`antClasspath`, `isolation`; both wired by the plugin, isolation defaults to `CLASSLOADER`), declares its inputs and outputs, and never modifies an input in place.
 
+Give each task an output directory of its own. The tasks clear (or, for `AntReplaceRegexp`, sync into) their output
+directory before Ant runs, so that outputs of removed inputs do not survive; a task whose output directory holds any of
+its inputs fails before anything is deleted. `AntChecksum` and `AntSignJar` write their outputs by file name, so they
+fail when two inputs share a name.
+
 | Task | Ant task | Inputs | Output | Cached |
 |------|----------|--------|--------|--------|
 | `AntReplaceRegexp` | `replaceregexp` | `sourceDirectory`, `includes`, `excludes`, `match`, `replace`, `flags`, `byLine`, `encoding` | `outputDirectory` (a filtered copy, then replaced in place there) | yes |
@@ -329,7 +334,9 @@ abstract class Concat : AbstractAntTask() {
 
 Clear any output directory in `prepare()` (`clearDirectory(outputDirectory)`) when the Ant task skips work it
 considers up to date, as `xslt`, `signjar` and `checksum` do, and set Ant's force attribute: otherwise Gradle reruns
-the task but Ant leaves stale output in place.
+the task but Ant leaves stale output in place. `clearDirectory` refuses a directory that holds any of the task's
+inputs; call `requireNoInputsIn(directory)` before replacing a directory's contents any other way, and
+`requireDistinctNames(files, what)` when outputs are written by input file name.
 
 ### Reusing Ant code
 
@@ -374,6 +381,10 @@ tasks.register<AntWork>("native2ascii") {
 `AntWork` has `elements`, `antClasspath` (defaults to `antBridgeClasspath`) and `isolation`. A task without declared
 outputs is never up to date. The Ant tree is an input through `treeFingerprint`, the SHA-256 of the resolved tree, so
 editing it reruns the task; only the hash is recorded, keeping resolved values such as secrets out of the history.
+The hash is unsalted, so a short secret written directly into the tree could be guessed from it: pass secrets to Ant
+through a typed task (`AntSignJar` resolves its `CredentialReference` passwords at execution) or an environment
+variable instead. It also includes absolute paths, so if you enable caching on an `AntWork` task, its cache entries are
+not shared between checkouts in different directories.
 
 ## `AntOperations` and isolation modes
 
@@ -442,6 +453,18 @@ nothing. A failing Ant task fails the work item with `AntExecutionException`.
 - **`AntOperations` waits for all worker items submitted by the current task**, not only its own. Submit
   `AntWorkAction` to your own queue to mix Ant with other work items (see above).
 - **`AntWork` without declared outputs is never up to date.**
+- **Reading a value Ant computed.** Ant tasks return no values; query tasks set a property, which legacy builds read
+  back with `ant.properties[...]`. Within one Ant tree, later tasks can use it (`${name}`), but getting it into
+  Gradle is a read-back. Use a Gradle-native provider instead:
+
+  | Legacy pattern | Gradle-native replacement |
+  |---|---|
+  | `ant.available(file: f, property: 'p')` | `providers.provider { f.exists() }`, or `layout.projectDirectory.file(...)` checked in the task that needs it |
+  | `ant.condition(property: 'p') { os(family: 'unix') }` | `providers.systemProperty("os.name").map { ... }` |
+  | `ant.loadfile(srcFile: f, property: 'p')` | `providers.fileContents(layout.projectDirectory.file(...)).asText` |
+  | `ant.exec(executable: ..., outputproperty: 'p')` | `providers.exec { commandLine(...) }.standardOutput.asText` |
+  | `ant.checksum(file: f, property: 'p')` | `providers.of(ChecksumValueSource::class) { parameters { inputFile.set(f); algorithm.set("MD5") } }` (`gradle-extensions`, `com.kelvsyc.gradle.providers`) |
+  | `ant.property(file: f)` and reads | `antBridge.properties { file(f) }` |
 - **`junitreport` with the `frames` format** may need Xalan on `antBridge`; `noframes` works with the default
   classpath.
 - **`ant.importBuild` is not covered.** Port the imported targets to Gradle tasks (typed tasks, `AntWork`).

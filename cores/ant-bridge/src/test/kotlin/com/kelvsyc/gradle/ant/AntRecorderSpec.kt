@@ -107,6 +107,16 @@ class AntRecorderSpec : FunSpec({
         shouldThrow<AntReadBackException> { recordGroovy("ant.x = 1") }
     }
 
+    test("a second text argument fails instead of replacing the first") {
+        shouldThrow<IllegalArgumentException> { recordGroovy("ant.echo('a', 'b')") }.message shouldContain
+            "more than one text argument"
+    }
+
+    test("a closure as an attribute value fails instead of being stringified") {
+        shouldThrow<IllegalArgumentException> { recordGroovy("ant.mkdir(dir: { 'x' })") }.message shouldContain
+            "Attribute 'dir' of recorded Ant element 'mkdir' is a closure"
+    }
+
     test("using a returned value fails loudly") {
         val exception = shouldThrow<AntReadBackException> {
             recordGroovy("def r = ant.available(file: 'x'); r.toBoolean()")

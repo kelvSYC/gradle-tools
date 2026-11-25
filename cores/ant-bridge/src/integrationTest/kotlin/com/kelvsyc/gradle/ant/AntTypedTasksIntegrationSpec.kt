@@ -320,5 +320,11 @@ class AntTypedTasksIntegrationSpec : FunSpec({
 
         runTwice(dir, "report")
         File(dir, "build/report/junit-noframes.html").readText() shouldContain "passes"
+
+        // A stale page from an earlier run (a removed test class, another format) does not survive a rerun.
+        val stale = dir.child("build/report/stale.html").apply { writeText("stale") }
+        dir.child("results/TEST-x.xml").appendText("\n")
+        runChanged(dir, "report")
+        stale.exists() shouldBe false
     }
 })
