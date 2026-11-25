@@ -17,8 +17,11 @@ import javax.inject.Inject
 /**
  * Base of the typed Ant tasks: each declares its own inputs and outputs and describes the Ant work as [elements],
  * which are built at execution time and run through [AntOperations].
+ *
+ * Extend this class to define a reusable Ant task type. It takes no constructor parameters: the services it needs are
+ * injected properties ([objects], [fileSystemOperations]), which subclasses may use too.
  */
-abstract class AbstractAntTask @Inject constructor(objects: ObjectFactory) : DefaultTask() {
+abstract class AbstractAntTask : DefaultTask() {
     /** The Ant classpath: Ant, its antlibs and anything they need. */
     @get:Classpath
     abstract val antClasspath: ConfigurableFileCollection
@@ -27,11 +30,13 @@ abstract class AbstractAntTask @Inject constructor(objects: ObjectFactory) : Def
     @get:Internal
     abstract val isolation: Property<AntIsolation>
 
-    /** Prepares the output before Ant runs. */
+    /** Creates the [AntOperations] that runs the Ant work; available to subclasses. */
+    @get:Inject
+    protected abstract val objects: ObjectFactory
+
+    /** Prepares the output before Ant runs; available to subclasses. */
     @get:Inject
     protected abstract val fileSystemOperations: FileSystemOperations
-
-    private val operations = objects.newInstance(AntOperations::class.java)
 
     init {
         isolation.convention(AntIsolation.CLASSLOADER)
@@ -68,7 +73,7 @@ abstract class AbstractAntTask @Inject constructor(objects: ObjectFactory) : Def
     @TaskAction
     fun runAnt() {
         prepare()
-        operations.run(antClasspath, isolation.get(), elements())
+        objects.newInstance(AntOperations::class.java).run(antClasspath, isolation.get(), elements())
     }
 
     /**

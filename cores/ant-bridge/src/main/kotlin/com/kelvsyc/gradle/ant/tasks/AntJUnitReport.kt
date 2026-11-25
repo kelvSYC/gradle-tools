@@ -2,7 +2,6 @@ package com.kelvsyc.gradle.ant.tasks
 
 import com.kelvsyc.gradle.ant.AntElement
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.CacheableTask
@@ -11,14 +10,13 @@ import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
-import javax.inject.Inject
 
 /**
  * Ant's `junitreport`: renders the JUnit XML results of [resultsDirectory] as an HTML report in [outputDirectory].
  * Needs `org.apache.ant:ant-junit` on the Ant classpath, which the plugin adds by default.
  */
 @CacheableTask
-abstract class AntJUnitReport @Inject constructor(objects: ObjectFactory) : AbstractAntTask(objects) {
+abstract class AntJUnitReport : AbstractAntTask() {
     /** The directory holding the JUnit XML result files. */
     @get:InputDirectory
     @get:PathSensitive(PathSensitivity.RELATIVE)

@@ -284,6 +284,27 @@ tasks.register<AntChecksum>("checksums") {
 }
 ```
 
+### Defining a typed task
+
+Extend `AbstractAntTask` to wrap an Ant task in a reusable task type. Declare its inputs and outputs as annotated
+properties, build the Ant elements from them in `elements()` (called at execution, so providers resolve late), and
+override `prepare()` to clear or set up outputs first. `AbstractAntTask` takes no constructor parameters; it injects
+`objects` and `fileSystemOperations`, which subclasses may use.
+
+```kotlin
+@CacheableTask
+abstract class AntTouch : AbstractAntTask() {
+    @get:OutputFile
+    abstract val marker: RegularFileProperty
+
+    override fun elements() = listOf(element("touch", "file" to marker))
+}
+```
+
+Clear any output directory in `prepare()` (`clearDirectory(outputDirectory)`) when the Ant task skips work it
+considers up to date, as `xslt`, `signjar` and `checksum` do, and set Ant's force attribute: otherwise Gradle reruns
+the task but Ant leaves stale output in place.
+
 ## Generic fallback: `AntWork`
 
 Any Ant task without a typed replacement runs through `AntWork` (Ant tasks in order; `ant { }` or `record { }`). It
@@ -304,6 +325,9 @@ tasks.register<AntWork>("native2ascii") {
     }
 }
 ```
+
+`AntWork` is meant to be configured, not extended; to define a reusable Ant task type, extend `AbstractAntTask`
+(see [Defining a typed task](#defining-a-typed-task)).
 
 `AntWork` has `elements`, `antClasspath` (defaults to `antBridgeClasspath`) and `isolation`. A task without declared
 outputs is never up to date. The Ant tree is an input through `treeFingerprint`, the SHA-256 of the resolved tree, so

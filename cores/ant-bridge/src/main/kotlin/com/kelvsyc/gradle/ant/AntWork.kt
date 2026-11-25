@@ -24,6 +24,9 @@ import javax.inject.Inject
  * Declare inputs and outputs with the normal `inputs`/`outputs` API; without declared outputs the task is never
  * up to date. The Ant tree itself is an input through [treeFingerprint], so editing it reruns the task. With the `com.kelvsyc.gradle.ant-bridge` plugin, [antClasspath] defaults to the `antBridgeClasspath`
  * configuration and [isolation] to [AntIsolation.CLASSLOADER].
+ *
+ * Configure this task; it is not designed to be extended. To define a reusable Ant task type, extend
+ * [com.kelvsyc.gradle.ant.tasks.AbstractAntTask].
  */
 @DisableCachingByDefault(because = "Arbitrary Ant work; declare outputs to get up-to-date checks")
 abstract class AntWork @Inject constructor(objects: ObjectFactory) : DefaultTask() {

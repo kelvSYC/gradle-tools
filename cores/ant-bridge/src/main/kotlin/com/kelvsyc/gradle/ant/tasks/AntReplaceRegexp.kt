@@ -2,7 +2,6 @@ package com.kelvsyc.gradle.ant.tasks
 
 import com.kelvsyc.gradle.ant.AntElement
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.CacheableTask
@@ -12,14 +11,13 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
-import javax.inject.Inject
 
 /**
  * Ant's `replaceregexp` over a copy of [sourceDirectory]: the filtered tree is synced into [outputDirectory] and the
  * replacement runs there, so the inputs are never modified.
  */
 @CacheableTask
-abstract class AntReplaceRegexp @Inject constructor(objects: ObjectFactory) : AbstractAntTask(objects) {
+abstract class AntReplaceRegexp : AbstractAntTask() {
     /** The directory whose files are processed. */
     @get:InputDirectory
     @get:PathSensitive(PathSensitivity.RELATIVE)

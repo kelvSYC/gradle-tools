@@ -3,7 +3,6 @@ package com.kelvsyc.gradle.ant.tasks
 import com.kelvsyc.gradle.ant.AntElement
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
@@ -11,13 +10,12 @@ import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
-import javax.inject.Inject
 
 /**
  * Ant's `checksum`: writes a checksum file into [outputDirectory] for each of [files].
  */
 @CacheableTask
-abstract class AntChecksum @Inject constructor(objects: ObjectFactory) : AbstractAntTask(objects) {
+abstract class AntChecksum : AbstractAntTask() {
     /** The files to checksum; they may come from different directories. */
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.NAME_ONLY)

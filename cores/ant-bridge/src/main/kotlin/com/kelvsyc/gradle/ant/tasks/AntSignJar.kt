@@ -5,7 +5,6 @@ import com.kelvsyc.gradle.clients.CredentialReference
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
@@ -16,14 +15,13 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.work.DisableCachingByDefault
-import javax.inject.Inject
 
 /**
  * Ant's `signjar`: signs each of [jars] into [outputDirectory]. The passwords are credential references, resolved
  * at execution and never part of the task's inputs.
  */
 @DisableCachingByDefault(because = "Signatures may carry timestamps and need secrets")
-abstract class AntSignJar @Inject constructor(objects: ObjectFactory) : AbstractAntTask(objects) {
+abstract class AntSignJar : AbstractAntTask() {
     /** The jars to sign. */
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.NAME_ONLY)
