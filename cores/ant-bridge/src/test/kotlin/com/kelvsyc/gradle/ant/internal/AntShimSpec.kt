@@ -110,4 +110,27 @@ class AntShimSpec : FunSpec({
         }
         verify { logger.warn("[ant:echo] ${'$'}{x}") }
     }
+
+    test("requested properties set by any task in the tree are returned") {
+        val file = File(tempdir(), "present.txt").apply { writeText("x") }
+        val nodes = listOf(
+            node("property", "name" to "a", "value" to "1"),
+            node("available", "file" to file.absolutePath, "property" to "b")
+        )
+        val result = AntRuntimeClassLoader(TestAnt.classpath).use {
+            AntShim(it).execute(nodes, tempdir(), mockk<Logger>(relaxed = true), setOf("a", "b", "unset"))
+        }
+        result.properties shouldBe mapOf("a" to "1", "b" to "true")
+    }
+
+    test("no results requested returns no properties") {
+        val result = AntRuntimeClassLoader(TestAnt.classpath).use {
+            AntShim(it).execute(
+                listOf(node("property", "name" to "a", "value" to "1")),
+                tempdir(),
+                mockk<Logger>(relaxed = true)
+            )
+        }
+        result.properties shouldBe emptyMap()
+    }
 })

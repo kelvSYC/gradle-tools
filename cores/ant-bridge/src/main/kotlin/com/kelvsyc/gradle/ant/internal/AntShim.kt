@@ -20,16 +20,26 @@ class AntShim(
 ) {
     /**
      * Runs [nodes] in order in a fresh Ant project based at [baseDirectory], logging Ant's messages to [logger], and
-     * returns the version Ant reports, or `null` if it reports none.
+     * returns the version Ant reports (`null` if it reports none) and the values of the [results] names the project
+     * defines after the run.
      *
      * @throws AntExecutionException if Ant reports a failure
      */
-    fun execute(nodes: List<AntNode>, baseDirectory: File, logger: Logger): String? {
+    fun execute(
+        nodes: List<AntNode>,
+        baseDirectory: File,
+        logger: Logger,
+        results: Set<String> = emptySet()
+    ): TreeResult {
         val request = mapOf(
             "nodes" to nodes.map { it.toShimMap() },
-            "baseDirectory" to baseDirectory.absolutePath
+            "baseDirectory" to baseDirectory.absolutePath,
+            "results" to results.toList()
         )
-        return invoke(TREE_EXECUTOR, request, logger)["antVersion"]?.toString()
+        val result = invoke(TREE_EXECUTOR, request, logger)
+        @Suppress("UNCHECKED_CAST")
+        val properties = (result["properties"] as Map<String, String>?).orEmpty()
+        return TreeResult(result["antVersion"]?.toString(), LinkedHashMap(properties))
     }
 
     /**
@@ -78,6 +88,16 @@ class AntShim(
             thread.contextClassLoader = previous
         }
     }
+
+    /**
+     * The outcome of [execute].
+     */
+    data class TreeResult(
+        /** The version Ant reports, or `null` if it reports none. */
+        val antVersion: String?,
+        /** The requested names the project defines, with their values, in request order. */
+        val properties: Map<String, String>
+    )
 
     /**
      * A property-loading request: [seeds] are set first, so they override the [sources], which load in order.

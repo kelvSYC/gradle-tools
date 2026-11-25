@@ -1,5 +1,7 @@
 package com.kelvsyc.gradle.ant.shim;
 
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -15,7 +17,9 @@ import org.apache.tools.ant.UnknownElement;
  * <p>
  * Request keys: {@code "nodes"} (a list of node maps with keys {@code "name"}, {@code "namespace"},
  * {@code "attributes"}, {@code "text"} and {@code "children"}), {@code "baseDirectory"} (a path string) and
- * {@code "logger"} (a {@code BiConsumer<Integer, String>}). The result has {@code "antVersion"} and, on failure,
+ * {@code "logger"} (a {@code BiConsumer<Integer, String>}), and optionally {@code "results"} (a collection of
+ * property names). The result has {@code "antVersion"}, {@code "properties"} (the requested names the project
+ * defines after the run, in request order, as strings) and, on failure,
  * {@code "failure"} (Ant's message), {@code "location"} and {@code "trace"} (the stack trace). Never throws.
  */
 public final class TreeExecutor implements Function<Map<String, Object>, Map<String, Object>> {
@@ -34,7 +38,23 @@ public final class TreeExecutor implements Function<Map<String, Object>, Map<Str
             element.maybeConfigure();
             element.perform();
         }
-        return ShimSupport.success();
+        Map<String, Object> result = ShimSupport.success();
+        result.put("properties", requestedProperties(request, project));
+        return result;
+    }
+
+    private static Map<String, String> requestedProperties(Map<String, Object> request, Project project) {
+        Map<String, String> properties = new LinkedHashMap<>();
+        Collection<?> names = (Collection<?>) request.get("results");
+        if (names != null) {
+            for (Object name : names) {
+                String value = project.getProperty(name.toString());
+                if (value != null) {
+                    properties.put(name.toString(), value);
+                }
+            }
+        }
+        return properties;
     }
 
     @SuppressWarnings("unchecked")

@@ -475,6 +475,226 @@ class AntBridgeConfigurationCacheSpec : FunSpec({
         second.output shouldContain REUSED
         File(dir, "out/für.txt").readText() shouldBe "x"
     }
+
+    test("script-body query feeds a task") {
+        val dir = kotlinProject(
+            "query",
+            """
+            val q = antBridge.query {
+                ant { task("loadfile", "srcFile" to layout.projectDirectory.file("VERSION"), "property" to "v") }
+                result("v")
+            }
+            println("CONFIG_V=" + q.getting("v").get())
+
+            tasks.register("show") {
+                val v = q.getting("v")
+                doLast { println("V=" + v.get()) }
+            }
+            """
+        )
+        File(dir, "VERSION").writeText("1.0")
+
+        val first = cc(dir, "show")
+        first.output shouldContain "CONFIG_V=1.0"
+        first.output shouldContain "\nV=1.0"
+        val second = cc(dir, "show")
+        second.output shouldContain REUSED
+        second.output shouldContain "\nV=1.0"
+
+        // Read in the script body, the value is a configuration input: a change invalidates the entry.
+        File(dir, "VERSION").writeText("2.0")
+        val third = cc(dir, "show")
+        third.output shouldNotContain REUSED
+        third.output shouldContain "CONFIG_V=2.0"
+        third.output shouldContain "\nV=2.0"
+    }
+
+    test("a query read only in a task action is obtained when the task runs") {
+        val dir = kotlinProject(
+            "query-in-action",
+            """
+            tasks.register("show") {
+                val q = antBridge.query {
+                    ant { task("loadfile", "srcFile" to layout.projectDirectory.file("VERSION"), "property" to "v") }
+                    result("v")
+                }
+                doLast { println("V=" + q.getting("v").get()) }
+            }
+            """
+        )
+        File(dir, "VERSION").writeText("1.0")
+
+        val first = cc(dir, "show")
+        first.output shouldContain "\nV=1.0"
+        val second = cc(dir, "show")
+        second.output shouldContain REUSED
+        second.output shouldContain "\nV=1.0"
+
+        // Not read during configuration, the value is no configuration input: the entry survives the change.
+        File(dir, "VERSION").writeText("2.0")
+        val third = cc(dir, "show")
+        third.output shouldContain REUSED
+        third.output shouldContain "\nV=2.0"
+    }
+
+    test("exported properties reach another task without dependsOn") {
+        val dir = exportProject("export")
+
+        val first = cc(dir, "consumer")
+        first.task(":producer")?.outcome shouldBe TaskOutcome.SUCCESS
+        first.output shouldContain "REV=r1"
+
+        // Exporting alone never makes the producer up to date (its only output is the export file), so it reruns.
+        val second = cc(dir, "consumer")
+        second.output shouldContain REUSED
+        second.task(":producer")?.outcome shouldBe TaskOutcome.SUCCESS
+        second.output shouldContain "REV=r1"
+    }
+
+    test("an exported value is not stale on rerun") {
+        val dir = exportProject("export-rerun")
+
+        cc(dir, "consumer").output shouldContain "REV=r1"
+
+        File(dir, "rev.txt").writeText("r2")
+        val second = cc(dir, "consumer")
+        second.output shouldContain REUSED
+        second.task(":producer")?.outcome shouldBe TaskOutcome.SUCCESS
+        second.output shouldContain "REV=r2"
+    }
+
+    test("adding an exported name reruns the producer") {
+        val dir = kotlinProject(
+            "export-add-name",
+            """
+            val producer = tasks.register<AntWork>("producer") {
+                val marker = layout.buildDirectory.file("marker.txt")
+                outputs.file(marker)
+                exportProperties("rev")
+                ant {
+                    task("property", "name" to "rev", "value" to "r1")
+                    task("property", "name" to "other", "value" to "o1")
+                    task("echo", "message" to "done", "file" to marker)
+                }
+            }
+
+            tasks.register("consumer") {
+                val exported = producer.flatMap { it.exportedProperties }
+                inputs.property("exported", exported)
+                doLast { println("EXPORTED=" + exported.get().toSortedMap()) }
+            }
+            """
+        )
+
+        val first = cc(dir, "consumer")
+        first.task(":producer")?.outcome shouldBe TaskOutcome.SUCCESS
+        first.output shouldContain "EXPORTED={rev=r1}"
+
+        val unchanged = cc(dir, "consumer")
+        unchanged.output shouldContain REUSED
+        unchanged.task(":producer")?.outcome shouldBe TaskOutcome.UP_TO_DATE
+        unchanged.output shouldContain "EXPORTED={rev=r1}"
+
+        val script = File(dir, "build.gradle.kts")
+        script.writeText(script.readText().replace("exportProperties(\"rev\")", "exportProperties(\"rev\", \"other\")"))
+        val added = cc(dir, "consumer")
+        added.task(":producer")?.outcome shouldBe TaskOutcome.SUCCESS
+        added.output shouldContain "EXPORTED={other=o1, rev=r1}"
+    }
+
+    test("a consumer still written in Ant reads the exported file") {
+        val value = "a=b#c é ${'$'}5"
+        val dir = kotlinProject(
+            "export-ant-consumer",
+            """
+            val producer = tasks.register<AntWork>("producer") {
+                exportProperties("rev")
+                ant { task("property", "name" to "rev", "value" to "a=b#c é \${'$'}5") }
+            }
+
+            tasks.register<AntWork>("antConsumer") {
+                val exported = producer.flatMap { it.exportedPropertiesFile }
+                inputs.file(exported)
+                ant {
+                    task("property", "file" to exported)
+                    task(
+                        "echo",
+                        "message" to "\${'$'}{rev}",
+                        "file" to layout.buildDirectory.file("rev.txt"),
+                        "encoding" to "UTF-8"
+                    )
+                }
+            }
+            """
+        )
+
+        val first = cc(dir, "antConsumer")
+        first.task(":producer")?.outcome shouldBe TaskOutcome.SUCCESS
+        File(dir, "build/rev.txt").readText(Charsets.UTF_8) shouldBe value
+
+        File(dir, "build/rev.txt").delete()
+        val second = cc(dir, "antConsumer")
+        second.output shouldContain REUSED
+        File(dir, "build/rev.txt").readText(Charsets.UTF_8) shouldBe value
+    }
+
+    test("a custom task class uses AntOperations results") {
+        val dir = kotlinProject(
+            "operations-results",
+            """
+            abstract class Results @Inject constructor(objects: ObjectFactory) : DefaultTask() {
+                private val ops = objects.newInstance(AntOperations::class.java)
+
+                @get:Classpath
+                abstract val cp: ConfigurableFileCollection
+
+                @get:OutputFile
+                abstract val out: RegularFileProperty
+
+                @TaskAction
+                fun go() {
+                    val results = ops.execute(cp, AntIsolation.CLASSLOADER, setOf("rev")) {
+                        task("property", "name" to "rev", "value" to "abc")
+                    }
+                    out.get().asFile.writeText(results.entries.joinToString("\n") { it.key + "=" + it.value })
+                }
+            }
+
+            tasks.register<Results>("results") {
+                cp.from(antBridge.classpath)
+                out.set(layout.buildDirectory.file("results.properties"))
+            }
+            """
+        )
+
+        cc(dir, "results").task(":results")?.outcome shouldBe TaskOutcome.SUCCESS
+        File(dir, "build/results.properties").readText() shouldBe "rev=abc"
+
+        File(dir, "build/results.properties").delete()
+        val second = cc(dir, "results")
+        second.output shouldContain REUSED
+        second.task(":results")?.outcome shouldBe TaskOutcome.SUCCESS
+        File(dir, "build/results.properties").readText() shouldBe "rev=abc"
+    }
+
+    test("exports work under process isolation") {
+        val dir = exportProject("export-process", "isolation.set(AntIsolation.PROCESS)")
+        File(dir, "build.gradle.kts").appendText("\nprintln(\"DAEMON_PID=${'$'}{ProcessHandle.current().pid()}\")\n")
+
+        val first = cc(dir, "consumer", "--info")
+        first.task(":producer")?.outcome shouldBe TaskOutcome.SUCCESS
+        first.output shouldContain "REV=r1"
+        val daemonPid = Regex("DAEMON_PID=(\\d+)").find(first.output)?.groupValues?.get(1)
+        val workerPid = Regex("Running Ant .+ in process (\\d+)").find(first.output)?.groupValues?.get(1)
+        daemonPid shouldNotBe null
+        workerPid shouldNotBe null
+        workerPid shouldNotBe daemonPid
+
+        File(dir, "rev.txt").writeText("r2")
+        val second = cc(dir, "consumer")
+        second.output shouldContain REUSED
+        second.output shouldContain "REV=r2"
+    }
 })
 
 private fun propertyProject(name: String): File {
@@ -494,5 +714,33 @@ private fun propertyProject(name: String): File {
         """
     )
     File(dir, "build.properties").writeText("dir=${'$'}{b.base}/app\n")
+    return dir
+}
+
+/**
+ * A producer exporting `rev`, read with `loadfile` from `rev.txt` (not a declared input), and a consumer printing it
+ * through `exportedProperties`, with no `dependsOn`.
+ */
+private fun exportProject(name: String, producerConfig: String = ""): File {
+    val dir = kotlinProject(
+        name,
+        """
+        val producer = tasks.register<AntWork>("producer") {
+            $producerConfig
+            exportProperties("rev")
+            ant {
+                task("loadfile", "srcFile" to layout.projectDirectory.file("rev.txt"), "property" to "raw")
+                task("property", "name" to "rev", "value" to "\${'$'}{raw}")
+            }
+        }
+
+        tasks.register("consumer") {
+            val rev = producer.flatMap { it.exportedProperties }.getting("rev")
+            inputs.property("rev", rev)
+            doLast { println("REV=" + rev.get()) }
+        }
+        """
+    )
+    File(dir, "rev.txt").writeText("r1")
     return dir
 }
