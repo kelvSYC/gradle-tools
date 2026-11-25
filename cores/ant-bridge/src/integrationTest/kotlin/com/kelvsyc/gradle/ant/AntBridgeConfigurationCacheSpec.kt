@@ -509,6 +509,34 @@ class AntBridgeConfigurationCacheSpec : FunSpec({
         third.output shouldContain "\nV=2.0"
     }
 
+    test("a query read only in a task action is obtained when the task runs") {
+        val dir = kotlinProject(
+            "query-in-action",
+            """
+            tasks.register("show") {
+                val q = antBridge.query {
+                    ant { task("loadfile", "srcFile" to layout.projectDirectory.file("VERSION"), "property" to "v") }
+                    result("v")
+                }
+                doLast { println("V=" + q.getting("v").get()) }
+            }
+            """
+        )
+        File(dir, "VERSION").writeText("1.0")
+
+        val first = cc(dir, "show")
+        first.output shouldContain "\nV=1.0"
+        val second = cc(dir, "show")
+        second.output shouldContain REUSED
+        second.output shouldContain "\nV=1.0"
+
+        // Not read during configuration, the value is no configuration input: the entry survives the change.
+        File(dir, "VERSION").writeText("2.0")
+        val third = cc(dir, "show")
+        third.output shouldContain REUSED
+        third.output shouldContain "\nV=2.0"
+    }
+
     test("exported properties reach another task without dependsOn") {
         val dir = exportProject("export")
 

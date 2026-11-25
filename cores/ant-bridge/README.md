@@ -402,6 +402,96 @@ caused by `AntExecutionException`.
 Pass it as the second argument (`ops.execute(cp, AntIsolation.PROCESS) { ... }`) or set `isolation` on an `AntWork` or
 typed task.
 
+## Values Ant computes
+
+Ant passes values through properties. The bridge turns them into a `Provider<Map<String, String>>`, read with
+`getting(key)` (from `gradle-extensions`, as for `antBridge.properties { }`). Later you replace that provider with a
+non-Ant one from the [read-back table](#what-cannot-be-migrated) and the code that reads it does not change. Results are
+strings; a name the Ant tree never set is absent from the map (`getting` gives an absent provider), never an empty
+string.
+
+### Script body: `antBridge.query { }`
+
+```kotlin
+// before: ant.available(file: 'VERSION', property: 'hasVersion'); ant.loadfile(srcFile: 'VERSION', property: 'v')
+//         if (ant.properties['hasVersion']) version = ant.properties['v']
+val q = antBridge.query {
+    ant {
+        task("available", "file" to layout.projectDirectory.file("VERSION"), "property" to "hasVersion")
+        task("loadfile", "srcFile" to layout.projectDirectory.file("VERSION"), "property" to "v")
+    }
+    result("hasVersion", "v")
+}
+version = q.getting("v").get()
+```
+
+`record { }` takes the legacy closures unchanged. An Ant failure fails the build at configuration with
+`AntExecutionException`.
+
+The query is a `ValueSource`, so the configuration cache treats it according to where it is read:
+
+- **Read during configuration** (the script body, as above), the query is a configuration-cache input: it re-runs on
+  every cache check, and an edit to what it reads invalidates the entry. This is why the allowlist below exists.
+- **Read only inside task actions** (capture the provider in a local inside `tasks.register`, read it in `doLast`), it
+  is obtained when the task runs and is not an input: the entry survives a change to what it reads.
+
+**Allowlist.** Because a query may re-run on every build, only read-only tasks are accepted, checked when the query is
+declared: `available`, `condition`, `loadfile`, `loadproperties`, `property`, `basename`, `dirname`, `pathconvert`,
+`length`, and `checksum` only with a `property` attribute (without it, `checksum` writes files). The check applies to
+top-level elements (nested elements are the task's own configuration) and matches the task name, the `property`
+attribute and the namespace exactly: `Property=` or an explicit empty namespace is rejected, as is every namespaced
+element (antlib tasks). `tstamp` is excluded on purpose: its value changes on every build, which would invalidate the
+configuration cache every time. Any other task fails with a message naming it.
+
+`allowSideEffects()` inside the query lifts the check. Its cost: the Ant tasks then run on every build, even on a
+configuration cache hit, so anything with side effects repeats. Prefer an `AntWork` task for such work.
+
+### Task `doLast` handoff: `AntWork.exportProperties`
+
+```kotlin
+// before: task a { doLast { ant.exec(executable: 'hostname', outputproperty: 'rev') } }
+//         task b { dependsOn a; doLast { println ant.properties.rev } }
+val a = tasks.register<AntWork>("a") {
+    exportProperties("rev")
+    ant { task("exec", "executable" to "hostname", "outputproperty" to "rev") }
+}
+tasks.register("b") {
+    val rev = a.flatMap { it.exportedProperties }.getting("rev") // carries the dependency on a
+    doLast { println(rev.get()) }
+}
+```
+
+`exportProperties(...)` is the only way to set the names; `exportedPropertyNames` is read-only and an input, so adding a
+name reruns the task. The values go to `exportedPropertiesFile` (default `build/ant-bridge/<task>/exported.properties`)
+and `exportedProperties` is derived from it, so a consumer wired with it depends on the producer without `dependsOn`.
+A consumer still written in Ant passes the file to `property file=` as a declared input
+(`inputs.file(a.flatMap { it.exportedPropertiesFile })`).
+
+The file is Java properties format, and `$` is escaped as `$$`: Ant's `property file=` and `exportedProperties` read
+values back exactly, while a plain `java.util.Properties` reader sees `$$`.
+
+**Up to date.** Exporting alone never makes an `AntWork` up to date: an exported value usually depends on something the
+task does not declare (a command's output, the clock), so a task whose only output is the export file reruns every build. It is up
+to date only when it has declared outputs other than the export file and nothing changed.
+
+### Custom task class: `AntOperations` results
+
+```kotlin
+// before: ant.loadfile(...); outputFile.writeText(ant.properties['rev'])
+@TaskAction
+fun go() {
+    val results = ops.execute(cp, AntIsolation.CLASSLOADER, setOf("rev")) {
+        task("property", "name" to "rev", "value" to "abc")
+    }
+    out.get().asFile.writeText(results.getValue("rev")) // write it to a declared output
+}
+```
+
+`execute` and `record` have overloads taking a `Set<String>` of names and returning the `Map<String, String>`; the
+other overloads still return nothing. Declare the value as the task's own output, and other tasks read it from there.
+To submit the work yourself, `AntWorkAction` takes optional `resultProperties` (names) and `resultFile` (where the
+values are written).
+
 ## Submitting Ant work to your own work queue: `AntWorkAction`
 
 `AntOperations` waits for all work the current task has submitted. To run Ant next to a task's own work items and wait
@@ -436,6 +526,8 @@ abstract class Mixed @Inject constructor(private val workers: WorkerExecutor) : 
 | `nodes` | `ListProperty<AntNode>` | The Ant tasks to run, in order, resolved (`AntElement.resolve()`) |
 | `antClasspath` | `ConfigurableFileCollection` | Ant, its antlibs and anything they need; usually `antBridge.classpath` |
 | `baseDirectory` | `DirectoryProperty` | The Ant project's base directory (`basedir`) |
+| `resultProperties` | `SetProperty<String>` | Optional: names of Ant properties to report after the tree runs |
+| `resultFile` | `RegularFileProperty` | Optional: where the requested properties are written (Java properties format) |
 
 The action isolates Ant itself, in a class loader of its own, so any queue works: `noIsolation()` and
 `classLoaderIsolation()` run it in the daemon, `processIsolation()` in a worker process. The queue's classpath needs
@@ -455,7 +547,8 @@ nothing. A failing Ant task fails the work item with `AntExecutionException`.
 - **`AntWork` without declared outputs is never up to date.**
 - **Reading a value Ant computed.** Ant tasks return no values; query tasks set a property, which legacy builds read
   back with `ant.properties[...]`. Within one Ant tree, later tasks can use it (`${name}`), but getting it into
-  Gradle is a read-back. Use a Gradle-native provider instead:
+  Gradle is a read-back. To keep Ant computing it for now, see [Values Ant computes](#values-ant-computes); to leave
+  Ant, use a Gradle-native provider instead:
 
   | Legacy pattern | Gradle-native replacement |
   |---|---|
@@ -468,6 +561,21 @@ nothing. A failing Ant task fails the work item with `AntExecutionException`.
 - **`junitreport` with the `frames` format** may need Xalan on `antBridge`; `noframes` works with the default
   classpath.
 - **`ant.importBuild` is not covered.** Port the imported targets to Gradle tasks (typed tasks, `AntWork`).
+
+### Why there is no shared `ant` service
+
+The temptation: inject a service named `ant`, keep the `ant.properties` reads, and be on Gradle 10. The bridge refuses
+to offer it, because it is the same global, mutable bag under a new name:
+
+- Gradle cannot see the dependency between the task that writes and the one that reads, so ordering depends on
+  `dependsOn` rather than on data.
+- Up-to-date checks and the build cache ignore the value, so a changed value does not rerun or invalidate anything.
+- Parallel execution and the configuration cache make it worse: writers race, and nothing stored in the cache carries
+  the value.
+- The build is stuck on the bridge, instead of one provider swap away from leaving it.
+
+Use the provider forms in [Values Ant computes](#values-ant-computes) instead, then replace them with the Gradle-native
+providers in the table above.
 
 ## Contributing
 

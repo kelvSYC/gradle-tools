@@ -63,10 +63,13 @@ The only types they share are the JDK's. Across the boundary:
   instantiated by name (`AntShim.TREE_EXECUTOR`, `AntShim.PROPERTY_LOADER`).
 - **Requests** are maps of strings, lists and maps. `AntNode.toShimMap()` and `AntPropertySource.toShimMap()` build
   them; the request keys of each entry point are documented in its class comment (`TreeExecutor`, `PropertyLoader`).
-  Every request carries `"logger"` and `"baseDirectory"`.
+  Every request carries `"logger"` and `"baseDirectory"`. `TreeExecutor` also accepts `"results"`, a list of property
+  names to report after the tree runs.
 - **Logging** is a `java.util.function.BiConsumer<Integer, String>` of Ant priority and message. `AntShim` maps Ant's
   priorities to Gradle's logger: error, warn, info, and debug for verbose and debug.
-- **Results** are maps. Success has `"antVersion"` (and `"properties"` for `PropertyLoader`). Failure has `"failure"`
+- **Results** are maps. Success has `"antVersion"` and, for `PropertyLoader` and for `TreeExecutor` when `"results"` was requested,
+  `"properties"`: for `TreeExecutor`, a map from each requested name the Ant project defines to its value (names the
+  tree did not set are left out). Failure has `"failure"`
   (Ant's message), `"location"` and `"trace"` (the stack trace as a string).
 
 **Failures are values, never exceptions.** An exception thrown from the shim carries Ant classes in its cause chain,
@@ -81,6 +84,27 @@ debug. Keep that rule when adding an entry point: nothing may escape `apply`.
 **Every call gets a fresh Ant `Project`**, so properties and references never leak between executions, including
 parallel ones. `fireBuildFinished` runs at the end, which closes the class loaders Ant creates for `taskdef
 classpath=…`.
+
+## Result properties and the result file
+
+Work actions cannot return values, and the Worker API may run them in another process, so `AntWorkAction` writes the
+requested properties (`resultProperties`) to `resultFile` and the caller reads that file back. The format is
+deterministic: Java properties, keys in name order, `$` escaped as `$$` (so Ant's `property file=` reads the values
+exactly), names the tree did not set absent. `AntWork`'s export file and `AntOperations`' result overloads use the same
+mechanism: `AntWork` points `resultFile` at its declared `exportedPropertiesFile`, while `AntOperations` uses a
+temporary file in the system temp directory (owner-only on POSIX), deleted after reading, also on failure. The
+configuration-time `AntQuery` has no work action (a `ValueSource` cannot use the Worker API) and reads `"properties"`
+from `TreeExecutor` directly.
+
+## Decision: no shared Ant state between tasks
+
+A `BuildService` (or any build-scoped holder) carrying Ant properties from one task to another is rejected, and the
+bridge must not grow one, even as a migration aid. It recreates the global `ant` property bag: Gradle cannot see the
+producer-consumer dependency (ordering by `dependsOn`, not by data), up-to-date checks and the build cache ignore the
+value, parallel runs and the configuration cache make it worse, and consumers stay on the bridge. Values reach other
+tasks only as declared task outputs and providers derived from them (`exportedProperties`, a custom task's own
+output), or at configuration time through `antBridge.query`, which a configuration-cache entry can validate. Each Ant
+call keeps its fresh `Project` for the same reason.
 
 ## Who opens loaders, and why there is no cache
 
