@@ -11,7 +11,7 @@ class AntScopeSpec : FunSpec({
     val src = File("/src")
     val dir = File("/dest")
 
-    fun tree(body: Action<in AntScope>) = buildTree(body).map { it.resolve() }
+    fun tree(body: Action<in AntScope>) = AntTrees.build(body).map { it.resolve() }
 
     test("generic task with nested elements") {
         val nodes = tree(
@@ -76,7 +76,7 @@ class AntScopeSpec : FunSpec({
 
     test("path keeps the file collection lazy until resolve") {
         val files = project.files()
-        val elements = buildTree(Action { task("x") { path(files) } })
+        val elements = AntTrees.build(Action { task("x") { path(files) } })
         val a = project.file("a.txt")
         files.from(a)
         elements.single().children.single().resolve().attributes["path"] shouldBe a.absolutePath

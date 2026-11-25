@@ -1,6 +1,6 @@
 package com.kelvsyc.gradle.ant
 
-import com.kelvsyc.gradle.ant.internal.AntWorkAction
+import com.kelvsyc.gradle.ant.actions.AntWorkAction
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe

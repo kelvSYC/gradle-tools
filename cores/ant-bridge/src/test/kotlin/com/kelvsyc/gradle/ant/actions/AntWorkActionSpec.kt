@@ -1,4 +1,4 @@
-package com.kelvsyc.gradle.ant.internal
+package com.kelvsyc.gradle.ant.actions
 
 import com.kelvsyc.gradle.ant.AntExecutionException
 import com.kelvsyc.gradle.ant.AntNode

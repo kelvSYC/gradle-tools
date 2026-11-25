@@ -1,6 +1,6 @@
 package com.kelvsyc.gradle.ant
 
-import com.kelvsyc.gradle.ant.internal.AntWorkAction
+import com.kelvsyc.gradle.ant.actions.AntWorkAction
 import org.gradle.api.Action
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.ProjectLayout
@@ -14,6 +14,9 @@ import javax.inject.Inject
  *
  * Obtain one from `antBridge.operations`, or create one in a task with `ObjectFactory.newInstance`.
  * A failing Ant task fails the call with Gradle's `WorkerExecutionException`, caused by [AntExecutionException].
+ *
+ * Each call waits for all work the current task has submitted, not only its own. To run Ant next to other work items
+ * and wait once, submit [com.kelvsyc.gradle.ant.actions.AntWorkAction] to your own work queue instead.
  */
 abstract class AntOperations @Inject constructor(
     private val workers: WorkerExecutor,
@@ -29,7 +32,7 @@ abstract class AntOperations @Inject constructor(
      * Runs the Ant tasks of [body] (Kotlin DSL) with [classpath], isolated as [isolation] says.
      */
     fun execute(classpath: FileCollection, isolation: AntIsolation, body: Action<in AntScope>) =
-        run(classpath, isolation, buildTree(body))
+        run(classpath, isolation, AntTrees.build(body))
 
     /**
      * Runs the legacy `ant.xxx(...)` calls recorded by [body] with [classpath], in an isolated class loader.
@@ -41,7 +44,7 @@ abstract class AntOperations @Inject constructor(
      * Runs the legacy `ant.xxx(...)` calls recorded by [body] with [classpath], isolated as [isolation] says.
      */
     fun record(classpath: FileCollection, isolation: AntIsolation, body: Action<in AntRecorder>) =
-        run(classpath, isolation, AntRecorder.record { body.execute(it) })
+        run(classpath, isolation, AntTrees.record(body))
 
     /**
      * Resolves [elements] and runs them with [classpath], isolated as [isolation] says, waiting for completion.

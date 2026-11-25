@@ -61,14 +61,14 @@ abstract class AntWork @Inject constructor(objects: ObjectFactory) : DefaultTask
      * Appends the Ant tasks of [body] (Kotlin DSL) to [elements].
      */
     fun ant(body: Action<in AntScope>) {
-        elements.addAll(buildTree(body))
+        elements.addAll(AntTrees.build(body))
     }
 
     /**
      * Appends the legacy `ant.xxx(...)` calls recorded by [body] to [elements].
      */
     fun record(body: Action<in AntRecorder>) {
-        elements.addAll(AntRecorder.record { body.execute(it) })
+        elements.addAll(AntTrees.record(body))
     }
 
     /**

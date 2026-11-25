@@ -33,7 +33,7 @@ AntWorkAction / AntProperties ──▶ AntShim ──JDK maps──▶ shim ent
 | The shim | `src/antShim/java/.../ant/shim/` | The only Ant-aware code. `TreeExecutor` turns element trees into Ant tasks and runs them; `PropertyLoader` runs Ant's `Property` task per source (`RecordingProperty` records the keys each source names); `ShimSupport` holds the shared project setup, logging bridge and result maps. |
 | `AntRuntimeClassLoader` | `src/main/.../ant/internal/` | A `URLClassLoader` over the resolved `antBridge` jars whose parent is the platform class loader. It defines the shim classes from the plugin's resources. |
 | `AntShim` | `src/main/.../ant/internal/` | The plugin-side adapter: converts requests to JDK types, invokes a shim entry point by class name, and turns the result back into a value or an `AntExecutionException`. |
-| Callers | `AntWorkAction`, `AntProperties` | Open a loader, call through `AntShim`, close the loader. Everything else (`AntWork`, the typed tasks, `AntOperations`) reaches Ant through `AntWorkAction`. |
+| Callers | `AntWorkAction` (`actions`, public), `AntProperties` | Open a loader, call through `AntShim`, close the loader. Everything else (`AntWork`, the typed tasks, `AntOperations`) reaches Ant through `AntWorkAction`, whose trees come from `AntTrees`. |
 
 ## Why the shim is plain Java
 
@@ -85,7 +85,9 @@ classpath=…`.
 ## Who opens loaders, and why there is no cache
 
 - `AntWorkAction` opens and closes a loader per work item. Build services are unavailable under process isolation, and
-  Gradle already reuses the worker's own class loaders.
+  Gradle already reuses the worker's own class loaders. Because the action isolates Ant itself, its isolation does not
+  depend on the queue's isolation mode or classpath, which is why it is public API that consumers may submit to any
+  work queue.
 - `AntProperties.obtain()` opens and closes a loader per read. A cached loader in a `BuildService` was tried and
   removed: a configuration-time `ValueSource` is part of the configuration cache's fingerprint, and a
   `BuildServiceProvider` parameter cannot be serialized there.

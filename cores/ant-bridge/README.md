@@ -349,6 +349,45 @@ caused by `AntExecutionException`.
 Pass it as the second argument (`ops.execute(cp, AntIsolation.PROCESS) { ... }`) or set `isolation` on an `AntWork` or
 typed task.
 
+## Submitting Ant work to your own work queue: `AntWorkAction`
+
+`AntOperations` waits for all work the current task has submitted. To run Ant next to a task's own work items and wait
+once, submit `com.kelvsyc.gradle.ant.actions.AntWorkAction` to your own queue. Build the tree with `AntTrees`
+(`AntTrees.build { }` for the Kotlin DSL; `AntTrees.record { }` for legacy calls, taking a Groovy closure or a
+`withGroovyBuilder` body) and resolve it at execution time:
+
+```kotlin
+abstract class Mixed @Inject constructor(private val workers: WorkerExecutor) : DefaultTask() {
+    @get:Classpath
+    abstract val antClasspath: ConfigurableFileCollection // set from antBridge.classpath
+
+    @get:OutputDirectory
+    abstract val out: DirectoryProperty
+
+    @TaskAction
+    fun go() {
+        val queue = workers.noIsolation()
+        val tree = AntTrees.build { task("mkdir", "dir" to out.dir("from-ant")) }
+        queue.submit(AntWorkAction::class.java) {
+            nodes.set(tree.map { it.resolve() })
+            antClasspath.from(this@Mixed.antClasspath)
+            baseDirectory.set(out)
+        }
+        queue.submit(MyOwnAction::class.java) { /* ... */ }
+    }
+}
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `nodes` | `ListProperty<AntNode>` | The Ant tasks to run, in order, resolved (`AntElement.resolve()`) |
+| `antClasspath` | `ConfigurableFileCollection` | Ant, its antlibs and anything they need; usually `antBridge.classpath` |
+| `baseDirectory` | `DirectoryProperty` | The Ant project's base directory (`basedir`) |
+
+The action isolates Ant itself, in a class loader of its own, so any queue works: `noIsolation()` and
+`classLoaderIsolation()` run it in the daemon, `processIsolation()` in a worker process. The queue's classpath needs
+nothing. A failing Ant task fails the work item with `AntExecutionException`.
+
 ## What cannot be migrated
 
 - **Read-backs inside a recorded block.** Ant runs after the block ends, so reads of `properties`, `references` or
@@ -358,7 +397,8 @@ typed task.
   `println`. Compute values outside the block and use them inside.
 - **No task dependencies from values in `AntWork`'s tree.** A `Provider` or `FileCollection` there carries no task
   dependency or input registration: declare inputs, outputs and `dependsOn` yourself.
-- **`AntOperations` waits for all worker items submitted by the current task**, not only its own.
+- **`AntOperations` waits for all worker items submitted by the current task**, not only its own. Submit
+  `AntWorkAction` to your own queue to mix Ant with other work items (see above).
 - **`AntWork` without declared outputs is never up to date.**
 - **`junitreport` with the `frames` format** may need Xalan on `antBridge`; `noframes` works with the default
   classpath.

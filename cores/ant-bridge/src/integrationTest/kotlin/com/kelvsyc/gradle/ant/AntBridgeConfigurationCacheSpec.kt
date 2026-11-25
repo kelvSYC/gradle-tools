@@ -311,6 +311,52 @@ class AntBridgeConfigurationCacheSpec : FunSpec({
         second.output shouldContain "[ant:echo] 1"
     }
 
+    test("AntWorkAction submitted next to the task's own work item, awaited once") {
+        val dir = kotlinProject(
+            "mixed-queue",
+            """
+            abstract class Mixed @Inject constructor(private val workers: WorkerExecutor) : DefaultTask() {
+                @get:Classpath
+                abstract val cp: ConfigurableFileCollection
+
+                @get:OutputDirectory
+                abstract val out: DirectoryProperty
+
+                @TaskAction
+                fun go() {
+                    val queue = workers.noIsolation()
+                    val tree = com.kelvsyc.gradle.ant.AntTrees.build { task("mkdir", "dir" to out.dir("from-ant")) }
+                    queue.submit(com.kelvsyc.gradle.ant.actions.AntWorkAction::class.java) {
+                        nodes.set(tree.map { it.resolve() })
+                        antClasspath.from(cp)
+                        baseDirectory.set(out)
+                    }
+                    queue.submit(com.kelvsyc.gradle.ant.fixtures.WriteMarkerAction::class.java) {
+                        marker.set(out.file("own/marker.txt"))
+                        text.set("own")
+                    }
+                }
+            }
+
+            tasks.register<Mixed>("mixed") {
+                cp.from(antBridge.classpath)
+                out.set(layout.buildDirectory.dir("mixed"))
+            }
+            """
+        )
+
+        cc(dir, "mixed").task(":mixed")?.outcome shouldBe TaskOutcome.SUCCESS
+        File(dir, "build/mixed/from-ant").isDirectory shouldBe true
+        File(dir, "build/mixed/own/marker.txt").readText() shouldBe "own"
+
+        File(dir, "build/mixed").deleteRecursively()
+        val second = cc(dir, "mixed")
+        second.output shouldContain REUSED
+        second.task(":mixed")?.outcome shouldBe TaskOutcome.SUCCESS
+        File(dir, "build/mixed/from-ant").isDirectory shouldBe true
+        File(dir, "build/mixed/own/marker.txt").readText() shouldBe "own"
+    }
+
     test("a failing Ant task fails the build") {
         val dir = kotlinProject(
             "failing",

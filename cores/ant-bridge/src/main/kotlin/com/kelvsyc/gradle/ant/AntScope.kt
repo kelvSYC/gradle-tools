@@ -148,12 +148,3 @@ class AntElementScope internal constructor(
     }
 }
 
-/**
- * Runs [body] against a fresh [AntScope] and returns the elements it appended.
- */
-internal fun buildTree(body: Action<in AntScope>): List<AntElement> {
-    val sink = ArrayList<AntElement>()
-    body.execute(AntScope(sink))
-    return sink
-}
-
