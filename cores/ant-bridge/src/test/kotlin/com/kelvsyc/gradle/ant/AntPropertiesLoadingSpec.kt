@@ -107,7 +107,7 @@ class AntPropertiesLoadingSpec : FunSpec({
         project.write("a.properties", "dist=${'$'}{basedir}/dist\n")
         val viaSpec = project.load { file("a.properties") }.get()
         viaSpec["dist"] shouldBe "${project.projectDir.absolutePath}/dist"
-        project.repositories.mavenCentral()
+        TestAnt.useIn(project)
         val viaExtension = project.extensions.getByType<AntBridgeExtension>()
             .properties { file("a.properties") }.get()
         viaExtension["dist"] shouldBe "${project.projectDir.absolutePath}/dist"
@@ -179,7 +179,7 @@ class AntPropertiesLoadingSpec : FunSpec({
 
     test("the antBridge extension loads properties with the plugin's classpath") {
         val project = project()
-        project.repositories.mavenCentral()
+        TestAnt.useIn(project)
         project.write("a.properties", "base=/opt\ndir=${'$'}{base}/app\n")
         val result = project.extensions.getByType<AntBridgeExtension>()
             .properties { file("a.properties") }.get()

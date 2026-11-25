@@ -1,6 +1,7 @@
 package com.kelvsyc.gradle.plugins
 
 import com.kelvsyc.gradle.ant.AntBridgeExtension
+import com.kelvsyc.gradle.ant.TestAnt
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
@@ -45,7 +46,7 @@ class AntBridgePluginSpec : FunSpec({
 
     test("extension exposes the classpath") {
         val project = project()
-        project.repositories.mavenCentral()
+        TestAnt.useIn(project)
         project.extensions.getByType<AntBridgeExtension>().classpath.files.map { it.name } shouldContain
             "ant-${AntBridgePlugin.DEFAULT_ANT_VERSION}.jar"
     }

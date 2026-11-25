@@ -135,7 +135,7 @@ class AntQueryLoadingSpec : FunSpec({
 
     test("antBridge.query wires the extension's classpath") {
         val project = project()
-        project.repositories.mavenCentral()
+        TestAnt.useIn(project)
         val extension = project.extensions.getByType(AntBridgeExtension::class.java)
         val provider = extension.query { ant { task("property", "name" to "k", "value" to "v") }; result("k") }
         provider.get() shouldBe mapOf("k" to "v")

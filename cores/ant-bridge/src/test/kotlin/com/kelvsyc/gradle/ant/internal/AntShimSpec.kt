@@ -55,6 +55,14 @@ class AntShimSpec : FunSpec({
         }
     }
 
+    test("an incomplete Ant classpath fails with AntExecutionException, not a linkage error across the boundary") {
+        val withoutLauncher = TestAnt.classpath.filterNot { it.name.startsWith("ant-launcher") }
+        withoutLauncher.size shouldBe TestAnt.classpath.size - 1
+        shouldThrow<AntExecutionException> {
+            run(listOf(node("echo", "message" to "hi")), withoutLauncher)
+        }.message shouldContain "AntMain"
+    }
+
     test("basedir is the given directory") {
         val (logger, baseDir) = run(listOf(node("echo", "message" to "${'$'}{basedir}")))
         verify { logger.warn("[ant:echo] ${baseDir.absolutePath}") }

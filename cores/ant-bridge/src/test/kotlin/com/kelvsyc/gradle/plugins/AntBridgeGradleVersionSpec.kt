@@ -1,5 +1,6 @@
 package com.kelvsyc.gradle.plugins
 
+import com.kelvsyc.gradle.ant.TestAnt
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
@@ -21,13 +22,18 @@ abstract class AntBridgeGradleVersionSpec : FunSpec() {
 
     private val settings = """rootProject.name = "consumer""""
 
+    // The Ant jars the test task already resolved, as a file dependency in place of the default module dependencies:
+    // no Maven Central requests from each version's fresh TestKit directory (see TestAnt.useIn).
+    private val antJars = TestAnt.classpathLiteral
+
     private val kotlinBuild = """
         import com.kelvsyc.gradle.ant.AntWork
         import com.kelvsyc.gradle.providers.getting
 
         plugins { id("com.kelvsyc.gradle.ant-bridge") }
 
-        repositories { mavenCentral() }
+        dependencies { antBridge(files($antJars)) }
+        configurations.antBridgeClasspath { exclude(group = "org.apache.ant") }
 
         val greeting = antBridge.properties { file("build.properties") }.getting("greeting")
 
@@ -41,7 +47,8 @@ abstract class AntBridgeGradleVersionSpec : FunSpec() {
 
         plugins { id 'com.kelvsyc.gradle.ant-bridge' }
 
-        repositories { mavenCentral() }
+        dependencies { antBridge files($antJars) }
+        configurations.antBridgeClasspath.exclude(group: 'org.apache.ant')
 
         def greeting = antBridge.properties { file('build.properties') }.map { it['greeting'] }
 
