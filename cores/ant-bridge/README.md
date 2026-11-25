@@ -184,6 +184,19 @@ antBridge.importBuild(file("build.xml"))
 The imported targets stay Gradle tasks of the same names, and can be handed over to Gradle one at a time. See
 [Replacing `ant.importBuild`](#replacing-antimportbuild).
 
+In the Groovy DSL, the legacy renaming closure becomes a `taskName { }` call inside the configuration closure:
+
+```groovy
+// before
+ant.importBuild('build.xml') { t -> "ant-$t" }
+
+// after
+antBridge.importBuild('build.xml') { taskName { "ant-$it" } }
+```
+
+The old form, `antBridge.importBuild('build.xml') { t -> "ant-$t" }`, still compiles, but the closure is then the
+configuration action: its result is ignored and no task is renamed.
+
 ### The Kotlin DSL and its typed helpers
 
 `AntOperations.execute(classpath) { }`, `AntWork.ant { }`, `AntTrees.build { }` and a typed task's `elements()` take an
@@ -579,11 +592,17 @@ antBridge.importBuild(file("tools/build.xml"), file("tools")) {}
   the tasks named by its `depends`; a name that is not a target of the imported build is a Gradle task name, as with
   legacy. The call registers the tasks, so `tasks.named(...)` works right after it. Dependencies are resolved after
   every call, so a later file may provide a target an earlier file depends on.
+- **`depends` order.** Each task named in a `depends` runs after the one named before it (`depends="clean,build"` runs
+  `clean` first), Gradle tasks and replacements included, as with legacy. The bridge uses `mustRunAfter` rather than
+  legacy's `shouldRunAfter`, which parallel execution (the configuration cache's default) ignores. A pair that
+  contradicts Ant's own dependencies (`depends="jar,compile"` where `jar` depends on `compile`), or an earlier kept
+  pair (`depends="x,y"` in one target and `depends="y,x"` in another), is skipped instead of forming a cycle.
 - **`taskName { }`** is the legacy renaming closure. A task name that is already taken fails the import, naming the
-  task and the target; rename with `taskName`. In a root project this includes Gradle's built-in tasks, so a target named `init`,
-  `wrapper`, `help` or `tasks` needs renaming.
-- **Base directory.** A file's top-level statements and targets use its `<project basedir>`, else its directory, else
-  the `baseDirectory` argument of the overload; files pulled in with `<import>` use their importer's.
+  task and the target; rename with `taskName`. In a root project this includes Gradle's built-in tasks, so a target
+  named `init`, `wrapper`, `help` or `tasks` needs renaming.
+- **Base directory.** A file's top-level statements and targets use the `baseDirectory` argument of the overload, else
+  the file's directory; the file's own `<project basedir>` is ignored, which matches legacy `importBuild` (it set the
+  base directory before parsing). Files pulled in with `<import>` use their importer's.
 - **Several calls in one project** form one Ant build, as with legacy: targets of one file may depend on another's,
   and top-level properties are shared. Each call re-reads every file imported so far, with that call's Ant classpath
   and seeds. Calling `importBuild` after the build has been read (by a task, or by querying `propertiesFor`) fails.
@@ -595,16 +614,18 @@ antBridge.importBuild(file("tools/build.xml"), file("tools")) {}
 - **Imported targets always run.** They declare no outputs other than their property exports (below), so they are
   never up to date and not cached, as with legacy.
 - **Configuration cache.** Reading the build runs the files' top-level statements during configuration, not on a
-  configuration-cache hit. The cache inputs are every loaded build file (including `<import>`ed ones) and the files
-  read by top-level `property file=` and `loadproperties srcFile=`; editing one of them invalidates the entry. Other
-  parse-time inputs (environment variables, URLs, resources, `exec`) are not tracked: editing them does not.
+  configuration-cache hit. The cache inputs are every loaded build file (including `<import>`ed ones), the files read
+  by top-level `property file=` and `loadproperties srcFile=`, and the files of optional `<import>`s, whether or not
+  they exist: editing, creating or deleting one of them invalidates the entry. Other parse-time inputs (environment
+  variables, URLs, resources, `exec`) are not tracked: editing them does not.
 
 ### How properties flow between targets
 
 Legacy targets shared one Ant project, and so one property bag. Here, each task runs only its own target, in a fresh
 Ant project: it sets the seeds, parses every file of the project's Ant build (running their top-level statements),
 loads the properties of its upstream targets, then runs the target. The properties the target newly defines are written
-to its export file (`build/ant-bridge/import/<task>.properties`), a declared output.
+to its `exportedPropertiesFile` (default `build/ant-bridge/import/<task>.properties`), a declared output, and are
+available to other tasks as its `exportedProperties` provider, which carries the dependency on the task.
 
 The upstream targets are the target's transitive `depends` in the `build.xml`, in the order Ant would run them; their
 export files are declared inputs. The first definition of a name wins, so the target sees what a single Ant run of it
@@ -735,9 +756,24 @@ before migrating it.
 - **Every execution re-parses the build.** Each imported task re-parses every imported file of the project, so
   top-level side effects (an `echo`, a `mkdir`) run during configuration and again once per executed target, but not
   on a configuration-cache hit.
-- **Untracked parse inputs.** Only the build files and the files read by top-level `property file=` and
-  `loadproperties srcFile=` are configuration-cache inputs; a changed environment variable, URL, resource or command
-  output read at top level does not invalidate the entry.
+- **Untracked parse inputs.** Only the build files, the files read by top-level `property file=` and
+  `loadproperties srcFile=` and the files of optional `<import>`s are configuration-cache inputs; a changed
+  environment variable, URL, resource or command output read at top level does not invalidate the entry.
+- **`depends` order is a hard ordering.** Consecutive `depends` entries are ordered with `mustRunAfter`, where legacy
+  used `shouldRunAfter`; a pair that would form a cycle with Ant's own dependencies is skipped (see
+  [Replacing `ant.importBuild`](#replacing-antimportbuild)).
+- **Top-level values are recomputed on every execution.** Each task re-runs the top-level statements, so values they
+  compute (`<tstamp>`, `exec outputproperty`, environment reads) can differ between targets of one build, and from
+  `propertiesFor`, which holds the values computed during configuration; a single Ant run computes them once.
+- **Imported tasks are in group `ant`.** Legacy `AntTarget` tasks had no group, so they now list under their own
+  heading in `gradle tasks`.
+- **`ant.file` and `basedir` follow the target's own top-level file.** While a target runs, `ant.file` and the base
+  directory are those of the top-level file that registered it; with legacy they were whatever the last import set.
+  This affects `<antcall>` (which re-reads `ant.file`) and `${ant.file}` in builds made of several imported files.
+- **One Ant classpath for all imports of a project.** Every task re-parses every imported file of the project with its
+  own import's `antClasspath`, so an earlier import's tasks read files imported later with the earlier classpath: an
+  antlib that only a later import's `antClasspath` provides breaks the earlier imports' tasks. Give every import of a
+  project the same classpath.
 - **The build script's `ant` object no longer feeds or reads the import.** Set values before the import with
   `properties(...)` seeds, which must be known during configuration; read Ant's values with `propertiesFor`.
 - **Build listeners, loggers and other per-project Ant state** configured through the legacy `ant` object do not apply.

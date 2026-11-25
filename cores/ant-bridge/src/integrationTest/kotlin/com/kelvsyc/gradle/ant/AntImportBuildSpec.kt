@@ -89,6 +89,27 @@ class AntImportBuildSpec : FunSpec({
         }
     }
 
+    test("depends order is kept between the tasks it names") {
+        val dir = importProject("depends-order", """antBridge.importBuild("build.xml")""")
+        dir.ant(
+            "build.xml",
+            """
+            <project name="order">
+                <target name="clean"><delete dir="out"/></target>
+                <target name="build"><mkdir dir="out"/><touch file="out/built.txt"/></target>
+                <target name="rebuild" depends="clean,build"/>
+            </project>
+            """
+        )
+
+        listOf(cc(dir, "rebuild"), cc(dir, "rebuild")).forEachIndexed { run, result ->
+            if (run > 0) result.output shouldContain REUSED
+            result.outcomes(":clean", ":build", ":rebuild") shouldContainExactly List(3) { TaskOutcome.SUCCESS }
+            (result.output.indexOf("> Task :clean") < result.output.indexOf("> Task :build")) shouldBe true
+            File(dir, "out/built.txt").isFile shouldBe true
+        }
+    }
+
     test("properties flow between targets") {
         val java = File(System.getProperty("java.home"), "bin/java").path
         val dir = importProject("flow", """antBridge.importBuild("build.xml")""")
@@ -382,6 +403,28 @@ class AntImportBuildSpec : FunSpec({
         edited.output shouldNotContain REUSED
         edited.value("SHOWN") shouldBe "2.0"
         edited.value("PRINTED") shouldBe "2.0"
+    }
+
+    test("creating a missing property file read at the top level invalidates the cache") {
+        val dir = importProject("missing-property-file", """antBridge.importBuild("build.xml")""")
+        dir.ant(
+            "build.xml",
+            """
+            <project name="local">
+                <property file="local.properties"/>
+                <property name="version" value="default"/>
+                <target name="show"><echo message="SHOWN=%{version}"/></target>
+            </project>
+            """
+        )
+
+        val first = cc(dir, "show")
+        first.value("SHOWN") shouldBe "default"
+
+        File(dir, "local.properties").writeText("version=local\n")
+        val second = cc(dir, "show")
+        second.output shouldNotContain REUSED
+        second.value("SHOWN") shouldBe "local"
     }
 
     test("process isolation") {

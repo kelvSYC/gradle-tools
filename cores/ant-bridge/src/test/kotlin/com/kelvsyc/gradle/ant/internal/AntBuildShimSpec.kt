@@ -91,7 +91,7 @@ class AntBuildShimSpec : FunSpec({
         model.targets.first { it.name == "build" }.upstream shouldBe listOf("clean")
     }
 
-    test("readBuild reports the existing files property and loadproperties read during the parse") {
+    test("readBuild reports the files property, loadproperties and optional imports read or looked for") {
         val dir = tempdir()
         File(dir, "build.properties").writeText("a=1\n")
         File(dir, "more.properties").writeText("b=2\n")
@@ -113,6 +113,7 @@ class AntBuildShimSpec : FunSpec({
                 <loadproperties srcFile="more.properties"/>
                 <property name="plain" value="x"/>
                 <import file="common.xml"/>
+                <import file="optional.xml" optional="true"/>
                 <target name="t">
                     <property file="target-only.properties"/>
                 </target>
@@ -121,7 +122,10 @@ class AntBuildShimSpec : FunSpec({
         )
         val model = read(listOf(main))
         model.readFiles.map { it.canonicalFile } shouldContainExactlyInAnyOrder
-            listOf("build.properties", "more.properties", "imported.properties").map { File(dir, it).canonicalFile }
+            listOf(
+                "build.properties", "missing.properties", "more.properties", "imported.properties", "common.xml",
+                "optional.xml"
+            ).map { File(dir, it).canonicalFile }
         model.topLevelProperties shouldContain ("c" to "3")
         model.loadedFiles.map { it.name } shouldContainExactlyInAnyOrder listOf("build.xml", "common.xml")
     }
@@ -224,8 +228,7 @@ class AntBuildShimSpec : FunSpec({
             "three/build.xml",
             "<project name=\"three\"><property name=\"three.here\" location=\".\"/></project>"
         )
-        val fourDir = tempdir()
-        val fourth = fourDir.write(
+        val fourth = tempdir().write(
             "four/build.xml",
             "<project name=\"four\" basedir=\"..\"><property name=\"four.here\" location=\".\"/></project>"
         )
@@ -244,7 +247,43 @@ class AntBuildShimSpec : FunSpec({
         File(properties.getValue("one.here")).canonicalFile shouldBe first.parentFile.canonicalFile
         File(properties.getValue("two.here")).canonicalFile shouldBe second.parentFile.canonicalFile
         File(properties.getValue("three.here")).canonicalFile shouldBe explicit.canonicalFile
-        File(properties.getValue("four.here")).canonicalFile shouldBe fourDir.canonicalFile
+        File(properties.getValue("four.here")).canonicalFile shouldBe explicit.canonicalFile
+    }
+
+    test("a file's own project basedir is ignored, as legacy importBuild ignored it") {
+        val file = tempdir().write(
+            "five/build.xml",
+            "<project name=\"five\" basedir=\"..\"><property name=\"five.here\" location=\".\"/></project>"
+        )
+        File(read(listOf(file)).topLevelProperties.getValue("five.here")).canonicalFile shouldBe
+            file.parentFile.canonicalFile
+    }
+
+    test("runTarget runs a target using antcall and a top-level macrodef") {
+        val dir = tempdir()
+        val marker = File(dir, "called.txt")
+        val file = dir.write(
+            "build.xml",
+            """
+            <project name="p">
+                <macrodef name="define">
+                    <attribute name="name"/>
+                    <attribute name="value"/>
+                    <sequential><property name="@{name}" value="@{value}"/></sequential>
+                </macrodef>
+                <target name="helper">
+                    <define name="inHelper" value="in-helper"/>
+                    <echo file="called.txt" message="${'$'}{inHelper},${'$'}{defined}"/>
+                </target>
+                <target name="t">
+                    <define name="defined" value="from-macro"/>
+                    <antcall target="helper"/>
+                </target>
+            </project>
+            """.trimIndent()
+        )
+        run(file, "t") shouldBe mapOf("defined" to "from-macro")
+        marker.readText() shouldBe "in-helper,from-macro"
     }
 
     test("runTarget runs only the target and reports its new properties") {

@@ -64,8 +64,8 @@ class AntShim(
      * messages to [logger], and returns the targets, top-level properties and loaded files of the parse. No target
      * runs.
      *
-     * Before each file, the project's base directory is the file's own `<project basedir>`, else
-     * [BuildFile.baseDirectory], else the file's directory.
+     * Before each file, the project's base directory is [BuildFile.baseDirectory], else the file's directory; the
+     * file's own `<project basedir>` is ignored, as legacy `importBuild` ignored it.
      *
      * @throws AntExecutionException if Ant reports a failure, or a target name is defined in two top-level files
      */
@@ -177,7 +177,7 @@ class AntShim(
     data class BuildFile(
         /** The build file. */
         val file: File,
-        /** The base directory, or `null` when the file's own `<project basedir>` or its directory applies. */
+        /** The base directory, or `null` for the file's directory. */
         val baseDirectory: File?
     ) {
         internal fun toShimMap(): Map<String, String?> =
@@ -198,8 +198,8 @@ class AntShim(
         /** The top-level files and every file they imported or included. */
         val loadedFiles: List<File>,
         /**
-         * The existing files the parse's `property file=` and `loadproperties` tasks read. Other inputs of the parse
-         * (environment, URLs, resources, commands) are not tracked.
+         * The files the parse's `property file=`, `loadproperties` and `import` tasks read or looked for, missing ones
+         * included. Other inputs of the parse (environment, URLs, resources, commands) are not tracked.
          */
         val readFiles: List<File> = emptyList()
     )

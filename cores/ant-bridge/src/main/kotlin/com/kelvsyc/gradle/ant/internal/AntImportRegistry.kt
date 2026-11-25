@@ -18,9 +18,10 @@ import java.io.File
 
 /**
  * The Ant build of one Gradle project: every `antBridge.importBuild` call of the project adds a top-level file to it.
- * Configuration-only: it holds what the calls declared and what reading the build reported, and wires the imported
- * tasks lazily from the final state. Its properties are finalized when read, so nothing changes after configuration;
- * no task reads the registry at execution.
+ * It holds what the calls declared and what reading the build reported, and wires the imported tasks lazily from the
+ * final state. It holds no runtime state: its properties are finalized when read, so nothing changes after
+ * configuration, and the lazy providers it hands out (which, without the configuration cache, may be evaluated during
+ * the execution phase) only read that frozen configuration.
  */
 internal class AntImportRegistry(
     private val tasks: TaskContainer,
@@ -43,7 +44,33 @@ internal class AntImportRegistry(
     private val exclusions = LinkedHashMap<String, TaskProvider<AntExclusionExport>?>()
 
     private var topLevelPropertyValues: Map<String, String> = emptyMap()
+
+    /** The files of the build that exist: the tasks' `buildFiles` input. */
     private var buildFileValues: List<File> = emptyList()
+
+    /** Task name to the task names it must run after, computed from the current build; reset by [importBuild]. */
+    private var ordering: Map<String, List<String>>? = null
+
+    /**
+     * Keeps the order of each imported target's `depends`, as legacy did with `shouldRunAfter`: each task named there
+     * must run after the one named before it, Gradle tasks and replacements included (see [dependsOrdering]).
+     * `mustRunAfter`, because the configuration cache runs tasks in parallel, which ignores `shouldRunAfter`. Every
+     * task of the project gets a lazy `mustRunAfter`, evaluated from the final build when the task graph is built.
+     * Added by the first [importBuild] call.
+     */
+    private val dependsOrderingHook: Unit by lazy {
+        tasks.configureEach {
+            val taskName = name
+            mustRunAfter(
+                providers.provider {
+                    val current = ordering
+                        ?: dependsOrdering(targets, taskNames, exclusions.keys).also { ordering = it }
+                    val existing = tasks.names
+                    current[taskName].orEmpty().filter { it in existing }
+                }
+            )
+        }
+    }
 
     /** Set once any of the properties below is read: the imported build can no longer change. */
     private var frozen = false
@@ -66,9 +93,9 @@ internal class AntImportRegistry(
      * Adds [file] (based at [baseDirectory], if given) to the build, re-reads the whole build, and registers a task
      * for every target the file adds, except the targets [spec] excludes.
      *
-     * Every file the build loaded, and every existing file its `property file=` and `loadproperties` tasks read
-     * during the parse, is a configuration cache input. Other inputs of the parse (environment, URLs, resources,
-     * commands) are not tracked. Nothing changes if the call fails.
+     * Every file the build loaded, and every file its `property file=`, `loadproperties` and `import` tasks read or
+     * looked for during the parse (a missing one too, by its absence), is a configuration cache input. Other inputs
+     * of the parse (environment, URLs, resources, commands) are not tracked. Nothing changes if the call fails.
      *
      * @throws InvalidUserDataException if the imported build was already read, [spec] excludes a target the file
      * does not add, or a task name is taken
@@ -98,7 +125,8 @@ internal class AntImportRegistry(
         targets = model.targets.associateBy { it.name }
         taskNames += names
         topLevelPropertyValues = LinkedHashMap(model.topLevelProperties)
-        buildFileValues = (model.loadedFiles + model.readFiles).distinct()
+        val inputs = (model.loadedFiles + model.readFiles).distinct()
+        buildFileValues = inputs.filter { it.isFile }
 
         names.forEach { (target, name) ->
             if (spec.exclusions.containsKey(target)) {
@@ -107,10 +135,12 @@ internal class AntImportRegistry(
                 registerTarget(target, name, spec, classpath)
             }
         }
-        // Configuration-cache inputs: editing any file of the build invalidates the entry.
-        buildFileValues.forEach { loaded ->
-            providers.fileContents(layout.file(providers.provider { loaded })).asBytes.get()
+        // Configuration-cache inputs: editing, creating or deleting any file of the build invalidates the entry.
+        inputs.forEach { input ->
+            providers.fileContents(layout.file(providers.provider { input })).asBytes.orNull
         }
+        ordering = null
+        dependsOrderingHook
         return AntImport(this)
     }
 
@@ -218,7 +248,7 @@ internal class AntImportRegistry(
             when (upstream) {
                 in exclusions -> exclusions[upstream]?.flatMap { it.exportFile }
                 in taskNames -> tasks.named(taskNames.getValue(upstream), AntImportedTarget::class.java)
-                    .flatMap { it.exportFile }
+                    .flatMap { it.exportedPropertiesFile }
                 else -> null
             }
         }
@@ -226,6 +256,45 @@ internal class AntImportRegistry(
 
 /** The name of the task writing the properties supplied for the excluded target whose task name is [name]. */
 private fun exportTaskName(name: String): String = "${name}AntProperties"
+
+/**
+ * The consecutive pairs of the `depends` of the imported targets (the keys of [taskNames] not in [excluded], in name
+ * order), as task names: the second of each pair to the firsts it must run after. Only the pairs that agree with Ant's
+ * dependency graph and the pairs kept before are kept: a pair whose second name must run before its first
+ * (`depends="jar,compile"` where `jar` depends on `compile`) is dropped, as it is moot in Ant, so the ordering never
+ * forms a cycle with the `depends` Ant knows of.
+ */
+private fun dependsOrdering(
+    targets: Map<String, AntShim.BuildTarget>,
+    taskNames: Map<String, String>,
+    excluded: Set<String>
+): Map<String, List<String>> {
+    // Ant name to the names that must run after it: its dependants, then the kept pairs.
+    val after = HashMap<String, MutableSet<String>>()
+    targets.values.forEach { target -> target.depends.forEach { after.getOrPut(it, ::HashSet) += target.name } }
+    val result = LinkedHashMap<String, MutableList<String>>()
+    taskNames.keys.filter { it !in excluded }.sorted().forEach { imported ->
+        targets.getValue(imported).depends.distinct().zipWithNext().forEach { (first, second) ->
+            if (!reaches(after, second, first)) {
+                after.getOrPut(first, ::HashSet) += second
+                result.getOrPut(taskNames[second] ?: second, ::ArrayList) += taskNames[first] ?: first
+            }
+        }
+    }
+    return result
+}
+
+/** Whether [to] is [from] or runs after it in [after]. */
+private fun reaches(after: Map<String, Set<String>>, from: String, to: String): Boolean {
+    val seen = HashSet<String>()
+    val pending = ArrayDeque(listOf(from))
+    while (pending.isNotEmpty()) {
+        val next = pending.removeFirst()
+        if (next == to) return true
+        if (seen.add(next)) after[next]?.let { pending += it }
+    }
+    return false
+}
 
 /** Merges [second] into [first], the first definition of a name winning. */
 private fun firstWins(first: Map<String, String>, second: Map<String, String>): Map<String, String> {

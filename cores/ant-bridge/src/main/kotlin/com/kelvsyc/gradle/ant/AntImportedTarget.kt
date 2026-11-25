@@ -28,7 +28,7 @@ import javax.inject.Inject
  * Runs one target of a build imported with `antBridge.importBuild`, and only that target: its Ant dependencies run as
  * the tasks it depends on. The run starts from a fresh Ant project that gets the [seeds], parses the
  * [topLevelBuildFiles] and loads the [upstreamExports]; the properties the target newly defines are written to
- * [exportFile]. Like the legacy `AntTarget`, it is never up to date.
+ * [exportedPropertiesFile]. Like the legacy `AntTarget`, it is never up to date.
  *
  * Registered and wired by `antBridge.importBuild`; abstract only so that Gradle can generate its managed properties,
  * and not designed to be extended.
@@ -69,7 +69,7 @@ abstract class AntImportedTarget @Inject constructor(
      * `build/ant-bridge/import/<task name>.properties`.
      */
     @get:OutputFile
-    abstract val exportFile: RegularFileProperty
+    abstract val exportedPropertiesFile: RegularFileProperty
 
     /** The Ant classpath: Ant, its antlibs and anything they need. */
     @get:Classpath
@@ -80,25 +80,26 @@ abstract class AntImportedTarget @Inject constructor(
     abstract val isolation: Property<AntIsolation>
 
     /**
-     * The properties the target newly defined, read from [exportFile]. Carries the dependency on this task.
+     * The properties the target newly defined, read from [exportedPropertiesFile]. Carries the dependency on this
+     * task.
      */
     @get:Internal
     val exportedProperties: Provider<Map<String, String>>
-        get() = exportFile.map { PropertiesFiles.read(it.asFile) }
+        get() = exportedPropertiesFile.map { PropertiesFiles.read(it.asFile) }
 
     init {
         group = "ant"
         isolation.convention(AntIsolation.CLASSLOADER)
-        exportFile.convention(layout.buildDirectory.file("ant-bridge/import/$name.properties"))
+        exportedPropertiesFile.convention(layout.buildDirectory.file("ant-bridge/import/$name.properties"))
         outputs.upToDateWhen { false }
     }
 
     /**
-     * Deletes [exportFile], then runs the target through the Worker API, isolated as [isolation] says.
+     * Deletes [exportedPropertiesFile], then runs the target through the Worker API, isolated as [isolation] says.
      */
     @TaskAction
     fun run() {
-        exportFile.get().asFile.delete()
+        exportedPropertiesFile.get().asFile.delete()
         // The worker classpath stays empty: the action builds its own isolated loader from the Ant classpath.
         val queue = when (isolation.get()) {
             AntIsolation.CLASSLOADER -> workers.classLoaderIsolation {}
@@ -110,7 +111,7 @@ abstract class AntImportedTarget @Inject constructor(
             seeds.set(this@AntImportedTarget.seeds)
             upstreamExports.set(this@AntImportedTarget.upstreamExports)
             target.set(this@AntImportedTarget.target)
-            exportFile.set(this@AntImportedTarget.exportFile)
+            exportFile.set(this@AntImportedTarget.exportedPropertiesFile)
             antClasspath.from(this@AntImportedTarget.antClasspath)
         }
     }

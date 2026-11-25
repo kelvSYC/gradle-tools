@@ -31,8 +31,9 @@ import org.apache.tools.ant.Target;
  * not targets are left out)), {@code "properties"} (the seeds and every property the parse set or tried to set, with
  * Ant's effective value; {@code basedir}, other Ant built-ins and system properties the parse did not name are left
  * out), {@code "loadedFiles"} (the absolute paths of the top-level files and every file they imported or included)
- * and {@code "readFiles"} (the absolute paths of the existing files the parse's
- * {@code property file=} and {@code loadproperties} tasks read; other inputs of the parse are not tracked).
+ * and {@code "readFiles"} (the absolute paths of the files the parse's {@code property file=},
+ * {@code loadproperties} and {@code import} tasks read or looked for, missing ones included; other inputs of the
+ * parse are not tracked).
  * Failures are reported as by {@link TreeExecutor}. Never throws.
  */
 public final class BuildReader implements Function<Map<String, Object>, Map<String, Object>> {

@@ -55,7 +55,7 @@ class AntImportRegistrationSpec : FunSpec({
     fun Task.dependencyNames(): Set<String> = taskDependencies.getDependencies(this).map { it.name }.toSet()
 
     fun Project.exportOf(task: String): File =
-        (tasks.getByName(task) as AntImportedTarget).exportFile.get().asFile
+        (tasks.getByName(task) as AntImportedTarget).exportedPropertiesFile.get().asFile
 
     test("importBuild registers one task per target with description, group and depends") {
         val project = project()
@@ -67,6 +67,41 @@ class AntImportRegistrationSpec : FunSpec({
         jar.description shouldBe "Builds the jar"
         jar.group shouldBe "ant"
         jar.target.get() shouldBe "jar"
+    }
+
+    test("each task named in depends must run after the one named before it, Gradle tasks included") {
+        val project = project()
+        project.tasks.register("gradleFirst")
+        project.tasks.register("gradleSecond")
+        project.write(
+            "build.xml",
+            """
+            <project name="p">
+                <target name="clean"/>
+                <target name="build"/>
+                <target name="rebuild" depends="clean,build"/>
+                <target name="mixed" depends="gradleFirst,gradleSecond,later"/>
+                <target name="compile"/>
+                <target name="jar" depends="compile"/>
+                <target name="dist" depends="jar,compile"/>
+                <target name="x"/>
+                <target name="y"/>
+                <target name="xy" depends="x,y"/>
+                <target name="yx" depends="y,x"/>
+            </project>
+            """
+        )
+        project.import("build.xml")
+        project.tasks.register("later")
+        fun Task.runsAfter(): Set<String> = mustRunAfter.getDependencies(this).map { it.name }.toSet()
+        project.tasks.getByName("build").runsAfter() shouldBe setOf("clean")
+        project.tasks.getByName("clean").runsAfter() shouldBe emptySet()
+        project.tasks.getByName("gradleSecond").runsAfter() shouldBe setOf("gradleFirst")
+        project.tasks.getByName("later").runsAfter() shouldBe setOf("gradleSecond")
+        // Pairs contradicting Ant's graph, or a pair kept before, are dropped rather than forming a cycle.
+        project.tasks.getByName("compile").runsAfter() shouldBe emptySet()
+        project.tasks.getByName("y").runsAfter() shouldBe setOf("x")
+        project.tasks.getByName("x").runsAfter() shouldBe emptySet()
     }
 
     test("tasks are available right after the call") {

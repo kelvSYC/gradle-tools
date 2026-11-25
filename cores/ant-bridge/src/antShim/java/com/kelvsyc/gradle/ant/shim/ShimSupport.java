@@ -35,6 +35,7 @@ import org.apache.tools.ant.PropertyHelper;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.UnknownElement;
+import org.apache.tools.ant.taskdefs.ImportTask;
 import org.apache.tools.ant.taskdefs.LoadProperties;
 import org.apache.tools.ant.taskdefs.Property;
 import org.apache.tools.ant.types.Resource;
@@ -101,17 +102,18 @@ final class ShimSupport {
      * optionally {@code "baseDirectory"}) in order into {@code project}, as Ant's own parser does for one top-level
      * build file each.
      * <p>
-     * Before each file, the project's base directory is set to the file's own {@code <project basedir>} (relative to
-     * the file's directory), else to {@code "baseDirectory"}, else to the file's directory, and {@code ant.file} to
-     * the file. A target name that one top-level file registers (itself or through its imports) and an earlier one
-     * already registered fails, naming both top-level files: Ant would otherwise silently keep the earlier target. A
-     * file imported by several top-level files is parsed once per importer; its targets are not duplicates, and keep
-     * the first importer.
+     * Before each file, the project's base directory is set to {@code "baseDirectory"}, else to the file's directory,
+     * and {@code ant.file} to the file. The file's own {@code <project basedir>} is ignored, as legacy
+     * {@code importBuild} ignored it by setting the base directory before the parse. A target name that one top-level
+     * file registers (itself or through its imports) and an earlier one already registered fails, naming both
+     * top-level files: Ant would otherwise silently keep the earlier target. A file imported by several top-level files
+     * is parsed once per importer; its targets are not duplicates, and keep the first importer.
      * Within one top-level file, Ant's own rules apply (the importing file's target wins over an imported one).
      * <p>
-     * The existing files that the parse's {@code property file=} and {@code loadproperties srcFile=} tasks read are
-     * reported as {@link ParsedBuild#readFiles}. Other inputs of the parse (environment, URLs, resources, commands)
-     * are not tracked.
+     * The files that the parse's {@code property file=}, {@code loadproperties srcFile=} and {@code import file=}
+     * (or {@code include file=}) tasks read or looked for, missing ones included, are reported as
+     * {@link ParsedBuild#readFiles}. Other inputs of the parse (environment, URLs, resources, commands) are not
+     * tracked.
      */
     @SuppressWarnings("unchecked")
     static ParsedBuild parseBuildFiles(Project project, Map<String, Object> request) {
@@ -141,7 +143,7 @@ final class ShimSupport {
             // part of the previous one.
             project.getReferences().remove(PARSING_CONTEXT);
             project.getTargets().remove("");
-            File baseDirectory = baseDirectory(file, scan.baseDirectory, (String) entry.get("baseDirectory"));
+            File baseDirectory = baseDirectory(file, (String) entry.get("baseDirectory"));
             parsed.baseDirectories.put(file, baseDirectory);
             enterTopLevelFile(project, file, baseDirectory);
             ProjectHelper helper = ProjectHelperRepository.getInstance()
@@ -226,12 +228,8 @@ final class ShimSupport {
         return targets;
     }
 
-    private static File baseDirectory(File file, String ownBaseDirectory, String requested) {
-        File parent = file.getParentFile();
-        if (ownBaseDirectory != null) {
-            return FileUtils.getFileUtils().resolveFile(parent, ownBaseDirectory);
-        }
-        return requested != null ? new File(requested) : parent;
+    private static File baseDirectory(File file, String requested) {
+        return requested != null ? new File(requested) : file.getParentFile();
     }
 
     private static File toFile(Object source) {
@@ -327,7 +325,10 @@ final class ShimSupport {
     static final class ParsedBuild {
         /** The top-level files and every file they imported or included, in load order. */
         final List<File> loadedFiles = new ArrayList<>();
-        /** The existing files that {@code property file=} and {@code loadproperties} read during the parse. */
+        /**
+         * The files that {@code property file=}, {@code loadproperties} and {@code import} read or looked for during
+         * the parse, missing ones included.
+         */
         final List<File> readFiles = new ArrayList<>();
         /** The top-level file that registered each target name. */
         final Map<String, File> owners = new HashMap<>();
@@ -347,12 +348,11 @@ final class ShimSupport {
     }
 
     /**
-     * The {@code basedir} attribute and the directly defined target names of a top-level build file, read without
+     * The directly defined target names of a top-level build file, read without
      * resolving any entity or DTD. A file that cannot be read this way yields nothing: Ant's own parse reports it.
      */
     private static final class TopLevelScan extends DefaultHandler {
         private final List<String> targets = new ArrayList<>();
-        private String baseDirectory;
         private int depth;
 
         static TopLevelScan of(File file) {
@@ -374,9 +374,7 @@ final class ShimSupport {
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
-            if (depth == 0) {
-                baseDirectory = attributes.getValue("", "basedir");
-            } else if (depth == 1 && (uri.isEmpty() || ProjectHelper.ANT_CORE_URI.equals(uri))
+            if (depth == 1 && (uri.isEmpty() || ProjectHelper.ANT_CORE_URI.equals(uri))
                 && ("target".equals(localName) || "extension-point".equals(localName))) {
                 String name = attributes.getValue("", "name");
                 if (name != null) {
@@ -393,9 +391,11 @@ final class ShimSupport {
     }
 
     /**
-     * Records the existing files that finished {@code property} ({@code file=}) and {@code loadproperties}
-     * ({@code srcFile=}) tasks read. Ant releases a task's configured instance once it ran, so the file is resolved
-     * from the element's attribute, as Ant resolved it: properties expanded, relative to the base directory.
+     * Records the files that finished {@code property} ({@code file=}), {@code loadproperties} ({@code srcFile=}) and
+     * {@code import}/{@code include} ({@code file=}) tasks read or looked for, whether or not they exist, so that a
+     * missing file can be tracked too. Ant releases a task's configured instance once it ran, so the file is resolved
+     * from the element's attribute, as Ant resolved it: properties expanded, relative to the base directory, or, for an
+     * import, to the importing file's directory.
      */
     private static final class ReadFilesListener implements BuildListener {
         private final Set<File> files = new LinkedHashSet<>();
@@ -412,18 +412,28 @@ final class ShimSupport {
             AntTypeDefinition definition = ComponentHelper.getComponentHelper(project).getDefinition(component);
             Class<?> type = definition == null ? null : definition.getExposedClass(project);
             String attribute = null;
+            File base = project.getBaseDir();
             if (type != null && Property.class.isAssignableFrom(type)) {
                 attribute = "file";
             } else if (type != null && LoadProperties.class.isAssignableFrom(type)) {
                 attribute = "srcFile";
+            } else if (type != null && ImportTask.class.isAssignableFrom(type)) {
+                attribute = "file";
+                base = importerDirectory(element);
             }
             Object value = attribute == null ? null : attributeValue(element, attribute);
-            if (value != null) {
-                File file = project.resolveFile(project.replaceProperties(value.toString()));
-                if (file.isFile()) {
-                    files.add(file.getAbsoluteFile());
-                }
+            if (value != null && base != null) {
+                String path = project.replaceProperties(value.toString());
+                files.add(FileUtils.getFileUtils().resolveFile(base, path).getAbsoluteFile());
             }
+        }
+
+        private static File importerDirectory(UnknownElement element) {
+            Location location = element.getLocation();
+            if (location == null || location.getFileName() == null) {
+                return null;
+            }
+            return new File(location.getFileName()).getAbsoluteFile().getParentFile();
         }
 
         private static Object attributeValue(UnknownElement element, String name) {

@@ -66,8 +66,8 @@ The only types they share are the JDK's. Across the boundary:
 - **Requests** are maps of strings, lists and maps. `AntNode.toShimMap()` and `AntPropertySource.toShimMap()` build
   them; the request keys of each entry point are documented in its class comment (`TreeExecutor`, `PropertyLoader`,
   `BuildReader`, `TargetRunner`). Every request carries `"logger"`. `TreeExecutor` and `PropertyLoader` take
-  `"baseDirectory"`; `BuildReader` and `TargetRunner` take `"files"` instead, each with its own base directory. `TreeExecutor` also accepts `"results"`, a list of property
-  names to report after the tree runs.
+  `"baseDirectory"`; `BuildReader` and `TargetRunner` take `"files"` instead, each with its own base directory.
+  `TreeExecutor` also accepts `"results"`, a list of property names to report after the tree runs.
 - **Logging** is a `java.util.function.BiConsumer<Integer, String>` of Ant priority and message. `AntShim` maps Ant's
   priorities to Gradle's logger: error, warn, info, and debug for verbose and debug.
 - **Results** are maps. Success has `"antVersion"` and `"properties"` (`PropertyLoader`, `BuildReader` and
@@ -110,10 +110,12 @@ project, so before each file it:
   target. A context left over from an earlier file would parse the next one as an import of it (its `<project>`
   attributes ignored, its top-level tasks appended to the earlier implicit target and run again), and the implicit
   target's name would be a duplicate;
-- sets the base directory itself, because `ProjectHelper2` keeps a `basedir` property that is already set. It reads the
-  file's own `<project basedir>` with a JDK SAX pass that resolves no entity or DTD (a file that pass cannot read is
-  left to Ant's parse to report), and also lists the targets and extension points the file defines directly (in no
-  namespace or in `antlib:org.apache.tools.ant`, as Ant reads them);
+- sets the base directory itself, to the file's `"baseDirectory"`, else the file's directory, as legacy `importBuild`
+  did. `ProjectHelper2` keeps a `basedir` property that is already set, so the file's own `<project basedir>` is
+  ignored, as it was with legacy;
+- lists the targets and extension points the file defines directly (in no namespace or in
+  `antlib:org.apache.tools.ant`, as Ant reads them) with a JDK SAX pass that resolves no entity or DTD (a file that
+  pass cannot read is left to Ant's parse to report);
 - hides the earlier files' targets (not their extension points, which the file may extend) during the parse. Ant
   silently ignores a target whose name is already registered, so without this a target that one file defines or
   imports would vanish behind an earlier file's. A name an earlier top-level file registered (itself or through its
@@ -136,8 +138,9 @@ The two shim entry points behind it:
 - `BuildReader` (`AntShim.readBuild`): request `"files"` (each `"file"` with an optional `"baseDirectory"`),
   `"seeds"`, `"logger"`. Result `"targets"` (per name Ant registered: `"name"`, `"file"`, `"description"`,
   `"depends"` as Ant resolved them, `"upstream"` in Ant's execution order from `topoSort`), `"properties"` (the seeds
-  and what the parse set), `"loadedFiles"` and `"readFiles"` (files read by `property file=` and `loadproperties`
-  during the parse, recorded by a build listener).
+  and what the parse set), `"loadedFiles"` and `"readFiles"` (the files `property file=`, `loadproperties` and
+  `import`/`include` read or looked for during the parse, missing ones included, recorded by a build listener from
+  each finished task's attribute).
 - `TargetRunner` (`AntShim.runTarget`): request `"files"`, `"seeds"`, `"exports"` (property maps in load order),
   `"target"`, `"logger"`. Result `"properties"`: the target's newly defined properties.
 
@@ -153,9 +156,11 @@ per extension, so one per Gradle project). The registry:
 - **Validates before committing**: the exclusions must name targets the file adds, and no task name may clash (with an
   existing task, or two targets of the call). Only then does it replace its state (files, seeds, targets, task names,
   top-level properties), so a failing call changes nothing.
-- **Registers cache inputs** by reading every loaded and read file through `providers.fileContents(...).asBytes.get()`:
-  a file content obtained during configuration is a configuration-cache input. Inputs the shim does not report
-  (environment, URLs, resources, commands) are not tracked.
+- **Registers cache inputs** by reading every loaded and read file through `providers.fileContents(...).asBytes.orNull`:
+  a file content obtained during configuration is a configuration-cache input, and a missing file is fingerprinted by
+  its absence, so creating it (a `local.properties`, an optional import) invalidates the entry. Only the existing files
+  go into the tasks' `buildFiles` input. Inputs the shim does not report (environment, URLs, resources, commands) are
+  not tracked.
 - **Registers tasks eagerly and wires them lazily.** The call registers (`tasks.register`) an `AntImportedTarget` per
   target it adds, so `tasks.named` works right after it, but each task's `dependsOn` and `upstreamExports` are providers
   evaluated against the registry's final state, so later calls can still satisfy a `depends` or extend an extension
@@ -164,6 +169,12 @@ per extension, so one per Gradle project). The registry:
   and `importBuild` fails once it is frozen, since an earlier task would otherwise have seen a different build. The
   build-file collection is a plain provider instead, because Gradle queries it while resolving task dependencies
   without finalizing it.
+- **Keeps the `depends` order** with a `tasks.configureEach` hook giving every task of the project a lazy
+  `mustRunAfter` on the task named before it in an imported target's `depends` (Gradle tasks and replacements
+  included). Legacy used `shouldRunAfter`, which parallel execution, the configuration cache's default, ignores. The
+  pairs are computed once per build state, in target name order, and a pair is dropped when its second name already
+  runs before its first through Ant's `depends` or the pairs kept so far, so the ordering cannot form a cycle with the
+  dependencies Ant knows of (dependencies only Gradle knows of are not checked).
 - **Logs the exclusion warning** in `afterEvaluate` (registered by the plugin), after every import of a normal build
   script has run.
 
@@ -188,9 +199,9 @@ means a changed existing property is not exported.
 ### Exports, upstream order and exclusions
 
 The registry maps each name in a target's `"upstream"` list to an export-file provider: an imported target's
-`exportFile`, an excluded target's materialised export, or nothing (an excluded target without supplied properties, or
-a name that is not a target). Because the providers come from the producing tasks' outputs, `upstreamExports` is a
-declared input that carries the task dependencies; no task reads another's file otherwise.
+`exportedPropertiesFile`, an excluded target's materialised export, or nothing (an excluded target without supplied
+properties, or a name that is not a target). Because the providers come from the producing tasks' outputs,
+`upstreamExports` is a declared input that carries the task dependencies; no task reads another's file otherwise.
 
 An exclusion that supplies properties is materialised as an `AntExclusionExport` task (`<task name>AntProperties`)
 writing the provider's values to a file in the same format. Downstream wiring then treats imported targets and
@@ -229,8 +240,11 @@ shared bag of the previous decision, so the import is built from these guardrail
 
 `AntImportRegistry` exists only during configuration. It holds what the calls declared and what reading the build
 reported, and computes each task's wiring; the tasks receive plain values (finalized when read) in their own
-properties, which is what the configuration cache stores. No task or work action reaches the registry at execution:
-it could not be serialized into the configuration cache, is unavailable in a worker process, and, if it carried values
+properties, which is what the configuration cache stores. The registry holds no runtime state: without the
+configuration cache, the lazy providers it hands out (task dependencies, ordering, upstream exports, `propertiesFor`)
+may still read its frozen, immutable configuration during the execution phase, but no work action reaches it, nothing
+writes to it after configuration, and with the configuration cache it is not part of the stored state at all. It
+could not be serialized into the configuration cache, is unavailable in a worker process, and, if it carried values
 at execution, would be the shared bag again.
 
 ## Who opens loaders, and why there is no cache
