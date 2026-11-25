@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.RuntimeConfigurable;
@@ -21,39 +20,21 @@ import org.apache.tools.ant.UnknownElement;
  */
 public final class TreeExecutor implements Function<Map<String, Object>, Map<String, Object>> {
     @Override
-    @SuppressWarnings("unchecked")
     public Map<String, Object> apply(Map<String, Object> request) {
-        Map<String, Object> result;
-        Project project = null;
-        Throwable error = null;
-        try {
-            project = ShimSupport.newProject(request);
-            Target target = new Target();
-            target.setName("");
-            target.setProject(project);
-            for (Map<String, Object> node : (List<Map<String, Object>>) request.get("nodes")) {
-                UnknownElement element = toElement(node, project, target);
-                element.maybeConfigure();
-                element.perform();
-            }
-            result = ShimSupport.success();
-        } catch (BuildException e) {
-            error = e;
-            result = ShimSupport.failure(e);
-        } catch (RuntimeException | LinkageError e) {
-            error = e;
-            result = ShimSupport.failure(e);
+        return ShimSupport.runInProject(request, project -> run(request, project));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> run(Map<String, Object> request, Project project) {
+        Target target = new Target();
+        target.setName("");
+        target.setProject(project);
+        for (Map<String, Object> node : (List<Map<String, Object>>) request.get("nodes")) {
+            UnknownElement element = toElement(node, project, target);
+            element.maybeConfigure();
+            element.perform();
         }
-        if (project != null) {
-            try {
-                project.fireBuildFinished(error);
-            } catch (RuntimeException | LinkageError e) {
-                if (error == null) {
-                    result = ShimSupport.failure(e);
-                }
-            }
-        }
-        return result;
+        return ShimSupport.success();
     }
 
     @SuppressWarnings("unchecked")

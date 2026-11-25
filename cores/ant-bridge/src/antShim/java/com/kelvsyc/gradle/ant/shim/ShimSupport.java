@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildException;
@@ -40,6 +41,37 @@ final class ShimSupport {
         project.addReference(MagicNames.REFID_PROJECT_HELPER, ProjectHelper.getProjectHelper());
         project.addBuildListener(new LoggerListener((BiConsumer<Integer, String>) request.get("logger")));
         return project;
+    }
+
+    /**
+     * Runs {@code body} in a fresh project (see {@link #newProject}) and returns its result, or the failure map of
+     * whatever it throws. Fires the project's build-finished event afterwards, which releases Ant's resources. Never
+     * throws.
+     */
+    static Map<String, Object> runInProject(Map<String, Object> request, Function<Project, Map<String, Object>> body) {
+        Map<String, Object> result;
+        Project project = null;
+        Throwable error = null;
+        try {
+            project = newProject(request);
+            result = body.apply(project);
+        } catch (BuildException e) {
+            error = e;
+            result = failure(e);
+        } catch (RuntimeException | LinkageError e) {
+            error = e;
+            result = failure(e);
+        }
+        if (project != null) {
+            try {
+                project.fireBuildFinished(error);
+            } catch (RuntimeException | LinkageError e) {
+                if (error == null) {
+                    result = failure(e);
+                }
+            }
+        }
+        return result;
     }
 
     /**
@@ -80,7 +112,7 @@ final class ShimSupport {
     private static String antVersion() {
         try {
             return Main.getAntVersion();
-        } catch (BuildException e) {
+        } catch (RuntimeException e) {
             return null;
         }
     }
