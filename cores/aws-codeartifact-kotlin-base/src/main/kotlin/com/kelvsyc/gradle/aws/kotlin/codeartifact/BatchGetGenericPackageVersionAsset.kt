@@ -1,10 +1,8 @@
 package com.kelvsyc.gradle.aws.kotlin.codeartifact
 
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.services.ServiceReference
 import org.gradle.work.DisableCachingByDefault
-import javax.inject.Inject
 
 /**
  * [DefaultTask] that downloads multiple assets from a CodeArtifact generic repository in parallel,
@@ -34,9 +32,7 @@ import javax.inject.Inject
  * @see AbstractBatchGetGenericPackageVersionAsset
  */
 @DisableCachingByDefault(because = "Downloading from an external service is not cacheable")
-abstract class BatchGetGenericPackageVersionAsset @Inject constructor(
-    objects: ObjectFactory,
-) : AbstractBatchGetGenericPackageVersionAsset(objects) {
+abstract class BatchGetGenericPackageVersionAsset : AbstractBatchGetGenericPackageVersionAsset() {
 
     /**
      * The shared build service managing the CodeArtifact client.

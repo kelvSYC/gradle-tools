@@ -28,9 +28,10 @@ import javax.inject.Inject
  * [Entry.partitionKey].
  */
 @DisableCachingByDefault(because = "Sending to an external service is not cacheable")
-abstract class AbstractSendMessageBatch @Inject constructor(
-    private val objects: ObjectFactory,
-) : DefaultTask() {
+abstract class AbstractSendMessageBatch : DefaultTask() {
+    /** Creates the [Entry] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val objects: ObjectFactory
 
     /**
      * The [ServiceBusSenderClient] used to send messages.

@@ -27,11 +27,19 @@ import javax.inject.Inject
  * repositories). For Maven or Ivy repositories, prefer Gradle's built-in dependency resolution mechanisms instead.
  */
 @DisableCachingByDefault(because = "Downloading from an external service is not cacheable")
-abstract class AbstractBatchDownloadFromArtifactory @Inject constructor(
-    private val objects: ObjectFactory,
-    private val providers: ProviderFactory,
-    private val workerExecutor: WorkerExecutor
-) : DefaultTask() {
+abstract class AbstractBatchDownloadFromArtifactory : DefaultTask() {
+    /** Creates the [Artifact] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val objects: ObjectFactory
+
+    /** Creates the lazy providers of the [Artifact] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val providers: ProviderFactory
+
+    /** Submits this task's work to the Gradle Worker API; available to subclasses. */
+    @get:Inject
+    protected abstract val workerExecutor: WorkerExecutor
+
     /**
      * The build service managing the Artifactory client to use.
      */

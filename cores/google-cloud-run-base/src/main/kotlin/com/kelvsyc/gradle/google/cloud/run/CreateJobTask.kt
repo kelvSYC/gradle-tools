@@ -2,8 +2,6 @@ package com.kelvsyc.gradle.google.cloud.run
 
 import org.gradle.api.provider.Property
 import org.gradle.api.services.ServiceReference
-import org.gradle.workers.WorkerExecutor
-import javax.inject.Inject
 
 /**
  * Specialization of [AbstractCreateJobTask] that adds `@get:ServiceReference` to the
@@ -24,9 +22,7 @@ import javax.inject.Inject
  * }
  * ```
  */
-abstract class CreateJobTask @Inject constructor(
-    workerExecutor: WorkerExecutor,
-) : AbstractCreateJobTask(workerExecutor) {
+abstract class CreateJobTask : AbstractCreateJobTask() {
 
     @get:ServiceReference
     abstract override val service: Property<CloudRunJobsClientBuildService>

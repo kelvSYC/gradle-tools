@@ -33,8 +33,12 @@ import javax.inject.Inject
  * @param T The type of value produced by this source.
  * @param P The parameters type, which must extend [Parameters].
  */
-abstract class AbstractArtifactorySearchValueSource<T : Any, P : AbstractArtifactorySearchValueSource.Parameters>
-@Inject constructor(private val execOperations: ExecOperations) : ValueSource<T, P> {
+abstract class AbstractArtifactorySearchValueSource<T : Any, P : AbstractArtifactorySearchValueSource.Parameters> :
+    ValueSource<T, P> {
+    /** Runs the JFrog CLI; available to subclasses. */
+    @get:Inject
+    protected abstract val execOperations: ExecOperations
+
     /**
      * Common parameters for all Artifactory search value sources.
      */

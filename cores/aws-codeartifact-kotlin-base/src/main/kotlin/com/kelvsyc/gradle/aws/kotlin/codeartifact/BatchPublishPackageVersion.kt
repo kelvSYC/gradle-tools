@@ -1,10 +1,8 @@
 package com.kelvsyc.gradle.aws.kotlin.codeartifact
 
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.services.ServiceReference
 import org.gradle.work.DisableCachingByDefault
-import javax.inject.Inject
 
 /**
  * [DefaultTask] that publishes multiple assets to a CodeArtifact generic repository in parallel,
@@ -47,9 +45,7 @@ import javax.inject.Inject
  * @see AbstractBatchPublishPackageVersion
  */
 @DisableCachingByDefault(because = "Publishing to an external service is not cacheable")
-abstract class BatchPublishPackageVersion @Inject constructor(
-    objects: ObjectFactory,
-) : AbstractBatchPublishPackageVersion(objects) {
+abstract class BatchPublishPackageVersion : AbstractBatchPublishPackageVersion() {
 
     /**
      * The shared build service managing the CodeArtifact client.

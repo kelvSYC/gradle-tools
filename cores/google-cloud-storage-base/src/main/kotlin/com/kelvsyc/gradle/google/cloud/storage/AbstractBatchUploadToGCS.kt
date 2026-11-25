@@ -26,11 +26,19 @@ import javax.inject.Inject
  * All artifacts will be uploaded using [UploadFileAction]. This task fails if any artifact fails to be uploaded.
  */
 @DisableCachingByDefault(because = "Uploading to an external service is not cacheable")
-abstract class AbstractBatchUploadToGCS @Inject constructor(
-    private val objects: ObjectFactory,
-    private val providers: ProviderFactory,
-    private val workerExecutor: WorkerExecutor
-) : DefaultTask() {
+abstract class AbstractBatchUploadToGCS : DefaultTask() {
+    /** Creates the [Artifact] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val objects: ObjectFactory
+
+    /** Creates the lazy providers of the [Artifact] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val providers: ProviderFactory
+
+    /** Submits this task's work to the Gradle Worker API; available to subclasses. */
+    @get:Inject
+    protected abstract val workerExecutor: WorkerExecutor
+
     /**
      * The build service managing the GCS client to use.
      */

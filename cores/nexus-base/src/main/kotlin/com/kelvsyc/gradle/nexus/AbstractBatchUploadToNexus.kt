@@ -28,11 +28,18 @@ import javax.inject.Inject
  * task dependency automatically.
  */
 @DisableCachingByDefault(because = "Uploading to an external service is not cacheable")
-abstract class AbstractBatchUploadToNexus @Inject constructor(
-    private val objects: ObjectFactory,
-    private val providers: ProviderFactory,
-    private val workerExecutor: WorkerExecutor,
-) : DefaultTask() {
+abstract class AbstractBatchUploadToNexus : DefaultTask() {
+    /** Creates the [Artifact] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val objects: ObjectFactory
+
+    /** Creates the lazy providers of the [Artifact] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val providers: ProviderFactory
+
+    /** Submits this task's work to the Gradle Worker API; available to subclasses. */
+    @get:Inject
+    protected abstract val workerExecutor: WorkerExecutor
 
     /**
      * The build service managing the Nexus client to use for all uploads in this task.

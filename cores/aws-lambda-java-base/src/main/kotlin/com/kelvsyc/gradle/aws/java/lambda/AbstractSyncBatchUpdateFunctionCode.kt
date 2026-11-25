@@ -1,6 +1,5 @@
 package com.kelvsyc.gradle.aws.java.lambda
 
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
@@ -8,7 +7,6 @@ import org.gradle.work.DisableCachingByDefault
 import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.services.lambda.model.GetFunctionRequest
 import software.amazon.awssdk.services.lambda.model.UpdateFunctionCodeRequest
-import javax.inject.Inject
 
 /**
  * Abstract [AbstractBatchUpdateFunctionCode] that uses a synchronous [LambdaClientBuildService] to update
@@ -26,9 +24,7 @@ import javax.inject.Inject
  * @see AbstractAsyncBatchUpdateFunctionCode
  */
 @DisableCachingByDefault(because = "Communicates with AWS Lambda")
-abstract class AbstractSyncBatchUpdateFunctionCode @Inject constructor(
-    objects: ObjectFactory,
-) : AbstractBatchUpdateFunctionCode(objects) {
+abstract class AbstractSyncBatchUpdateFunctionCode : AbstractBatchUpdateFunctionCode() {
 
     /**
      * The build service managing the synchronous Lambda client.

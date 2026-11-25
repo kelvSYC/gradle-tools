@@ -25,9 +25,10 @@ import javax.inject.Inject
  * when you need to supply a custom `service` binding without `@ServiceReference` tracking.
  */
 @DisableCachingByDefault(because = "Deploying to an external service is not cacheable")
-abstract class AbstractDeployFunctionFromZip @Inject constructor(
-    private val workerExecutor: WorkerExecutor,
-) : DefaultTask() {
+abstract class AbstractDeployFunctionFromZip : DefaultTask() {
+    /** Submits this task's work to the Gradle Worker API; available to subclasses. */
+    @get:Inject
+    protected abstract val workerExecutor: WorkerExecutor
 
     /** The build service managing the Cloud Functions client. */
     @get:Internal

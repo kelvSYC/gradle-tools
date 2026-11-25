@@ -29,10 +29,15 @@ import javax.inject.Inject
  * reported as a task failure listing the failed entry ids.
  */
 @DisableCachingByDefault(because = "Publishing to an external service is not cacheable")
-abstract class AbstractPublishBatch @Inject constructor(
-    private val objects: ObjectFactory,
-    private val providers: ProviderFactory
-) : DefaultTask() {
+abstract class AbstractPublishBatch : DefaultTask() {
+    /** Creates the [Entry] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val objects: ObjectFactory
+
+    /** Creates the lazy providers of the [Entry] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val providers: ProviderFactory
+
     /**
      * The [SnsClient] used to publish messages.
      */

@@ -43,9 +43,10 @@ import javax.inject.Inject
  * @see AbstractAsyncBatchGetGenericPackageVersionAsset
  */
 @DisableCachingByDefault(because = "Downloading from an external service is not cacheable")
-abstract class AbstractBatchGetGenericPackageVersionAsset @Inject constructor(
-    private val objects: ObjectFactory,
-) : DefaultTask() {
+abstract class AbstractBatchGetGenericPackageVersionAsset : DefaultTask() {
+    /** Creates the [Artifact] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val objects: ObjectFactory
 
     /**
      * Per-artifact coordinates and output location for a CodeArtifact generic package version asset.
