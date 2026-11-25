@@ -2,6 +2,7 @@ package com.kelvsyc.gradle.ant
 
 import groovy.lang.Binding
 import groovy.lang.Closure
+import groovy.lang.GroovyObject
 import groovy.lang.GroovyShell
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
@@ -84,15 +85,19 @@ class AntRecorderSpec : FunSpec({
     }
 
     test("reading properties fails loudly") {
-        shouldThrow<AntReadBackException> { recordGroovy("ant.properties['x']") }
+        shouldThrow<AntReservedPropertyException> { recordGroovy("ant.properties['x']") }
             .message shouldContain "antBridge.properties"
-        val exception = shouldThrow<AntReadBackException> { recordGroovy("ant.project") }
+        shouldThrow<AntReadBackException> { recordGroovy("ant.basedir") }
+            .message shouldContain "antBridge.properties"
+        val exception = shouldThrow<AntReservedPropertyException> { recordGroovy("ant.project") }
         exception.message shouldBe "Cannot read 'project' from a recorded Ant block: Ant runs after the block ends. " +
             "Load properties with antBridge.properties { } (a Provider) or read a task output instead."
     }
 
     test("reading recorder properties inside a closure fails loudly") {
-        shouldThrow<AntReadBackException> { recordGroovy("ant.copy(todir: 'o') { fileset(dir: properties['x']) }") }
+        shouldThrow<AntReservedPropertyException> {
+            recordGroovy("ant.copy(todir: 'o') { fileset(dir: properties['x']) }")
+        }
             .message shouldContain "antBridge.properties"
         shouldThrow<AntReadBackException> { recordGroovy("ant.copy(todir: 'o') { fileset(dir: missing) }") }
             .message shouldContain "'missing'"
@@ -109,8 +114,21 @@ class AntRecorderSpec : FunSpec({
         exception.message shouldBe "The value returned by a recorded Ant call is not available: Ant runs after the block ends."
         shouldThrow<AntReadBackException> { recordGroovy("def r = ant.available(file: 'x'); if (r) { ant.echo('y') }") }
         shouldThrow<AntReadBackException> { recordGroovy("def r = ant.available(file: 'x'); r.value") }
-        recordGroovy("def r = ant.available(file: 'x'); \"${'$'}r\"").single()
-            .name shouldBe "available"
+    }
+
+    test("a returned value used as an attribute or text fails loudly") {
+        shouldThrow<AntReadBackException> {
+            recordGroovy("ant.copy(todir: 'o') { fileset(dir: file('x')) }")
+        }.message shouldBe "Attribute 'dir' of recorded Ant element 'fileset' uses the value of a recorded Ant call, " +
+            "which is not available: Ant runs after the block ends. Inside a recorded block an unqualified method " +
+            "call such as file(...) is recorded as an Ant element; compute the value outside the block."
+        shouldThrow<AntReadBackException> { recordGroovy("ant.mkdir(dir: ant.available(file: 'x'))") }
+        shouldThrow<AntReadBackException> {
+            recordGroovy("def r = ant.available(file: 'x'); ant.mkdir(dir: \"out/${'$'}r\")")
+        }.message shouldContain "Attribute 'dir' of recorded Ant element 'mkdir'"
+        shouldThrow<AntReadBackException> {
+            recordGroovy("def r = ant.available(file: 'x'); ant.echo(\"is ${'$'}r\")")
+        }.message shouldContain "The text of recorded Ant element 'echo'"
     }
 
     test("Object methods are not recorded") {
@@ -129,6 +147,54 @@ class AntRecorderSpec : FunSpec({
             body.call(recorder)
         }
         shouldBeCopyTree(elements)
+    }
+
+    context("a Groovy closure whose owner has properties") {
+        val owner = GroovyShell().evaluate(
+            """
+            class Owner {
+                def outDir = 'owned'
+                Map getProperties() { [x: 'owner'] }
+                Closure flat() { return { mkdir(dir: outDir) } }
+                Closure nested() { return { copy(todir: outDir) { fileset(dir: outDir) { include(name: outDir) } } } }
+                Closure unknown() { return { copy(todir: 'o') { fileset(dir: missing) } } }
+                Closure reserved() { return { copy(todir: properties['x']) } }
+            }
+            return new Owner()
+            """.trimIndent()
+        ) as GroovyObject
+
+        fun recordDelegated(method: String): List<AntElement> {
+            val closure = owner.invokeMethod(method, null) as Closure<*>
+            return AntRecorder.record { recorder ->
+                val body = closure.clone() as Closure<*>
+                body.resolveStrategy = Closure.DELEGATE_FIRST
+                body.delegate = recorder
+                body.call(recorder)
+            }
+        }
+
+        test("top-level reads record the owner's value") {
+            recordDelegated("flat").single().attributes["dir"] shouldBe "owned"
+        }
+
+        test("nested reads record the owner's value") {
+            val copy = recordDelegated("nested").single()
+            copy.attributes["todir"] shouldBe "owned"
+            val fileset = copy.children.single()
+            fileset.attributes["dir"] shouldBe "owned"
+            fileset.children.single().attributes["name"] shouldBe "owned"
+        }
+
+        test("unknown names fail with the read-back message") {
+            shouldThrow<AntReadBackException> { recordDelegated("unknown") }.message shouldBe
+                "Cannot read 'missing' from a recorded Ant block: Ant runs after the block ends. " +
+                "Load properties with antBridge.properties { } (a Provider) or read a task output instead."
+        }
+
+        test("reserved names fail even when the owner has them") {
+            shouldThrow<AntReservedPropertyException> { recordDelegated("reserved") }
+        }
     }
 
     test("Kotlin withGroovyBuilder body records the same tree") {

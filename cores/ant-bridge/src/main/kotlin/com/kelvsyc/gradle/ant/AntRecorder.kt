@@ -10,22 +10,41 @@ import org.gradle.api.GradleException
 
 /**
  * Thrown when a recorded Ant block tries to read a value that only exists once Ant has run.
+ *
+ * It is a [MissingPropertyException] so that, in a closure with a recorder as its delegate, Groovy falls back to the
+ * closure's owner for names the recorder does not have, and rethrows this exception only if the owner has none either.
  */
-class AntReadBackException(message: String, cause: Throwable? = null) : GradleException(message, cause)
+class AntReadBackException(
+    private val readBackMessage: String,
+    cause: Throwable? = null
+) : MissingPropertyException(readBackMessage, null as String?, null as Class<*>?) {
+    init {
+        cause?.let { initCause(it) }
+    }
+
+    override val message: String get() = readBackMessage
+
+    override fun getMessageWithoutLocationText(): String = readBackMessage
+}
+
+/**
+ * Thrown when a recorded Ant block reads `properties`, `references` or `project` from the recorder. Unlike
+ * [AntReadBackException] it is not a [MissingPropertyException], so a closure never falls back to an owner's property
+ * of the same name, which would silently return a Gradle value instead of Ant's.
+ */
+class AntReservedPropertyException(message: String) : GradleException(message)
 
 /**
  * Records legacy `ant.xxx(...)` calls into [AntElement] trees instead of running them. A method name becomes the
  * element name (`"uri:local"` is split at the last `:` into namespace and name), a map argument becomes attributes, a
  * string argument becomes the text and a trailing closure records the children, with a recorder as its delegate.
  *
- * Ant runs only after the block ends, so reading a property from the recorder, or using the value a recorded call
- * returns, throws [AntReadBackException]. Inside a nested closure, names the recorder does not own resolve against
- * the closure's owner as usual.
+ * Ant runs only after the block ends: reading `properties`, `references` or `project` throws
+ * [AntReservedPropertyException]; reading or setting any other property, or using the value a recorded call returns,
+ * throws [AntReadBackException]. In a closure with a recorder as its delegate, other names still resolve against the
+ * closure's owner.
  */
-class AntRecorder internal constructor(
-    private val sink: MutableList<AntElement>,
-    private val owner: Any? = null
-) : GroovyInterceptable {
+class AntRecorder internal constructor(private val sink: MutableList<AntElement>) : GroovyInterceptable {
     override fun invokeMethod(name: String, args: Any?): Any? {
         val arguments = argumentsOf(args)
         return when (name) {
@@ -37,24 +56,14 @@ class AntRecorder internal constructor(
     }
 
     override fun getProperty(propertyName: String): Any? {
-        val scope = owner
-        if (scope == null || propertyName in RECORDER_PROPERTIES) {
-            throw AntReadBackException(readMessage(propertyName))
+        if (propertyName in RECORDER_PROPERTIES) {
+            throw AntReservedPropertyException(readMessage(propertyName))
         }
-        return try {
-            InvokerHelper.getProperty(scope, propertyName)
-        } catch (e: MissingPropertyException) {
-            throw AntReadBackException(readMessage(propertyName), e)
-        }
+        throw AntReadBackException(readMessage(propertyName))
     }
 
     override fun setProperty(propertyName: String, newValue: Any?) {
-        val scope = owner ?: throw AntReadBackException(writeMessage(propertyName))
-        try {
-            InvokerHelper.setProperty(scope, propertyName, newValue)
-        } catch (e: MissingPropertyException) {
-            throw AntReadBackException(writeMessage(propertyName), e)
-        }
+        throw AntReadBackException("Cannot set '$propertyName' on a recorded Ant block: Ant runs after the block ends.")
     }
 
     override fun getMetaClass(): MetaClass = InvokerHelper.getMetaClass(javaClass)
@@ -74,8 +83,11 @@ class AntRecorder internal constructor(
         arguments.forEachIndexed { index, argument ->
             when {
                 argument is Map<*, *> ->
-                    argument.forEach { (key, value) -> element.attributes[key.toString()] = normalize(value) }
-                argument is CharSequence -> element.text = argument.toString()
+                    argument.forEach { (key, value) ->
+                        val attribute = key.toString()
+                        element.attributes[attribute] = checked(value, "Attribute '$attribute'", qualifiedName)
+                    }
+                argument is CharSequence -> element.text = checked(argument, "The text", qualifiedName).toString()
                 argument is Closure<*> && index == arguments.lastIndex -> recordChildren(element, argument)
                 else -> throw IllegalArgumentException(
                     "Unsupported argument $argument for recorded Ant element '$qualifiedName': " +
@@ -87,7 +99,7 @@ class AntRecorder internal constructor(
     }
 
     private fun recordChildren(element: AntElement, closure: Closure<*>) {
-        val child = AntRecorder(element.children, closure.owner)
+        val child = AntRecorder(element.children)
         val body = closure.rehydrate(child, closure.owner, closure.thisObject)
         body.resolveStrategy = Closure.DELEGATE_FIRST
         body.call()
@@ -112,14 +124,21 @@ class AntRecorder internal constructor(
             else -> listOf(args)
         }
 
-        private fun normalize(value: Any?): Any? = if (value is GString) value.toString() else value
+        private fun checked(value: Any?, what: String, elementName: String): Any? {
+            val recorded = value is RecordedCall || value is GString && value.values.any { it is RecordedCall }
+            if (recorded) {
+                throw AntReadBackException(
+                    "$what of recorded Ant element '$elementName' uses the value of a recorded Ant call, which is " +
+                        "not available: Ant runs after the block ends. Inside a recorded block an unqualified method " +
+                        "call such as file(...) is recorded as an Ant element; compute the value outside the block."
+                )
+            }
+            return if (value is GString) value.toString() else value
+        }
 
         private fun readMessage(name: String) =
             "Cannot read '$name' from a recorded Ant block: Ant runs after the block ends. " +
                 "Load properties with antBridge.properties { } (a Provider) or read a task output instead."
-
-        private fun writeMessage(name: String) =
-            "Cannot set '$name' on a recorded Ant block: Ant runs after the block ends."
     }
 }
 
