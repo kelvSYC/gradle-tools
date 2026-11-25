@@ -54,17 +54,6 @@ internal object IntegrationTestSupport {
     fun newProjectDir(prefix: String): File =
         createTempDirectory(prefix).toFile().apply { deleteOnExit() }
 
-    fun runProbe(projectDir: File, vararg args: String): ProbeOutcome {
-        val runner = GradleRunner.create()
-            .withProjectDir(projectDir)
-            .withArguments(*args)
-            .forwardOutput()
-        return runCatching { runner.build() }.fold(
-            onSuccess = { ProbeOutcome.Succeeded(it) },
-            onFailure = { ProbeOutcome.Failed(it.message.orEmpty()) }
-        )
-    }
-
     /** Runs a build that must succeed, with [environment] added to this JVM's environment. */
     fun run(projectDir: File, vararg args: String, environment: Map<String, String> = emptyMap()): BuildResult =
         runner(projectDir, args.toList(), environment).build()
@@ -80,9 +69,4 @@ internal object IntegrationTestSupport {
             .forwardOutput()
         return if (environment.isEmpty()) runner else runner.withEnvironment(System.getenv() + environment)
     }
-}
-
-internal sealed interface ProbeOutcome {
-    data class Succeeded(val result: BuildResult) : ProbeOutcome
-    data class Failed(val message: String) : ProbeOutcome
 }

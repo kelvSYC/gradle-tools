@@ -99,12 +99,14 @@ abstract class AntPropertiesSpec @Inject constructor(private val layout: Project
     }
 
     /**
-     * Adds a properties resource looked up on [classpath].
+     * Adds a properties resource looked up on [classpath]. The classpath is resolved when this function is called,
+     * at configuration time.
      */
     fun resource(name: String, classpath: FileCollection) = resource(name, classpath) { }
 
     /**
-     * Adds a properties resource looked up on [classpath], with [options].
+     * Adds a properties resource looked up on [classpath], with [options]. The classpath is resolved when this
+     * function is called, at configuration time.
      */
     fun resource(name: String, classpath: FileCollection, options: Action<in AntPropertySourceOptions>) {
         val configured = options(options)

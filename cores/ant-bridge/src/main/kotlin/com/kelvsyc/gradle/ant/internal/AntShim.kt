@@ -13,7 +13,7 @@ import java.util.function.Function
  */
 class AntShim(
     /** The isolated loader holding Ant and the shim. */
-    val loader: AntRuntimeClassLoader
+    private val loader: AntRuntimeClassLoader
 ) {
     /**
      * Runs [nodes] in order in a fresh Ant project based at [baseDirectory], logging Ant's messages to [logger], and
