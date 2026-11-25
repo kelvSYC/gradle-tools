@@ -175,9 +175,9 @@ the antlib named by the URI from the `antBridge` classpath. In recorded Groovy, 
 
 ### The Kotlin DSL and its typed helpers
 
-`AntOperations.execute(classpath) { }` and `AntWork.ant { }` take an `AntScope`: `task(name, attributes..., namespace
-= null) { }` appends an Ant task, and the nested scope (`AntElementScope`) has `element(...)`, `text(...)` and helpers
-for common Ant types.
+`AntOperations.execute(classpath) { }`, `AntWork.ant { }`, `AntTrees.build { }` and a typed task's `elements()` take an
+`AntScope`: `task(name, attributes..., namespace = null) { }` appends an Ant task, and the nested scope
+(`AntElementScope`) has `element(...)`, `text(...)` and helpers for common Ant types.
 
 | Helper | Ant element |
 |---|---|
@@ -189,7 +189,8 @@ for common Ant types.
 | `filterchain { }` | `<filterchain>` |
 
 Attribute and text values can be `String`, `Number`, `Boolean`, `File`, `Path`, a `FileSystemLocation`, a
-`FileCollection` or a `Provider<*>` of these; providers stay lazy until the task runs.
+`FileCollection` or a `Provider<*>` of these; providers stay lazy until the task runs. A `null` value leaves the
+attribute out; an absent provider fails when the task runs.
 
 ```kotlin
 tasks.register<AntWork>("copyText") {
@@ -286,24 +287,65 @@ tasks.register<AntChecksum>("checksums") {
 
 ### Defining a typed task
 
-Extend `AbstractAntTask` to wrap an Ant task in a reusable task type. Declare its inputs and outputs as annotated
-properties, build the Ant elements from them in `elements()` (called at execution, so providers resolve late), and
-override `prepare()` to clear or set up outputs first. `AbstractAntTask` takes no constructor parameters; it injects
-`objects` and `fileSystemOperations`, which subclasses may use.
+Extend `AbstractAntTask` to wrap an Ant task in a reusable task type:
+
+1. Declare the task's inputs and outputs as annotated properties, as for any Gradle task.
+2. Override `AntScope.elements()` and describe the Ant work with the same Kotlin DSL as `AntWork.ant { }`
+   ([The Kotlin DSL and its typed helpers](#the-kotlin-dsl-and-its-typed-helpers)): nesting, `fileset`,
+   `filterchain` and the other helpers all work. It runs at execution, so pass properties directly (they stay lazy)
+   and read optional ones with `orNull`: a `null` attribute value is left out, and a `null` check skips an optional
+   nested element.
+3. Override `prepare()` if outputs need setting up first.
+
+`AbstractAntTask` takes no constructor parameters; it injects `objects` and `fileSystemOperations`, which subclasses
+may use.
 
 ```kotlin
 @CacheableTask
-abstract class AntTouch : AbstractAntTask() {
-    @get:OutputFile
-    abstract val marker: RegularFileProperty
+abstract class Concat : AbstractAntTask() {
+    @get:InputDirectory
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val sourceDirectory: DirectoryProperty
 
-    override fun elements() = listOf(element("touch", "file" to marker))
+    @get:Input
+    abstract val includes: ListProperty<String>
+
+    @get:Input
+    @get:Optional
+    abstract val header: Property<String>
+
+    @get:OutputFile
+    abstract val destination: RegularFileProperty
+
+    override fun AntScope.elements() {
+        task("concat", "destfile" to destination, "fixlastline" to true) {
+            header.orNull?.let { element("header", "trimleading" to true) { text(it) } }
+            fileset(sourceDirectory, includes = includes.get())
+            filterchain { element("striplinecomments") { element("comment", "value" to "#") } }
+        }
+    }
 }
 ```
 
 Clear any output directory in `prepare()` (`clearDirectory(outputDirectory)`) when the Ant task skips work it
 considers up to date, as `xslt`, `signjar` and `checksum` do, and set Ant's force attribute: otherwise Gradle reruns
 the task but Ant leaves stale output in place.
+
+### Reusing Ant code
+
+Reuse Ant at the Gradle boundary, not inside the Ant tree, so that the eventual Ant-free rewrite does not touch the
+call sites:
+
+- **A typed task** (above): callers see typed inputs and outputs. Going Ant-free replaces `elements()` with
+  Gradle-native code; every caller stays unchanged, and up-to-date checks and caching come for free.
+- **A Gradle-level helper** that registers or configures a task, such as `fun TaskContainer.registerConcat(...)`:
+  its signature survives a switch to a native task.
+- **Not an extension on `AntScope`** such as `fun AntScope.touch(...)`. Its callers live inside `ant { }` blocks,
+  so going Ant-free rewrites every one of them, and a growing set of such helpers turns Ant into a permanent part of
+  the build's vocabulary.
+
+Helpers that only translate Gradle values into Ant data, like the built-in `path(files)` and `filterset(tokens)`,
+are fine anywhere: they carry no behaviour of their own.
 
 ## Generic fallback: `AntWork`
 

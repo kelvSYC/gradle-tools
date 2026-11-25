@@ -1,6 +1,6 @@
 package com.kelvsyc.gradle.ant.tasks
 
-import com.kelvsyc.gradle.ant.AntElement
+import com.kelvsyc.gradle.ant.AntScope
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
@@ -78,22 +78,21 @@ abstract class AntReplaceRegexp : AbstractAntTask() {
         }
     }
 
-    override fun elements(): List<AntElement> {
-        val fileset = element(
-            "fileset",
-            "dir" to outputDirectory,
-            "includes" to includes.get().joinToString(","),
-            "excludes" to excludes.get().takeIf { it.isNotEmpty() }?.joinToString(",")
-        )
-        val regexp = element(
+    override fun AntScope.elements() {
+        task(
             "replaceregexp",
             "match" to match,
             "replace" to replace,
             "flags" to flags,
             "byline" to byLine,
             "encoding" to encoding.orNull
-        )
-        regexp.children.add(fileset)
-        return listOf(regexp)
+        ) {
+            element(
+                "fileset",
+                "dir" to outputDirectory,
+                "includes" to includes.get().joinToString(","),
+                "excludes" to excludes.get().takeIf { it.isNotEmpty() }?.joinToString(",")
+            )
+        }
     }
 }

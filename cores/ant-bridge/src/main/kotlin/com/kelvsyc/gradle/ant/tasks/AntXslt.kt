@@ -1,6 +1,6 @@
 package com.kelvsyc.gradle.ant.tasks
 
-import com.kelvsyc.gradle.ant.AntElement
+import com.kelvsyc.gradle.ant.AntScope
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.MapProperty
@@ -58,8 +58,8 @@ abstract class AntXslt : AbstractAntTask() {
     /** Clears [outputDirectory], so that outputs of removed inputs do not survive. */
     override fun prepare() = clearDirectory(outputDirectory)
 
-    override fun elements(): List<AntElement> {
-        val xslt = element(
+    override fun AntScope.elements() {
+        task(
             "xslt",
             "basedir" to sourceDirectory,
             "destdir" to outputDirectory,
@@ -68,10 +68,8 @@ abstract class AntXslt : AbstractAntTask() {
             "extension" to extension,
             "includes" to includes.get().joinToString(","),
             "excludes" to excludes.get().takeIf { it.isNotEmpty() }?.joinToString(",")
-        )
-        parameters.get().forEach { (name, value) ->
-            xslt.children.add(element("param", "name" to name, "expression" to value))
+        ) {
+            parameters.get().forEach { (name, value) -> element("param", "name" to name, "expression" to value) }
         }
-        return listOf(xslt)
     }
 }

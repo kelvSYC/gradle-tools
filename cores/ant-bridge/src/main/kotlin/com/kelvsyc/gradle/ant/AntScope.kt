@@ -4,13 +4,20 @@ import org.gradle.api.Action
 
 /**
  * The top-level scope of the Kotlin DSL: each call appends one Ant task to the tree being built.
+ *
+ * In attributes, a `null` value leaves the attribute unset (convenient for optional values such as
+ * `encoding.orNull`); a `Provider` stays lazy, and an absent one fails when the tree is resolved.
+ *
+ * To reuse an Ant task across builds, define a task type by extending
+ * [com.kelvsyc.gradle.ant.tasks.AbstractAntTask] rather than an extension function on this scope: see "Reusing Ant
+ * code" in the README.
  */
 class AntScope internal constructor(private val sink: MutableList<AntElement>) {
     /**
      * Appends an Ant task.
      *
      * @param name the task name
-     * @param attributes the task attributes, in order
+     * @param attributes the task attributes, in order; `null` values are left out
      * @param namespace the task namespace URI, or `null` for the default namespace
      * @param body configures nested elements
      */
@@ -20,11 +27,18 @@ class AntScope internal constructor(private val sink: MutableList<AntElement>) {
         namespace: String? = null,
         body: Action<in AntElementScope> = Action {}
     ) {
-        val element = AntElement(name, namespace)
-        attributes.forEach { (key, value) -> element.attributes[key] = value }
-        sink.add(element)
-        body.execute(AntElementScope(element))
+        sink.add(newElement(name, namespace, attributes, body))
     }
+}
+
+private fun newElement(
+    name: String,
+    namespace: String?,
+    attributes: Array<out Pair<String, Any?>>,
+    body: Action<in AntElementScope>
+): AntElement = AntElement(name, namespace).also { element ->
+    attributes.forEach { (key, value) -> if (value != null) element.attributes[key] = value }
+    body.execute(AntElementScope(element))
 }
 
 /**
@@ -38,7 +52,7 @@ class AntElementScope internal constructor(
      * Appends a nested element.
      *
      * @param name the element name
-     * @param attributes the element attributes, in order
+     * @param attributes the element attributes, in order; `null` values are left out
      * @param namespace the element namespace URI, or `null` for the default namespace
      * @param body configures nested elements
      */
@@ -48,10 +62,7 @@ class AntElementScope internal constructor(
         namespace: String? = null,
         body: Action<in AntElementScope> = Action {}
     ) {
-        val child = AntElement(name, namespace)
-        attributes.forEach { (key, value) -> child.attributes[key] = value }
-        element.children.add(child)
-        body.execute(AntElementScope(child))
+        element.children.add(newElement(name, namespace, attributes, body))
     }
 
     /**
@@ -119,10 +130,7 @@ class AntElementScope internal constructor(
      * @param to the `to` pattern, if any
      */
     fun mapper(type: String, from: String? = null, to: String? = null) {
-        element("mapper", "type" to type) {
-            from?.let { element.attributes["from"] = it }
-            to?.let { element.attributes["to"] = it }
-        }
+        element("mapper", "type" to type, "from" to from, "to" to to)
     }
 
     /**

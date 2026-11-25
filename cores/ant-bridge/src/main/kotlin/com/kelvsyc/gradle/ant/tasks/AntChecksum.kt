@@ -1,6 +1,6 @@
 package com.kelvsyc.gradle.ant.tasks
 
-import com.kelvsyc.gradle.ant.AntElement
+import com.kelvsyc.gradle.ant.AntScope
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
@@ -41,14 +41,16 @@ abstract class AntChecksum : AbstractAntTask() {
     /** Clears [outputDirectory], so that outputs of removed inputs do not survive. */
     override fun prepare() = clearDirectory(outputDirectory)
 
-    override fun elements(): List<AntElement> = files.files.map { file ->
-        element(
-            "checksum",
-            "file" to file,
-            "todir" to outputDirectory,
-            "algorithm" to algorithm,
-            "fileext" to fileExtension,
-            "forceoverwrite" to true
-        )
+    override fun AntScope.elements() {
+        files.files.forEach { file ->
+            task(
+                "checksum",
+                "file" to file,
+                "todir" to outputDirectory,
+                "algorithm" to algorithm,
+                "fileext" to fileExtension,
+                "forceoverwrite" to true
+            )
+        }
     }
 }

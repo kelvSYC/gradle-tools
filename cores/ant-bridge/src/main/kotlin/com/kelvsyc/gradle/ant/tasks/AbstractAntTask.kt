@@ -3,6 +3,8 @@ package com.kelvsyc.gradle.ant.tasks
 import com.kelvsyc.gradle.ant.AntElement
 import com.kelvsyc.gradle.ant.AntIsolation
 import com.kelvsyc.gradle.ant.AntOperations
+import com.kelvsyc.gradle.ant.AntScope
+import com.kelvsyc.gradle.ant.AntTrees
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
@@ -15,8 +17,8 @@ import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
 /**
- * Base of the typed Ant tasks: each declares its own inputs and outputs and describes the Ant work as [elements],
- * which are built at execution time and run through [AntOperations].
+ * Base of the typed Ant tasks: each declares its own inputs and outputs and describes the Ant work in [elements] with
+ * the Kotlin DSL ([AntScope]). The tree is built at execution time and run through [AntOperations].
  *
  * Extend this class to define a reusable Ant task type. It takes no constructor parameters: the services it needs are
  * injected properties ([objects], [fileSystemOperations]), which subclasses may use too.
@@ -43,9 +45,10 @@ abstract class AbstractAntTask : DefaultTask() {
     }
 
     /**
-     * The Ant tasks to run, in order. Called at execution, so providers and secrets resolve late.
+     * Declares the Ant tasks to run, in order, with the Kotlin DSL. Called at execution, so providers and secrets
+     * resolve late; read optional properties with `orNull`, since `null` attribute values are left out.
      */
-    protected abstract fun elements(): List<AntElement>
+    protected abstract fun AntScope.elements()
 
     /**
      * Prepares the task's output before Ant runs; does nothing by default.
@@ -63,9 +66,9 @@ abstract class AbstractAntTask : DefaultTask() {
     }
 
     /**
-     * Returns [elements]; exists so that tests can inspect the Ant tree without running Ant.
+     * Returns the tree of [elements]; also lets tests inspect it without running Ant.
      */
-    internal fun buildElements(): List<AntElement> = elements()
+    internal fun buildElements(): List<AntElement> = AntTrees.build { elements() }
 
     /**
      * Runs [prepare], then [elements] with [antClasspath], isolated as [isolation] says.
@@ -73,14 +76,6 @@ abstract class AbstractAntTask : DefaultTask() {
     @TaskAction
     fun runAnt() {
         prepare()
-        objects.newInstance(AntOperations::class.java).run(antClasspath, isolation.get(), elements())
+        objects.newInstance(AntOperations::class.java).run(antClasspath, isolation.get(), buildElements())
     }
-
-    /**
-     * Returns a new element with the given [name] and [attributes]; null attribute values are left out.
-     */
-    protected fun element(name: String, vararg attributes: Pair<String, Any?>): AntElement =
-        AntElement(name).also { element ->
-            attributes.forEach { (key, value) -> if (value != null) element.attributes[key] = value }
-        }
 }

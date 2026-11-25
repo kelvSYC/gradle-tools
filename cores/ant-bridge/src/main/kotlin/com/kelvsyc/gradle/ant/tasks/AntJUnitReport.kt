@@ -1,6 +1,6 @@
 package com.kelvsyc.gradle.ant.tasks
 
-import com.kelvsyc.gradle.ant.AntElement
+import com.kelvsyc.gradle.ant.AntScope
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
@@ -39,16 +39,10 @@ abstract class AntJUnitReport : AbstractAntTask() {
         format.convention("noframes")
     }
 
-    override fun elements(): List<AntElement> {
-        val report = element("junitreport", "todir" to temporaryDir)
-        report.children.add(
-            element(
-                "fileset",
-                "dir" to resultsDirectory,
-                "includes" to includes.get().joinToString(",")
-            )
-        )
-        report.children.add(element("report", "format" to format, "todir" to outputDirectory))
-        return listOf(report)
+    override fun AntScope.elements() {
+        task("junitreport", "todir" to temporaryDir) {
+            element("fileset", "dir" to resultsDirectory, "includes" to includes.get().joinToString(","))
+            element("report", "format" to format, "todir" to outputDirectory)
+        }
     }
 }

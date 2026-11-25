@@ -1,5 +1,6 @@
 package com.kelvsyc.gradle.ant
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import org.gradle.api.Action
@@ -80,6 +81,15 @@ class AntScopeSpec : FunSpec({
         val a = project.file("a.txt")
         files.from(a)
         elements.single().children.single().resolve().attributes["path"] shouldBe a.absolutePath
+    }
+
+    test("null attribute values are left out; absent providers still fail at resolve") {
+        tree(Action { task("x", "a" to null, "b" to "1") { element("y", "c" to null) } }).single().let { x ->
+            x.attributes shouldBe mapOf("b" to "1")
+            x.children.single().attributes shouldBe emptyMap()
+        }
+        val absent = project.objects.property(String::class.java)
+        shouldThrow<AntAttributeException> { tree(Action { task("x", "a" to absent) }) }
     }
 
     test("mapper omits absent attributes, filterchain and text nest") {

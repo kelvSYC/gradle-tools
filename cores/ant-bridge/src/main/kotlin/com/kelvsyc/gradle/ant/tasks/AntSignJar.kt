@@ -1,6 +1,6 @@
 package com.kelvsyc.gradle.ant.tasks
 
-import com.kelvsyc.gradle.ant.AntElement
+import com.kelvsyc.gradle.ant.AntScope
 import com.kelvsyc.gradle.clients.CredentialReference
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
@@ -71,11 +71,11 @@ abstract class AntSignJar : AbstractAntTask() {
     /** Clears [outputDirectory], so that outputs of removed inputs do not survive. */
     override fun prepare() = clearDirectory(outputDirectory)
 
-    override fun elements(): List<AntElement> {
+    override fun AntScope.elements() {
         val storePass = storePassword.get().resolve()
         val keyPass = keyPassword.orNull?.resolve()
-        return jars.files.map { jar ->
-            element(
+        jars.files.forEach { jar ->
+            task(
                 "signjar",
                 "jar" to jar,
                 "destDir" to outputDirectory,
