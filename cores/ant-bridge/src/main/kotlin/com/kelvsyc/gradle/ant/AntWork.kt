@@ -86,7 +86,8 @@ abstract class AntWork @Inject constructor(
 
     /**
      * The exported Ant properties, read from [exportedPropertiesFile]; names the tree did not set are absent. Carries
-     * the dependency on this task, so a task using it as an input runs after this one.
+     * the dependency on this task, so a task using it as an input runs after this one. If this task did not run (for
+     * example it was skipped by `onlyIf`), the file is missing and reading fails.
      */
     @get:Internal
     val exportedProperties: Provider<Map<String, String>>

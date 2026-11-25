@@ -19,8 +19,9 @@ import javax.inject.Inject
  * Runs an Ant tree in a fresh Ant project, in an isolated class loader, and returns the [requested][Parameters.results]
  * properties the tree set. Names the tree did not set are absent from the map.
  *
- * The configuration cache obtains the value again on every build to validate its entry, so the tree re-runs on every
- * build, even when the cache is reused. An Ant failure fails the build with [AntExecutionException].
+ * Where the tree runs depends on where the query is read. Read during configuration, the configuration cache obtains
+ * the value again on every cache check, so the tree re-runs on every build, even when the cache is reused. Read only
+ * inside task actions, it is obtained when the task runs. An Ant failure fails the build with [AntExecutionException].
  */
 abstract class AntQuery : ValueSource<Map<String, String>, AntQuery.Parameters> {
     /**
@@ -62,7 +63,7 @@ private const val CHECKSUM = "checksum"
 /**
  * Declares the Ant tree and the requested properties of an [AntQuery]. Not designed to be extended.
  *
- * The query runs while the build is configured and the configuration cache re-runs it on every build, so only
+ * A query read during configuration is re-run by the configuration cache on every build, so only
  * read-only Ant tasks are allowed at the top level of the tree (`available`, `condition`, `loadfile`,
  * `loadproperties`, `property`, `basename`, `dirname`, `pathconvert`, `length`, and `checksum` with a `property`
  * attribute) unless [allowSideEffects] is called. Nested elements of an allowed task are not checked.
@@ -73,7 +74,8 @@ abstract class AntQuerySpec @Inject constructor(private val layout: ProjectLayou
     private var sideEffectsAllowed = false
 
     /**
-     * Appends the Ant tasks of [body], written in the Kotlin DSL. The tree re-runs on every build.
+     * Appends the Ant tasks of [body], written in the Kotlin DSL. Read during configuration, the tree re-runs on every
+     * build.
      */
     fun ant(body: Action<in AntScope>) {
         elements += AntTrees.build(body)
@@ -81,7 +83,7 @@ abstract class AntQuerySpec @Inject constructor(private val layout: ProjectLayou
 
     /**
      * Appends the legacy `ant.xxx(...)` calls recorded by [body], such as a Kotlin `withGroovyBuilder { }` block. The
-     * tree re-runs on every build.
+     * tree re-runs on every build when read during configuration.
      */
     fun record(body: Action<in AntRecorder>) {
         elements += AntTrees.record(body)
@@ -89,7 +91,8 @@ abstract class AntQuerySpec @Inject constructor(private val layout: ProjectLayou
 
     /**
      * Appends the legacy `ant.xxx(...)` calls recorded by the Groovy closure [body], which runs with the recorder as
-     * its delegate, so its body is unchanged from a legacy `ant { }` block. The tree re-runs on every build.
+     * its delegate, so its body is unchanged from a legacy `ant { }` block. The tree
+     * re-runs on every build when read during configuration.
      */
     fun record(body: Closure<*>) {
         elements += AntTrees.record(body)
@@ -103,9 +106,9 @@ abstract class AntQuerySpec @Inject constructor(private val layout: ProjectLayou
     }
 
     /**
-     * Allows any Ant task in the tree. The tree re-runs on every build, including those that reuse the configuration
-     * cache, so its side effects repeat on every build; prefer `AntWork.exportProperties` for work that belongs in a
-     * task.
+     * Allows any Ant task in the tree. Read during configuration, the tree re-runs on every build, including those
+     * that reuse the configuration cache, so its side effects repeat on every build; prefer
+     * `AntWork.exportProperties` for work that belongs in a task.
      */
     fun allowSideEffects() {
         sideEffectsAllowed = true

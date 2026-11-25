@@ -37,7 +37,8 @@ abstract class AntBridgeExtension @Inject constructor(
     /**
      * Returns the properties requested by [configure], set by its Ant tree, run by [AntQuery] with [classpath]. Only
      * read-only Ant tasks are allowed unless [AntQuerySpec.allowSideEffects] is called, checked here, before anything
-     * runs. The configuration cache re-runs the tree on every build. Each obtain opens and closes its own class
+     * runs. Read during configuration, the tree re-runs on every build (cache check); read only in task actions, it
+     * is obtained when the task runs. Each obtain opens and closes its own class
      * loader.
      *
      * @throws org.gradle.api.InvalidUserDataException if the tree has a task that is not allowed

@@ -378,7 +378,9 @@ tasks.register<AntWork>("native2ascii") {
 `AntWork` is meant to be configured, not extended; to define a reusable Ant task type, extend `AbstractAntTask`
 (see [Defining a typed task](#defining-a-typed-task)).
 
-`AntWork` has `elements`, `antClasspath` (defaults to `antBridgeClasspath`) and `isolation`. A task without declared
+`AntWork` has `elements`, `antClasspath` (defaults to `antBridgeClasspath`), `isolation` and, to hand Ant-computed
+values to other tasks, `exportProperties`, `exportedPropertiesFile` and `exportedProperties` (see
+[Values Ant computes](#values-ant-computes)). A task without declared
 outputs is never up to date. The Ant tree is an input through `treeFingerprint`, the SHA-256 of the resolved tree, so
 editing it reruns the task; only the hash is recorded, keeping resolved values such as secrets out of the history.
 The hash is unsalted, so a short secret written directly into the tree could be guessed from it: pass secrets to Ant
@@ -404,8 +406,10 @@ typed task.
 
 ## Values Ant computes
 
+`getting` comes from `gradle-extensions`: `import com.kelvsyc.gradle.providers.getting`.
+
 Ant passes values through properties. The bridge turns them into a `Provider<Map<String, String>>`, read with
-`getting(key)` (from `gradle-extensions`, as for `antBridge.properties { }`). Later you replace that provider with a
+`getting(key)` (as for `antBridge.properties { }`). Later you replace that provider with a
 non-Ant one from the [read-back table](#what-cannot-be-migrated) and the code that reads it does not change. Results are
 strings; a name the Ant tree never set is absent from the map (`getting` gives an absent provider), never an empty
 string.
@@ -418,11 +422,13 @@ string.
 val q = antBridge.query {
     ant {
         task("available", "file" to layout.projectDirectory.file("VERSION"), "property" to "hasVersion")
-        task("loadfile", "srcFile" to layout.projectDirectory.file("VERSION"), "property" to "v")
+        task("loadfile", "srcFile" to layout.projectDirectory.file("VERSION"), "property" to "v", "failonerror" to false)
     }
     result("hasVersion", "v")
 }
-version = q.getting("v").get()
+if (q.getting("hasVersion").isPresent) {
+    version = q.getting("v").get()
+}
 ```
 
 `record { }` takes the legacy closures unchanged. An Ant failure fails the build at configuration with
@@ -456,15 +462,18 @@ val a = tasks.register<AntWork>("a") {
     ant { task("exec", "executable" to "hostname", "outputproperty" to "rev") }
 }
 tasks.register("b") {
-    val rev = a.flatMap { it.exportedProperties }.getting("rev") // carries the dependency on a
-    doLast { println(rev.get()) }
+    val exported = a.flatMap { it.exportedProperties }
+    inputs.property("exported", exported) // declaring the input carries the dependency on a
+    doLast { println(exported.get().getValue("rev")) }
 }
 ```
 
 `exportProperties(...)` is the only way to set the names; `exportedPropertyNames` is read-only and an input, so adding a
 name reruns the task. The values go to `exportedPropertiesFile` (default `build/ant-bridge/<task>/exported.properties`)
-and `exportedProperties` is derived from it, so a consumer wired with it depends on the producer without `dependsOn`.
-A consumer still written in Ant passes the file to `property file=` as a declared input
+and `exportedProperties` is derived from it, so a consumer that declares it as an input (`inputs.property(...)`, as
+above) depends on the producer without `dependsOn`; a provider captured only inside `doLast` registers nothing. If
+the producer did not run (for example, `onlyIf` skipped it), the file is missing and reading `exportedProperties`
+fails. A consumer still written in Ant passes the file to `property file=` as a declared input
 (`inputs.file(a.flatMap { it.exportedPropertiesFile })`).
 
 The file is Java properties format, and `$` is escaped as `$$`: Ant's `property file=` and `exportedProperties` read
@@ -487,8 +496,9 @@ fun go() {
 }
 ```
 
-`execute` and `record` have overloads taking a `Set<String>` of names and returning the `Map<String, String>`; the
-other overloads still return nothing. Declare the value as the task's own output, and other tasks read it from there.
+`execute` and `record` have overloads taking a `Collection<String>` of names (a Groovy list literal works), with or
+without an `AntIsolation` (default `CLASSLOADER`), and returning the `Map<String, String>`; the other overloads still
+return nothing. Declare the value as the task's own output, and other tasks read it from there.
 To submit the work yourself, `AntWorkAction` takes optional `resultProperties` (names) and `resultFile` (where the
 values are written).
 
@@ -537,7 +547,8 @@ nothing. A failing Ant task fails the work item with `AntExecutionException`.
 
 - **Read-backs inside a recorded block.** Ant runs after the block ends, so reads of `properties`, `references` or
   `project`, and uses of values returned by recorded calls, fail loudly (`AntReservedPropertyException`,
-  `AntReadBackException`). Load properties with `antBridge.properties { }` instead.
+  `AntReadBackException`). Load properties with `antBridge.properties { }` instead, and read values Ant computes with
+  `antBridge.query { }` or `AntWork.exportProperties` (see [Values Ant computes](#values-ant-computes)).
 - **Unqualified method calls inside a recorded block are recorded as Ant elements**, including `file('x')` and
   `println`. Compute values outside the block and use them inside.
 - **No task dependencies from values in `AntWork`'s tree.** A `Provider` or `FileCollection` there carries no task

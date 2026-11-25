@@ -67,10 +67,10 @@ The only types they share are the JDK's. Across the boundary:
   names to report after the tree runs.
 - **Logging** is a `java.util.function.BiConsumer<Integer, String>` of Ant priority and message. `AntShim` maps Ant's
   priorities to Gradle's logger: error, warn, info, and debug for verbose and debug.
-- **Results** are maps. Success has `"antVersion"` and, for `PropertyLoader` and for `TreeExecutor` when `"results"` was requested,
-  `"properties"`: for `TreeExecutor`, a map from each requested name the Ant project defines to its value (names the
-  tree did not set are left out). Failure has `"failure"`
-  (Ant's message), `"location"` and `"trace"` (the stack trace as a string).
+- **Results** are maps. Success has `"antVersion"` and `"properties"` (`PropertyLoader` always; `TreeExecutor` always,
+  empty when no `"results"` were requested). For `TreeExecutor`, `"properties"` maps each requested name the Ant
+  project defines to its value (names the tree did not set are left out). Failure has
+  `"failure"` (Ant's message), `"location"` and `"trace"` (the stack trace as a string).
 
 **Failures are values, never exceptions.** An exception thrown from the shim carries Ant classes in its cause chain,
 which the plugin side cannot catch by type and which can fail to render or to serialize back from a worker process.

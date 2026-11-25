@@ -24,6 +24,8 @@ import javax.inject.Inject
  * The overloads taking `results` return the requested Ant properties as the tree left them; names the tree did not
  * set are absent from the map. To hand the values to another task, write them to a declared output of your task.
  */
+// The overloads (DSL or legacy, with or without isolation and results) are the public API.
+@Suppress("TooManyFunctions")
 abstract class AntOperations @Inject constructor(
     private val workers: WorkerExecutor,
     private val layout: ProjectLayout
@@ -53,13 +55,33 @@ abstract class AntOperations @Inject constructor(
         run(classpath, isolation, AntTrees.record(body))
 
     /**
+     * Runs the Ant tasks of [body] (Kotlin DSL) with [classpath], in an isolated class loader, and returns the
+     * values of the Ant properties named in [results] that the tree set.
+     */
+    fun execute(
+        classpath: FileCollection,
+        results: Collection<String>,
+        body: Action<in AntScope>
+    ): Map<String, String> = execute(classpath, AntIsolation.CLASSLOADER, results, body)
+
+    /**
+     * Runs the legacy `ant.xxx(...)` calls recorded by [body] with [classpath], in an isolated class loader, and
+     * returns the values of the Ant properties named in [results] that the tree set.
+     */
+    fun record(
+        classpath: FileCollection,
+        results: Collection<String>,
+        body: Action<in AntRecorder>
+    ): Map<String, String> = record(classpath, AntIsolation.CLASSLOADER, results, body)
+
+    /**
      * Runs the Ant tasks of [body] (Kotlin DSL) with [classpath], isolated as [isolation] says, and returns the
      * values of the Ant properties named in [results] that the tree set.
      */
     fun execute(
         classpath: FileCollection,
         isolation: AntIsolation,
-        results: Set<String>,
+        results: Collection<String>,
         body: Action<in AntScope>
     ): Map<String, String> = runForResults(classpath, isolation, AntTrees.build(body), results)
 
@@ -70,7 +92,7 @@ abstract class AntOperations @Inject constructor(
     fun record(
         classpath: FileCollection,
         isolation: AntIsolation,
-        results: Set<String>,
+        results: Collection<String>,
         body: Action<in AntRecorder>
     ): Map<String, String> = runForResults(classpath, isolation, AntTrees.record(body), results)
 
@@ -113,11 +135,11 @@ abstract class AntOperations @Inject constructor(
         classpath: FileCollection,
         isolation: AntIsolation,
         elements: List<AntElement>,
-        results: Set<String>
+        results: Collection<String>
     ): Map<String, String> {
         val file = Files.createTempFile("ant-bridge", ".properties").toFile()
         try {
-            run(classpath, isolation, elements, results, file)
+            run(classpath, isolation, elements, results.toSet(), file)
             return PropertiesFiles.read(file)
         } finally {
             file.delete()

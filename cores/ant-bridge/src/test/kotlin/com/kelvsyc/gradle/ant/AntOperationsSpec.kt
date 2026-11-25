@@ -106,6 +106,31 @@ class AntOperationsSpec : FunSpec({
         resultFile?.exists() shouldBe false
     }
 
+    test("result overloads without isolation use a class loader and accept a list") {
+        val fixture = Fixture()
+        val project = fixture.project
+        every { fixture.queue.submit(AntWorkAction::class.java, capture(fixture.parameters)) } answers {
+            val params = project.objects.newInstance(AntWorkAction.Parameters::class.java)
+            fixture.parameters.captured.execute(params)
+            PropertiesFiles.write(params.resultFile.get().asFile, mapOf("rev" to "abc"))
+        }
+
+        val executed = fixture.operations.execute(project.files(), listOf("rev")) {
+            task("property", "name" to "rev", "value" to "abc")
+        }
+        val recorded = fixture.operations.record(project.files(), listOf("rev")) {
+            invokeMethod("property", arrayOf(mapOf("name" to "rev", "value" to "abc")))
+        }
+
+        executed shouldBe mapOf("rev" to "abc")
+        recorded shouldBe mapOf("rev" to "abc")
+        verify(exactly = 2) { fixture.workers.classLoaderIsolation(any()) }
+        verify(exactly = 0) { fixture.workers.processIsolation(any()) }
+        val params = project.objects.newInstance(AntWorkAction.Parameters::class.java)
+        fixture.parameters.captured.execute(params)
+        params.resultProperties.get() shouldBe setOf("rev")
+    }
+
     test("the plain overload leaves the result file absent") {
         val fixture = Fixture()
         val project = fixture.project
