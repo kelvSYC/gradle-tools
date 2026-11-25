@@ -25,6 +25,7 @@ val antShim = sourceSets.create("antShim")
 
 dependencies {
     api("com.kelvsyc.gradle:clients-base")
+    api("com.kelvsyc.gradle:gradle-extensions")
 
     "antShimCompileOnly"(local.ant)
     "antShimCompileOnly"(local.ant.junit)

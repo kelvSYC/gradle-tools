@@ -3,6 +3,7 @@ package com.kelvsyc.gradle.ant
 import com.kelvsyc.gradle.ant.internal.AntRuntimeClassLoader
 import com.kelvsyc.gradle.ant.internal.AntShim
 import com.kelvsyc.gradle.plugins.AntBridgePlugin
+import com.kelvsyc.gradle.providers.getting
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.engine.spec.tempdir
 import io.kotest.matchers.collections.shouldContainExactly
@@ -168,12 +169,12 @@ class AntPropertiesLoadingSpec : FunSpec({
         result["b"] shouldBe "café"
     }
 
-    test("antProperty is absent for a missing key") {
+    test("getting is absent for a missing key") {
         val project = project()
         project.write("a.properties", "k=v\n")
         val provider = project.load { file("a.properties") }
-        provider.antProperty("k").get() shouldBe "v"
-        provider.antProperty("nope").isPresent shouldBe false
+        provider.getting("k").get() shouldBe "v"
+        provider.getting("nope").isPresent shouldBe false
     }
 
     test("the antBridge extension loads properties with the plugin's classpath") {

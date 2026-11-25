@@ -17,7 +17,7 @@ private val KOTLIN_HEADER = """
     import com.kelvsyc.gradle.ant.AntIsolation
     import com.kelvsyc.gradle.ant.AntOperations
     import com.kelvsyc.gradle.ant.AntWork
-    import com.kelvsyc.gradle.ant.antProperty
+    import com.kelvsyc.gradle.providers.getting
     import javax.inject.Inject
 
     apply(plugin = "com.kelvsyc.gradle.ant-bridge")
@@ -439,10 +439,10 @@ private fun propertyProject(name: String): File {
             file("build.properties") { prefix.set("b") }
             seed("b.base", "/srv")
         }
-        println("DIR=" + p.antProperty("b.dir").get())
+        println("DIR=" + p.getting("b.dir").get())
 
         tasks.register("show") {
-            val dirValue = p.antProperty("b.dir")
+            val dirValue = p.getting("b.dir")
             doLast { println("SHOW=" + dirValue.get()) }
         }
         """

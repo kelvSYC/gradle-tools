@@ -47,7 +47,7 @@ and `AntWork.ant`; legacy Groovy closures and Kotlin `withGroovyBuilder` bodies 
 ```kotlin
 // before: ant.property(file: "build.properties"); version = ant.properties["app.version"]
 val legacy = antBridge.properties { file("build.properties") }
-version = legacy.map { it.getValue("app.version") }.get()
+version = legacy.getting("app.version").get()
 ```
 
 See [Loading Ant properties](#loading-ant-properties-antproperties) for every source and the other property recipes.
@@ -243,10 +243,10 @@ Direct users build the `AntPropertySource` values themselves and must set `baseD
 ```kotlin
 // before: ant.property(file: "build.properties"); version = ant.properties["app.version"]
 val legacy = antBridge.properties { file("build.properties") }
-version = legacy.map { it.getValue("app.version") }.get()
+version = legacy.getting("app.version").get()
 
 // before: ant.property(environment: "env"); ant.properties["env.HOME"]
-val home = antBridge.properties { environment("env") }.antProperty("env.HOME")
+val home = antBridge.properties { environment("env") }.getting("env.HOME")
 
 // before: ant.property(name: "base", value: "/srv"); ant.property(file: "build.properties")
 val overridden = antBridge.properties {
@@ -255,10 +255,11 @@ val overridden = antBridge.properties {
 }
 
 // before: ant.property(file: "build.properties", prefix: "cfg"); ant.properties["cfg.dir"]
-val dir = antBridge.properties { file("build.properties") { prefix.set("cfg") } }.antProperty("cfg.dir")
+val dir = antBridge.properties { file("build.properties") { prefix.set("cfg") } }.getting("cfg.dir")
 ```
 
-`antProperty(key)` returns a `Provider<String>` that is absent when the key is not defined.
+`getting(key)` (from `gradle-extensions`, `import com.kelvsyc.gradle.providers.getting`) returns a `Provider<String>`
+that is absent when the key is not defined. In the Groovy DSL, use `.map { it['key'] }`.
 
 ## Typed tasks (`com.kelvsyc.gradle.ant.tasks`)
 

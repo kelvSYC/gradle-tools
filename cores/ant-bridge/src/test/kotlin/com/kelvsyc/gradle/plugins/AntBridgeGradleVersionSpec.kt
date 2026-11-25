@@ -23,13 +23,13 @@ abstract class AntBridgeGradleVersionSpec : FunSpec() {
 
     private val kotlinBuild = """
         import com.kelvsyc.gradle.ant.AntWork
-        import com.kelvsyc.gradle.ant.antProperty
+        import com.kelvsyc.gradle.providers.getting
 
         plugins { id("com.kelvsyc.gradle.ant-bridge") }
 
         repositories { mavenCentral() }
 
-        val greeting = antBridge.properties { file("build.properties") }.antProperty("greeting")
+        val greeting = antBridge.properties { file("build.properties") }.getting("greeting")
 
         tasks.register<AntWork>("hello") {
             ant { task("echo", "message" to greeting.map { "GREETING=" + it }) }
@@ -37,14 +37,13 @@ abstract class AntBridgeGradleVersionSpec : FunSpec() {
     """.trimIndent()
 
     private val groovyBuild = """
-        import com.kelvsyc.gradle.ant.AntPropertiesKt
         import com.kelvsyc.gradle.ant.AntWork
 
         plugins { id 'com.kelvsyc.gradle.ant-bridge' }
 
         repositories { mavenCentral() }
 
-        def greeting = AntPropertiesKt.antProperty(antBridge.properties { file('build.properties') }, 'greeting')
+        def greeting = antBridge.properties { file('build.properties') }.map { it['greeting'] }
 
         tasks.register('hello', AntWork) {
             record {

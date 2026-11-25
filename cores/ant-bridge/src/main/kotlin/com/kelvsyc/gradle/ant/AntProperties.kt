@@ -12,7 +12,6 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ValueSource
 import org.gradle.api.provider.ValueSourceParameters
 import javax.inject.Inject
@@ -154,9 +153,3 @@ abstract class AntPropertiesSpec @Inject constructor(private val layout: Project
         parameters.seeds.set(seeds)
     }
 }
-
-/**
- * Returns the value of [key], absent if the properties do not define it.
- */
-fun Provider<Map<String, String>>.antProperty(key: String): Provider<String> =
-    filter { key in it }.map { it.getValue(key) }
