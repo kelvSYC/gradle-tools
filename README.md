@@ -20,6 +20,7 @@ Standalone Gradle plugins that solve a specific build problem. Apply them direct
 | `karakum-core` | `com.kelvsyc.gradle.karakum-core` | Karakum TypeScript → Kotlin external-declaration codegen, with automatic Kotlin/JS and KMP source-set wiring | 8.14 |
 | `aws-lambda-jvm-plugin` | `com.kelvsyc.gradle.aws-lambda-jvm` (and `.runtime`, `.fat-package`, `.thin-package`, `.layered`) | Composable JVM Lambda packaging plugins: fat-JAR and thin-JAR deployment ZIPs | 8.14 |
 | `aws-lambda-jvm-deploy-plugin` | `com.kelvsyc.gradle.aws-lambda-jvm.deploy`, `.layered-deploy`, `.upload` | Wires the `aws-lambda-jvm-plugin` deployment ZIP to an AWS Lambda upload task | 8.14 |
+| `ant-bridge` | `com.kelvsyc.gradle.ant-bridge` | Configuration-cache-safe bridge for legacy Ant usage past Gradle 10: Ant property loading as a `ValueSource`, Ant calls in tasks via the Worker API | 8.14 |
 
 All plugin IDs are prefixed with `com.kelvsyc.gradle.`. A core's plugin IDs are not derived from its directory name; each is declared in the core's `gradlePlugin` block.
 

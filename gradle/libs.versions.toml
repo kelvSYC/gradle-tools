@@ -7,6 +7,7 @@
 [versions]
 gradle-build-conventions = "0.7.5"
 kotlin-tools = "0.5.3"
+ant = "1.10.18"
 
 [libraries]
 conventions-settings-plugin = { module = "com.kelvsyc.internal:settings-plugin", version.ref = "gradle-build-conventions" }
@@ -16,3 +17,8 @@ conventions-settings-plugin = { module = "com.kelvsyc.internal:settings-plugin",
 kotlin-tools-moshi-extensions = { module = "com.kelvsyc.kotlin:moshi-extensions", version.ref = "kotlin-tools" }
 kotlin-tools-snakeyaml-extensions = { module = "com.kelvsyc.kotlin:snakeyaml-extensions", version.ref = "kotlin-tools" }
 kotlin-tools-xml-extensions = { module = "com.kelvsyc.kotlin:xml-extensions", version.ref = "kotlin-tools" }
+
+# Ant for the ant-bridge core's tests and shim compilation; the plugin's own default is a constant that a test checks against `ant`.
+ant = { module = "org.apache.ant:ant", version.ref = "ant" }
+ant-junit = { module = "org.apache.ant:ant-junit", version.ref = "ant" }
+ant-contrib = { module = "ant-contrib:ant-contrib", version = "1.0b3" }
