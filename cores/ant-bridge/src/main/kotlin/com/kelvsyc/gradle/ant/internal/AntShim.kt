@@ -25,6 +25,7 @@ class AntShim(private val loader: AntRuntimeClassLoader) {
         if (result.containsKey("failure")) {
             val message = result["failure"]?.toString() ?: "Ant failed"
             val location = result["location"]?.toString().orEmpty()
+            result["trace"]?.let { logger.debug("Ant failure stack trace:\n$it") }
             throw AntExecutionException(if (location.isEmpty()) message else "$location$message")
         }
     }

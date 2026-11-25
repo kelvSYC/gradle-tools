@@ -17,12 +17,13 @@ import org.apache.tools.ant.UnknownElement;
  * Request keys: {@code "nodes"} (a list of node maps with keys {@code "name"}, {@code "namespace"},
  * {@code "attributes"}, {@code "text"} and {@code "children"}), {@code "baseDirectory"} (a path string) and
  * {@code "logger"} (a {@code BiConsumer<Integer, String>}). The result has {@code "antVersion"} and, on failure,
- * {@code "failure"} (Ant's message) and {@code "location"}. Never throws.
+ * {@code "failure"} (Ant's message), {@code "location"} and {@code "trace"} (the stack trace). Never throws.
  */
 public final class TreeExecutor implements Function<Map<String, Object>, Map<String, Object>> {
     @Override
     @SuppressWarnings("unchecked")
     public Map<String, Object> apply(Map<String, Object> request) {
+        Map<String, Object> result;
         Project project = null;
         Throwable error = null;
         try {
@@ -35,18 +36,24 @@ public final class TreeExecutor implements Function<Map<String, Object>, Map<Str
                 element.maybeConfigure();
                 element.perform();
             }
-            return ShimSupport.success();
+            result = ShimSupport.success();
         } catch (BuildException e) {
             error = e;
-            return ShimSupport.failure(e);
-        } catch (RuntimeException e) {
+            result = ShimSupport.failure(e);
+        } catch (RuntimeException | LinkageError e) {
             error = e;
-            return ShimSupport.failure(e);
-        } finally {
-            if (project != null) {
+            result = ShimSupport.failure(e);
+        }
+        if (project != null) {
+            try {
                 project.fireBuildFinished(error);
+            } catch (RuntimeException | LinkageError e) {
+                if (error == null) {
+                    result = ShimSupport.failure(e);
+                }
             }
         }
+        return result;
     }
 
     @SuppressWarnings("unchecked")

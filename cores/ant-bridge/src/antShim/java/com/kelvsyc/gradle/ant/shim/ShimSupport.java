@@ -1,6 +1,8 @@
 package com.kelvsyc.gradle.ant.shim;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -8,6 +10,7 @@ import java.util.function.BiConsumer;
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildListener;
+import org.apache.tools.ant.Location;
 import org.apache.tools.ant.MagicNames;
 import org.apache.tools.ant.Main;
 import org.apache.tools.ant.Project;
@@ -40,32 +43,46 @@ final class ShimSupport {
     }
 
     /**
-     * Returns the result map of a failure.
+     * Returns the result map of a failure reported by Ant: its message, its location (empty if unknown) and the stack
+     * trace. Never throws.
      */
     static Map<String, Object> failure(BuildException e) {
-        Map<String, Object> result = success();
-        result.put("failure", e.getMessage());
-        result.put("location", e.getLocation().toString());
-        return result;
+        Location location = e.getLocation();
+        return failure(e.getMessage(), location == null ? "" : location.toString(), e);
     }
 
     /**
-     * Returns the result map of a failure that Ant did not report as a {@link BuildException}.
+     * Returns the result map of a failure that Ant did not report as a {@link BuildException}. Never throws.
      */
-    static Map<String, Object> failure(RuntimeException e) {
+    static Map<String, Object> failure(Throwable e) {
+        return failure(e.toString(), "", e);
+    }
+
+    private static Map<String, Object> failure(String message, String location, Throwable e) {
         Map<String, Object> result = success();
-        result.put("failure", e.toString());
-        result.put("location", "");
+        result.put("failure", message);
+        result.put("location", location);
+        StringWriter trace = new StringWriter();
+        e.printStackTrace(new PrintWriter(trace));
+        result.put("trace", trace.toString());
         return result;
     }
 
     /**
-     * Returns the result map of a success.
+     * Returns the result map of a success. Never throws: the Ant version is {@code null} if Ant cannot report it.
      */
     static Map<String, Object> success() {
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("antVersion", Main.getAntVersion());
+        result.put("antVersion", antVersion());
         return result;
+    }
+
+    private static String antVersion() {
+        try {
+            return Main.getAntVersion();
+        } catch (BuildException e) {
+            return null;
+        }
     }
 
     /**

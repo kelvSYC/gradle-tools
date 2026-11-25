@@ -5,6 +5,7 @@ import com.kelvsyc.gradle.ant.AntNode
 import com.kelvsyc.gradle.ant.TestAnt
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.engine.spec.tempdir
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldEndWith
@@ -12,7 +13,6 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.gradle.api.logging.Logger
 import java.io.File
-import java.nio.file.Files
 
 private const val CONTRIB = "antlib:net.sf.antcontrib"
 
@@ -26,7 +26,7 @@ private fun node(
 class AntShimSpec : FunSpec({
     fun run(nodes: List<AntNode>, classpath: List<File> = TestAnt.classpath): Pair<Logger, File> {
         val logger = mockk<Logger>(relaxed = true)
-        val baseDir = Files.createTempDirectory("ant shim").toFile()
+        val baseDir = tempdir()
         AntRuntimeClassLoader(classpath).use { AntShim(it).execute(nodes, baseDir, logger) }
         return logger to baseDir
     }
@@ -43,16 +43,28 @@ class AntShimSpec : FunSpec({
         }
     }
 
+    test("echo at level error reaches the Gradle logger at error") {
+        val (logger, _) = run(listOf(node("echo", "message" to "bad", "level" to "error")))
+        verify { logger.error("[ant:echo] bad") }
+    }
+
+    test("the loader sees neither Gradle nor the Kotlin stdlib") {
+        AntRuntimeClassLoader(TestAnt.classpath).use {
+            shouldThrow<ClassNotFoundException> { it.loadClass("org.gradle.api.Project") }
+            shouldThrow<ClassNotFoundException> { it.loadClass("kotlin.Unit") }
+        }
+    }
+
     test("basedir is the given directory") {
         val (logger, baseDir) = run(listOf(node("echo", "message" to "${'$'}{basedir}")))
         verify { logger.warn("[ant:echo] ${baseDir.absolutePath}") }
     }
 
     test("copy with nested fileset copies files") {
-        val src = Files.createTempDirectory("ant src").toFile()
+        val src = tempdir()
         File(src, "a.txt").writeText("a")
         File(src, "b.xml").writeText("b")
-        val out = File(Files.createTempDirectory("ant out").toFile(), "out")
+        val out = File(tempdir(), "out")
         val include = node("include", "name" to "**/*.txt")
         val fileset = node("fileset", "dir" to src.absolutePath, children = listOf(include))
         run(listOf(node("copy", "todir" to out.absolutePath, children = listOf(fileset))))
@@ -90,7 +102,7 @@ class AntShimSpec : FunSpec({
 
     test("each execution starts from a fresh project") {
         val logger = mockk<Logger>(relaxed = true)
-        val baseDir = Files.createTempDirectory("ant shim").toFile()
+        val baseDir = tempdir()
         AntRuntimeClassLoader(TestAnt.classpath).use {
             val shim = AntShim(it)
             shim.execute(listOf(node("property", "name" to "x", "value" to "set")), baseDir, logger)
