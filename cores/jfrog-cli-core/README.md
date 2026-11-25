@@ -171,9 +171,8 @@ Extend it by implementing `buildSearchArgs()` (which CLI arguments identify the 
 `doObtain(output: String)` (which parses the JSON into your desired type):
 
 ```kotlin
-abstract class LatestVersionValueSource
-@Inject constructor(execOperations: ExecOperations) :
-    AbstractArtifactorySearchValueSource<String, LatestVersionValueSource.Parameters>(execOperations) {
+abstract class LatestVersionValueSource :
+    AbstractArtifactorySearchValueSource<String, LatestVersionValueSource.Parameters>() {
 
     interface Parameters : AbstractArtifactorySearchValueSource.Parameters {
         val repoKey: Property<String>

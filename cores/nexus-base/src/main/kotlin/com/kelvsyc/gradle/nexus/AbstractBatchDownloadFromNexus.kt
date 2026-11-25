@@ -27,11 +27,18 @@ import javax.inject.Inject
  * automatically.
  */
 @DisableCachingByDefault(because = "Downloading from an external service is not cacheable")
-abstract class AbstractBatchDownloadFromNexus @Inject constructor(
-    private val objects: ObjectFactory,
-    private val providers: ProviderFactory,
-    private val workerExecutor: WorkerExecutor,
-) : DefaultTask() {
+abstract class AbstractBatchDownloadFromNexus : DefaultTask() {
+    /** Creates the [Artifact] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val objects: ObjectFactory
+
+    /** Creates the lazy providers of the [Artifact] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val providers: ProviderFactory
+
+    /** Submits this task's work to the Gradle Worker API; available to subclasses. */
+    @get:Inject
+    protected abstract val workerExecutor: WorkerExecutor
 
     /**
      * The build service managing the Nexus client to use for all downloads in this task.

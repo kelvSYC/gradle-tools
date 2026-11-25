@@ -1,12 +1,8 @@
 package com.kelvsyc.gradle.nexus
 
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.services.ServiceReference
 import org.gradle.work.DisableCachingByDefault
-import org.gradle.workers.WorkerExecutor
-import javax.inject.Inject
 
 /**
  * Specialization of [AbstractBatchDownloadFromNexus] that adds the `@get:ServiceReference`
@@ -14,11 +10,7 @@ import javax.inject.Inject
  * task dependency.
  */
 @DisableCachingByDefault(because = "Downloading from an external service is not cacheable")
-abstract class BatchDownloadFromNexus @Inject constructor(
-    objects: ObjectFactory,
-    providers: ProviderFactory,
-    workerExecutor: WorkerExecutor,
-) : AbstractBatchDownloadFromNexus(objects, providers, workerExecutor) {
+abstract class BatchDownloadFromNexus : AbstractBatchDownloadFromNexus() {
 
     @get:ServiceReference
     abstract override val service: Property<NexusClientBuildService>
