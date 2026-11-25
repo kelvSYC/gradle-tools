@@ -7,10 +7,12 @@ import com.kelvsyc.gradle.plugins.AntBridgePlugin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.engine.spec.tempdir
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.maps.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldStartWith
 import io.kotest.matchers.types.shouldBeSameInstanceAs
 import io.kotest.matchers.types.shouldNotBeSameInstanceAs
 import io.mockk.mockk
@@ -86,7 +88,11 @@ class AntPropertiesLoadingSpec : FunSpec({
 
         val missing = File(project.projectDir, "missing.properties")
         val logger = mockk<Logger>(relaxed = true)
-        val request = AntShim.PropertyRequest(listOf(AntPropertySource.File(missing, null, false)), emptyMap())
+        val request = AntShim.PropertyRequest(
+            listOf(AntPropertySource.File(missing, null, false)),
+            emptyMap(),
+            project.projectDir
+        )
         val result = AntRuntimeClassLoader(TestAnt.classpath).use { AntShim(it).loadProperties(request, logger) }
         result.shouldBeEmpty()
         verify { logger.info("Property file ${missing.absolutePath} not found; skipped") }
@@ -94,11 +100,40 @@ class AntPropertiesLoadingSpec : FunSpec({
 
     test("system properties and Ant built-ins are excluded") {
         val project = project()
-        project.write("a.properties", "k=v\n")
-        val keys = project.load { file("a.properties") }.get().keys
-        keys shouldNotContain "java.version"
-        keys shouldNotContain "basedir"
-        keys shouldNotContain "ant.version"
+        project.write("a.properties", "dist=${'$'}{basedir}/dist\nv=${'$'}{ant.version}\n")
+        val result = project.load { file("a.properties") }.get()
+        result.keys shouldContainExactlyInAnyOrder listOf("dist", "v")
+        result["v"] shouldStartWith "Apache Ant(TM) version 1.10.18"
+    }
+
+    test("basedir is the project directory") {
+        val project = project()
+        project.write("a.properties", "dist=${'$'}{basedir}/dist\n")
+        val viaSpec = project.load { file("a.properties") }.get()
+        viaSpec["dist"] shouldBe "${project.projectDir.absolutePath}/dist"
+        project.repositories.mavenCentral()
+        val viaExtension = project.extensions.getByType<AntBridgeExtension>()
+            .properties { file("a.properties") }.get()
+        viaExtension["dist"] shouldBe "${project.projectDir.absolutePath}/dist"
+        viaExtension.keys shouldNotContain "basedir"
+    }
+
+    test("resource and url sources take prefix options") {
+        val project = project()
+        val jar = File(project.projectDir, "res.jar")
+        JarOutputStream(jar.outputStream()).use {
+            it.putNextEntry(JarEntry("res/r.properties"))
+            it.write("base=/r\ndir=${'$'}{base}/app\n".toByteArray())
+            it.closeEntry()
+        }
+        val urlFile = project.write("u.properties", "base=/u\ndir=${'$'}{base}/app\n")
+        val result = project.load {
+            resource("res/r.properties", project.files(jar), Action { prefix.set("res"); prefixValues.set(true) })
+            url(urlFile.toURI().toString(), Action { prefix.set("url"); prefixValues.set(true) })
+        }.get()
+        result["res.dir"] shouldBe "/r/app"
+        result["url.dir"] shouldBe "/u/app"
+        result.keys shouldContainExactlyInAnyOrder listOf("res.base", "res.dir", "url.base", "url.dir")
     }
 
     test("key already set as a system property reports Ant's effective value") {

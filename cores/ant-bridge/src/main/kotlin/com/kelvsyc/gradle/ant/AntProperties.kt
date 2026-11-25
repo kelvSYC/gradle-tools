@@ -4,6 +4,7 @@ import com.kelvsyc.gradle.ant.internal.AntRuntimeService
 import com.kelvsyc.gradle.ant.internal.AntShim
 import org.gradle.api.Action
 import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.logging.Logging
@@ -39,6 +40,9 @@ abstract class AntProperties : ValueSource<Map<String, String>, AntProperties.Pa
         /** Properties set before any source, so they override the sources' values. */
         val seeds: MapProperty<String, String>
 
+        /** The Ant project's base directory (`basedir`); `antBridge.properties` sets it to the project directory. */
+        val baseDirectory: DirectoryProperty
+
         /** The Ant classpath: Ant and anything the sources' Ant tasks need. */
         val antClasspath: ConfigurableFileCollection
 
@@ -48,13 +52,17 @@ abstract class AntProperties : ValueSource<Map<String, String>, AntProperties.Pa
 
     override fun obtain(): Map<String, String> {
         val shim = parameters.runtime.get().shim(parameters.antClasspath.files.toList())
-        val request = AntShim.PropertyRequest(parameters.sources.get(), parameters.seeds.getOrElse(emptyMap()))
+        val request = AntShim.PropertyRequest(
+            parameters.sources.get(),
+            parameters.seeds.getOrElse(emptyMap()),
+            parameters.baseDirectory.get().asFile
+        )
         return shim.loadProperties(request, Logging.getLogger(AntProperties::class.java))
     }
 }
 
 /**
- * Per-source options of [AntPropertiesSpec.file], mirroring Ant's `property` task.
+ * Per-source options of [AntPropertiesSpec.file], [AntPropertiesSpec.resource] and [AntPropertiesSpec.url], mirroring Ant's `property` task.
  */
 abstract class AntPropertySourceOptions {
     /** Prepended, with a `.`, to every key (Ant's `prefix`). */
@@ -88,8 +96,7 @@ abstract class AntPropertiesSpec @Inject constructor(private val layout: Project
      * Adds a properties file, resolved against the project directory, with [options].
      */
     fun file(path: Any, options: Action<in AntPropertySourceOptions>) {
-        val configured = objects.newInstance(AntPropertySourceOptions::class.java)
-        options.execute(configured)
+        val configured = options(options)
         val file = layout.projectDirectory.files(path).singleFile
         sources += AntPropertySource.File(file, configured.prefix.orNull, configured.prefixValues.get())
     }
@@ -97,15 +104,32 @@ abstract class AntPropertiesSpec @Inject constructor(private val layout: Project
     /**
      * Adds a properties resource looked up on [classpath].
      */
-    fun resource(name: String, classpath: FileCollection) {
-        sources += AntPropertySource.Resource(name, classpath.files.toList(), null, false)
+    fun resource(name: String, classpath: FileCollection) = resource(name, classpath) { }
+
+    /**
+     * Adds a properties resource looked up on [classpath], with [options].
+     */
+    fun resource(name: String, classpath: FileCollection, options: Action<in AntPropertySourceOptions>) {
+        val configured = options(options)
+        sources += AntPropertySource.Resource(
+            name,
+            classpath.files.toList(),
+            configured.prefix.orNull,
+            configured.prefixValues.get()
+        )
     }
 
     /**
      * Adds a properties document read from [url].
      */
-    fun url(url: String) {
-        sources += AntPropertySource.Url(url, null, false)
+    fun url(url: String) = url(url) { }
+
+    /**
+     * Adds a properties document read from [url], with [options].
+     */
+    fun url(url: String, options: Action<in AntPropertySourceOptions>) {
+        val configured = options(options)
+        sources += AntPropertySource.Url(url, configured.prefix.orNull, configured.prefixValues.get())
     }
 
     /**
@@ -122,7 +146,11 @@ abstract class AntPropertiesSpec @Inject constructor(private val layout: Project
         seeds[key] = value
     }
 
+    private fun options(action: Action<in AntPropertySourceOptions>): AntPropertySourceOptions =
+        objects.newInstance(AntPropertySourceOptions::class.java).also { action.execute(it) }
+
     internal fun applyTo(parameters: AntProperties.Parameters) {
+        parameters.baseDirectory.set(layout.projectDirectory)
         parameters.sources.set(sources)
         parameters.seeds.set(seeds)
     }

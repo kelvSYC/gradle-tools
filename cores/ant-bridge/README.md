@@ -25,6 +25,7 @@ a fresh Ant project and an isolated class loader (Ant never goes on the build sc
 - The result holds only the keys the seeds and sources name, each with Ant's effective value: a key already set as a
   system property reports the system property's value. Other system properties and Ant built-ins (`basedir`,
   `ant.*`) are excluded.
+- `basedir` is the project directory, as with Gradle's built-in `ant`.
 - A missing file contributes nothing and is logged at info. Files are read as ISO-8859-1 with `\uXXXX` escapes.
 - Files, URLs and the environment are read only when the value is obtained, so changing them invalidates the
   configuration cache.
@@ -34,8 +35,8 @@ a fresh Ant project and an isolated class loader (Ant never goes on the build sc
 | Function | Ant equivalent |
 |---|---|
 | `file(path)`, `file(path) { prefix.set("p"); prefixValues.set(true) }` | `<property file="..." prefix="..." prefixValues="..."/>`; `path` resolves against the project directory |
-| `resource(name, classpath)` | `<property resource="..." classpath="..."/>` |
-| `url(url)` | `<property url="..."/>` |
+| `resource(name, classpath)`, `resource(name, classpath) { prefix.set("p") }` | `<property resource="..." classpath="..." prefix="..."/>` |
+| `url(url)`, `url(url) { prefix.set("p") }` | `<property url="..." prefix="..."/>` |
 | `environment(prefix)` | `<property environment="..."/>` |
 | `seed(key, value)` | a property set before loading (overrides the sources) |
 
@@ -45,6 +46,7 @@ a fresh Ant project and an isolated class loader (Ant never goes on the build sc
 |---|---|---|
 | `sources` | `ListProperty<AntPropertySource>` | `File`, `Resource`, `Url` or `Environment`, loaded in order |
 | `seeds` | `MapProperty<String, String>` | Properties set before any source |
+| `baseDirectory` | `DirectoryProperty` | Ant's `basedir`, used by `${basedir}` references; the spec sets the project directory |
 | `antClasspath` | `ConfigurableFileCollection` | The Ant classpath |
 | `runtime` | `Property<AntRuntimeService>` | The `antBridgeRuntime` shared service |
 

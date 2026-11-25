@@ -29,7 +29,7 @@ class AntShim(
     }
 
     /**
-     * Loads the properties of [request] in a fresh Ant project, logging Ant's messages to [logger], and returns the
+     * Loads the properties of [request] in a fresh Ant project based at its base directory, logging Ant's messages to [logger], and returns the
      * seeds and every key a source defined, in that order, with Ant's effective value.
      *
      * @throws AntExecutionException if Ant reports a failure
@@ -37,7 +37,8 @@ class AntShim(
     fun loadProperties(request: PropertyRequest, logger: Logger): Map<String, String> {
         val shimRequest = mapOf(
             "seeds" to request.seeds,
-            "sources" to request.sources.map { it.toShimMap() }
+            "sources" to request.sources.map { it.toShimMap() },
+            "baseDirectory" to request.baseDirectory.absolutePath
         )
         val result = invoke(PROPERTY_LOADER, shimRequest, logger)
         @Suppress("UNCHECKED_CAST")
@@ -81,7 +82,9 @@ class AntShim(
         /** The sources, in order. */
         val sources: List<AntPropertySource>,
         /** Properties set before any source. */
-        val seeds: Map<String, String>
+        val seeds: Map<String, String>,
+        /** The Ant project's base directory (`basedir`). */
+        val baseDirectory: File
     )
 
     private class LoggerBridge(private val logger: Logger) : BiConsumer<Int, String> {
