@@ -8,20 +8,14 @@ import org.gradle.api.provider.ProviderFactory
 import javax.inject.Inject
 
 /**
- * The `antBridge` extension.
+ * The `antBridge` extension. Not designed to be extended.
  */
 abstract class AntBridgeExtension @Inject constructor(
     /** The resolved Ant classpath: Ant, its antlibs and anything else declared on `antBridge`. */
-    val classpath: FileCollection
+    val classpath: FileCollection,
+    private val objects: ObjectFactory,
+    private val providers: ProviderFactory
 ) {
-    /** Creates the property specs. */
-    @get:Inject
-    protected abstract val objects: ObjectFactory
-
-    /** Creates the property value sources. */
-    @get:Inject
-    protected abstract val providers: ProviderFactory
-
     /** Runs Ant from task actions and `doLast` blocks at execution time. */
     val operations: AntOperations = objects.newInstance(AntOperations::class.java)
 

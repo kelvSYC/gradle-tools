@@ -73,13 +73,13 @@ abstract class AntPropertySourceOptions {
 }
 
 /**
- * Declares the sources and seeds of [AntProperties]. Sources load in the order they are declared.
+ * Declares the sources and seeds of [AntProperties]. Sources load in the order they are declared. Not designed to be
+ * extended.
  */
-abstract class AntPropertiesSpec @Inject constructor(private val layout: ProjectLayout) {
-    /** Creates the per-source options. */
-    @get:Inject
-    protected abstract val objects: ObjectFactory
-
+abstract class AntPropertiesSpec @Inject constructor(
+    private val layout: ProjectLayout,
+    private val objects: ObjectFactory
+) {
     private val sources = mutableListOf<AntPropertySource>()
     private val seeds = linkedMapOf<String, String>()
 
