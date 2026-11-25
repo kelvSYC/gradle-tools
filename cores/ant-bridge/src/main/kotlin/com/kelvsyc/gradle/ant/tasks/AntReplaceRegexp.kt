@@ -64,6 +64,7 @@ abstract class AntReplaceRegexp : AbstractAntTask() {
     }
 
     override fun prepare() {
+        requireNoInputsIn(outputDirectory)
         // Resolved up front: inside the spec lambdas, `includes` and `excludes` mean the spec's own properties.
         val included = includes.get()
         val excluded = excludes.get()

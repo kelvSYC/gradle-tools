@@ -6,6 +6,7 @@ import com.kelvsyc.gradle.ant.AntOperations
 import com.kelvsyc.gradle.ant.AntScope
 import com.kelvsyc.gradle.ant.AntTrees
 import org.gradle.api.DefaultTask
+import org.gradle.api.InvalidUserDataException
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileSystemOperations
@@ -14,6 +15,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
+import java.io.File
 import javax.inject.Inject
 
 /**
@@ -58,11 +60,50 @@ abstract class AbstractAntTask : DefaultTask() {
     /**
      * Deletes and recreates [directory], so that no output of an earlier run (such as the output of a removed input)
      * survives and Ant's own up-to-date checks never skip work that Gradle decided to rerun.
+     *
+     * @throws InvalidUserDataException if [directory] holds any of the task's input files: clearing it would delete
+     *   them (see [requireNoInputsIn])
      */
     protected fun clearDirectory(directory: DirectoryProperty) {
+        requireNoInputsIn(directory)
         val target = directory.get().asFile
         fileSystemOperations.delete { delete(target) }
         target.mkdirs()
+    }
+
+    /**
+     * Fails before anything is deleted if [directory] is, or contains, any of the task's input files, such as an
+     * output directory set to the source directory or to the directory holding the inputs. Call it before replacing
+     * the contents of [directory] in any other way (as a `sync` into it does).
+     *
+     * @throws InvalidUserDataException naming the first input file found in [directory]
+     */
+    protected fun requireNoInputsIn(directory: DirectoryProperty) {
+        val target = directory.get().asFile.toPath().toAbsolutePath().normalize()
+        val input = inputs.files.files.firstOrNull { it.toPath().toAbsolutePath().normalize().startsWith(target) }
+        if (input != null) {
+            throw InvalidUserDataException(
+                "The output directory $target of $path holds its input $input, which preparing the output would " +
+                    "delete: use a directory of its own for the output."
+            )
+        }
+    }
+
+    /**
+     * Fails if two of [files] have the same name, since writing their outputs into one directory by name would make
+     * one overwrite the other.
+     *
+     * @param what what the files are, for the message (for example `"files to checksum"`)
+     * @throws InvalidUserDataException naming the clashing files
+     */
+    protected fun requireDistinctNames(files: Collection<File>, what: String) {
+        val clashes = files.groupBy { it.name }.values.filter { it.size > 1 }
+        if (clashes.isNotEmpty()) {
+            throw InvalidUserDataException(
+                "The $what of $path include files with the same name, whose outputs would overwrite each other: " +
+                    clashes.joinToString("; ") { group -> group.joinToString(", ") }
+            )
+        }
     }
 
     /**

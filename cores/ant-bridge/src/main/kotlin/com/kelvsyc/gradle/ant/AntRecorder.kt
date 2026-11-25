@@ -95,7 +95,12 @@ class AntRecorder internal constructor(private val sink: MutableList<AntElement>
                         val attribute = key.toString()
                         element.attributes[attribute] = checked(value, "Attribute '$attribute'", qualifiedName)
                     }
-                argument is CharSequence -> element.text = checked(argument, "The text", qualifiedName).toString()
+                argument is CharSequence -> {
+                    require(element.text == null) {
+                        "Recorded Ant element '$qualifiedName' has more than one text argument: pass its text once"
+                    }
+                    element.text = checked(argument, "The text", qualifiedName).toString()
+                }
                 argument is Closure<*> && index == arguments.lastIndex -> recordChildren(element, argument)
                 else -> throw IllegalArgumentException(
                     "Unsupported argument $argument for recorded Ant element '$qualifiedName': " +
@@ -140,6 +145,10 @@ class AntRecorder internal constructor(private val sink: MutableList<AntElement>
                         "not available: Ant runs after the block ends. Inside a recorded block an unqualified method " +
                         "call such as file(...) is recorded as an Ant element; compute the value outside the block."
                 )
+            }
+            require(value !is Closure<*>) {
+                "$what of recorded Ant element '$elementName' is a closure, which Ant cannot take as a value: pass " +
+                    "the value, or a Provider (providers.provider { ... }) to keep it lazy"
             }
             return if (value is GString) value.toString() else value
         }

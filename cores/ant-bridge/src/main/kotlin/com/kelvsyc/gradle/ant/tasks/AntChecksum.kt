@@ -38,8 +38,14 @@ abstract class AntChecksum : AbstractAntTask() {
         fileExtension.convention(".sha256")
     }
 
-    /** Clears [outputDirectory], so that outputs of removed inputs do not survive. */
-    override fun prepare() = clearDirectory(outputDirectory)
+    /**
+     * Fails if two of [files] share a name, as their checksum files would clash, then clears [outputDirectory], so
+     * that outputs of removed inputs do not survive.
+     */
+    override fun prepare() {
+        requireDistinctNames(files.files, "files to checksum")
+        clearDirectory(outputDirectory)
+    }
 
     override fun AntScope.elements() {
         files.files.forEach { file ->
