@@ -77,7 +77,7 @@ class AntShim(
             @Suppress("UNCHECKED_CAST")
             BuildTarget(
                 name = target["name"] as String,
-                file = File(target["file"] as String),
+                file = (target["file"] as String?)?.let(::File),
                 description = target["description"] as String?,
                 depends = (target["depends"] as List<String>).toList(),
                 upstream = (target["upstream"] as List<String>).toList()
@@ -92,8 +92,10 @@ class AntShim(
 
     /**
      * Runs only [target]'s own tasks, not its Ant dependencies, in a fresh Ant project and returns every property the
-     * run defined. The project gets [seeds] as user properties, then each map of [upstreamExports] in order (the first
-     * definition of a name wins), then parses [files] as [readBuild] does. The target's own `if` and `unless` apply.
+     * run defined. The project gets [seeds] as user properties, parses [files] as [readBuild] does, then gets each map
+     * of [upstreamExports] in order, as an upstream target's properties (the first definition of a name wins, so the
+     * build's top-level definitions win too). The target's own `if` and `unless` apply, and it runs with the base
+     * directory and `ant.file` of the top-level file that registered it.
      *
      * @throws AntExecutionException if Ant reports a failure, or the build has no such target
      */
@@ -201,8 +203,8 @@ class AntShim(
     data class BuildTarget(
         /** The name Ant registered the target under. */
         val name: String,
-        /** The file defining the target. */
-        val file: File,
+        /** The file defining the target, or `null` if Ant does not know it. */
+        val file: File?,
         /** The target's description, or `null` if it has none. */
         val description: String?,
         /** The direct dependencies as Ant resolved them, extension-point wiring included. */

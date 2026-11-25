@@ -59,7 +59,7 @@ class AntBuildShimSpec : FunSpec({
         jar.description shouldBe "Builds the jar"
         jar.depends shouldBe listOf("compile", "init")
         jar.upstream shouldBe listOf("init", "compile")
-        jar.file.canonicalFile shouldBe file.canonicalFile
+        jar.file?.canonicalFile shouldBe file.canonicalFile
         targets.getValue("init").description shouldBe null
         targets.getValue("init").upstream shouldBe emptyList()
     }
@@ -87,7 +87,7 @@ class AntBuildShimSpec : FunSpec({
         model.loadedFiles.map { it.canonicalFile } shouldContainExactlyInAnyOrder listOf(main, common)
             .map { it.canonicalFile }
         model.targets.map { it.name } shouldContainAll listOf("build", "clean", "common.clean")
-        model.targets.first { it.name == "clean" }.file.canonicalFile shouldBe common.canonicalFile
+        model.targets.first { it.name == "clean" }.file?.canonicalFile shouldBe common.canonicalFile
         model.targets.first { it.name == "build" }.upstream shouldBe listOf("clean")
     }
 
@@ -129,6 +129,49 @@ class AntBuildShimSpec : FunSpec({
         val exception = shouldThrow<AntExecutionException> { read(listOf(first, second)) }
         exception.message shouldContain "same"
         exception.message shouldContain first.name
+        exception.message shouldContain second.name
+    }
+
+    test("a target name imported by one top-level file and defined by another fails naming both") {
+        val dir = tempdir()
+        val first = dir.write("one.xml", "<project name=\"one\"><target name=\"clean\"/></project>")
+        dir.write("common.xml", "<project name=\"common\"><target name=\"clean\"/></project>")
+        val second = dir.write(
+            "two.xml",
+            "<project name=\"two\"><import file=\"common.xml\"/><target name=\"b\"/></project>"
+        )
+        val exception = shouldThrow<AntExecutionException> { read(listOf(first, second)) }
+        exception.message shouldContain "clean"
+        exception.message shouldContain first.name
+        exception.message shouldContain second.name
+    }
+
+    test("an importing file's target wins over an imported one within one top-level file") {
+        val dir = tempdir()
+        dir.write("common.xml", "<project name=\"common\"><target name=\"clean\"/></project>")
+        val main = dir.write(
+            "build.xml",
+            "<project name=\"main\"><import file=\"common.xml\"/><target name=\"clean\"/></project>"
+        )
+        read(listOf(main)).targets.first { it.name == "clean" }.file?.canonicalFile shouldBe main.canonicalFile
+    }
+
+    test("a file imported by two top-level files is not a duplicate") {
+        val dir = tempdir()
+        dir.write("common.xml", "<project name=\"common\"><target name=\"clean\"/></project>")
+        val first = dir.write("one.xml", "<project name=\"one\"><import file=\"common.xml\"/></project>")
+        val second = dir.write("two.xml", "<project name=\"two\"><import file=\"common.xml\"/></project>")
+        read(listOf(first, second)).targets.map { it.name } shouldContain "clean"
+    }
+
+    test("targets in Ant's core namespace count as defined") {
+        val dir = tempdir()
+        val first = dir.write("one.xml", "<project name=\"one\"><extension-point name=\"same\"/></project>")
+        val second = dir.write(
+            "two.xml",
+            "<project xmlns=\"antlib:org.apache.tools.ant\" name=\"two\"><extension-point name=\"same\"/></project>"
+        )
+        val exception = shouldThrow<AntExecutionException> { read(listOf(first, second)) }
         exception.message shouldContain second.name
     }
 
@@ -177,6 +220,7 @@ class AntBuildShimSpec : FunSpec({
                 <target name="init">
                     <echo message="init ran"/>
                     <property name="p" value="0"/>
+                    <property name="fromInit" value="yes"/>
                 </target>
                 <target name="compile" depends="init">
                     <property name="q" value="${'$'}{p}"/>
@@ -185,8 +229,52 @@ class AntBuildShimSpec : FunSpec({
             """.trimIndent()
         )
         val logger = mockk<Logger>(relaxed = true)
-        run(file, "compile", listOf(mapOf("p" to "1")), logger) shouldBe mapOf("q" to "1")
+        val result = run(file, "compile", listOf(mapOf("p" to "1")), logger)
+        result shouldBe mapOf("q" to "1")
+        result shouldNotContainKey "fromInit"
         verify(exactly = 0) { logger.warn("[ant:echo] init ran") }
+    }
+
+    test("runTarget runs a target with the base directory and ant.file of its top-level file") {
+        val first = tempdir().write(
+            "one/build.xml",
+            """
+            <project name="one">
+                <target name="a">
+                    <property name="where" location="."/>
+                    <property name="file" value="${'$'}{ant.file}"/>
+                </target>
+            </project>
+            """.trimIndent()
+        )
+        val second = tempdir().write("two/build.xml", "<project name=\"two\"><target name=\"b\"/></project>")
+        val result = AntRuntimeClassLoader(TestAnt.classpath).use {
+            AntShim(it).runTarget(
+                listOf(BuildFile(first, null), BuildFile(second, null)),
+                emptyMap(),
+                emptyList(),
+                "a",
+                mockk(relaxed = true)
+            )
+        }
+        File(result.getValue("where")).canonicalFile shouldBe first.parentFile.canonicalFile
+        File(result.getValue("file")).canonicalFile shouldBe first.canonicalFile
+    }
+
+    test("upstream exports are not visible to top-level statements") {
+        val file = tempdir().write(
+            "build.xml",
+            """
+            <project name="p">
+                <condition property="x"><isset property="a"/></condition>
+                <target name="t">
+                    <property name="seenA" value="${'$'}{a}"/>
+                    <property name="seenX" value="${'$'}{x}"/>
+                </target>
+            </project>
+            """.trimIndent()
+        )
+        run(file, "t", listOf(mapOf("a" to "up"))) shouldBe mapOf("seenA" to "up", "seenX" to "${'$'}{x}")
     }
 
     test("runTarget honours if with upstream values") {

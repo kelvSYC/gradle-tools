@@ -112,9 +112,19 @@ project, so before each file it:
   target's name would be a duplicate;
 - sets the base directory itself, because `ProjectHelper2` keeps a `basedir` property that is already set. It reads the
   file's own `<project basedir>` with a JDK SAX pass that resolves no entity or DTD (a file that pass cannot read is
-  left to Ant's parse to report), and also lists the targets the file defines directly. Ant silently ignores a target
-  whose name is already registered, so a name an earlier top-level file registered (itself or through its imports)
-  fails instead, naming both files.
+  left to Ant's parse to report), and also lists the targets and extension points the file defines directly (in no
+  namespace or in `antlib:org.apache.tools.ant`, as Ant reads them);
+- hides the earlier files' targets (not their extension points, which the file may extend) during the parse. Ant
+  silently ignores a target whose name is already registered, so without this a target that one file defines or
+  imports would vanish behind an earlier file's. A name an earlier top-level file registered (itself or through its
+  imports) fails instead, naming both files; within one top-level file, Ant's own rule stays (the importing file's
+  target wins). A file imported by two top-level files is parsed, and its top-level statements run, once per
+  importer; its targets are the same definitions, so they are not duplicates and belong to the first importer.
+
+`TargetRunner` runs a target with the base directory and `ant.file` of the top-level file that registered it, as Ant
+runs an imported target with its importer's. It applies the upstream exports after the parse, so the build's top-level
+statements never see them, as in a single Ant run. `BuildReader` computes each target's upstream with Ant's
+`topoSort`, so a dependency cycle anywhere in the build fails the whole read.
 
 The loaded files are each top-level helper's import stack after its parse, which holds the file and everything it
 imported or included (resources without a file, such as imports from a jar, are left out).

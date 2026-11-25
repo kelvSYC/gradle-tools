@@ -7,6 +7,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -21,6 +22,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildListener;
+import org.apache.tools.ant.ExtensionPoint;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.MagicNames;
 import org.apache.tools.ant.Main;
@@ -92,44 +94,37 @@ final class ShimSupport {
     /**
      * Parses the build files of a request's {@code "files"} (a list of maps with {@code "file"}, an absolute path, and
      * optionally {@code "baseDirectory"}) in order into {@code project}, as Ant's own parser does for one top-level
-     * build file each, and returns every file the parse loaded: the top-level files and every file they
-     * {@code import} or {@code include}, in load order.
+     * build file each.
      * <p>
      * Before each file, the project's base directory is set to the file's own {@code <project basedir>} (relative to
      * the file's directory), else to {@code "baseDirectory"}, else to the file's directory, and {@code ant.file} to
-     * the file. A target name that one top-level file defines and an earlier one already registered (itself or
-     * through its imports) fails, naming both top-level files: Ant would otherwise silently ignore the later
-     * definition.
+     * the file. A target name that one top-level file registers (itself or through its imports) and an earlier one
+     * already registered fails, naming both top-level files: Ant would otherwise silently keep the earlier target. A
+     * file imported by several top-level files is parsed once per importer; its targets are not duplicates, and keep
+     * the first importer.
+     * Within one top-level file, Ant's own rules apply (the importing file's target wins over an imported one).
      */
     @SuppressWarnings("unchecked")
-    static List<File> parseBuildFiles(Project project, Map<String, Object> request) {
+    static ParsedBuild parseBuildFiles(Project project, Map<String, Object> request) {
+        ParsedBuild parsed = new ParsedBuild();
         Set<File> loaded = new LinkedHashSet<>();
-        Map<String, File> definedBy = new HashMap<>();
         for (Map<String, Object> entry : (List<Map<String, Object>>) request.get("files")) {
             File file = new File((String) entry.get("file")).getAbsoluteFile();
             TopLevelScan scan = TopLevelScan.of(file);
             for (String name : scan.targets) {
-                File earlier = definedBy.get(name);
-                if (earlier != null) {
-                    throw new BuildException("Target '" + name + "' is defined in both " + earlier + " and " + file);
-                }
+                checkNotRegistered(parsed, name, file);
             }
             // A fresh parsing context and no implicit target, so that this file is parsed as a top-level file, not as
             // part of the previous one.
             project.getReferences().remove(PARSING_CONTEXT);
             project.getTargets().remove("");
-            project.setBaseDir(baseDirectory(file, scan.baseDirectory, (String) entry.get("baseDirectory")));
-            project.setUserProperty(MagicNames.ANT_FILE, file.getPath());
-            Set<String> before = new LinkedHashSet<>(project.getTargets().keySet());
-            ProjectHelper helper = ProjectHelperRepository.getInstance().getProjectHelperForBuildFile(
-                new FileResource(file));
+            File baseDirectory = baseDirectory(file, scan.baseDirectory, (String) entry.get("baseDirectory"));
+            parsed.baseDirectories.put(file, baseDirectory);
+            enterTopLevelFile(project, file, baseDirectory);
+            ProjectHelper helper = ProjectHelperRepository.getInstance()
+                .getProjectHelperForBuildFile(new FileResource(file));
             project.addReference(MagicNames.REFID_PROJECT_HELPER, helper);
-            helper.parse(project, file);
-            for (String name : project.getTargets().keySet()) {
-                if (!name.isEmpty() && !before.contains(name)) {
-                    definedBy.put(name, file);
-                }
-            }
+            parseHidingEarlierTargets(project, helper, file, parsed);
             for (Object source : helper.getImportStack()) {
                 File loadedFile = toFile(source);
                 if (loadedFile != null) {
@@ -137,7 +132,68 @@ final class ShimSupport {
                 }
             }
         }
-        return new ArrayList<>(loaded);
+        parsed.loadedFiles.addAll(loaded);
+        return parsed;
+    }
+
+    /**
+     * Sets the base directory and {@code ant.file} of {@code project} to those of the top-level file {@code file}, as
+     * while it is parsed, or while one of its targets runs.
+     */
+    static void enterTopLevelFile(Project project, File file, File baseDirectory) {
+        project.setBaseDir(baseDirectory);
+        project.setUserProperty(MagicNames.ANT_FILE, file.getPath());
+    }
+
+    /**
+     * Parses {@code file} with the earlier top-level files' targets (but not their extension points, which the file
+     * may extend) hidden, so that Ant registers every target the file defines or imports instead of silently ignoring
+     * the names already taken; such a name then fails. Restores the hidden targets afterwards.
+     */
+    private static void parseHidingEarlierTargets(Project project, ProjectHelper helper, File file,
+                                                  ParsedBuild parsed) {
+        Map<String, Target> hidden = new HashMap<>();
+        for (Map.Entry<String, Target> target : project.getTargets().entrySet()) {
+            if (!(target.getValue() instanceof ExtensionPoint)) {
+                hidden.put(target.getKey(), target.getValue());
+            }
+        }
+        Set<String> before = new HashSet<>(project.getTargets().keySet());
+        project.getTargets().keySet().removeAll(hidden.keySet());
+        try {
+            helper.parse(project, file);
+            for (Map.Entry<String, Target> target : project.getTargets().entrySet()) {
+                Target earlier = hidden.get(target.getKey());
+                if (earlier != null && !sameDefinition(earlier, target.getValue())) {
+                    checkNotRegistered(parsed, target.getKey(), file);
+                }
+            }
+        } finally {
+            project.getTargets().putAll(hidden);
+        }
+        for (String name : project.getTargets().keySet()) {
+            if (!name.isEmpty() && !before.contains(name)) {
+                parsed.owners.put(name, file);
+            }
+        }
+    }
+
+    /**
+     * Whether two targets come from the same place: a file imported by two top-level files defines its targets twice.
+     */
+    private static boolean sameDefinition(Target first, Target second) {
+        Location one = first.getLocation();
+        Location two = second.getLocation();
+        return one != null && two != null && one.getFileName() != null
+            && one.getFileName().equals(two.getFileName()) && one.getLineNumber() == two.getLineNumber()
+            && one.getColumnNumber() == two.getColumnNumber();
+    }
+
+    private static void checkNotRegistered(ParsedBuild parsed, String name, File file) {
+        File earlier = parsed.owners.get(name);
+        if (earlier != null) {
+            throw new BuildException("Target '" + name + "' is defined in both " + earlier + " and " + file);
+        }
     }
 
     /**
@@ -245,6 +301,29 @@ final class ShimSupport {
     }
 
     /**
+     * The outcome of {@link #parseBuildFiles}.
+     */
+    static final class ParsedBuild {
+        /** The top-level files and every file they imported or included, in load order. */
+        final List<File> loadedFiles = new ArrayList<>();
+        /** The top-level file that registered each target name. */
+        final Map<String, File> owners = new HashMap<>();
+        /** The base directory of each top-level file. */
+        final Map<File, File> baseDirectories = new HashMap<>();
+
+        /**
+         * Sets the base directory and {@code ant.file} of {@code project} to those of the top-level file that
+         * registered {@code target}, as Ant runs a target with its top-level file's. Does nothing for an unknown name.
+         */
+        void enterOwner(Project project, String target) {
+            File owner = owners.get(target);
+            if (owner != null) {
+                enterTopLevelFile(project, owner, baseDirectories.get(owner));
+            }
+        }
+    }
+
+    /**
      * The {@code basedir} attribute and the directly defined target names of a top-level build file, read without
      * resolving any entity or DTD. A file that cannot be read this way yields nothing: Ant's own parse reports it.
      */
@@ -274,7 +353,7 @@ final class ShimSupport {
         public void startElement(String uri, String localName, String qName, Attributes attributes) {
             if (depth == 0) {
                 baseDirectory = attributes.getValue("", "basedir");
-            } else if (depth == 1 && uri.isEmpty()
+            } else if (depth == 1 && (uri.isEmpty() || ProjectHelper.ANT_CORE_URI.equals(uri))
                 && ("target".equals(localName) || "extension-point".equals(localName))) {
                 String name = attributes.getValue("", "name");
                 if (name != null) {

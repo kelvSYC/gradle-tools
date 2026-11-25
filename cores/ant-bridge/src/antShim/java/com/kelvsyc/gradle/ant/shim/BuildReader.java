@@ -46,7 +46,7 @@ public final class BuildReader implements Function<Map<String, Object>, Map<Stri
         Set<String> keys = new LinkedHashSet<>(seeds.keySet());
         PropertyHelper.getPropertyHelper(project).add(new RecordingSetter(keys));
         List<String> loadedFiles = new ArrayList<>();
-        for (File file : ShimSupport.parseBuildFiles(project, request)) {
+        for (File file : ShimSupport.parseBuildFiles(project, request).loadedFiles) {
             loadedFiles.add(file.getPath());
         }
         keys.remove(MagicNames.PROJECT_BASEDIR);
@@ -73,7 +73,7 @@ public final class BuildReader implements Function<Map<String, Object>, Map<Stri
             Target target = named.get(name);
             Map<String, Object> map = new LinkedHashMap<>();
             map.put("name", name);
-            map.put("file", target.getLocation().getFileName());
+            map.put("file", target.getLocation() == null ? null : target.getLocation().getFileName());
             map.put("description", target.getDescription());
             map.put("depends", Collections.list(target.getDependencies()));
             map.put("upstream", upstream(project, name, named));
