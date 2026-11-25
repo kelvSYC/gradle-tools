@@ -66,9 +66,13 @@ abstract class AntWork @Inject constructor(
     @get:Internal
     abstract val isolation: Property<AntIsolation>
 
-    /** The names of the Ant properties to export to [exportedPropertiesFile]; see [exportProperties]. */
+    /**
+     * The names of the Ant properties to export to [exportedPropertiesFile]. Read-only: add names with
+     * [exportProperties], which also registers the export file as an output.
+     */
     @get:Input
-    abstract val exportedPropertyNames: SetProperty<String>
+    val exportedPropertyNames: Provider<Set<String>>
+        get() = exportedNames
 
     /**
      * The file the exported Ant properties are written to, in Java properties format (which Ant's `property file=`
@@ -90,13 +94,14 @@ abstract class AntWork @Inject constructor(
 
     private val operations = objects.newInstance(AntOperations::class.java)
 
+    private val exportedNames: SetProperty<String> = objects.setProperty(String::class.java).convention(emptySet())
+
     private var exportRegistered = false
 
     init {
         isolation.convention(AntIsolation.CLASSLOADER)
-        exportedPropertyNames.convention(emptySet())
         exportedPropertiesFile.convention(
-            exportedPropertyNames.flatMap { names ->
+            exportedNames.flatMap { names ->
                 if (names.isEmpty()) {
                     providers.provider<RegularFile> { null }
                 } else {
@@ -107,13 +112,14 @@ abstract class AntWork @Inject constructor(
     }
 
     /**
-     * Exports the Ant properties named [names] after the tree runs: adds them to [exportedPropertyNames]. Add
-     * names through this function rather than [exportedPropertyNames] directly: on its first call it registers
-     * [exportedPropertiesFile] as an output (so [exportedProperties] carries the task dependency) and the rule that
-     * the export file alone never makes the task up to date.
+     * Exports the Ant properties named [names] after the tree runs: adds them to [exportedPropertyNames]. On the first
+     * call with names it registers [exportedPropertiesFile] as an output (so [exportedProperties] carries the task
+     * dependency) and the rule that the export file alone never makes the task up to date. Without names it does
+     * nothing.
      */
     fun exportProperties(vararg names: String) {
-        exportedPropertyNames.addAll(*names)
+        if (names.isEmpty()) return
+        exportedNames.addAll(*names)
         if (!exportRegistered) {
             exportRegistered = true
             // Registered here, not in init: any output or up-to-date spec makes `outputs.hasOutput` true.
@@ -148,8 +154,9 @@ abstract class AntWork @Inject constructor(
             antClasspath,
             isolation.get(),
             elements.get(),
-            exportedPropertyNames.get(),
-            exportedPropertiesFile.orNull?.asFile
+            exportedNames.get(),
+            // Only a registered export writes the file: without names it would be an undeclared output.
+            if (exportRegistered) exportedPropertiesFile.orNull?.asFile else null
         )
     }
 

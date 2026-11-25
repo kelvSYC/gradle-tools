@@ -2,6 +2,7 @@ package com.kelvsyc.gradle.ant
 
 import com.kelvsyc.gradle.ant.actions.AntWorkAction
 import com.kelvsyc.gradle.ant.internal.PropertiesFiles
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
@@ -101,6 +102,36 @@ class AntOperationsSpec : FunSpec({
         }
 
         result shouldBe mapOf("rev" to "abc")
+        resultFile shouldNotBe null
+        resultFile?.exists() shouldBe false
+    }
+
+    test("the plain overload leaves the result file absent") {
+        val fixture = Fixture()
+        val project = fixture.project
+        fixture.operations.execute(project.files()) { task("echo", "message" to "hi") }
+
+        val params = project.objects.newInstance(AntWorkAction.Parameters::class.java)
+        fixture.parameters.captured.execute(params)
+        params.resultFile.isPresent shouldBe false
+    }
+
+    test("the temporary result file is deleted when the work fails") {
+        val fixture = Fixture()
+        val project = fixture.project
+        var resultFile: File? = null
+        every { fixture.queue.submit(AntWorkAction::class.java, capture(fixture.parameters)) } answers {
+            val params = project.objects.newInstance(AntWorkAction.Parameters::class.java)
+            fixture.parameters.captured.execute(params)
+            resultFile = params.resultFile.get().asFile
+        }
+        every { fixture.workers.await() } throws IllegalStateException("boom")
+
+        shouldThrow<IllegalStateException> {
+            fixture.operations.execute(project.files(), AntIsolation.CLASSLOADER, setOf("rev")) {
+                task("property", "name" to "rev", "value" to "abc")
+            }
+        }
         resultFile shouldNotBe null
         resultFile?.exists() shouldBe false
     }
