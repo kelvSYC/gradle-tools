@@ -3,10 +3,13 @@ package com.kelvsyc.gradle.ant.actions
 import com.kelvsyc.gradle.ant.AntNode
 import com.kelvsyc.gradle.ant.internal.AntRuntimeClassLoader
 import com.kelvsyc.gradle.ant.internal.AntShim
+import com.kelvsyc.gradle.ant.internal.PropertiesFiles
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.logging.Logging
 import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.SetProperty
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkParameters
 
@@ -35,17 +38,30 @@ abstract class AntWorkAction : WorkAction<AntWorkAction.Parameters> {
 
         /** The Ant project's base directory (`basedir`). */
         val baseDirectory: DirectoryProperty
+
+        /** Names of Ant properties whose values to report after the run; those the tree did not set are omitted. */
+        val resultProperties: SetProperty<String>
+
+        /**
+         * The properties file to write the values of [resultProperties] to (an empty file if none is set). Nothing is
+         * written when absent.
+         */
+        val resultFile: RegularFileProperty
     }
 
     override fun execute() {
         val logger = Logging.getLogger(AntWorkAction::class.java)
         AntRuntimeClassLoader(parameters.antClasspath.files.toList()).use { loader ->
-            val version = AntShim(loader).execute(
+            val result = AntShim(loader).execute(
                 parameters.nodes.get(),
                 parameters.baseDirectory.get().asFile,
-                logger
+                logger,
+                parameters.resultProperties.getOrElse(emptySet())
             )
-            logger.info("Running Ant {} in process {}", version, ProcessHandle.current().pid())
+            logger.info("Running Ant {} in process {}", result.antVersion, ProcessHandle.current().pid())
+            if (parameters.resultFile.isPresent) {
+                PropertiesFiles.write(parameters.resultFile.get().asFile, result.properties)
+            }
         }
     }
 }
