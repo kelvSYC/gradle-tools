@@ -33,7 +33,7 @@ import javax.inject.Inject
  * Registered and wired by `antBridge.importBuild`; abstract only so that Gradle can generate its managed properties,
  * and not designed to be extended.
  */
-@DisableCachingByDefault(because = "Runs an Ant target, which declares no outputs")
+@DisableCachingByDefault(because = "Runs an Ant target, whose side effects are undeclared outputs")
 abstract class AntImportedTarget @Inject constructor(
     private val workers: WorkerExecutor,
     layout: ProjectLayout

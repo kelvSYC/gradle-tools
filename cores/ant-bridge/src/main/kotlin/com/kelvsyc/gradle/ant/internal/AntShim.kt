@@ -87,7 +87,9 @@ class AntShim(
         val properties = LinkedHashMap(result["properties"] as Map<String, String>)
         @Suppress("UNCHECKED_CAST")
         val loadedFiles = (result["loadedFiles"] as List<String>).map(::File)
-        return BuildModel(targets, properties, loadedFiles)
+        @Suppress("UNCHECKED_CAST")
+        val readFiles = (result["readFiles"] as List<String>).map(::File)
+        return BuildModel(targets, properties, loadedFiles, readFiles)
     }
 
     /**
@@ -194,7 +196,12 @@ class AntShim(
          */
         val topLevelProperties: Map<String, String>,
         /** The top-level files and every file they imported or included. */
-        val loadedFiles: List<File>
+        val loadedFiles: List<File>,
+        /**
+         * The existing files the parse's `property file=` and `loadproperties` tasks read. Other inputs of the parse
+         * (environment, URLs, resources, commands) are not tracked.
+         */
+        val readFiles: List<File> = emptyList()
     )
 
     /**

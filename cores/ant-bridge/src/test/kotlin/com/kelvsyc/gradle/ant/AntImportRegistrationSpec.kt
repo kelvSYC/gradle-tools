@@ -66,7 +66,7 @@ class AntImportRegistrationSpec : FunSpec({
         jar.dependencyNames() shouldContainAll listOf("compile", "init")
         jar.description shouldBe "Builds the jar"
         jar.group shouldBe "ant"
-        (jar as AntImportedTarget).target.get() shouldBe "jar"
+        jar.target.get() shouldBe "jar"
     }
 
     test("tasks are available right after the call") {
@@ -117,7 +117,6 @@ class AntImportRegistrationSpec : FunSpec({
         project.import("one.xml")
         project.import("two.xml")
         project.tasks.getByName("a").dependencyNames() shouldContain "b"
-        project.exportOf("a")
         (project.tasks.getByName("a") as AntImportedTarget).upstreamExports.get().map { it.asFile } shouldBe
             listOf(project.exportOf("b"))
         val failure = shouldThrow<AntExecutionException> { project.import("three.xml") }
@@ -142,7 +141,8 @@ class AntImportRegistrationSpec : FunSpec({
         jar.upstreamExports.get().map { it.asFile } shouldContainExactly
             listOf(project.exportOf("init"), project.exportOf("compile"))
         jar.inputs.files.files shouldContainAll listOf(project.exportOf("init"), project.exportOf("compile"))
-        project.exportOf("jar") shouldBe project.layout.buildDirectory.file("ant-bridge/import/jar.properties").get().asFile
+        project.exportOf("jar") shouldBe
+            project.layout.buildDirectory.file("ant-bridge/import/jar.properties").get().asFile
     }
 
     test("an excluded target that supplies properties feeds downstream as an input") {
@@ -205,9 +205,92 @@ class AntImportRegistrationSpec : FunSpec({
         provider.get() shouldBe mapOf("seed" to "s", "top" to "t", "fromInit" to "i")
     }
 
+    test("propertiesFor: the first definition wins between upstream exports in Ant order") {
+        val project = project()
+        project.write(
+            "build.xml",
+            """
+            <project name="p">
+                <target name="init"/>
+                <target name="compile" depends="init"/>
+                <target name="jar" depends="compile"/>
+            </project>
+            """
+        )
+        val imp = project.import("build.xml")
+        listOf("init" to "k=fromInit\na=1\n", "compile" to "k=fromCompile\nb=2\n").forEach { (task, content) ->
+            project.exportOf(task).apply { parentFile.mkdirs(); writeText(content) }
+            (project.tasks.getByName(task) as TaskInternal).state.setOutcome(TaskExecutionOutcome.EXECUTED)
+        }
+        imp.propertiesFor("jar").get() shouldBe mapOf("k" to "fromInit", "a" to "1", "b" to "2")
+    }
+
+    test("an upstream target with an empty export is wired as an input without failure") {
+        val project = project()
+        project.write(
+            "build.xml",
+            """<project name="p"><target name="init"/><target name="compile" depends="init"/></project>"""
+        )
+        val imp = project.import("build.xml")
+        project.exportOf("init").apply { parentFile.mkdirs(); writeText("") }
+        (project.tasks.getByName("init") as TaskInternal).state.setOutcome(TaskExecutionOutcome.EXECUTED)
+        val compile = project.tasks.getByName("compile") as AntImportedTarget
+        compile.upstreamExports.get().map { it.asFile } shouldBe listOf(project.exportOf("init"))
+        compile.dependencyNames() shouldContain "init"
+        imp.propertiesFor("compile").get() shouldBe emptyMap()
+    }
+
+    test("a taskName mapping two targets to one name fails before anything is registered") {
+        val project = project()
+        project.write("build.xml", BUILD)
+        val failure = shouldThrow<InvalidUserDataException> { project.import("build.xml") { taskName { "same" } } }
+        failure.message shouldContain "'same'"
+        failure.message shouldContain "'compile'"
+        project.tasks.findByName("same") shouldBe null
+        project.import("build.xml")
+        project.tasks.getByName("jar").dependencyNames() shouldContain "compile"
+    }
+
+    test("an exclusion export task name clashing with an existing task fails") {
+        val project = project()
+        project.write("build.xml", BUILD)
+        project.tasks.register("compileAntProperties")
+        val replacement = project.tasks.register("compile")
+        shouldThrow<InvalidUserDataException> {
+            project.import("build.xml") { exclude("compile") { properties(replacement.map { emptyMap() }) } }
+        }.message shouldContain "compileAntProperties"
+        project.tasks.findByName("jar") shouldBe null
+    }
+
+    test("importBuild after the imported build was read fails") {
+        val project = project()
+        project.write("one.xml", """<project name="one"><target name="a"/></project>""")
+        project.write("two.xml", """<project name="two"><target name="b"/></project>""")
+        val imp = project.import("one.xml")
+        imp.propertiesFor("a").get()
+        shouldThrow<InvalidUserDataException> { project.import("two.xml") }.message shouldContain
+            "importBuild after the imported Ant build was read"
+        project.tasks.findByName("b") shouldBe null
+    }
+
+    test("property files read while parsing are build inputs") {
+        val project = project()
+        File(project.projectDir, "build.properties").writeText("v=1\n")
+        project.write(
+            "build.xml",
+            """<project name="p"><property file="build.properties"/><target name="a"/></project>"""
+        )
+        project.import("build.xml")
+        (project.tasks.getByName("a") as AntImportedTarget).buildFiles.files.map { it.canonicalFile } shouldContain
+            File(project.projectDir, "build.properties").canonicalFile
+    }
+
     test("seeds are resolved when the build is read and reach the tasks") {
         val project = project()
-        project.write("build.xml", """<project name="p"><property name="x" value="${'$'}{s}"/><target name="a"/></project>""")
+        project.write(
+            "build.xml",
+            """<project name="p"><property name="x" value="${'$'}{s}"/><target name="a"/></project>"""
+        )
         val imp = project.import("build.xml") { properties(project.provider { mapOf("s" to "v") }) }
         (project.tasks.getByName("a") as AntImportedTarget).seeds.get() shouldBe mapOf("s" to "v")
         imp.propertiesFor("a").get() shouldBe mapOf("s" to "v", "x" to "v")

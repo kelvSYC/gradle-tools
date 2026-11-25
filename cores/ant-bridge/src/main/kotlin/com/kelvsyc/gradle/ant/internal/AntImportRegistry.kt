@@ -42,21 +42,45 @@ internal class AntImportRegistry(
     /** Excluded target to the task materialising the properties its replacement supplies, if any. */
     private val exclusions = LinkedHashMap<String, TaskProvider<AntExclusionExport>?>()
 
-    private val topLevelFiles = objects.listProperty(File::class.java).apply { finalizeValueOnRead() }
-    private val baseDirectories = objects.listProperty(String::class.java).apply { finalizeValueOnRead() }
-    private val seeds = objects.mapProperty(String::class.java, String::class.java).apply { finalizeValueOnRead() }
-    private val topLevelProperties =
-        objects.mapProperty(String::class.java, String::class.java).apply { finalizeValueOnRead() }
-    private val loadedFiles = objects.fileCollection().apply { finalizeValueOnRead() }
+    private var topLevelPropertyValues: Map<String, String> = emptyMap()
+    private var buildFileValues: List<File> = emptyList()
+
+    /** Set once any of the properties below is read: the imported build can no longer change. */
+    private var frozen = false
+
+    // Each is finalized when first read, from the state above at that time.
+    private val topLevelFiles = objects.listProperty(File::class.java)
+        .value(frozenProvider { files.map { it.file } }).apply { finalizeValueOnRead() }
+    private val baseDirectories = objects.listProperty(String::class.java)
+        .value(frozenProvider { files.map { it.baseDirectory?.absolutePath.orEmpty() } })
+        .apply { finalizeValueOnRead() }
+    private val seeds = objects.mapProperty(String::class.java, String::class.java)
+        .value(frozenProvider { seedValues.toMap() }).apply { finalizeValueOnRead() }
+    private val topLevelProperties = objects.mapProperty(String::class.java, String::class.java)
+        .value(frozenProvider { topLevelPropertyValues }).apply { finalizeValueOnRead() }
+    // Not frozenProvider: resolving task dependencies queries it without finalizing it.
+    private val buildFiles = objects.fileCollection()
+        .from(providers.provider { buildFileValues }).apply { finalizeValueOnRead() }
 
     /**
      * Adds [file] (based at [baseDirectory], if given) to the build, re-reads the whole build, and registers a task
      * for every target the file adds, except the targets [spec] excludes.
      *
-     * @throws InvalidUserDataException if [spec] excludes a target the file does not add, or a task name is taken
+     * Every file the build loaded, and every existing file its `property file=` and `loadproperties` tasks read
+     * during the parse, is a configuration cache input. Other inputs of the parse (environment, URLs, resources,
+     * commands) are not tracked. Nothing changes if the call fails.
+     *
+     * @throws InvalidUserDataException if the imported build was already read, [spec] excludes a target the file
+     * does not add, or a task name is taken
      * @throws com.kelvsyc.gradle.ant.AntExecutionException if Ant fails to read the build
      */
     fun importBuild(file: File, baseDirectory: File?, spec: AntImportSpec): AntImport {
+        if (frozen) {
+            throw InvalidUserDataException(
+                "Cannot import $file: importBuild after the imported Ant build was read (by a task, or through " +
+                    "propertiesFor). Import every build file before reading it."
+            )
+        }
         val classpath = spec.antClasspath ?: defaultClasspath
         val newFiles = files + AntShim.BuildFile(file, baseDirectory)
         val newSeeds = LinkedHashMap(seedValues)
@@ -73,11 +97,8 @@ internal class AntImportRegistry(
         seedValues += newSeeds
         targets = model.targets.associateBy { it.name }
         taskNames += names
-        topLevelFiles.set(files.map { it.file })
-        baseDirectories.set(files.map { it.baseDirectory?.absolutePath.orEmpty() })
-        seeds.set(seedValues)
-        topLevelProperties.set(model.topLevelProperties)
-        loadedFiles.setFrom(model.loadedFiles)
+        topLevelPropertyValues = LinkedHashMap(model.topLevelProperties)
+        buildFileValues = (model.loadedFiles + model.readFiles).distinct()
 
         names.forEach { (target, name) ->
             if (spec.exclusions.containsKey(target)) {
@@ -87,7 +108,7 @@ internal class AntImportRegistry(
             }
         }
         // Configuration-cache inputs: editing any file of the build invalidates the entry.
-        model.loadedFiles.distinct().forEach { loaded ->
+        buildFileValues.forEach { loaded ->
             providers.fileContents(layout.file(providers.provider { loaded })).asBytes.get()
         }
         return AntImport(this)
@@ -129,11 +150,22 @@ internal class AntImportRegistry(
             )
         }
         val names = added.associateWith { spec.taskNameTransformer.transform(it) }
-        val clashes = names.filter { (target, name) -> target !in spec.exclusions && name in tasks.names }
+        // Every task the call registers: an imported target's, or the export task of an exclusion supplying properties.
+        val registered = names.mapNotNull { (target, name) ->
+            when {
+                target !in spec.exclusions -> name to target
+                spec.exclusions[target]?.supplied != null -> exportTaskName(name) to target
+                else -> null
+            }
+        }
+        val clashes = registered.groupBy({ it.first }, { it.second })
+            .filter { (name, targets) -> targets.size > 1 || name in tasks.names }
         if (clashes.isNotEmpty()) {
-            val described = clashes.entries.joinToString { (target, name) -> "Ant target '$target' (task '$name')" }
+            val described = clashes.entries.joinToString { (name, targets) ->
+                "task '$name' (Ant target${if (targets.size > 1) "s" else ""} ${targets.joinToString { "'$it'" }})"
+            }
             throw InvalidUserDataException(
-                "Cannot import $file: a task with the same name already exists for $described. " +
+                "Cannot import $file: task names clash with an existing task or with each other: $described. " +
                     "Rename the imported tasks with taskName { ... }."
             )
         }
@@ -146,11 +178,15 @@ internal class AntImportRegistry(
         tasks.register(name, AntImportedTarget::class.java) {
             this.target.set(target)
             targetDescription?.let { description = it }
-            buildFiles.from(loadedFiles)
+            buildFiles.from(this@AntImportRegistry.buildFiles)
             topLevelBuildFiles.set(topLevelFiles)
             baseDirectories.set(this@AntImportRegistry.baseDirectories)
             seeds.set(this@AntImportRegistry.seeds)
-            upstreamExports.addAll(upstreamExportFiles(target))
+            upstreamExports.addAll(
+                providers.provider { upstreamExportsOf(target) }.flatMap { exports ->
+                    objects.listProperty(RegularFile::class.java).apply { exports.forEach { add(it) } }
+                }
+            )
             dependsOn(providers.provider { dependencyNames(target) })
             antClasspath.from(classpath)
             isolation.set(targetIsolation)
@@ -158,10 +194,16 @@ internal class AntImportRegistry(
     }
 
     private fun registerExport(name: String, supplied: Provider<Map<String, String>>) =
-        tasks.register("${name}AntProperties", AntExclusionExport::class.java) {
+        tasks.register(exportTaskName(name), AntExclusionExport::class.java) {
             description = "Writes the properties supplied in place of the excluded Ant target '$name'."
             properties.set(supplied)
             exportFile.set(layout.buildDirectory.file("ant-bridge/import/${this.name}.properties"))
+        }
+
+    private fun <T : Any> frozenProvider(value: () -> T): Provider<T> =
+        providers.provider {
+            frozen = true
+            value()
         }
 
     private fun target(name: String): AntShim.BuildTarget =
@@ -169,11 +211,6 @@ internal class AntImportRegistry(
 
     private fun dependencyNames(target: String): List<String> =
         target(target).depends.distinct().map { taskNames[it] ?: it }
-
-    private fun upstreamExportFiles(target: String): Provider<List<RegularFile>> =
-        providers.provider { upstreamExportsOf(target) }.flatMap { exports ->
-            objects.listProperty(RegularFile::class.java).apply { exports.forEach { add(it) } }
-        }
 
     /** The export files the upstream targets of [target] offer, in Ant's order. */
     private fun upstreamExportsOf(target: String): List<Provider<RegularFile>> =
@@ -186,6 +223,9 @@ internal class AntImportRegistry(
             }
         }
 }
+
+/** The name of the task writing the properties supplied for the excluded target whose task name is [name]. */
+private fun exportTaskName(name: String): String = "${name}AntProperties"
 
 /** Merges [second] into [first], the first definition of a name winning. */
 private fun firstWins(first: Map<String, String>, second: Map<String, String>): Map<String, String> {

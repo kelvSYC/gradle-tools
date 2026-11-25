@@ -91,6 +91,41 @@ class AntBuildShimSpec : FunSpec({
         model.targets.first { it.name == "build" }.upstream shouldBe listOf("clean")
     }
 
+    test("readBuild reports the existing files property and loadproperties read during the parse") {
+        val dir = tempdir()
+        File(dir, "build.properties").writeText("a=1\n")
+        File(dir, "more.properties").writeText("b=2\n")
+        File(dir, "imported.properties").writeText("c=3\n")
+        dir.write(
+            "common.xml",
+            """
+            <project name="common">
+                <property file="imported.properties"/>
+            </project>
+            """.trimIndent()
+        )
+        val main = dir.write(
+            "build.xml",
+            """
+            <project name="main">
+                <property file="build.properties"/>
+                <property file="missing.properties"/>
+                <loadproperties srcFile="more.properties"/>
+                <property name="plain" value="x"/>
+                <import file="common.xml"/>
+                <target name="t">
+                    <property file="target-only.properties"/>
+                </target>
+            </project>
+            """.trimIndent()
+        )
+        val model = read(listOf(main))
+        model.readFiles.map { it.canonicalFile } shouldContainExactlyInAnyOrder
+            listOf("build.properties", "more.properties", "imported.properties").map { File(dir, it).canonicalFile }
+        model.topLevelProperties shouldContain ("c" to "3")
+        model.loadedFiles.map { it.name } shouldContainExactlyInAnyOrder listOf("build.xml", "common.xml")
+    }
+
     test("extension-point wiring shows in depends") {
         val file = tempdir().write(
             "build.xml",

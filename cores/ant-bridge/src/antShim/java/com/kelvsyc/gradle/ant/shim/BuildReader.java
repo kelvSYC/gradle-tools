@@ -30,7 +30,9 @@ import org.apache.tools.ant.Target;
  * {@code "upstream"} (every transitive dependency in Ant's execution order, without the target itself; names that are
  * not targets are left out)), {@code "properties"} (the seeds and every property the parse set or tried to set, with
  * Ant's effective value; {@code basedir}, other Ant built-ins and system properties the parse did not name are left
- * out) and {@code "loadedFiles"} (the absolute paths of the top-level files and every file they imported or included).
+ * out), {@code "loadedFiles"} (the absolute paths of the top-level files and every file they imported or included)
+ * and {@code "readFiles"} (the absolute paths of the existing files the parse's
+ * {@code property file=} and {@code loadproperties} tasks read; other inputs of the parse are not tracked).
  * Failures are reported as by {@link TreeExecutor}. Never throws.
  */
 public final class BuildReader implements Function<Map<String, Object>, Map<String, Object>> {
@@ -45,9 +47,14 @@ public final class BuildReader implements Function<Map<String, Object>, Map<Stri
         ShimSupport.applySeeds(project, seeds);
         Set<String> keys = new LinkedHashSet<>(seeds.keySet());
         PropertyHelper.getPropertyHelper(project).add(new RecordingSetter(keys));
+        ShimSupport.ParsedBuild parsed = ShimSupport.parseBuildFiles(project, request);
         List<String> loadedFiles = new ArrayList<>();
-        for (File file : ShimSupport.parseBuildFiles(project, request).loadedFiles) {
+        for (File file : parsed.loadedFiles) {
             loadedFiles.add(file.getPath());
+        }
+        List<String> readFiles = new ArrayList<>();
+        for (File file : parsed.readFiles) {
+            readFiles.add(file.getPath());
         }
         keys.remove(MagicNames.PROJECT_BASEDIR);
         Map<String, String> properties = new LinkedHashMap<>();
@@ -61,6 +68,7 @@ public final class BuildReader implements Function<Map<String, Object>, Map<Stri
         result.put("targets", targets(project));
         result.put("properties", properties);
         result.put("loadedFiles", loadedFiles);
+        result.put("readFiles", readFiles);
         return result;
     }
 

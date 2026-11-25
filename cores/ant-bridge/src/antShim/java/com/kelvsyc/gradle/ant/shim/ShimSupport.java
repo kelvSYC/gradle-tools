@@ -21,7 +21,9 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.tools.ant.BuildEvent;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.AntTypeDefinition;
 import org.apache.tools.ant.BuildListener;
+import org.apache.tools.ant.ComponentHelper;
 import org.apache.tools.ant.ExtensionPoint;
 import org.apache.tools.ant.Location;
 import org.apache.tools.ant.MagicNames;
@@ -32,6 +34,9 @@ import org.apache.tools.ant.ProjectHelperRepository;
 import org.apache.tools.ant.PropertyHelper;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.UnknownElement;
+import org.apache.tools.ant.taskdefs.LoadProperties;
+import org.apache.tools.ant.taskdefs.Property;
 import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.resources.FileProvider;
 import org.apache.tools.ant.types.resources.FileResource;
@@ -103,11 +108,29 @@ final class ShimSupport {
      * file imported by several top-level files is parsed once per importer; its targets are not duplicates, and keep
      * the first importer.
      * Within one top-level file, Ant's own rules apply (the importing file's target wins over an imported one).
+     * <p>
+     * The existing files that the parse's {@code property file=} and {@code loadproperties srcFile=} tasks read are
+     * reported as {@link ParsedBuild#readFiles}. Other inputs of the parse (environment, URLs, resources, commands)
+     * are not tracked.
      */
     @SuppressWarnings("unchecked")
     static ParsedBuild parseBuildFiles(Project project, Map<String, Object> request) {
         ParsedBuild parsed = new ParsedBuild();
         Set<File> loaded = new LinkedHashSet<>();
+        ReadFilesListener readFiles = new ReadFilesListener();
+        project.addBuildListener(readFiles);
+        try {
+            parseAll(project, request, parsed, loaded);
+        } finally {
+            project.removeBuildListener(readFiles);
+        }
+        parsed.loadedFiles.addAll(loaded);
+        parsed.readFiles.addAll(readFiles.files);
+        return parsed;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void parseAll(Project project, Map<String, Object> request, ParsedBuild parsed, Set<File> loaded) {
         for (Map<String, Object> entry : (List<Map<String, Object>>) request.get("files")) {
             File file = new File((String) entry.get("file")).getAbsoluteFile();
             TopLevelScan scan = TopLevelScan.of(file);
@@ -132,8 +155,6 @@ final class ShimSupport {
                 }
             }
         }
-        parsed.loadedFiles.addAll(loaded);
-        return parsed;
     }
 
     /**
@@ -306,6 +327,8 @@ final class ShimSupport {
     static final class ParsedBuild {
         /** The top-level files and every file they imported or included, in load order. */
         final List<File> loadedFiles = new ArrayList<>();
+        /** The existing files that {@code property file=} and {@code loadproperties} read during the parse. */
+        final List<File> readFiles = new ArrayList<>();
         /** The top-level file that registered each target name. */
         final Map<String, File> owners = new HashMap<>();
         /** The base directory of each top-level file. */
@@ -366,6 +389,74 @@ final class ShimSupport {
         @Override
         public void endElement(String uri, String localName, String qName) {
             depth--;
+        }
+    }
+
+    /**
+     * Records the existing files that finished {@code property} ({@code file=}) and {@code loadproperties}
+     * ({@code srcFile=}) tasks read. Ant releases a task's configured instance once it ran, so the file is resolved
+     * from the element's attribute, as Ant resolved it: properties expanded, relative to the base directory.
+     */
+    private static final class ReadFilesListener implements BuildListener {
+        private final Set<File> files = new LinkedHashSet<>();
+
+        @Override
+        public void taskFinished(BuildEvent event) {
+            Task task = event.getTask();
+            if (!(task instanceof UnknownElement)) {
+                return;
+            }
+            UnknownElement element = (UnknownElement) task;
+            Project project = element.getProject();
+            String component = ProjectHelper.genComponentName(element.getNamespace(), element.getTag());
+            AntTypeDefinition definition = ComponentHelper.getComponentHelper(project).getDefinition(component);
+            Class<?> type = definition == null ? null : definition.getExposedClass(project);
+            String attribute = null;
+            if (type != null && Property.class.isAssignableFrom(type)) {
+                attribute = "file";
+            } else if (type != null && LoadProperties.class.isAssignableFrom(type)) {
+                attribute = "srcFile";
+            }
+            Object value = attribute == null ? null : attributeValue(element, attribute);
+            if (value != null) {
+                File file = project.resolveFile(project.replaceProperties(value.toString()));
+                if (file.isFile()) {
+                    files.add(file.getAbsoluteFile());
+                }
+            }
+        }
+
+        private static Object attributeValue(UnknownElement element, String name) {
+            for (Map.Entry<String, Object> attribute : element.getWrapper().getAttributeMap().entrySet()) {
+                if (attribute.getKey().equalsIgnoreCase(name)) {
+                    return attribute.getValue();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public void messageLogged(BuildEvent event) {
+        }
+
+        @Override
+        public void buildStarted(BuildEvent event) {
+        }
+
+        @Override
+        public void buildFinished(BuildEvent event) {
+        }
+
+        @Override
+        public void targetStarted(BuildEvent event) {
+        }
+
+        @Override
+        public void targetFinished(BuildEvent event) {
+        }
+
+        @Override
+        public void taskStarted(BuildEvent event) {
         }
     }
 
