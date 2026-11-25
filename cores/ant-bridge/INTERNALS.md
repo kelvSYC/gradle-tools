@@ -34,7 +34,7 @@ AntWorkAction / AntProperties ──▶ AntShim ──JDK maps──▶ shim ent
 | The shim | `src/antShim/java/.../ant/shim/` | The only Ant-aware code. `TreeExecutor` turns element trees into Ant tasks and runs them; `PropertyLoader` runs Ant's `Property` task per source (`RecordingProperty` records the keys each source names); `BuildReader` parses build files with Ant's own project helper and reports their targets, top-level properties and loaded files; `TargetRunner` re-parses them and runs one target without its dependencies; `ShimSupport` holds the shared project setup, build-file parsing, logging bridge and result maps. |
 | `AntRuntimeClassLoader` | `src/main/.../ant/internal/` | A `URLClassLoader` over the resolved `antBridge` jars whose parent is the platform class loader. It defines the shim classes from the plugin's resources. |
 | `AntShim` | `src/main/.../ant/internal/` | The plugin-side adapter: converts requests to JDK types, invokes a shim entry point by class name, and turns the result back into a value or an `AntExecutionException`. |
-| Callers | `AntWorkAction` (`actions`, public), `AntProperties` | Open a loader, call through `AntShim`, close the loader. Everything else (`AntWork`, the typed tasks, `AntOperations`) reaches Ant through `AntWorkAction`, whose trees come from `AntTrees`. |
+| Callers | `AntWorkAction` (`actions`, public), `AntProperties`, `AntQuery`, and `AntImportRegistry` and `AntTargetAction` (`internal`) | Open a loader, call through `AntShim`, close the loader. Everything else (`AntWork`, the typed tasks, `AntOperations`) reaches Ant through `AntWorkAction`, whose trees come from `AntTrees`; `antBridge.importBuild` reads the build through `AntImportRegistry` and runs targets through `AntTargetAction` (see [How `importBuild` works](#how-importbuild-works)). |
 
 ## Why the shim is plain Java
 
@@ -72,7 +72,7 @@ The only types they share are the JDK's. Across the boundary:
   priorities to Gradle's logger: error, warn, info, and debug for verbose and debug.
 - **Results** are maps. Success has `"antVersion"` and `"properties"` (`PropertyLoader`, `BuildReader` and
   `TargetRunner` always; `TreeExecutor` always, empty when no `"results"` were requested). `BuildReader` adds
-  `"targets"` and `"loadedFiles"`. For `TreeExecutor`, `"properties"` maps each requested name the Ant
+  `"targets"`, `"loadedFiles"` and `"readFiles"`. For `TreeExecutor`, `"properties"` maps each requested name the Ant
   project defines to its value (names the tree did not set are left out). Failure has
   `"failure"` (Ant's message), `"location"` and `"trace"` (the stack trace as a string).
 
@@ -129,6 +129,77 @@ statements never see them, as in a single Ant run. `BuildReader` computes each t
 The loaded files are each top-level helper's import stack after its parse, which holds the file and everything it
 imported or included (resources without a file, such as imports from a jar, are left out).
 
+## How `importBuild` works
+
+The two shim entry points behind it:
+
+- `BuildReader` (`AntShim.readBuild`): request `"files"` (each `"file"` with an optional `"baseDirectory"`),
+  `"seeds"`, `"logger"`. Result `"targets"` (per name Ant registered: `"name"`, `"file"`, `"description"`,
+  `"depends"` as Ant resolved them, `"upstream"` in Ant's execution order from `topoSort`), `"properties"` (the seeds
+  and what the parse set), `"loadedFiles"` and `"readFiles"` (files read by `property file=` and `loadproperties`
+  during the parse, recorded by a build listener).
+- `TargetRunner` (`AntShim.runTarget`): request `"files"`, `"seeds"`, `"exports"` (property maps in load order),
+  `"target"`, `"logger"`. Result `"properties"`: the target's newly defined properties.
+
+### Configuration: reading the build
+
+`AntBridgeExtension.importBuild` configures an `AntImportSpec` and hands it to the project's `AntImportRegistry` (one
+per extension, so one per Gradle project). The registry:
+
+- **Reads the whole build on every call**: the files so far plus the new one, in call order, with the call's Ant
+  classpath (a loader opened and closed for the read) and the seeds accumulated so far, resolved here. This runs in
+  ordinary configuration code, not in a `ValueSource`, so the parse (and its top-level side effects) is not repeated on
+  a configuration-cache hit.
+- **Validates before committing**: the exclusions must name targets the file adds, and no task name may clash (with an
+  existing task, or two targets of the call). Only then does it replace its state (files, seeds, targets, task names,
+  top-level properties), so a failing call changes nothing.
+- **Registers cache inputs** by reading every loaded and read file through `providers.fileContents(...).asBytes.get()`:
+  a file content obtained during configuration is a configuration-cache input. Inputs the shim does not report
+  (environment, URLs, resources, commands) are not tracked.
+- **Registers tasks eagerly and wires them lazily.** The call registers (`tasks.register`) an `AntImportedTarget` per
+  target it adds, so `tasks.named` works right after it, but each task's `dependsOn` and `upstreamExports` are providers
+  evaluated against the registry's final state, so later calls can still satisfy a `depends` or extend an extension
+  point. The values every task shares (top-level files, base directories, seeds, top-level properties) are properties
+  of the registry that `finalizeValueOnRead`; the provider behind each marks the registry frozen when it is first read,
+  and `importBuild` fails once it is frozen, since an earlier task would otherwise have seen a different build. The
+  build-file collection is a plain provider instead, because Gradle queries it while resolving task dependencies
+  without finalizing it.
+- **Logs the exclusion warning** in `afterEvaluate` (registered by the plugin), after every import of a normal build
+  script has run.
+
+### Execution: one target per task
+
+`AntImportedTarget` deletes its export file and submits `AntTargetAction` to a class-loader- or process-isolated
+queue; the action opens its own loader from the Ant classpath, as `AntWorkAction` does. `TargetRunner` then, in a fresh
+project:
+
+1. sets the seeds as user properties;
+2. re-parses every top-level file (see [Parsing several top-level build files into one
+   project](#parsing-several-top-level-build-files-into-one-project)), so each execution rebuilds its starting state
+   from the files instead of receiving it;
+3. applies the upstream exports in order with `PropertyHelper.setNewProperty`, so the first definition wins;
+4. enters the owning top-level file's base directory and `ant.file`, snapshots the property names, runs only the
+   target (`Target.performTasks()`, so `if`/`unless` apply and its `depends` do not run), and reports the names added
+   since the snapshot.
+
+`AntTargetAction` writes them with `PropertiesFiles` (the `$$` escaping of the result-file format). Measuring by name
+means a changed existing property is not exported.
+
+### Exports, upstream order and exclusions
+
+The registry maps each name in a target's `"upstream"` list to an export-file provider: an imported target's
+`exportFile`, an excluded target's materialised export, or nothing (an excluded target without supplied properties, or
+a name that is not a target). Because the providers come from the producing tasks' outputs, `upstreamExports` is a
+declared input that carries the task dependencies; no task reads another's file otherwise.
+
+An exclusion that supplies properties is materialised as an `AntExclusionExport` task (`<task name>AntProperties`)
+writing the provider's values to a file in the same format. Downstream wiring then treats imported targets and
+replacements alike (a list of file providers in Ant's order), the replacement's values are a task input with its
+dependency, and the work action takes only files.
+
+`AntImport.propertiesFor` merges the same pieces on the Gradle side: seeds, then top-level properties, then each
+upstream export, zipped first-wins, so it carries the same dependencies as the target's task would.
+
 ## Decision: no shared Ant state between tasks
 
 A `BuildService` (or any build-scoped holder) carrying Ant properties from one task to another is rejected, and the
@@ -138,6 +209,29 @@ value, parallel runs and the configuration cache make it worse, and consumers st
 tasks only as declared task outputs and providers derived from them (`exportedProperties`, a custom task's own
 output), or at configuration time through `antBridge.query`, which a configuration-cache entry can validate. Each Ant
 call keeps its fresh `Project` for the same reason.
+
+## Decision: the import's Ant build is derived, not shared
+
+Legacy `ant.importBuild` parsed into the project's one long-lived Ant project and every target ran in it. The
+tempting port (parse once, keep the project or its property table in a `BuildService`, run each target in it) is the
+shared bag of the previous decision, so the import is built from these guardrails instead:
+
+- **Nothing holds Ant state between executions**: no `BuildService`, static, `object` or long-lived field with Ant
+  projects, properties, references or parsed files. The project's Ant build is an immutable list of files (plus seeds
+  and base directories) fixed at configuration, and every execution rebuilds its starting state from it by
+  re-parsing. The cost is a parse per target and top-level side effects per execution, documented as deviations.
+- **Values between targets are declared files.** A target's new properties are its declared output; downstream tasks
+  declare the upstream export files as inputs. Gradle sees every edge, so parallel execution, the configuration cache
+  and a later native replacement all keep working.
+- **Visibility follows the `build.xml` graph**, never run order: a target loads only its upstream targets' exports.
+  Recreating run-order visibility would need shared state and make results depend on scheduling.
+- **Only properties pass.** References are live Ant objects that cannot cross a process or a file.
+
+`AntImportRegistry` exists only during configuration. It holds what the calls declared and what reading the build
+reported, and computes each task's wiring; the tasks receive plain values (finalized when read) in their own
+properties, which is what the configuration cache stores. No task or work action reaches the registry at execution:
+it could not be serialized into the configuration cache, is unavailable in a worker process, and, if it carried values
+at execution, would be the shared bag again.
 
 ## Who opens loaders, and why there is no cache
 
