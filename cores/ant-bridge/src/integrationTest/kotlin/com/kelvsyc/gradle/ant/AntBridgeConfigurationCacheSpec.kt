@@ -544,6 +544,7 @@ class AntBridgeConfigurationCacheSpec : FunSpec({
         first.task(":producer")?.outcome shouldBe TaskOutcome.SUCCESS
         first.output shouldContain "REV=r1"
 
+        // Exporting alone never makes the producer up to date (its only output is the export file), so it reruns.
         val second = cc(dir, "consumer")
         second.output shouldContain REUSED
         second.task(":producer")?.outcome shouldBe TaskOutcome.SUCCESS
@@ -678,10 +679,16 @@ class AntBridgeConfigurationCacheSpec : FunSpec({
 
     test("exports work under process isolation") {
         val dir = exportProject("export-process", "isolation.set(AntIsolation.PROCESS)")
+        File(dir, "build.gradle.kts").appendText("\nprintln(\"DAEMON_PID=${'$'}{ProcessHandle.current().pid()}\")\n")
 
-        val first = cc(dir, "consumer")
+        val first = cc(dir, "consumer", "--info")
         first.task(":producer")?.outcome shouldBe TaskOutcome.SUCCESS
         first.output shouldContain "REV=r1"
+        val daemonPid = Regex("DAEMON_PID=(\\d+)").find(first.output)?.groupValues?.get(1)
+        val workerPid = Regex("Running Ant .+ in process (\\d+)").find(first.output)?.groupValues?.get(1)
+        daemonPid shouldNotBe null
+        workerPid shouldNotBe null
+        workerPid shouldNotBe daemonPid
 
         File(dir, "rev.txt").writeText("r2")
         val second = cc(dir, "consumer")

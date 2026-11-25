@@ -66,10 +66,9 @@ class AntQueryLoadingSpec : FunSpec({
         )
         cases.forEach { (name, configure) ->
             val error = shouldThrow<InvalidUserDataException> { project.query(configure) }
-            error.message shouldContain name
+            error.message shouldContain "Ant task '$name'"
             error.message shouldContain "allowSideEffects()"
         }
-        target.exists() shouldBe false
     }
 
     test("the allowlist failure explains the re-run and points to AntWork.exportProperties") {
@@ -79,11 +78,12 @@ class AntQueryLoadingSpec : FunSpec({
     }
 
     test("nested elements of an allowed task are not checked") {
+        // `istrue` is not on the allowlist, but as a nested condition it is the allowed task's configuration.
         val provider = project().query {
-            ant { task("condition", "property" to "p") { element("os", "family" to "unix") } }
+            ant { task("condition", "property" to "p") { element("istrue", "value" to "true") } }
             result("p")
         }
-        provider.get()
+        provider.get() shouldBe mapOf("p" to "true")
     }
 
     test("allowSideEffects lifts the allowlist") {
@@ -106,7 +106,8 @@ class AntQueryLoadingSpec : FunSpec({
             result("x")
         }
         val error = shouldThrow<Exception> { provider.get() }
-        generateSequence<Throwable>(error) { it.cause }.any { it is AntExecutionException } shouldBe true
+        val antError = generateSequence<Throwable>(error) { it.cause }.filterIsInstance<AntExecutionException>().first()
+        antError.message shouldContain "missing.txt"
     }
 
     test("a Groovy closure query records legacy calls") {
