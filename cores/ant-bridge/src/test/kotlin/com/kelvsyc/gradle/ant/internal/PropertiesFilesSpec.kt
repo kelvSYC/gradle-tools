@@ -10,12 +10,19 @@ import org.gradle.api.logging.Logger
 import java.io.File
 
 class PropertiesFilesSpec : FunSpec({
-    val awkward = mapOf("k" to "a=b:c#d\ne", "ü" to "é")
+    val awkward = mapOf("k" to "a=b:c#d\ne", "ü" to "é", "empty" to "", " lead" to "x", "euro" to "€")
+    val dollars = mapOf("d1" to "a\$\$b", "d2" to "\${x}", "d3" to "\$")
 
     test("round-trips awkward values") {
         val file = File(tempdir(), "nested/out.properties")
         PropertiesFiles.write(file, awkward)
         PropertiesFiles.read(file) shouldBe awkward
+    }
+
+    test("round-trips dollar signs") {
+        val file = File(tempdir(), "out.properties")
+        PropertiesFiles.write(file, dollars)
+        PropertiesFiles.read(file) shouldBe dollars
     }
 
     test("output is deterministic") {
@@ -38,5 +45,16 @@ class PropertiesFilesSpec : FunSpec({
             AntShim(it).execute(listOf(node), tempdir(), mockk<Logger>(relaxed = true), awkward.keys)
         }
         result.properties shouldBe awkward
+    }
+
+    test("Ant reads dollar signs literally") {
+        val file = File(tempdir(), "out.properties")
+        PropertiesFiles.write(file, dollars)
+        val define = AntNode("property", null, mapOf("name" to "x", "value" to "X"), null, emptyList())
+        val load = AntNode("property", null, mapOf("file" to file.absolutePath), null, emptyList())
+        val result = AntRuntimeClassLoader(TestAnt.classpath).use {
+            AntShim(it).execute(listOf(define, load), tempdir(), mockk<Logger>(relaxed = true), dollars.keys)
+        }
+        result.properties shouldBe dollars
     }
 })

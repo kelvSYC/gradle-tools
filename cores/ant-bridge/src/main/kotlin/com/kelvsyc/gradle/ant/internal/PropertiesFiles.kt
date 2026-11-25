@@ -6,6 +6,9 @@ import java.util.Properties
 
 /**
  * Reads and writes `.properties` files deterministically, in the format Ant's `property file=` reads.
+ *
+ * Ant expands `${...}` and collapses `$$` to `$` in the values it loads, so [write] escapes every `$` in a value as
+ * `$$` and [read] undoes it. The files are for Ant and for [read], not for plain [Properties] readers.
  */
 internal object PropertiesFiles {
     /**
@@ -15,7 +18,7 @@ internal object PropertiesFiles {
     fun write(file: File, values: Map<String, String>) {
         val lines = values.toSortedMap().map { (key, value) ->
             val out = ByteArrayOutputStream()
-            Properties().apply { setProperty(key, value) }.store(out, null)
+            Properties().apply { setProperty(key, value.replace("$", "$$")) }.store(out, null)
             out.toString(Charsets.ISO_8859_1).lines().filter { it.isNotEmpty() && !it.startsWith("#") }
         }.flatten()
         file.absoluteFile.parentFile?.mkdirs()
@@ -29,7 +32,7 @@ internal object PropertiesFiles {
         val properties = Properties()
         file.inputStream().use { properties.load(it) }
         val result = LinkedHashMap<String, String>()
-        properties.stringPropertyNames().sorted().forEach { result[it] = properties.getProperty(it) }
+        properties.stringPropertyNames().sorted().forEach { result[it] = properties.getProperty(it).replace("$$", "$") }
         return result
     }
 }
