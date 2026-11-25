@@ -57,4 +57,30 @@ class AntWorkSpec : FunSpec({
         val extension = project().extensions.getByType(AntBridgeExtension::class.java)
         extension.operations shouldBeSameInstanceAs extension.operations
     }
+
+    test("no exports means no export output") {
+        val task = project().tasks.register("antWork", AntWork::class.java).get()
+        task.exportedPropertiesFile.isPresent shouldBe false
+        task.outputs.hasOutput shouldBe false
+    }
+
+    test("exportProperties declares the file and the names as input and output") {
+        val project = project()
+        val task = project.tasks.register("antWork", AntWork::class.java).get()
+        task.exportProperties("rev")
+        task.exportedPropertiesFile.get().asFile.parentFile shouldBe
+            project.layout.buildDirectory.dir("ant-bridge/antWork").get().asFile
+        task.outputs.files.files shouldContain task.exportedPropertiesFile.get().asFile
+        @Suppress("UNCHECKED_CAST")
+        (task.inputs.properties["exportedPropertyNames"] as Set<String>) shouldContain "rev"
+    }
+
+    test("exportedProperties carries the task dependency") {
+        val project = project()
+        val work = project.tasks.register("antWork", AntWork::class.java) { exportProperties("rev") }
+        val consumer = project.tasks.register("consumer") {
+            inputs.property("v", work.flatMap { it.exportedProperties })
+        }.get()
+        consumer.taskDependencies.getDependencies(consumer) shouldContain work.get()
+    }
 })

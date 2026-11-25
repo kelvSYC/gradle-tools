@@ -1,9 +1,11 @@
 package com.kelvsyc.gradle.ant
 
 import com.kelvsyc.gradle.ant.actions.AntWorkAction
+import com.kelvsyc.gradle.ant.internal.PropertiesFiles
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -15,6 +17,7 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.workers.WorkQueue
 import org.gradle.workers.WorkerExecutor
+import java.io.File
 
 class AntOperationsSpec : FunSpec({
     class Fixture {
@@ -63,5 +66,42 @@ class AntOperationsSpec : FunSpec({
         nodes.single().attributes shouldBe mapOf("dir" to dir.get().asFile.absolutePath)
         params.baseDirectory.get().asFile shouldBe project.projectDir
         params.antClasspath.files shouldBe setOf(project.file("ant.jar"))
+    }
+
+    test("result overload passes the requested names and a result file") {
+        val fixture = Fixture()
+        val project = fixture.project
+        every { fixture.queue.submit(AntWorkAction::class.java, capture(fixture.parameters)) } answers {
+            val params = project.objects.newInstance(AntWorkAction.Parameters::class.java)
+            fixture.parameters.captured.execute(params)
+            PropertiesFiles.write(params.resultFile.get().asFile, emptyMap())
+        }
+        fixture.operations.execute(project.files(), AntIsolation.CLASSLOADER, setOf("rev")) {
+            task("property", "name" to "rev", "value" to "abc")
+        }
+
+        val params = project.objects.newInstance(AntWorkAction.Parameters::class.java)
+        fixture.parameters.captured.execute(params)
+        params.resultProperties.get() shouldBe setOf("rev")
+        params.resultFile.isPresent shouldBe true
+    }
+
+    test("result overload returns the file's contents") {
+        val fixture = Fixture()
+        val project = fixture.project
+        var resultFile: File? = null
+        every { fixture.queue.submit(AntWorkAction::class.java, capture(fixture.parameters)) } answers {
+            val params = project.objects.newInstance(AntWorkAction.Parameters::class.java)
+            fixture.parameters.captured.execute(params)
+            resultFile = params.resultFile.get().asFile
+            PropertiesFiles.write(params.resultFile.get().asFile, mapOf("rev" to "abc"))
+        }
+        val result = fixture.operations.record(project.files(), AntIsolation.CLASSLOADER, setOf("rev")) {
+            invokeMethod("property", arrayOf(mapOf("name" to "rev", "value" to "abc")))
+        }
+
+        result shouldBe mapOf("rev" to "abc")
+        resultFile shouldNotBe null
+        resultFile?.exists() shouldBe false
     }
 })
