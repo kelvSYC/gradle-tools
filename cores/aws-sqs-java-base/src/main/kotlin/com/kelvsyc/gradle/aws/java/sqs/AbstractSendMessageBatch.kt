@@ -29,10 +29,15 @@ import javax.inject.Inject
  * reported as a task failure listing the failed entry ids.
  */
 @DisableCachingByDefault(because = "Sending to an external service is not cacheable")
-abstract class AbstractSendMessageBatch @Inject constructor(
-    private val objects: ObjectFactory,
-    private val providers: ProviderFactory
-) : DefaultTask() {
+abstract class AbstractSendMessageBatch : DefaultTask() {
+    /** Creates the [Entry] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val objects: ObjectFactory
+
+    /** Creates the lazy providers of the [Entry] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val providers: ProviderFactory
+
     /**
      * The [SqsClient] used to send messages.
      */

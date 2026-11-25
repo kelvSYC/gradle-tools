@@ -37,9 +37,10 @@ import javax.inject.Inject
  * @see AbstractAsyncBatchUpdateFunctionCode
  */
 @DisableCachingByDefault(because = "Communicates with AWS Lambda")
-abstract class AbstractBatchUpdateFunctionCode @Inject constructor(
-    private val objects: ObjectFactory,
-) : DefaultTask() {
+abstract class AbstractBatchUpdateFunctionCode : DefaultTask() {
+    /** Creates the [Artifact] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val objects: ObjectFactory
 
     /**
      * Per-function coordinates and deployment package for a single Lambda code update.

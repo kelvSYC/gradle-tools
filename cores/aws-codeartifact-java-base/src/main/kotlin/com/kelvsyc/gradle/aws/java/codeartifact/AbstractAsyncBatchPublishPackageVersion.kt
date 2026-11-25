@@ -1,7 +1,6 @@
 package com.kelvsyc.gradle.aws.java.codeartifact
 
 import com.kelvsyc.gradle.providers.asPath
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
@@ -9,7 +8,6 @@ import org.gradle.work.DisableCachingByDefault
 import software.amazon.awssdk.core.async.AsyncRequestBody
 import software.amazon.awssdk.services.codeartifact.CodeartifactAsyncClient
 import java.util.concurrent.CompletableFuture
-import javax.inject.Inject
 
 /**
  * Abstract [AbstractBatchPublishPackageVersion] that uses a [CodeartifactAsyncClient] to publish
@@ -25,9 +23,7 @@ import javax.inject.Inject
  * @see AbstractWorkerBatchPublishPackageVersion
  */
 @DisableCachingByDefault(because = "Publishing to an external service is not cacheable")
-abstract class AbstractAsyncBatchPublishPackageVersion @Inject constructor(
-    objects: ObjectFactory,
-) : AbstractBatchPublishPackageVersion(objects) {
+abstract class AbstractAsyncBatchPublishPackageVersion : AbstractBatchPublishPackageVersion() {
 
     /**
      * The asynchronous CodeArtifact client.

@@ -27,10 +27,15 @@ import javax.inject.Inject
  * All artifacts will be downloaded concurrently. This task fails if any artifact fails to be retrieved.
  */
 @DisableCachingByDefault(because = "Downloading from an external service is not cacheable")
-abstract class AbstractBatchDownloadFromS3 @Inject constructor(
-    private val objects: ObjectFactory,
-    private val providers: ProviderFactory
-) : DefaultTask() {
+abstract class AbstractBatchDownloadFromS3 : DefaultTask() {
+    /** Creates the [Artifact] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val objects: ObjectFactory
+
+    /** Creates the lazy providers of the [Artifact] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val providers: ProviderFactory
+
     /**
      * The [S3TransferManager] client used to perform the download.
      */

@@ -1,11 +1,8 @@
 package com.kelvsyc.gradle.aws.java.lambda
 
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.services.ServiceReference
 import org.gradle.work.DisableCachingByDefault
-import software.amazon.awssdk.services.lambda.LambdaAsyncClient
-import javax.inject.Inject
 
 /**
  * [DefaultTask] that updates the deployment package for multiple Lambda functions concurrently via
@@ -39,9 +36,7 @@ import javax.inject.Inject
  * @see BatchUpdateFunctionCode
  */
 @DisableCachingByDefault(because = "Communicates with AWS Lambda")
-abstract class AsyncBatchUpdateFunctionCode @Inject constructor(
-    objects: ObjectFactory,
-) : AbstractAsyncBatchUpdateFunctionCode(objects) {
+abstract class AsyncBatchUpdateFunctionCode : AbstractAsyncBatchUpdateFunctionCode() {
 
     /** The shared build service managing the asynchronous Lambda client. */
     @get:ServiceReference

@@ -1,6 +1,5 @@
 package com.kelvsyc.gradle.aws.java.codeartifact
 
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
@@ -23,10 +22,10 @@ import javax.inject.Inject
  * @see AbstractAsyncBatchGetGenericPackageVersionAsset
  */
 @DisableCachingByDefault(because = "Downloading from an external service is not cacheable")
-abstract class AbstractWorkerBatchGetGenericPackageVersionAsset @Inject constructor(
-    objects: ObjectFactory,
-    private val workerExecutor: WorkerExecutor,
-) : AbstractBatchGetGenericPackageVersionAsset(objects) {
+abstract class AbstractWorkerBatchGetGenericPackageVersionAsset : AbstractBatchGetGenericPackageVersionAsset() {
+    /** Submits this task's work to the Gradle Worker API; available to subclasses. */
+    @get:Inject
+    protected abstract val workerExecutor: WorkerExecutor
 
     /**
      * The build service managing the synchronous CodeArtifact client.

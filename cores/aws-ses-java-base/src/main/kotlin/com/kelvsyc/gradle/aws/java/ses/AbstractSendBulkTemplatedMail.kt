@@ -30,10 +30,15 @@ import javax.inject.Inject
  * listing the failed entry names.
  */
 @DisableCachingByDefault(because = "Sending email is not cacheable")
-abstract class AbstractSendBulkTemplatedMail @Inject constructor(
-    private val objects: ObjectFactory,
-    private val providers: ProviderFactory
-) : DefaultTask() {
+abstract class AbstractSendBulkTemplatedMail : DefaultTask() {
+    /** Creates the [Entry] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val objects: ObjectFactory
+
+    /** Creates the lazy providers of the [Entry] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val providers: ProviderFactory
+
     /**
      * The [SesClient] used to send emails.
      */
