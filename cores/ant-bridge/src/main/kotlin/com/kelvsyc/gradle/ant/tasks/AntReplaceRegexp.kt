@@ -2,7 +2,6 @@ package com.kelvsyc.gradle.ant.tasks
 
 import com.kelvsyc.gradle.ant.AntElement
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
@@ -21,10 +20,6 @@ import javax.inject.Inject
  */
 @CacheableTask
 abstract class AntReplaceRegexp @Inject constructor(objects: ObjectFactory) : AbstractAntTask(objects) {
-    /** Copies the filtered source tree into [outputDirectory]. */
-    @get:Inject
-    protected abstract val fileSystemOperations: FileSystemOperations
-
     /** The directory whose files are processed. */
     @get:InputDirectory
     @get:PathSensitive(PathSensitivity.RELATIVE)

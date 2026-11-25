@@ -40,13 +40,17 @@ abstract class AntChecksum @Inject constructor(objects: ObjectFactory) : Abstrac
         fileExtension.convention(".sha256")
     }
 
+    /** Clears [outputDirectory], so that outputs of removed inputs do not survive. */
+    override fun prepare() = clearDirectory(outputDirectory)
+
     override fun elements(): List<AntElement> = files.files.map { file ->
         element(
             "checksum",
             "file" to file,
             "todir" to outputDirectory,
             "algorithm" to algorithm,
-            "fileext" to fileExtension
+            "fileext" to fileExtension,
+            "forceoverwrite" to true
         )
     }
 }

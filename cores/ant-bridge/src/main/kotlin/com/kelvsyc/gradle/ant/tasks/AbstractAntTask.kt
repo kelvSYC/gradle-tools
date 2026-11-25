@@ -5,6 +5,8 @@ import com.kelvsyc.gradle.ant.AntIsolation
 import com.kelvsyc.gradle.ant.AntOperations
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Classpath
@@ -25,6 +27,10 @@ abstract class AbstractAntTask @Inject constructor(objects: ObjectFactory) : Def
     @get:Internal
     abstract val isolation: Property<AntIsolation>
 
+    /** Prepares the output before Ant runs. */
+    @get:Inject
+    protected abstract val fileSystemOperations: FileSystemOperations
+
     private val operations = objects.newInstance(AntOperations::class.java)
 
     init {
@@ -40,6 +46,16 @@ abstract class AbstractAntTask @Inject constructor(objects: ObjectFactory) : Def
      * Prepares the task's output before Ant runs; does nothing by default.
      */
     protected open fun prepare() = Unit
+
+    /**
+     * Deletes and recreates [directory], so that no output of an earlier run (such as the output of a removed input)
+     * survives and Ant's own up-to-date checks never skip work that Gradle decided to rerun.
+     */
+    protected fun clearDirectory(directory: DirectoryProperty) {
+        val target = directory.get().asFile
+        fileSystemOperations.delete { delete(target) }
+        target.mkdirs()
+    }
 
     /**
      * Returns [elements]; exists so that tests can inspect the Ant tree without running Ant.

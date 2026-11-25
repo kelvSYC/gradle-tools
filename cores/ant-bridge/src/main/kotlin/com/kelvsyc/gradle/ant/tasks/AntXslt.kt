@@ -57,12 +57,16 @@ abstract class AntXslt @Inject constructor(objects: ObjectFactory) : AbstractAnt
         extension.convention(".html")
     }
 
+    /** Clears [outputDirectory], so that outputs of removed inputs do not survive. */
+    override fun prepare() = clearDirectory(outputDirectory)
+
     override fun elements(): List<AntElement> {
         val xslt = element(
             "xslt",
             "basedir" to sourceDirectory,
             "destdir" to outputDirectory,
             "style" to stylesheet,
+            "force" to true,
             "extension" to extension,
             "includes" to includes.get().joinToString(","),
             "excludes" to excludes.get().takeIf { it.isNotEmpty() }?.joinToString(",")

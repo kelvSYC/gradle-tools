@@ -64,6 +64,7 @@ class AntTypedTasksSpec : FunSpec({
             "basedir" to project.file("xml").absolutePath,
             "destdir" to project.file("html").absolutePath,
             "style" to project.file("style.xsl").absolutePath,
+            "force" to "true",
             "extension" to ".html",
             "includes" to "**/*"
         )
@@ -81,7 +82,8 @@ class AntTypedTasksSpec : FunSpec({
         elements.map { it.attributes["file"] } shouldContainExactly
             listOf(project.file("a.jar").absolutePath, project.file("sub/b.jar").absolutePath)
         elements.first().attributes.filterKeys { it != "file" } shouldBe mapOf(
-            "todir" to project.file("sums").absolutePath, "algorithm" to "SHA-256", "fileext" to ".sha256"
+            "todir" to project.file("sums").absolutePath, "algorithm" to "SHA-256", "fileext" to ".sha256",
+            "forceoverwrite" to "true"
         )
     }
 
@@ -104,7 +106,8 @@ class AntTypedTasksSpec : FunSpec({
             "alias" to "me",
             "storepass" to "store",
             "keypass" to "key",
-            "tsaurl" to "http://tsa"
+            "tsaurl" to "http://tsa",
+            "force" to "true"
         )
     }
 

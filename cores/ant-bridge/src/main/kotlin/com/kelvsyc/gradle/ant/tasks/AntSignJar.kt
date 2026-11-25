@@ -70,6 +70,9 @@ abstract class AntSignJar @Inject constructor(objects: ObjectFactory) : Abstract
     @get:OutputDirectory
     abstract val outputDirectory: DirectoryProperty
 
+    /** Clears [outputDirectory], so that outputs of removed inputs do not survive. */
+    override fun prepare() = clearDirectory(outputDirectory)
+
     override fun elements(): List<AntElement> {
         val storePass = storePassword.get().resolve()
         val keyPass = keyPassword.orNull?.resolve()
@@ -85,7 +88,8 @@ abstract class AntSignJar @Inject constructor(objects: ObjectFactory) : Abstract
                 "storetype" to storeType.orNull,
                 "sigalg" to sigAlg.orNull,
                 "digestalg" to digestAlg.orNull,
-                "tsaurl" to tsaUrl.orNull
+                "tsaurl" to tsaUrl.orNull,
+                "force" to true
             )
         }
     }
