@@ -243,6 +243,29 @@ class AntBridgeConfigurationCacheSpec : FunSpec({
         File(dir, "out/a.txt").readText() shouldBe "a"
     }
 
+    test("AntWork with declared outputs reruns when its Ant tree changes") {
+        val dir = kotlinProject(
+            "tree-change",
+            """
+            tasks.register<AntWork>("message") {
+                val target = layout.buildDirectory.file("out/message.txt")
+                outputs.file(target)
+                ant { task("echo", "message" to "one", "file" to target) }
+            }
+            """
+        )
+
+        cc(dir, "message").task(":message")?.outcome shouldBe TaskOutcome.SUCCESS
+        val unchanged = cc(dir, "message")
+        unchanged.output shouldContain REUSED
+        unchanged.task(":message")?.outcome shouldBe TaskOutcome.UP_TO_DATE
+
+        val script = File(dir, "build.gradle.kts")
+        script.writeText(script.readText().replace("\"message\" to \"one\"", "\"message\" to \"two\""))
+        cc(dir, "message").task(":message")?.outcome shouldBe TaskOutcome.SUCCESS
+        File(dir, "build/out/message.txt").readText() shouldBe "two"
+    }
+
     test("AntWork with absent outputs is never up to date") {
         val dir = kotlinProject(
             "no-outputs",

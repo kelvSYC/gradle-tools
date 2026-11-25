@@ -5,6 +5,8 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldMatch
 import io.kotest.matchers.types.shouldBeSameInstanceAs
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -31,6 +33,24 @@ class AntWorkSpec : FunSpec({
     test("has no outputs, so it is never up to date") {
         val task = project().tasks.register("antWork", AntWork::class.java).get()
         task.outputs.hasOutput shouldBe false
+    }
+
+    test("the tree fingerprint is a hash that follows the resolved tree") {
+        val project = project()
+        var count = 0
+        fun fingerprint(message: String): String {
+            val task = project.tasks.register("antWork${count++}", AntWork::class.java).get()
+            task.ant { task("echo", "message" to project.provider { message }) }
+            return task.treeFingerprint.get()
+        }
+        fingerprint("secret-one") shouldBe fingerprint("secret-one")
+        fingerprint("secret-one") shouldNotBe fingerprint("secret-two")
+        fingerprint("secret-one") shouldMatch Regex("[0-9a-f]{64}")
+    }
+
+    test("the tree fingerprint is a task input") {
+        val task = project().tasks.register("antWork", AntWork::class.java).get()
+        task.inputs.properties.keys shouldContain "treeFingerprint"
     }
 
     test("the extension exposes one AntOperations") {
