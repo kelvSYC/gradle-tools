@@ -1,7 +1,6 @@
 package com.kelvsyc.gradle.ant
 
 import com.kelvsyc.gradle.ant.internal.AntRuntimeClassLoader
-import com.kelvsyc.gradle.ant.internal.AntRuntimeService
 import com.kelvsyc.gradle.ant.internal.AntShim
 import com.kelvsyc.gradle.plugins.AntBridgePlugin
 import io.kotest.core.spec.style.FunSpec
@@ -13,8 +12,6 @@ import io.kotest.matchers.maps.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldStartWith
-import io.kotest.matchers.types.shouldBeSameInstanceAs
-import io.kotest.matchers.types.shouldNotBeSameInstanceAs
 import io.mockk.mockk
 import io.mockk.verify
 import org.gradle.api.Action
@@ -33,12 +30,10 @@ class AntPropertiesLoadingSpec : FunSpec({
 
     fun Project.load(configure: AntPropertiesSpec.() -> Unit): Provider<Map<String, String>> {
         val spec = objects.newInstance(AntPropertiesSpec::class.java).apply(configure)
-        val runtime = gradle.sharedServices.registerIfAbsent("antBridgeRuntime", AntRuntimeService::class.java) {}
         return providers.of(AntProperties::class.java) {
             parameters {
                 spec.applyTo(this)
                 antClasspath.setFrom(TestAnt.classpath)
-                this.runtime.set(runtime)
             }
         }
     }
@@ -188,17 +183,5 @@ class AntPropertiesLoadingSpec : FunSpec({
         val result = project.extensions.getByType<AntBridgeExtension>()
             .properties { file("a.properties") }.get()
         result["dir"] shouldBe "/opt/app"
-    }
-
-    test("runtime service reuses one loader per classpath and closes it") {
-        val project = project()
-        val service = project.gradle.sharedServices
-            .registerIfAbsent("antBridgeRuntime", AntRuntimeService::class.java) {}.get()
-        val loader = service.shim(TestAnt.classpath).loader
-        service.shim(TestAnt.classpath).loader shouldBeSameInstanceAs loader
-        service.shim(TestAnt.classpath + TestAnt.contribClasspath).loader shouldNotBeSameInstanceAs loader
-        loader.getResource("org/apache/tools/ant/Project.class") shouldNotBe null
-        service.close()
-        loader.getResource("org/apache/tools/ant/Project.class") shouldBe null
     }
 })

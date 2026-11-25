@@ -47,7 +47,6 @@ a fresh Ant project and an isolated class loader (Ant never goes on the build sc
 | `seeds` | `MapProperty<String, String>` | Properties set before any source |
 | `baseDirectory` | `DirectoryProperty` | Ant's `basedir`, used by `${basedir}` references; the spec sets the project directory |
 | `antClasspath` | `ConfigurableFileCollection` | The Ant classpath |
-| `runtime` | `Property<AntRuntimeService>` | Optional; caches one Ant class loader per classpath across obtains. Leave it unset when the value is obtained at configuration time: the configuration cache does not support build services there |
 
 ### Example
 

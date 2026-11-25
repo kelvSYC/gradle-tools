@@ -328,7 +328,9 @@ class AntBridgeConfigurationCacheSpec : FunSpec({
         val second = cc(dir, "isolated", "--info")
         second.output shouldContain REUSED
         second.task(":isolated")?.outcome shouldBe TaskOutcome.SUCCESS
-        Regex("Running Ant .+ in process (\\d+)").find(second.output)?.groupValues?.get(1) shouldNotBe daemonPid
+        val secondWorkerPid = Regex("Running Ant .+ in process (\\d+)").find(second.output)?.groupValues?.get(1)
+        secondWorkerPid shouldNotBe null
+        secondWorkerPid shouldNotBe daemonPid
     }
 
     test("the bridge's Ant version runs, not Gradle's") {

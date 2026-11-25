@@ -26,9 +26,8 @@ abstract class AntBridgeExtension @Inject constructor(
     val operations: AntOperations = objects.newInstance(AntOperations::class.java)
 
     /**
-     * Returns the properties declared by [configure], loaded by [AntProperties] with [classpath]. Each obtain uses
-     * its own class loader: the value is typically obtained at configuration time, where the configuration cache does
-     * not support build services.
+     * Returns the properties declared by [configure], loaded by [AntProperties] with [classpath]. Each obtain opens
+     * and closes its own class loader.
      */
     fun properties(configure: Action<in AntPropertiesSpec>): Provider<Map<String, String>> {
         val spec = objects.newInstance(AntPropertiesSpec::class.java)

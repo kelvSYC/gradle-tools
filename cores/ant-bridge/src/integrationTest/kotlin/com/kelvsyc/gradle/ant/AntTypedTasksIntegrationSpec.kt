@@ -53,7 +53,9 @@ private fun javaTool(name: String): File = File(System.getProperty("java.home"),
 
 private fun runTool(vararg command: String): Int {
     val process = ProcessBuilder(*command).inheritIO().start()
-    process.waitFor(TOOL_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+    val finished = process.waitFor(TOOL_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+    if (!finished) process.destroyForcibly()
+    check(finished) { "${command.first()} did not finish within $TOOL_TIMEOUT_SECONDS seconds" }
     return process.exitValue()
 }
 

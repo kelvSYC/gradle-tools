@@ -1,7 +1,6 @@
 package com.kelvsyc.gradle.ant
 
 import com.kelvsyc.gradle.ant.internal.AntRuntimeClassLoader
-import com.kelvsyc.gradle.ant.internal.AntRuntimeService
 import com.kelvsyc.gradle.ant.internal.AntShim
 import org.gradle.api.Action
 import org.gradle.api.file.ConfigurableFileCollection
@@ -46,33 +45,17 @@ abstract class AntProperties : ValueSource<Map<String, String>, AntProperties.Pa
 
         /** The Ant classpath: Ant and anything the sources' Ant tasks need. */
         val antClasspath: ConfigurableFileCollection
-
-        /**
-         * Optional service caching the isolated Ant class loaders across obtains; without it each obtain creates and
-         * closes its own loader. Leave it unset when the value is obtained at configuration time: the configuration
-         * cache does not support build services in the inputs it fingerprints.
-         */
-        val runtime: Property<AntRuntimeService>
     }
 
-    override fun obtain(): Map<String, String> {
-        val classpath = parameters.antClasspath.files.toList()
-        val service = parameters.runtime.orNull
-        return if (service != null) {
-            load(service.shim(classpath))
-        } else {
-            AntRuntimeClassLoader(classpath).use { load(AntShim(it)) }
+    override fun obtain(): Map<String, String> =
+        AntRuntimeClassLoader(parameters.antClasspath.files.toList()).use { loader ->
+            val request = AntShim.PropertyRequest(
+                parameters.sources.get(),
+                parameters.seeds.getOrElse(emptyMap()),
+                parameters.baseDirectory.get().asFile
+            )
+            AntShim(loader).loadProperties(request, Logging.getLogger(AntProperties::class.java))
         }
-    }
-
-    private fun load(shim: AntShim): Map<String, String> {
-        val request = AntShim.PropertyRequest(
-            parameters.sources.get(),
-            parameters.seeds.getOrElse(emptyMap()),
-            parameters.baseDirectory.get().asFile
-        )
-        return shim.loadProperties(request, Logging.getLogger(AntProperties::class.java))
-    }
 }
 
 /**
