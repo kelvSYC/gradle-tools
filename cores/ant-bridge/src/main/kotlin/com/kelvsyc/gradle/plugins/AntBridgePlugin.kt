@@ -3,7 +3,6 @@ package com.kelvsyc.gradle.plugins
 import com.kelvsyc.gradle.ant.AntBridgeExtension
 import com.kelvsyc.gradle.ant.AntIsolation
 import com.kelvsyc.gradle.ant.AntWork
-import com.kelvsyc.gradle.ant.internal.AntRuntimeService
 import com.kelvsyc.gradle.ant.tasks.AbstractAntTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -12,9 +11,8 @@ import org.gradle.api.Project
  * Bridges legacy Ant usage into configuration-cache-safe Gradle builds.
  *
  * Applying it creates the `antBridge` dependency scope (Ant and its antlibs), the `antBridgeClasspath` resolvable
- * configuration that extends it, the `antBridge` extension and the `antBridgeRuntime` shared build service, which
- * caches the isolated Ant class loaders used to load properties. Every [AntWork] and typed Ant task ([AbstractAntTask]) gets `antBridgeClasspath` as its
- * Ant classpath and class-loader isolation by convention.
+ * configuration that extends it and the `antBridge` extension. Every [AntWork] and typed Ant task ([AbstractAntTask])
+ * gets `antBridgeClasspath` as its Ant classpath and class-loader isolation by convention.
  */
 class AntBridgePlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -29,8 +27,7 @@ class AntBridgePlugin : Plugin<Project> {
         val classpath = project.configurations.resolvable(CLASSPATH_NAME) {
             extendsFrom(scope.get())
         }
-        val runtime = project.gradle.sharedServices.registerIfAbsent(RUNTIME_SERVICE_NAME, AntRuntimeService::class.java) {}
-        val extension = project.extensions.create(EXTENSION_NAME, AntBridgeExtension::class.java, classpath.get(), runtime)
+        val extension = project.extensions.create(EXTENSION_NAME, AntBridgeExtension::class.java, classpath.get())
         project.tasks.withType(AntWork::class.java).configureEach {
             antClasspath.from(extension.classpath)
             isolation.convention(AntIsolation.CLASSLOADER)
@@ -55,9 +52,6 @@ class AntBridgePlugin : Plugin<Project> {
 
         /** Name of the resolvable configuration holding the resolved Ant classpath. */
         const val CLASSPATH_NAME: String = "antBridgeClasspath"
-
-        /** Name of the shared build service caching the isolated Ant class loaders. */
-        const val RUNTIME_SERVICE_NAME: String = "antBridgeRuntime"
 
         /** Name of the extension. */
         const val EXTENSION_NAME: String = "antBridge"

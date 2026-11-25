@@ -11,8 +11,7 @@ plugins {
 ```
 
 The plugin creates the `antBridge` dependency scope (Ant `1.10.18` as a preferred version, plus any antlibs you add),
-the `antBridgeClasspath` resolvable configuration, the `antBridge` extension and the `antBridgeRuntime` shared build
-service, which caches one isolated Ant class loader per Ant classpath for the build.
+the `antBridgeClasspath` resolvable configuration and the `antBridge` extension.
 
 ## Loading Ant properties: `AntProperties`
 
@@ -48,7 +47,7 @@ a fresh Ant project and an isolated class loader (Ant never goes on the build sc
 | `seeds` | `MapProperty<String, String>` | Properties set before any source |
 | `baseDirectory` | `DirectoryProperty` | Ant's `basedir`, used by `${basedir}` references; the spec sets the project directory |
 | `antClasspath` | `ConfigurableFileCollection` | The Ant classpath |
-| `runtime` | `Property<AntRuntimeService>` | The `antBridgeRuntime` shared service |
+| `runtime` | `Property<AntRuntimeService>` | Optional; caches one Ant class loader per classpath across obtains. Leave it unset when the value is obtained at configuration time: the configuration cache does not support build services there |
 
 ### Example
 

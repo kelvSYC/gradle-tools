@@ -44,7 +44,6 @@ abstract class AntSignJar @Inject constructor(objects: ObjectFactory) : Abstract
 
     /** The key password, if it differs from the keystore password; resolved at execution, not an input. */
     @get:Internal
-    @get:Optional
     abstract val keyPassword: Property<CredentialReference>
 
     /** The keystore type (Ant's `storetype`). */

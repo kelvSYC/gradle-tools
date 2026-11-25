@@ -6,6 +6,7 @@ plugins {
     id("com.kelvsyc.internal.kotlin-gradle-plugin")
     id("com.kelvsyc.internal.gradle-tools.core")
     id("com.kelvsyc.internal.gradle-tools.detekt")
+    id("com.kelvsyc.internal.gradle-tools.gradle-integration-test")
     id("com.kelvsyc.internal.github-publishing")
 }
 
@@ -61,7 +62,8 @@ dependencies {
 }
 
 tasks.test {
-    // One AntBridgeGradleVersionSpec subclass per Gradle version (added later), each in its own test JVM.
+    // One AntBridgeGradleVersionSpec subclass per Gradle version (com.kelvsyc.gradle.plugins.gradleversions), each in its
+    // own test JVM. Each version's TestKit directory is a subdirectory of gradleVersionTest.testKitDir.
     maxParallelForks = 2
     val antClasspath = files(antTestClasspath)
     val contribClasspath = files(antContribTestClasspath)

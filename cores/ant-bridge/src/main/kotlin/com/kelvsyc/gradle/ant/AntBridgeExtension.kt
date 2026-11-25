@@ -1,6 +1,5 @@
 package com.kelvsyc.gradle.ant
 
-import com.kelvsyc.gradle.ant.internal.AntRuntimeService
 import org.gradle.api.Action
 import org.gradle.api.file.FileCollection
 import org.gradle.api.model.ObjectFactory
@@ -13,8 +12,7 @@ import javax.inject.Inject
  */
 abstract class AntBridgeExtension @Inject constructor(
     /** The resolved Ant classpath: Ant, its antlibs and anything else declared on `antBridge`. */
-    val classpath: FileCollection,
-    private val runtime: Provider<AntRuntimeService>
+    val classpath: FileCollection
 ) {
     /** Creates the property specs. */
     @get:Inject
@@ -28,7 +26,9 @@ abstract class AntBridgeExtension @Inject constructor(
     val operations: AntOperations = objects.newInstance(AntOperations::class.java)
 
     /**
-     * Returns the properties declared by [configure], loaded by [AntProperties] with [classpath].
+     * Returns the properties declared by [configure], loaded by [AntProperties] with [classpath]. Each obtain uses
+     * its own class loader: the value is typically obtained at configuration time, where the configuration cache does
+     * not support build services.
      */
     fun properties(configure: Action<in AntPropertiesSpec>): Provider<Map<String, String>> {
         val spec = objects.newInstance(AntPropertiesSpec::class.java)
@@ -37,7 +37,6 @@ abstract class AntBridgeExtension @Inject constructor(
             parameters {
                 spec.applyTo(this)
                 antClasspath.from(classpath)
-                runtime.set(this@AntBridgeExtension.runtime)
             }
         }
     }
