@@ -78,6 +78,9 @@ tasks.register('legacy') {
 }
 ```
 
+Inside a recorded body, an `ant.` prefix (`ant.copy(...)`, or `ant.withGroovyBuilder { }` in Kotlin) is accepted and
+records the same: `ant` there is the recorder, never Gradle's `project.ant`.
+
 ### `ant.xxx` in a custom task class's `@TaskAction`
 
 Create an `AntOperations` with the injected `ObjectFactory` and pass the Ant classpath as a task input.
@@ -97,7 +100,7 @@ abstract class Legacy @Inject constructor(objects: ObjectFactory) : DefaultTask(
     fun go() {
         val marker = out.get().file("marker")
         ant.execute(cp) { task("touch", "file" to marker) }
-        // or, for a legacy closure body: ant.record(cp) { touch(file: marker) }
+        // or, for a legacy builder body: ant.record(cp) { withGroovyBuilder { "touch"("file" to marker) } }
     }
 }
 
@@ -168,7 +171,7 @@ tasks.register<AntWork>("contrib") {
 
 The `antlib:` URI form needs no `taskdef`: `task("var", ..., namespace = "antlib:net.sf.antcontrib")` makes Ant load
 the antlib named by the URI from the `antBridge` classpath. In recorded Groovy, the same is
-`ant.'antlib:net.sf.antcontrib:var'(name: 'x', value: '1')`.
+`'antlib:net.sf.antcontrib:var'(name: 'x', value: '1')` (an `ant.` prefix is also accepted).
 
 ### The Kotlin DSL and its typed helpers
 
@@ -221,16 +224,18 @@ a fresh Ant project and an isolated class loader (Ant never goes on the build sc
 | `file(path)`, `file(path) { prefix.set("p"); prefixValues.set(true) }` | `<property file="..." prefix="..." prefixValues="..."/>`; `path` resolves against the project directory |
 | `resource(name, classpath)`, `resource(name, classpath) { prefix.set("p") }` | `<property resource="..." classpath="..." prefix="..."/>` |
 | `url(url)`, `url(url) { prefix.set("p") }` | `<property url="..." prefix="..."/>` |
-| `environment(prefix)` | `<property environment="..."/>` |
+| `environment(prefix)` | `<property environment="..."/>`; the whole environment is the value's input, so any changed variable invalidates the configuration cache, and every variable (tokens included) is stored, encrypted, in its fingerprint |
 | `seed(key, value)` | a property set before loading (overrides the sources) |
 
 ### Parameters (when using `providers.of` directly)
+
+Direct users build the `AntPropertySource` values themselves and must set `baseDirectory`.
 
 | Parameter | Type | Description |
 |---|---|---|
 | `sources` | `ListProperty<AntPropertySource>` | `File`, `Resource`, `Url` or `Environment`, loaded in order |
 | `seeds` | `MapProperty<String, String>` | Properties set before any source |
-| `baseDirectory` | `DirectoryProperty` | Ant's `basedir`, used by `${basedir}` references; the spec sets the project directory |
+| `baseDirectory` | `DirectoryProperty` | Required: Ant's `basedir`, used by `${basedir}` references; the spec sets the project directory |
 | `antClasspath` | `ConfigurableFileCollection` | The Ant classpath |
 
 ### Example
@@ -267,7 +272,9 @@ Each extends `AbstractAntTask` (`antClasspath`, `isolation`; both wired by the p
 | `AntSignJar` | `signjar` | `jars`, `keystore`, `alias`, `storeType`, `sigAlg`, `digestAlg`, `tsaUrl` | `outputDirectory` | no |
 | `AntJUnitReport` | `junitreport` | `resultsDirectory`, `includes` (`TEST-*.xml`), `format` (`noframes`) | `outputDirectory` | yes |
 
-`AntSignJar` takes `storePassword` and `keyPassword` as `Property<CredentialReference>`; they are resolved at execution and are not task inputs. `AntJUnitReport` needs `org.apache.ant:ant-junit`, which the plugin adds by default.
+`AntXslt`, `AntChecksum` and `AntSignJar` clear `outputDirectory` before Ant runs and tell Ant to skip its own
+up-to-date checks, so a rerun never leaves stale output (including the output of a removed input). `AntSignJar` takes
+`storePassword` and `keyPassword` as `Property<CredentialReference>`; they are resolved at execution and are not task inputs. `AntJUnitReport` needs `org.apache.ant:ant-junit`, which the plugin adds by default.
 
 ```kotlin
 tasks.register<AntChecksum>("checksums") {
@@ -298,7 +305,8 @@ tasks.register<AntWork>("native2ascii") {
 ```
 
 `AntWork` has `elements`, `antClasspath` (defaults to `antBridgeClasspath`) and `isolation`. A task without declared
-outputs is never up to date.
+outputs is never up to date. The Ant tree is an input through `treeFingerprint`, the SHA-256 of the resolved tree, so
+editing it reruns the task; only the hash is recorded, keeping resolved values such as secrets out of the history.
 
 ## `AntOperations` and isolation modes
 
