@@ -19,9 +19,10 @@ import javax.inject.Inject
  * you need to supply a custom `service` binding without `@ServiceReference` tracking.
  */
 @DisableCachingByDefault(because = "Deleting a Cloud Run job is not cacheable")
-abstract class AbstractDeleteJobTask @Inject constructor(
-    private val workerExecutor: WorkerExecutor,
-) : DefaultTask() {
+abstract class AbstractDeleteJobTask : DefaultTask() {
+    /** Submits this task's work to the Gradle Worker API; available to subclasses. */
+    @get:Inject
+    protected abstract val workerExecutor: WorkerExecutor
 
     /**
      * The build service managing the Cloud Run Jobs client.

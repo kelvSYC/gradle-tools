@@ -26,9 +26,11 @@ import javax.inject.Inject
  * Specify entries using [registerEntry]. For topics with message ordering, set [Entry.orderingKey].
  */
 @DisableCachingByDefault(because = "Publishing to an external service is not cacheable")
-abstract class AbstractPublishBatch @Inject constructor(
-    private val objects: ObjectFactory,
-) : DefaultTask() {
+abstract class AbstractPublishBatch : DefaultTask() {
+    /** Creates the [Entry] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val objects: ObjectFactory
+
     /**
      * The [TopicAdminClient] used to publish messages.
      */

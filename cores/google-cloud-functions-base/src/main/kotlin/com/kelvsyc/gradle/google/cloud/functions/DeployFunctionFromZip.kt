@@ -3,8 +3,6 @@ package com.kelvsyc.gradle.google.cloud.functions
 import org.gradle.api.provider.Property
 import org.gradle.api.services.ServiceReference
 import org.gradle.work.DisableCachingByDefault
-import org.gradle.workers.WorkerExecutor
-import javax.inject.Inject
 
 /**
  * Specialization of [AbstractDeployFunctionFromZip] that adds `@get:ServiceReference` to the
@@ -25,9 +23,7 @@ import javax.inject.Inject
  * ```
  */
 @DisableCachingByDefault(because = "Deploying to an external service is not cacheable")
-abstract class DeployFunctionFromZip @Inject constructor(
-    workerExecutor: WorkerExecutor,
-) : AbstractDeployFunctionFromZip(workerExecutor) {
+abstract class DeployFunctionFromZip : AbstractDeployFunctionFromZip() {
 
     @get:ServiceReference
     abstract override val service: Property<FunctionServiceClientBuildService>

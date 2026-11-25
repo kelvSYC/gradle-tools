@@ -34,10 +34,15 @@ import javax.inject.Inject
  * any artifact fails to be retrieved.
  */
 @DisableCachingByDefault(because = "Downloading from an external service is not cacheable")
-abstract class AbstractBatchDownloadFromGCS @Inject constructor(
-    private val objects: ObjectFactory,
-    private val providers: ProviderFactory
-) : DefaultTask() {
+abstract class AbstractBatchDownloadFromGCS : DefaultTask() {
+    /** Creates the [Artifact] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val objects: ObjectFactory
+
+    /** Creates the lazy providers of the [Artifact] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val providers: ProviderFactory
+
     /**
      * The [Storage] client used to perform the download.
      */

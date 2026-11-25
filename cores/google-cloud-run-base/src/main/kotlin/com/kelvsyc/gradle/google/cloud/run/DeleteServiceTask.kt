@@ -2,8 +2,6 @@ package com.kelvsyc.gradle.google.cloud.run
 
 import org.gradle.api.provider.Property
 import org.gradle.api.services.ServiceReference
-import org.gradle.workers.WorkerExecutor
-import javax.inject.Inject
 
 /**
  * Specialization of [AbstractDeleteServiceTask] that adds `@get:ServiceReference` to the
@@ -22,9 +20,7 @@ import javax.inject.Inject
  * }
  * ```
  */
-abstract class DeleteServiceTask @Inject constructor(
-    workerExecutor: WorkerExecutor,
-) : AbstractDeleteServiceTask(workerExecutor) {
+abstract class DeleteServiceTask : AbstractDeleteServiceTask() {
 
     @get:ServiceReference
     abstract override val service: Property<CloudRunServicesClientBuildService>
