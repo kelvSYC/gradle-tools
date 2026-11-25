@@ -4,8 +4,6 @@ import org.gradle.api.provider.Property
 import org.gradle.api.services.ServiceReference
 import org.gradle.api.tasks.Input
 import org.gradle.work.DisableCachingByDefault
-import org.gradle.workers.WorkerExecutor
-import javax.inject.Inject
 
 /**
  * Task that sets `WEBSITE_RUN_FROM_PACKAGE` to a plain blob URL on an Azure Function App.
@@ -17,9 +15,7 @@ import javax.inject.Inject
  * [configureAction] to call [RunFromPackageFunctionAppAction.Parameters.sasUrl].
  */
 @DisableCachingByDefault(because = "Deploying to an external service is not cacheable")
-abstract class DeployFunctionAppFromPackage @Inject constructor(
-    workerExecutor: WorkerExecutor,
-) : AbstractDeployFunctionAppFromPackage(workerExecutor) {
+abstract class DeployFunctionAppFromPackage : AbstractDeployFunctionAppFromPackage() {
 
     @get:ServiceReference
     abstract override val appService: Property<FunctionAppClientBuildService>

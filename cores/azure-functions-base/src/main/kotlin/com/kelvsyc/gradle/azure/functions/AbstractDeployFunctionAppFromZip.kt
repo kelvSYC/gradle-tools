@@ -23,9 +23,10 @@ import javax.inject.Inject
  * to supply a custom [appService] binding without `@ServiceReference` tracking.
  */
 @DisableCachingByDefault(because = "Deploying to an external service is not cacheable")
-abstract class AbstractDeployFunctionAppFromZip @Inject constructor(
-    private val workerExecutor: WorkerExecutor,
-) : DefaultTask() {
+abstract class AbstractDeployFunctionAppFromZip : DefaultTask() {
+    /** Submits this task's work to the Gradle Worker API; available to subclasses. */
+    @get:Inject
+    protected abstract val workerExecutor: WorkerExecutor
 
     /**
      * The ARM manager service used to retrieve publishing credentials and locate the function app.

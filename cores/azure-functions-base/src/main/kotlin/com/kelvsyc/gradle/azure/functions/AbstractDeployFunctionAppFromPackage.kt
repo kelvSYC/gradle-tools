@@ -22,9 +22,10 @@ import javax.inject.Inject
  * class for always-run scenarios.
  */
 @DisableCachingByDefault(because = "Deploying to an external service is not cacheable")
-abstract class AbstractDeployFunctionAppFromPackage @Inject constructor(
-    private val workerExecutor: WorkerExecutor,
-) : DefaultTask() {
+abstract class AbstractDeployFunctionAppFromPackage : DefaultTask() {
+    /** Submits this task's work to the Gradle Worker API; available to subclasses. */
+    @get:Inject
+    protected abstract val workerExecutor: WorkerExecutor
 
     /**
      * The ARM manager service.

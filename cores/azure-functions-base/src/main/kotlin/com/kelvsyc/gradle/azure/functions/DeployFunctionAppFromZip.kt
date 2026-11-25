@@ -3,8 +3,6 @@ package com.kelvsyc.gradle.azure.functions
 import org.gradle.api.provider.Property
 import org.gradle.api.services.ServiceReference
 import org.gradle.work.DisableCachingByDefault
-import org.gradle.workers.WorkerExecutor
-import javax.inject.Inject
 
 /**
  * Task that deploys a local zip file to an Azure Function App via the Kudu SCM zip-deploy API.
@@ -24,9 +22,7 @@ import javax.inject.Inject
  * without `@ServiceReference` tracking (e.g. in a composite build with custom wiring).
  */
 @DisableCachingByDefault(because = "Deploying to an external service is not cacheable")
-abstract class DeployFunctionAppFromZip @Inject constructor(
-    workerExecutor: WorkerExecutor,
-) : AbstractDeployFunctionAppFromZip(workerExecutor) {
+abstract class DeployFunctionAppFromZip : AbstractDeployFunctionAppFromZip() {
 
     @get:ServiceReference
     abstract override val appService: Property<FunctionAppClientBuildService>
