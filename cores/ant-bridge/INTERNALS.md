@@ -22,7 +22,8 @@ antBridge configuration ──resolved──▶ Ant jars ─┐
                                                  ├─▶ AntRuntimeClassLoader (parent: platform loader)
 plugin jar: ant-bridge-shim/**.class.bin ───────┘            │ defines
                                                              ▼
-AntWorkAction / AntProperties ──▶ AntShim ──JDK maps──▶ shim entry point (TreeExecutor, PropertyLoader)
+AntWorkAction / AntProperties ──▶ AntShim ──JDK maps──▶ shim entry point (TreeExecutor, PropertyLoader,
+                                                             │        BuildReader, TargetRunner)
                                                              │
                                                              ▼
                                                         Ant Project
@@ -30,7 +31,7 @@ AntWorkAction / AntProperties ──▶ AntShim ──JDK maps──▶ shim ent
 
 | Piece | Where | Role |
 |---|---|---|
-| The shim | `src/antShim/java/.../ant/shim/` | The only Ant-aware code. `TreeExecutor` turns element trees into Ant tasks and runs them; `PropertyLoader` runs Ant's `Property` task per source (`RecordingProperty` records the keys each source names); `ShimSupport` holds the shared project setup, logging bridge and result maps. |
+| The shim | `src/antShim/java/.../ant/shim/` | The only Ant-aware code. `TreeExecutor` turns element trees into Ant tasks and runs them; `PropertyLoader` runs Ant's `Property` task per source (`RecordingProperty` records the keys each source names); `BuildReader` parses build files with Ant's own project helper and reports their targets, top-level properties and loaded files; `TargetRunner` re-parses them and runs one target without its dependencies; `ShimSupport` holds the shared project setup, build-file parsing, logging bridge and result maps. |
 | `AntRuntimeClassLoader` | `src/main/.../ant/internal/` | A `URLClassLoader` over the resolved `antBridge` jars whose parent is the platform class loader. It defines the shim classes from the plugin's resources. |
 | `AntShim` | `src/main/.../ant/internal/` | The plugin-side adapter: converts requests to JDK types, invokes a shim entry point by class name, and turns the result back into a value or an `AntExecutionException`. |
 | Callers | `AntWorkAction` (`actions`, public), `AntProperties` | Open a loader, call through `AntShim`, close the loader. Everything else (`AntWork`, the typed tasks, `AntOperations`) reaches Ant through `AntWorkAction`, whose trees come from `AntTrees`. |
@@ -60,15 +61,18 @@ The plugin and the shim are in different class loaders, so a class they both nam
 The only types they share are the JDK's. Across the boundary:
 
 - **Entry points** are classes implementing `java.util.function.Function<Map<String, Object>, Map<String, Object>>`,
-  instantiated by name (`AntShim.TREE_EXECUTOR`, `AntShim.PROPERTY_LOADER`).
+  instantiated by name (`AntShim.TREE_EXECUTOR`, `AntShim.PROPERTY_LOADER`, `AntShim.BUILD_READER`,
+  `AntShim.TARGET_RUNNER`).
 - **Requests** are maps of strings, lists and maps. `AntNode.toShimMap()` and `AntPropertySource.toShimMap()` build
-  them; the request keys of each entry point are documented in its class comment (`TreeExecutor`, `PropertyLoader`).
-  Every request carries `"logger"` and `"baseDirectory"`. `TreeExecutor` also accepts `"results"`, a list of property
+  them; the request keys of each entry point are documented in its class comment (`TreeExecutor`, `PropertyLoader`,
+  `BuildReader`, `TargetRunner`). Every request carries `"logger"`. `TreeExecutor` and `PropertyLoader` take
+  `"baseDirectory"`; `BuildReader` and `TargetRunner` take `"files"` instead, each with its own base directory. `TreeExecutor` also accepts `"results"`, a list of property
   names to report after the tree runs.
 - **Logging** is a `java.util.function.BiConsumer<Integer, String>` of Ant priority and message. `AntShim` maps Ant's
   priorities to Gradle's logger: error, warn, info, and debug for verbose and debug.
-- **Results** are maps. Success has `"antVersion"` and `"properties"` (`PropertyLoader` always; `TreeExecutor` always,
-  empty when no `"results"` were requested). For `TreeExecutor`, `"properties"` maps each requested name the Ant
+- **Results** are maps. Success has `"antVersion"` and `"properties"` (`PropertyLoader`, `BuildReader` and
+  `TargetRunner` always; `TreeExecutor` always, empty when no `"results"` were requested). `BuildReader` adds
+  `"targets"` and `"loadedFiles"`. For `TreeExecutor`, `"properties"` maps each requested name the Ant
   project defines to its value (names the tree did not set are left out). Failure has
   `"failure"` (Ant's message), `"location"` and `"trace"` (the stack trace as a string).
 
@@ -95,6 +99,25 @@ mechanism: `AntWork` points `resultFile` at its declared `exportedPropertiesFile
 temporary file in the system temp directory (owner-only on POSIX), deleted after reading, also on failure. The
 configuration-time `AntQuery` has no work action (a `ValueSource` cannot use the Worker API) and reads `"properties"`
 from `TreeExecutor` directly.
+
+## Parsing several top-level build files into one project
+
+`ShimSupport.parseBuildFiles` (used by `BuildReader` and `TargetRunner`) parses each file with a new `ProjectHelper`
+from `ProjectHelperRepository`, as `ProjectHelper.configureProject` does, but Ant expects one top-level file per
+project, so before each file it:
+
+- removes Ant's parsing context (the `ant.parsing.context` reference of `ProjectHelper2`) and the unnamed implicit
+  target. A context left over from an earlier file would parse the next one as an import of it (its `<project>`
+  attributes ignored, its top-level tasks appended to the earlier implicit target and run again), and the implicit
+  target's name would be a duplicate;
+- sets the base directory itself, because `ProjectHelper2` keeps a `basedir` property that is already set. It reads the
+  file's own `<project basedir>` with a JDK SAX pass that resolves no entity or DTD (a file that pass cannot read is
+  left to Ant's parse to report), and also lists the targets the file defines directly. Ant silently ignores a target
+  whose name is already registered, so a name an earlier top-level file registered (itself or through its imports)
+  fails instead, naming both files.
+
+The loaded files are each top-level helper's import stack after its parse, which holds the file and everything it
+imported or included (resources without a file, such as imports from a jar, are left out).
 
 ## Decision: no shared Ant state between tasks
 
