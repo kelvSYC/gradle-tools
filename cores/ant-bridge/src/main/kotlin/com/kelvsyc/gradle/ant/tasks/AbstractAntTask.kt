@@ -15,6 +15,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 import java.io.File
 import javax.inject.Inject
 
@@ -25,6 +26,7 @@ import javax.inject.Inject
  * Extend this class to define a reusable Ant task type. It takes no constructor parameters: the services it needs are
  * injected properties ([objects], [fileSystemOperations]), which subclasses may use too.
  */
+@DisableCachingByDefault(because = "Abstract base: each subclass declares whether its own work is cacheable")
 abstract class AbstractAntTask : DefaultTask() {
     /** The Ant classpath: Ant, its antlibs and anything they need. */
     @get:Classpath
