@@ -50,8 +50,13 @@ abstract class AntTargetAction : WorkAction<AntTargetAction.Parameters> {
         val logger = Logging.getLogger(AntTargetAction::class.java)
         val target = parameters.target.get()
         val export = parameters.exportFile.get().asFile
+        val buildFiles = parameters.buildFiles.get()
+        val baseDirectories = parameters.baseDirectories.get()
+        require(buildFiles.size == baseDirectories.size) {
+            "buildFiles and baseDirectories must have the same size (${buildFiles.size} vs ${baseDirectories.size})"
+        }
         export.delete()
-        val files = parameters.buildFiles.get().zip(parameters.baseDirectories.get()) { file, base ->
+        val files = buildFiles.zip(baseDirectories) { file, base ->
             AntShim.BuildFile(file, base.ifEmpty { null }?.let(::File))
         }
         logger.info("Running Ant target {} in process {}", target, ProcessHandle.current().pid())

@@ -16,12 +16,13 @@ class AntTargetActionSpec : FunSpec({
         buildFile: File,
         target: String,
         exportFile: File,
-        upstream: List<File> = emptyList()
+        upstream: List<File> = emptyList(),
+        baseDirectories: List<String> = listOf("")
     ): AntTargetAction {
         val project = ProjectBuilder.builder().build()
         val params = project.objects.newInstance(AntTargetAction.Parameters::class.java)
         params.buildFiles.add(buildFile)
-        params.baseDirectories.add("")
+        params.baseDirectories.addAll(baseDirectories)
         params.upstreamExports.addAll(upstream.map { f -> project.layout.projectDirectory.file(f.absolutePath) })
         params.target.set(target)
         params.exportFile.set(exportFile)
@@ -66,6 +67,26 @@ class AntTargetActionSpec : FunSpec({
         val export = dir.resolve("a.properties").also { PropertiesFiles.write(it, mapOf("stale" to "1")) }
         val e = shouldThrow<AntExecutionException> { action(file, "a", export).execute() }
         e.message shouldContain "boom"
+        export.exists().shouldBeFalse()
+    }
+
+    test("a base directory with a space is the target's basedir") {
+        val dir = tempdir()
+        val base = dir.resolve("base dir").apply { mkdirs() }
+        val file = build(dir, "<target name=\"a\"><property name=\"bd\" value=\"\${basedir}\"/></target>")
+        val export = dir.resolve("a.properties")
+        action(file, "a", export, baseDirectories = listOf(base.absolutePath)).execute()
+        File(PropertiesFiles.read(export)["bd"]!!).canonicalFile shouldBe base.canonicalFile
+    }
+
+    test("mismatched buildFiles and baseDirectories fail before anything runs") {
+        val dir = tempdir()
+        val file = build(dir, "<target name=\"a\"/>")
+        val export = dir.resolve("a.properties")
+        val e = shouldThrow<IllegalArgumentException> {
+            action(file, "a", export, baseDirectories = listOf("", "")).execute()
+        }
+        e.message shouldContain "same size (1 vs 2)"
         export.exists().shouldBeFalse()
     }
 })
