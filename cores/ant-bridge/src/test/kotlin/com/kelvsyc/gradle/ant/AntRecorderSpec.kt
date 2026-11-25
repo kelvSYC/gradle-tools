@@ -154,11 +154,13 @@ class AntRecorderSpec : FunSpec({
             """
             class Owner {
                 def outDir = 'owned'
+                def ant = 'the owner ant'
                 Map getProperties() { [x: 'owner'] }
                 Closure flat() { return { mkdir(dir: outDir) } }
                 Closure nested() { return { copy(todir: outDir) { fileset(dir: outDir) { include(name: outDir) } } } }
                 Closure unknown() { return { copy(todir: 'o') { fileset(dir: missing) } } }
                 Closure reserved() { return { copy(todir: properties['x']) } }
+                Closure prefixed() { return { ant.copy(todir: 'out') { ant.fileset(dir: 'src') } } }
             }
             return new Owner()
             """.trimIndent()
@@ -192,6 +194,10 @@ class AntRecorderSpec : FunSpec({
                 "Load properties with antBridge.properties { } (a Provider) or read a task output instead."
         }
 
+        test("an ant. prefix records into the recorder, not the owner's ant") {
+            shouldBeCopyTree(recordDelegated("prefixed"))
+        }
+
         test("reserved names fail even when the owner has them") {
             shouldThrow<AntReservedPropertyException> { recordDelegated("reserved") }
         }
@@ -206,5 +212,13 @@ class AntRecorderSpec : FunSpec({
             }
         }
         shouldBeCopyTree(elements)
+    }
+
+    test("Kotlin body using the ant prefix records") {
+        val elements = AntRecorder.record { recorder ->
+            recorder.ant.withGroovyBuilder { "echo"("message" to "x") }
+        }
+        elements.single().name shouldBe "echo"
+        elements.single().attributes shouldBe mapOf("message" to "x")
     }
 })

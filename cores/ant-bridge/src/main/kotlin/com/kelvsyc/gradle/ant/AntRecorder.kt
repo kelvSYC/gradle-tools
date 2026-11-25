@@ -42,9 +42,16 @@ class AntReservedPropertyException(message: String) : GradleException(message)
  * Ant runs only after the block ends: reading `properties`, `references` or `project` throws
  * [AntReservedPropertyException]; reading or setting any other property, or using the value a recorded call returns,
  * throws [AntReadBackException]. In a closure with a recorder as its delegate, other names still resolve against the
- * closure's owner.
+ * closure's owner. An `ant.` prefix is accepted: [ant] is the recorder itself.
  */
 class AntRecorder internal constructor(private val sink: MutableList<AntElement>) : GroovyInterceptable {
+    /**
+     * This recorder, so that legacy bodies written as `ant.copy(...)` record here rather than reaching Gradle's own
+     * `project.ant`: in Groovy, `ant` is read from the recorder before the closure's owner; in Kotlin,
+     * `record { ant.withGroovyBuilder { ... } }` would otherwise bind to `Project.ant`.
+     */
+    val ant: AntRecorder get() = this
+
     override fun invokeMethod(name: String, args: Any?): Any? {
         val arguments = argumentsOf(args)
         return when (name) {
@@ -56,6 +63,7 @@ class AntRecorder internal constructor(private val sink: MutableList<AntElement>
     }
 
     override fun getProperty(propertyName: String): Any? {
+        if (propertyName == "ant") return this
         if (propertyName in RECORDER_PROPERTIES) {
             throw AntReservedPropertyException(readMessage(propertyName))
         }
