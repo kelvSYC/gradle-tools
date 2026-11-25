@@ -24,6 +24,9 @@ abstract class AntBridgeExtension @Inject constructor(
     @get:Inject
     protected abstract val providers: ProviderFactory
 
+    /** Runs Ant from task actions and `doLast` blocks at execution time. */
+    val operations: AntOperations = objects.newInstance(AntOperations::class.java)
+
     /**
      * Returns the properties declared by [configure], loaded by [AntProperties] with [classpath].
      */

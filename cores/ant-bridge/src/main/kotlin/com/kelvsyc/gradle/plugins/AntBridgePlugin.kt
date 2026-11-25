@@ -1,6 +1,8 @@
 package com.kelvsyc.gradle.plugins
 
 import com.kelvsyc.gradle.ant.AntBridgeExtension
+import com.kelvsyc.gradle.ant.AntIsolation
+import com.kelvsyc.gradle.ant.AntWork
 import com.kelvsyc.gradle.ant.internal.AntRuntimeService
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -10,7 +12,8 @@ import org.gradle.api.Project
  *
  * Applying it creates the `antBridge` dependency scope (Ant and its antlibs), the `antBridgeClasspath` resolvable
  * configuration that extends it, the `antBridge` extension and the `antBridgeRuntime` shared build service, which
- * caches the isolated Ant class loaders used to load properties.
+ * caches the isolated Ant class loaders used to load properties. Every [AntWork] task gets `antBridgeClasspath` as its
+ * Ant classpath and class-loader isolation by convention.
  */
 class AntBridgePlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -26,7 +29,11 @@ class AntBridgePlugin : Plugin<Project> {
             extendsFrom(scope.get())
         }
         val runtime = project.gradle.sharedServices.registerIfAbsent(RUNTIME_SERVICE_NAME, AntRuntimeService::class.java) {}
-        project.extensions.create(EXTENSION_NAME, AntBridgeExtension::class.java, classpath.get(), runtime)
+        val extension = project.extensions.create(EXTENSION_NAME, AntBridgeExtension::class.java, classpath.get(), runtime)
+        project.tasks.withType(AntWork::class.java).configureEach {
+            antClasspath.from(extension.classpath)
+            isolation.convention(AntIsolation.CLASSLOADER)
+        }
     }
 
     private fun org.gradle.api.artifacts.Dependency.preferred(): org.gradle.api.artifacts.Dependency {

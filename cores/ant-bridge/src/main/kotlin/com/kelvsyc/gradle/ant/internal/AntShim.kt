@@ -16,16 +16,17 @@ class AntShim(
     val loader: AntRuntimeClassLoader
 ) {
     /**
-     * Runs [nodes] in order in a fresh Ant project based at [baseDirectory], logging Ant's messages to [logger].
+     * Runs [nodes] in order in a fresh Ant project based at [baseDirectory], logging Ant's messages to [logger], and
+     * returns the version Ant reports, or `null` if it reports none.
      *
      * @throws AntExecutionException if Ant reports a failure
      */
-    fun execute(nodes: List<AntNode>, baseDirectory: File, logger: Logger) {
+    fun execute(nodes: List<AntNode>, baseDirectory: File, logger: Logger): String? {
         val request = mapOf(
             "nodes" to nodes.map { it.toShimMap() },
             "baseDirectory" to baseDirectory.absolutePath
         )
-        invoke(TREE_EXECUTOR, request, logger)
+        return invoke(TREE_EXECUTOR, request, logger)["antVersion"]?.toString()
     }
 
     /**
