@@ -202,7 +202,7 @@ Each core has a minimum Gradle, set by `com.kelvsyc.gradle.minimumGradle` in the
 
 | Tier | Cores | Compiled against | Kotlin `apiVersion`/`languageVersion` |
 |------|-------|------------------|---------------------------------------|
-| 8.14 (default) | 49 | `org.gradle.experimental:gradle-public-api:8.14` | 2.0 (Gradle 8.14 embeds Kotlin 2.0.21) |
+| 8.14 (default) | 50 | `org.gradle.experimental:gradle-public-api:8.14` | 2.0 (Gradle 8.14 embeds Kotlin 2.0.21) |
 | 9.0 | 15: the 13 `aws-*-kotlin-base`, `aws-kotlin-extensions`, `google-cloud-artifact-registry-base` | `gradle-public-api:9.0.0` | 2.2 |
 
 - **The rule:** the units are every core, `aggregation/compat` and, with `-Pcheck.shard.integration=true`, the integration tests (`integrationTest`). Each unit has a weight, its cost in light-core equivalents: `heavyUnitWeights` in the root `build.gradle.kts` lists the few heavy units (`gradle-extensions`, `integrationTest`, `aggregation/compat`, `dokka-dash`), every other core weighs 1, so a new core is sharded automatically (cores are read from `cores/`). Greedy longest-processing-time assigns them: heaviest unit first (ties by name), each to the shard with the smallest weight sum so far (ties to the lowest index). `./gradlew :shardAssignment -Pcheck.shard=1/<count>` (with `-Pcheck.shard.integration=true` if wanted) prints every shard's units and weight sum.
