@@ -71,3 +71,24 @@ val dir = antBridge.properties { file("build.properties") { prefix.set("cfg") } 
 ```
 
 `antProperty(key)` returns a `Provider<String>` that is absent when the key is not defined.
+
+## Typed tasks (`com.kelvsyc.gradle.ant.tasks`)
+
+Each extends `AbstractAntTask` (`antClasspath`, `isolation`; both wired by the plugin, isolation defaults to `CLASSLOADER`), declares its inputs and outputs, and never modifies an input in place.
+
+| Task | Ant task | Inputs | Output | Cached |
+|------|----------|--------|--------|--------|
+| `AntReplaceRegexp` | `replaceregexp` | `sourceDirectory`, `includes`, `excludes`, `match`, `replace`, `flags`, `byLine`, `encoding` | `outputDirectory` (a filtered copy, then replaced in place there) | yes |
+| `AntXslt` | `xslt` | `sourceDirectory`, `includes`, `excludes`, `stylesheet`, `parameters`, `extension` | `outputDirectory` | yes |
+| `AntChecksum` | `checksum` | `files`, `algorithm` (`SHA-256`), `fileExtension` (`.sha256`) | `outputDirectory` | yes |
+| `AntSignJar` | `signjar` | `jars`, `keystore`, `alias`, `storeType`, `sigAlg`, `digestAlg`, `tsaUrl` | `outputDirectory` | no |
+| `AntJUnitReport` | `junitreport` | `resultsDirectory`, `includes` (`TEST-*.xml`), `format` (`noframes`) | `outputDirectory` | yes |
+
+`AntSignJar` takes `storePassword` and `keyPassword` as `Property<CredentialReference>`; they are resolved at execution and are not task inputs. `AntJUnitReport` needs `org.apache.ant:ant-junit`, which the plugin adds by default.
+
+```kotlin
+tasks.register<AntChecksum>("checksums") {
+    files.from(tasks.jar)
+    outputDirectory.set(layout.buildDirectory.dir("checksums"))
+}
+```

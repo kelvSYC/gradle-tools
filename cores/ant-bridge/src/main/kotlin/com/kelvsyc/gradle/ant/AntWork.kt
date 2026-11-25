@@ -35,6 +35,10 @@ abstract class AntWork @Inject constructor(objects: ObjectFactory) : DefaultTask
 
     private val operations = objects.newInstance(AntOperations::class.java)
 
+    init {
+        isolation.convention(AntIsolation.CLASSLOADER)
+    }
+
     /**
      * Appends the Ant tasks of [body] (Kotlin DSL) to [elements].
      */
