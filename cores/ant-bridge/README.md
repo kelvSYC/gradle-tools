@@ -596,7 +596,10 @@ antBridge.importBuild(file("tools/build.xml"), file("tools")) {}
   `clean` first), Gradle tasks and replacements included, as with legacy. The bridge uses `mustRunAfter` rather than
   legacy's `shouldRunAfter`, which parallel execution (the configuration cache's default) ignores. A pair that
   contradicts Ant's own dependencies (`depends="jar,compile"` where `jar` depends on `compile`), or an earlier kept
-  pair (`depends="x,y"` in one target and `depends="y,x"` in another), is skipped instead of forming a cycle.
+  pair (`depends="x,y"` in one target and `depends="y,x"` in another), is skipped instead of forming a cycle. Only
+  dependencies Ant knows of are checked: if two Gradle tasks in one `depends` depend on each other in the opposite
+  order in Gradle (`depends="assemble,classes"`), the build fails with a cycle, where legacy ignored the ordering.
+  Reorder the entries, or replace the target.
 - **`taskName { }`** is the legacy renaming closure. A task name that is already taken fails the import, naming the
   task and the target; rename with `taskName`. In a root project this includes Gradle's built-in tasks, so a target
   named `init`, `wrapper`, `help` or `tasks` needs renaming.
@@ -760,8 +763,9 @@ before migrating it.
   `loadproperties srcFile=` and the files of optional `<import>`s are configuration-cache inputs; a changed
   environment variable, URL, resource or command output read at top level does not invalidate the entry.
 - **`depends` order is a hard ordering.** Consecutive `depends` entries are ordered with `mustRunAfter`, where legacy
-  used `shouldRunAfter`; a pair that would form a cycle with Ant's own dependencies is skipped (see
-  [Replacing `ant.importBuild`](#replacing-antimportbuild)).
+  used `shouldRunAfter`. A pair that would form a cycle with Ant's own dependencies is skipped, but one that conflicts
+  only with Gradle-side dependencies (two Gradle tasks in a `depends` that depend on each other the other way round)
+  fails the build with a cycle, where legacy ignored it (see [Replacing `ant.importBuild`](#replacing-antimportbuild)).
 - **Top-level values are recomputed on every execution.** Each task re-runs the top-level statements, so values they
   compute (`<tstamp>`, `exec outputproperty`, environment reads) can differ between targets of one build, and from
   `propertiesFor`, which holds the values computed during configuration; a single Ant run computes them once.

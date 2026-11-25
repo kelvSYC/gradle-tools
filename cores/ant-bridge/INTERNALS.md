@@ -238,12 +238,13 @@ shared bag of the previous decision, so the import is built from these guardrail
   Recreating run-order visibility would need shared state and make results depend on scheduling.
 - **Only properties pass.** References are live Ant objects that cannot cross a process or a file.
 
-`AntImportRegistry` exists only during configuration. It holds what the calls declared and what reading the build
-reported, and computes each task's wiring; the tasks receive plain values (finalized when read) in their own
-properties, which is what the configuration cache stores. The registry holds no runtime state: without the
-configuration cache, the lazy providers it hands out (task dependencies, ordering, upstream exports, `propertiesFor`)
-may still read its frozen, immutable configuration during the execution phase, but no work action reaches it, nothing
-writes to it after configuration, and with the configuration cache it is not part of the stored state at all. It
+`AntImportRegistry` is filled during configuration and frozen when its values are first read. It holds what the calls
+declared and what reading the build reported, and computes each task's wiring; the tasks receive plain values
+(finalized when read) in their own properties, which is what the configuration cache stores. The registry holds no
+runtime state: without the configuration cache, the lazy providers it hands out (task dependencies, ordering, upstream
+exports, `propertiesFor`) may still read its frozen configuration during the execution phase, and the ordering
+provider caches the pairs it computes when the task graph is built, but no work action reaches it, no Ant state or
+task result is ever written to it, and with the configuration cache it is not part of the stored state at all. It
 could not be serialized into the configuration cache, is unavailable in a worker process, and, if it carried values
 at execution, would be the shared bag again.
 
