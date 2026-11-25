@@ -54,9 +54,10 @@ import javax.inject.Inject
  * @see BatchPublishPackageVersion
  */
 @DisableCachingByDefault(because = "Publishing to an external service is not cacheable")
-abstract class AbstractBatchPublishPackageVersion @Inject constructor(
-    private val objects: ObjectFactory,
-) : DefaultTask() {
+abstract class AbstractBatchPublishPackageVersion : DefaultTask() {
+    /** Creates the [Artifact] instances registered on this task; available to subclasses. */
+    @get:Inject
+    protected abstract val objects: ObjectFactory
 
     /**
      * Per-artifact coordinates and content for publishing a CodeArtifact generic package version asset.
