@@ -8,6 +8,8 @@ import java.net.URLClassLoader
  * An isolated class loader for Ant and its antlibs, whose parent is the platform class loader, so that neither
  * Gradle's own Ant nor the plugin's classes are visible to Ant. The shim classes (`com.kelvsyc.gradle.ant.shim`)
  * are defined in it from the plugin's `ant-bridge-shim/<path>.class.bin` resources.
+ *
+ * See the core's `INTERNALS.md` for why Ant is isolated this way.
  */
 class AntRuntimeClassLoader(antClasspath: List<File>) :
     URLClassLoader(antClasspath.map { it.toURI().toURL() }.toTypedArray(), getPlatformClassLoader()) {

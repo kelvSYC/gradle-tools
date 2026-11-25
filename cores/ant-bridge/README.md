@@ -339,3 +339,8 @@ typed task.
 - **`junitreport` with the `frames` format** may need Xalan on `antBridge`; `noframes` works with the default
   classpath.
 - **`ant.importBuild` is not covered.** Port the imported targets to Gradle tasks (typed tasks, `AntWork`).
+
+## Contributing
+
+How the bridge loads and runs Ant (the isolated class loader, the Java shim and its boundary contract) is described in
+[INTERNALS.md](INTERNALS.md).

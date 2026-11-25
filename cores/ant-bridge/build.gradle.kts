@@ -12,6 +12,13 @@ plugins {
 
 configure<DokkaExtension> {
     moduleName.set("Ant Bridge")
+    // The plumbing behind the API (see INTERNALS.md) is not part of it.
+    dokkaSourceSets.configureEach {
+        perPackageOption {
+            matchingRegex.set("""com\.kelvsyc\.gradle\.ant\.internal(\..*)?""")
+            suppress.set(true)
+        }
+    }
 }
 
 gradlePlugin {
@@ -21,6 +28,8 @@ gradlePlugin {
     }
 }
 
+// The Ant shim: plain Java compiled against Ant, defined at run time in an isolated class loader next to the consumer's
+// Ant. See INTERNALS.md for why it is Java and why it ships as resources.
 val antShim = sourceSets.create("antShim")
 
 dependencies {

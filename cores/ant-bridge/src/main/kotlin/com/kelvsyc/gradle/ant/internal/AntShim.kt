@@ -10,6 +10,9 @@ import java.util.function.Function
 
 /**
  * Invokes the Ant shim's entry points in [loader] by class name, exchanging JDK-typed maps only.
+ *
+ * The boundary contract (request and result keys, failures as values, the context class loader) is described in the
+ * core's `INTERNALS.md`.
  */
 class AntShim(
     /** The isolated loader holding Ant and the shim. */
