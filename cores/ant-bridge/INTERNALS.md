@@ -211,6 +211,16 @@ dependency, and the work action takes only files.
 `AntImport.propertiesFor` merges the same pieces on the Gradle side: seeds, then top-level properties, then each
 upstream export, zipped first-wins, so it carries the same dependencies as the target's task would.
 
+## Decision: no adapter for Ant filter readers
+
+Ant's filter readers (`ReplaceTokens` and friends in `Copy` filters) are not wrapped. They are plain
+`java.io.FilterReader` classes that Gradle instantiates itself, without Ant's runtime, and Gradle's
+[announcement][gradle-blog-keep-filters] gives a supported, faithful path: Ant as a build script
+dependency from Gradle 10. An adapter running them through the isolated loader would need the Ant classpath threaded
+through filter properties that Gradle does not track as inputs, and a loader per filtered file or a loader cache
+shared across tasks, which edges towards the shared state the bridge avoids, for little gain over that one dependency
+line. The README's "Ant filter readers in Copy tasks" section documents the options.
+
 ## Decision: no shared Ant state between tasks
 
 A `BuildService` (or any build-scoped holder) carrying Ant properties from one task to another is rejected, and the
@@ -273,3 +283,5 @@ matches the catalog.
 The integration tests (`src/integrationTest`) run TestKit builds that resolve Ant from Maven Central, under the
 configuration cache. The Gradle-version specs (`src/test/.../plugins/gradleversions`) repeat a smoke test on the oldest
 supported Gradle and on the running one.
+
+[gradle-blog-keep-filters]: https://blog.gradle.org/side-quest-removing-ant#keep-ants-filters-by-adding-ant-yourself
