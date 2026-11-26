@@ -112,7 +112,8 @@ final class ShimSupport {
     private static String antVersion() {
         try {
             return Main.getAntVersion();
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | LinkageError e) {
+            // Unknown version: Ant could not report it, for example without ant-launcher (AntMain) on the classpath.
             return null;
         }
     }
