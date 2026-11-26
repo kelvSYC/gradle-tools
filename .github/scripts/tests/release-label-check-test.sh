@@ -37,6 +37,18 @@ printf 'one\nTWO\n' > cores/a/api/a.api
 breaking="$(commit_change change)"
 git reset -q --hard "$base"
 
+# The PR is behind its base: only the PR's own change counts, not what the base gained since.
+git reset -q --hard "$base"
+echo pr > pr.txt
+pr_head="$(commit_change prwork)"
+git reset -q --hard "$base"
+base_moved="$(git rev-parse HEAD)"
+printf 'one\ntwo\nthree\n' > cores/a/api/a.api
+base_moved="$(commit_change basemoved)"
+run 0 "base gained API after the PR branched" "$base_moved" "$pr_head"
+contains "none" "behind-base PR reports none"
+git reset -q --hard "$base"
+
 # No release tag yet: major is 0.
 run 0 "no change, no label" "$base" "$base"
 contains "none" "reports change kind none"
