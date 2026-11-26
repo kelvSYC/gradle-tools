@@ -6,6 +6,26 @@ Ant task calls in a task action become Worker API work, and the Ant tasks you st
 Ant itself runs in an isolated class loader (or process) from the `antBridge` configuration, never on the build
 script classpath, and everything works under the configuration cache.
 
+## Read Gradle's guidance first
+
+Gradle's own announcement, [Side Quest: How Gradle Is Removing Ant][gradle-blog] (Gradle blog, October 2026), is the
+place to start. It lists what Gradle 9.9 deprecates and Gradle 10 removes, and the supported ways off Ant:
+
+- [Switch to a Gradle equivalent][gradle-blog-equivalent]: `Copy`, `Delete`, `Zip`/`Jar`/`Tar`, `Exec`,
+  `JavaExec`, and the behaviour differences to watch for.
+- [Call the tool directly][gradle-blog-tool]: `JavaExec`, the Worker API, or the tool on the build logic
+  classpath.
+- [Replace Ant filters with `filter(Transformer)`][gradle-blog-filters] and
+  [keep Ant's filters by adding Ant yourself][gradle-blog-keep-filters]: see
+  [Ant filter readers in Copy tasks](#ant-filter-readers-in-copy-tasks).
+- [Run Ant in a separate process][gradle-blog-process]: a generated build file run with `javaexec`.
+
+Where those apply, use them: they leave the build Ant-free. This bridge is for Ant usage you cannot rewrite in one
+step, such as `ant.importBuild`, Ant property files and the shared property bag, or `ant.xxx` calls spread across task
+actions. It keeps them working on Gradle 10 behind Gradle-shaped seams (providers, tasks, declared inputs and
+outputs) that you then replace one by one with the options above. Its `AntIsolation.PROCESS` mode is, in effect, the
+"run Ant in a separate process" recipe packaged up, for any Ant task rather than one hand-written build file.
+
 ## Supported Gradle versions
 
 Gradle 8.14 and later, running on JDK 21 or newer. Ant 1.10.x.
@@ -196,6 +216,11 @@ antBridge.importBuild('build.xml') { taskName { "ant-$it" } }
 
 The old form, `antBridge.importBuild('build.xml') { t -> "ant-$t" }`, still compiles, but the closure is then the
 configuration action: its result is ignored and no task is renamed.
+
+### `filter(...)` with Ant filter readers
+
+`filter(ReplaceTokens::class, ...)` and the other Ant filter readers do not need the bridge. See
+[Ant filter readers in Copy tasks](#ant-filter-readers-in-copy-tasks).
 
 ### The Kotlin DSL and its typed helpers
 
@@ -698,6 +723,30 @@ reads with Gradle values, and delete the `build.xml`.
 - The prefixed aliases `<import>` creates (`project.target`) get tasks of their own, as with legacy. Excluding the
   unprefixed name leaves the alias registered.
 
+## Ant filter readers in Copy tasks
+
+`filter(org.apache.tools.ant.filters.ReplaceTokens::class, …)` and the other Ant filter readers in `Copy`, `Sync` and
+`processResources` use Ant as a plain library: Gradle instantiates the `java.io.FilterReader` class in its own class
+loader, with no Ant project, targets or property bag. The bridge is not needed for them, and deliberately offers no
+adapter. Gradle's [announcement][gradle-blog] gives two ways forward:
+
+- **Replace them with Gradle filters** ([Replace Ant filters with `filter(Transformer)`][gradle-blog-filters]).
+  `filter { line -> … }` replaces `ReplaceTokens` (one pass over the tokens per line, with the tokens declared as task
+  inputs), `PrefixLines`, `StripLineComments`, `TabsToSpaces` and the other line filters; `expand(...)` covers
+  property templates. `filter { }` works line by line, so tokens spanning line breaks and whole-file filters such as
+  `HeadFilter` and `TailFilter` need a `java.io.FilterReader` of your own. This leaves the build Ant-free.
+- **Keep Ant's filters by adding Ant yourself** ([Keep Ant's filters by adding Ant yourself][gradle-blog-keep-filters]):
+  `buildscript { dependencies { classpath("org.apache.ant:ant:<version>") } }`, or an `implementation` dependency in
+  the build that holds your convention plugins. As the announcement puts it: "Only do this starting with Gradle 10.
+  Before that, it puts a second copy of Ant on the build script classpath, and Gradle's own copy wins." Until then,
+  leave the existing `filter(...)` calls as they are; they use Gradle's bundled Ant.
+
+Ant on the build script classpath for filters and the bridge's `antBridge` configuration are independent: the bridge
+loads its Ant in an isolated class loader that never sees the build script classpath, so the two can be different
+versions. Align them if you want the same Ant everywhere. The build-script Ant is an ordinary library dependency,
+subject to the usual version conflicts with other plugins on the same classpath, and it keeps Ant among the build's
+dependencies until the filters are replaced.
+
 ## What cannot be migrated
 
 - **Read-backs inside a recorded block.** Ant runs after the block ends, so reads of `properties`, `references` or
@@ -805,3 +854,10 @@ targets, or on custom project helpers may not work with the bridge.
 
 How the bridge loads and runs Ant (the isolated class loader, the Java shim and its boundary contract) is described in
 [INTERNALS.md](INTERNALS.md).
+
+[gradle-blog]: https://blog.gradle.org/side-quest-removing-ant
+[gradle-blog-equivalent]: https://blog.gradle.org/side-quest-removing-ant#switch-to-a-gradle-equivalent
+[gradle-blog-filters]: https://blog.gradle.org/side-quest-removing-ant#replace-ant-filters-with-filtertransformer
+[gradle-blog-keep-filters]: https://blog.gradle.org/side-quest-removing-ant#keep-ants-filters-by-adding-ant-yourself
+[gradle-blog-process]: https://blog.gradle.org/side-quest-removing-ant#run-ant-in-a-separate-process
+[gradle-blog-tool]: https://blog.gradle.org/side-quest-removing-ant#call-the-tool-directly
