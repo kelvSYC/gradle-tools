@@ -1,0 +1,81 @@
+public abstract class com/kelvsyc/gradle/aws/java/ses/AbstractSendBulkTemplatedMail : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getClient ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDefaultTemplateData ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEntries ()Lorg/gradle/api/provider/MapProperty;
+	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
+	protected abstract fun getProviders ()Lorg/gradle/api/provider/ProviderFactory;
+	public abstract fun getSender ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTemplateName ()Lorg/gradle/api/provider/Property;
+	public final fun registerEntry (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/ses/AbstractSendBulkTemplatedMail$Entry : org/gradle/api/Named {
+	public fun <init> (Ljava/lang/String;)V
+	public abstract fun getBccAddresses ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getCcAddresses ()Lorg/gradle/api/provider/ListProperty;
+	public fun getName ()Ljava/lang/String;
+	public abstract fun getRecipients ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getTemplateData ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/ses/AbstractSendRawMailAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/ses/AbstractSendRawMailAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getMessage ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSender ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/ses/AbstractSendTemplatedMailAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/ses/AbstractSendTemplatedMailAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getBccAddresses ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getCcAddresses ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getRecipients ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getSender ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTemplateJson ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTemplateName ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/ses/SendBulkTemplatedMail : com/kelvsyc/gradle/aws/java/ses/AbstractSendBulkTemplatedMail {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/ses/SendMailAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/ses/SendMailAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getBccAddresses ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getCcAddresses ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getHtmlMessage ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRecipients ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getSender ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSubject ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTextMessage ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/ses/SesAsyncClientBuildService : com/kelvsyc/gradle/aws/java/AbstractAwsJavaClientBuildService {
+	public fun <init> ()V
+	public synthetic fun createClient ()Ljava/lang/Object;
+	protected fun createClient ()Lsoftware/amazon/awssdk/services/ses/SesAsyncClient;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/ses/SesClientBuildService : com/kelvsyc/gradle/aws/java/AbstractAwsJavaClientBuildService {
+	public fun <init> ()V
+	public synthetic fun createClient ()Ljava/lang/Object;
+	protected fun createClient ()Lsoftware/amazon/awssdk/services/ses/SesClient;
+}
+

@@ -1,0 +1,516 @@
+public final class com/kelvsyc/gradle/ant/AntAttributeException : org/gradle/api/GradleException {
+	public fun <init> (Ljava/lang/String;)V
+}
+
+public abstract class com/kelvsyc/gradle/ant/AntBridgeExtension {
+	public fun <init> (Lorg/gradle/api/file/FileCollection;Lorg/gradle/api/model/ObjectFactory;Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/file/ProjectLayout;Lorg/gradle/api/tasks/TaskContainer;)V
+	public final fun getClasspath ()Lorg/gradle/api/file/FileCollection;
+	public final fun getOperations ()Lcom/kelvsyc/gradle/ant/AntOperations;
+	public final fun importBuild (Ljava/lang/Object;)Lcom/kelvsyc/gradle/ant/AntImport;
+	public final fun importBuild (Ljava/lang/Object;Ljava/lang/Object;Lorg/gradle/api/Action;)Lcom/kelvsyc/gradle/ant/AntImport;
+	public final fun importBuild (Ljava/lang/Object;Lorg/gradle/api/Action;)Lcom/kelvsyc/gradle/ant/AntImport;
+	public final fun properties (Lorg/gradle/api/Action;)Lorg/gradle/api/provider/Provider;
+	public final fun query (Lorg/gradle/api/Action;)Lorg/gradle/api/provider/Provider;
+}
+
+public final class com/kelvsyc/gradle/ant/AntElement {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getAttributes ()Ljava/util/Map;
+	public final fun getChildren ()Ljava/util/List;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getNamespace ()Ljava/lang/String;
+	public final fun getText ()Ljava/lang/Object;
+	public final fun resolve ()Lcom/kelvsyc/gradle/ant/AntNode;
+	public final fun setText (Ljava/lang/Object;)V
+}
+
+public final class com/kelvsyc/gradle/ant/AntElementScope {
+	public final fun element (Ljava/lang/String;[Lkotlin/Pair;Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public static synthetic fun element$default (Lcom/kelvsyc/gradle/ant/AntElementScope;Ljava/lang/String;[Lkotlin/Pair;Ljava/lang/String;Lorg/gradle/api/Action;ILjava/lang/Object;)V
+	public final fun exclude (Ljava/lang/String;)V
+	public final fun fileset (Ljava/lang/Object;Ljava/util/List;Ljava/util/List;Lorg/gradle/api/Action;)V
+	public static synthetic fun fileset$default (Lcom/kelvsyc/gradle/ant/AntElementScope;Ljava/lang/Object;Ljava/util/List;Ljava/util/List;Lorg/gradle/api/Action;ILjava/lang/Object;)V
+	public final fun filterchain (Lorg/gradle/api/Action;)V
+	public final fun filterset (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V
+	public static synthetic fun filterset$default (Lcom/kelvsyc/gradle/ant/AntElementScope;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)V
+	public final fun getElement ()Lcom/kelvsyc/gradle/ant/AntElement;
+	public final fun include (Ljava/lang/String;)V
+	public final fun mapper (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public static synthetic fun mapper$default (Lcom/kelvsyc/gradle/ant/AntElementScope;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
+	public final fun path (Ljava/lang/Object;)V
+	public final fun text (Ljava/lang/Object;)V
+}
+
+public abstract class com/kelvsyc/gradle/ant/AntExclusion {
+	public fun <init> ()V
+	public final fun properties (Lorg/gradle/api/provider/Provider;)V
+}
+
+public final class com/kelvsyc/gradle/ant/AntExecutionException : org/gradle/api/GradleException {
+	public fun <init> (Ljava/lang/String;)V
+}
+
+public final class com/kelvsyc/gradle/ant/AntImport {
+	public final fun propertiesFor (Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+}
+
+public abstract class com/kelvsyc/gradle/ant/AntImportSpec {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
+	public final fun antClasspath (Lorg/gradle/api/file/FileCollection;)V
+	public final fun exclude (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public final fun exclude ([Ljava/lang/String;)V
+	public final fun isolation (Lcom/kelvsyc/gradle/ant/AntIsolation;)V
+	public final fun properties (Ljava/util/Map;)V
+	public final fun properties (Lorg/gradle/api/provider/Provider;)V
+	public final fun taskName (Lorg/gradle/api/Transformer;)V
+}
+
+public abstract class com/kelvsyc/gradle/ant/AntImportedTarget : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;Lorg/gradle/api/file/ProjectLayout;)V
+	public abstract fun getAntClasspath ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public abstract fun getBaseDirectories ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getBuildFiles ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public final fun getExportedProperties ()Lorg/gradle/api/provider/Provider;
+	public abstract fun getExportedPropertiesFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getIsolation ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSeeds ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getTarget ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTopLevelBuildFiles ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getUpstreamExports ()Lorg/gradle/api/provider/ListProperty;
+	public final fun run ()V
+}
+
+public final class com/kelvsyc/gradle/ant/AntIsolation : java/lang/Enum {
+	public static final field CLASSLOADER Lcom/kelvsyc/gradle/ant/AntIsolation;
+	public static final field PROCESS Lcom/kelvsyc/gradle/ant/AntIsolation;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/kelvsyc/gradle/ant/AntIsolation;
+	public static fun values ()[Lcom/kelvsyc/gradle/ant/AntIsolation;
+}
+
+public final class com/kelvsyc/gradle/ant/AntNode : java/io/Serializable {
+	public static final field Companion Lcom/kelvsyc/gradle/ant/AntNode$Companion;
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/util/List;)V
+	public final fun getAttributes ()Ljava/util/Map;
+	public final fun getChildren ()Ljava/util/List;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getNamespace ()Ljava/lang/String;
+	public final fun getText ()Ljava/lang/String;
+	public final fun toShimMap ()Ljava/util/Map;
+}
+
+public final class com/kelvsyc/gradle/ant/AntNode$Companion {
+}
+
+public abstract class com/kelvsyc/gradle/ant/AntOperations {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;Lorg/gradle/api/file/ProjectLayout;)V
+	public final fun execute (Lorg/gradle/api/file/FileCollection;Lcom/kelvsyc/gradle/ant/AntIsolation;Ljava/util/Collection;Lorg/gradle/api/Action;)Ljava/util/Map;
+	public final fun execute (Lorg/gradle/api/file/FileCollection;Lcom/kelvsyc/gradle/ant/AntIsolation;Lorg/gradle/api/Action;)V
+	public final fun execute (Lorg/gradle/api/file/FileCollection;Ljava/util/Collection;Lorg/gradle/api/Action;)Ljava/util/Map;
+	public final fun execute (Lorg/gradle/api/file/FileCollection;Lorg/gradle/api/Action;)V
+	public final fun record (Lorg/gradle/api/file/FileCollection;Lcom/kelvsyc/gradle/ant/AntIsolation;Ljava/util/Collection;Lorg/gradle/api/Action;)Ljava/util/Map;
+	public final fun record (Lorg/gradle/api/file/FileCollection;Lcom/kelvsyc/gradle/ant/AntIsolation;Lorg/gradle/api/Action;)V
+	public final fun record (Lorg/gradle/api/file/FileCollection;Ljava/util/Collection;Lorg/gradle/api/Action;)Ljava/util/Map;
+	public final fun record (Lorg/gradle/api/file/FileCollection;Lorg/gradle/api/Action;)V
+	public final fun run (Lorg/gradle/api/file/FileCollection;Lcom/kelvsyc/gradle/ant/AntIsolation;Ljava/util/List;)V
+}
+
+public abstract class com/kelvsyc/gradle/ant/AntProperties : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/Map;
+}
+
+public abstract interface class com/kelvsyc/gradle/ant/AntProperties$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getAntClasspath ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public abstract fun getBaseDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getSeeds ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getSources ()Lorg/gradle/api/provider/ListProperty;
+}
+
+public abstract class com/kelvsyc/gradle/ant/AntPropertiesSpec {
+	public fun <init> (Lorg/gradle/api/file/ProjectLayout;Lorg/gradle/api/model/ObjectFactory;)V
+	public final fun environment (Ljava/lang/String;)V
+	public final fun file (Ljava/lang/Object;)V
+	public final fun file (Ljava/lang/Object;Lorg/gradle/api/Action;)V
+	public final fun resource (Ljava/lang/String;Lorg/gradle/api/file/FileCollection;)V
+	public final fun resource (Ljava/lang/String;Lorg/gradle/api/file/FileCollection;Lorg/gradle/api/Action;)V
+	public final fun seed (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun url (Ljava/lang/String;)V
+	public final fun url (Ljava/lang/String;Lorg/gradle/api/Action;)V
+}
+
+public abstract class com/kelvsyc/gradle/ant/AntPropertySource : java/io/Serializable {
+	public static final field Companion Lcom/kelvsyc/gradle/ant/AntPropertySource$Companion;
+	public abstract fun toShimMap ()Ljava/util/Map;
+}
+
+public final class com/kelvsyc/gradle/ant/AntPropertySource$Companion {
+}
+
+public final class com/kelvsyc/gradle/ant/AntPropertySource$Environment : com/kelvsyc/gradle/ant/AntPropertySource {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lcom/kelvsyc/gradle/ant/AntPropertySource$Environment;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/ant/AntPropertySource$Environment;Ljava/lang/String;ILjava/lang/Object;)Lcom/kelvsyc/gradle/ant/AntPropertySource$Environment;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPrefix ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toShimMap ()Ljava/util/Map;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/ant/AntPropertySource$File : com/kelvsyc/gradle/ant/AntPropertySource {
+	public fun <init> (Ljava/io/File;Ljava/lang/String;Z)V
+	public final fun component1 ()Ljava/io/File;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Z
+	public final fun copy (Ljava/io/File;Ljava/lang/String;Z)Lcom/kelvsyc/gradle/ant/AntPropertySource$File;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/ant/AntPropertySource$File;Ljava/io/File;Ljava/lang/String;ZILjava/lang/Object;)Lcom/kelvsyc/gradle/ant/AntPropertySource$File;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getFile ()Ljava/io/File;
+	public final fun getPrefix ()Ljava/lang/String;
+	public final fun getPrefixValues ()Z
+	public fun hashCode ()I
+	public fun toShimMap ()Ljava/util/Map;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/ant/AntPropertySource$Resource : com/kelvsyc/gradle/ant/AntPropertySource {
+	public fun <init> (Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Z)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Z
+	public final fun copy (Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Z)Lcom/kelvsyc/gradle/ant/AntPropertySource$Resource;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/ant/AntPropertySource$Resource;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;ZILjava/lang/Object;)Lcom/kelvsyc/gradle/ant/AntPropertySource$Resource;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getClasspath ()Ljava/util/List;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getPrefix ()Ljava/lang/String;
+	public final fun getPrefixValues ()Z
+	public fun hashCode ()I
+	public fun toShimMap ()Ljava/util/Map;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/ant/AntPropertySource$Url : com/kelvsyc/gradle/ant/AntPropertySource {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Z)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Z
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Z)Lcom/kelvsyc/gradle/ant/AntPropertySource$Url;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/ant/AntPropertySource$Url;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)Lcom/kelvsyc/gradle/ant/AntPropertySource$Url;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPrefix ()Ljava/lang/String;
+	public final fun getPrefixValues ()Z
+	public final fun getUrl ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toShimMap ()Ljava/util/Map;
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class com/kelvsyc/gradle/ant/AntPropertySourceOptions {
+	public fun <init> ()V
+	public abstract fun getPrefix ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPrefixValues ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/ant/AntQuery : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/Map;
+}
+
+public abstract interface class com/kelvsyc/gradle/ant/AntQuery$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getAntClasspath ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public abstract fun getBaseDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getNodes ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getResults ()Lorg/gradle/api/provider/SetProperty;
+}
+
+public abstract class com/kelvsyc/gradle/ant/AntQuerySpec {
+	public fun <init> (Lorg/gradle/api/file/ProjectLayout;)V
+	public final fun allowSideEffects ()V
+	public final fun ant (Lorg/gradle/api/Action;)V
+	public final fun record (Lgroovy/lang/Closure;)V
+	public final fun record (Lorg/gradle/api/Action;)V
+	public final fun result ([Ljava/lang/String;)V
+}
+
+public final class com/kelvsyc/gradle/ant/AntReadBackException : groovy/lang/MissingPropertyException {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getMessage ()Ljava/lang/String;
+	public fun getMessageWithoutLocationText ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/ant/AntRecorder : groovy/lang/GroovyInterceptable {
+	public final fun getAnt ()Lcom/kelvsyc/gradle/ant/AntRecorder;
+	public fun getMetaClass ()Lgroovy/lang/MetaClass;
+	public fun getProperty (Ljava/lang/String;)Ljava/lang/Object;
+	public fun invokeMethod (Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;
+	public fun setMetaClass (Lgroovy/lang/MetaClass;)V
+	public fun setProperty (Ljava/lang/String;Ljava/lang/Object;)V
+}
+
+public final class com/kelvsyc/gradle/ant/AntReservedPropertyException : org/gradle/api/GradleException {
+	public fun <init> (Ljava/lang/String;)V
+}
+
+public final class com/kelvsyc/gradle/ant/AntScope {
+	public final fun task (Ljava/lang/String;[Lkotlin/Pair;Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public static synthetic fun task$default (Lcom/kelvsyc/gradle/ant/AntScope;Ljava/lang/String;[Lkotlin/Pair;Ljava/lang/String;Lorg/gradle/api/Action;ILjava/lang/Object;)V
+}
+
+public final class com/kelvsyc/gradle/ant/AntTrees {
+	public static final field INSTANCE Lcom/kelvsyc/gradle/ant/AntTrees;
+	public static final fun build (Lorg/gradle/api/Action;)Ljava/util/List;
+	public static final fun record (Lgroovy/lang/Closure;)Ljava/util/List;
+	public static final fun record (Lorg/gradle/api/Action;)Ljava/util/List;
+}
+
+public abstract class com/kelvsyc/gradle/ant/AntWork : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;Lorg/gradle/api/file/ProjectLayout;Lorg/gradle/api/provider/ProviderFactory;)V
+	public final fun ant (Lorg/gradle/api/Action;)V
+	public final fun exportProperties ([Ljava/lang/String;)V
+	public abstract fun getAntClasspath ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public abstract fun getElements ()Lorg/gradle/api/provider/ListProperty;
+	public final fun getExportedProperties ()Lorg/gradle/api/provider/Provider;
+	public abstract fun getExportedPropertiesFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public final fun getExportedPropertyNames ()Lorg/gradle/api/provider/Provider;
+	public abstract fun getIsolation ()Lorg/gradle/api/provider/Property;
+	public final fun getTreeFingerprint ()Lorg/gradle/api/provider/Provider;
+	public final fun record (Lorg/gradle/api/Action;)V
+	public final fun run ()V
+}
+
+public final class com/kelvsyc/gradle/ant/RecordedCall : groovy/lang/GroovyInterceptable {
+	public fun getMetaClass ()Lgroovy/lang/MetaClass;
+	public fun getProperty (Ljava/lang/String;)Ljava/lang/Object;
+	public fun invokeMethod (Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;
+	public fun setMetaClass (Lgroovy/lang/MetaClass;)V
+	public fun setProperty (Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Void;
+	public synthetic fun setProperty (Ljava/lang/String;Ljava/lang/Object;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class com/kelvsyc/gradle/ant/actions/AntWorkAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/ant/actions/AntWorkAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getAntClasspath ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public abstract fun getBaseDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getNodes ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getResultFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getResultProperties ()Lorg/gradle/api/provider/SetProperty;
+}
+
+public abstract class com/kelvsyc/gradle/ant/internal/AntExclusionExport : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getExportFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getProperties ()Lorg/gradle/api/provider/MapProperty;
+	public final fun write ()V
+}
+
+public final class com/kelvsyc/gradle/ant/internal/AntRuntimeClassLoader : java/net/URLClassLoader {
+	public fun <init> (Ljava/util/List;)V
+}
+
+public final class com/kelvsyc/gradle/ant/internal/AntShim {
+	public fun <init> (Lcom/kelvsyc/gradle/ant/internal/AntRuntimeClassLoader;)V
+	public final fun execute (Ljava/util/List;Ljava/io/File;Lorg/gradle/api/logging/Logger;Ljava/util/Set;)Lcom/kelvsyc/gradle/ant/internal/AntShim$TreeResult;
+	public static synthetic fun execute$default (Lcom/kelvsyc/gradle/ant/internal/AntShim;Ljava/util/List;Ljava/io/File;Lorg/gradle/api/logging/Logger;Ljava/util/Set;ILjava/lang/Object;)Lcom/kelvsyc/gradle/ant/internal/AntShim$TreeResult;
+	public final fun loadProperties (Lcom/kelvsyc/gradle/ant/internal/AntShim$PropertyRequest;Lorg/gradle/api/logging/Logger;)Ljava/util/Map;
+	public final fun readBuild (Ljava/util/List;Ljava/util/Map;Lorg/gradle/api/logging/Logger;)Lcom/kelvsyc/gradle/ant/internal/AntShim$BuildModel;
+	public final fun runTarget (Ljava/util/List;Ljava/util/Map;Ljava/util/List;Ljava/lang/String;Lorg/gradle/api/logging/Logger;)Ljava/util/Map;
+}
+
+public final class com/kelvsyc/gradle/ant/internal/AntShim$BuildFile {
+	public fun <init> (Ljava/io/File;Ljava/io/File;)V
+	public final fun component1 ()Ljava/io/File;
+	public final fun component2 ()Ljava/io/File;
+	public final fun copy (Ljava/io/File;Ljava/io/File;)Lcom/kelvsyc/gradle/ant/internal/AntShim$BuildFile;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/ant/internal/AntShim$BuildFile;Ljava/io/File;Ljava/io/File;ILjava/lang/Object;)Lcom/kelvsyc/gradle/ant/internal/AntShim$BuildFile;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBaseDirectory ()Ljava/io/File;
+	public final fun getFile ()Ljava/io/File;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/ant/internal/AntShim$BuildModel {
+	public fun <init> (Ljava/util/List;Ljava/util/Map;Ljava/util/List;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/util/List;Ljava/util/Map;Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Ljava/util/Map;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;Ljava/util/Map;Ljava/util/List;Ljava/util/List;)Lcom/kelvsyc/gradle/ant/internal/AntShim$BuildModel;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/ant/internal/AntShim$BuildModel;Ljava/util/List;Ljava/util/Map;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lcom/kelvsyc/gradle/ant/internal/AntShim$BuildModel;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLoadedFiles ()Ljava/util/List;
+	public final fun getReadFiles ()Ljava/util/List;
+	public final fun getTargets ()Ljava/util/List;
+	public final fun getTopLevelProperties ()Ljava/util/Map;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/ant/internal/AntShim$BuildTarget {
+	public fun <init> (Ljava/lang/String;Ljava/io/File;Ljava/lang/String;Ljava/util/List;Ljava/util/List;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/io/File;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/util/List;
+	public final fun component5 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/io/File;Ljava/lang/String;Ljava/util/List;Ljava/util/List;)Lcom/kelvsyc/gradle/ant/internal/AntShim$BuildTarget;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/ant/internal/AntShim$BuildTarget;Ljava/lang/String;Ljava/io/File;Ljava/lang/String;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lcom/kelvsyc/gradle/ant/internal/AntShim$BuildTarget;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDepends ()Ljava/util/List;
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getFile ()Ljava/io/File;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getUpstream ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/ant/internal/AntShim$PropertyRequest {
+	public fun <init> (Ljava/util/List;Ljava/util/Map;Ljava/io/File;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun component2 ()Ljava/util/Map;
+	public final fun component3 ()Ljava/io/File;
+	public final fun copy (Ljava/util/List;Ljava/util/Map;Ljava/io/File;)Lcom/kelvsyc/gradle/ant/internal/AntShim$PropertyRequest;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/ant/internal/AntShim$PropertyRequest;Ljava/util/List;Ljava/util/Map;Ljava/io/File;ILjava/lang/Object;)Lcom/kelvsyc/gradle/ant/internal/AntShim$PropertyRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBaseDirectory ()Ljava/io/File;
+	public final fun getSeeds ()Ljava/util/Map;
+	public final fun getSources ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/ant/internal/AntShim$TreeResult {
+	public fun <init> (Ljava/lang/String;Ljava/util/Map;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/util/Map;
+	public final fun copy (Ljava/lang/String;Ljava/util/Map;)Lcom/kelvsyc/gradle/ant/internal/AntShim$TreeResult;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/ant/internal/AntShim$TreeResult;Ljava/lang/String;Ljava/util/Map;ILjava/lang/Object;)Lcom/kelvsyc/gradle/ant/internal/AntShim$TreeResult;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAntVersion ()Ljava/lang/String;
+	public final fun getProperties ()Ljava/util/Map;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class com/kelvsyc/gradle/ant/internal/AntTargetAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/ant/internal/AntTargetAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getAntClasspath ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public abstract fun getBaseDirectories ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getBuildFiles ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getExportFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getSeeds ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getTarget ()Lorg/gradle/api/provider/Property;
+	public abstract fun getUpstreamExports ()Lorg/gradle/api/provider/ListProperty;
+}
+
+public abstract class com/kelvsyc/gradle/ant/tasks/AbstractAntTask : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	protected final fun clearDirectory (Lorg/gradle/api/file/DirectoryProperty;)V
+	protected abstract fun elements (Lcom/kelvsyc/gradle/ant/AntScope;)V
+	public abstract fun getAntClasspath ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	protected abstract fun getFileSystemOperations ()Lorg/gradle/api/file/FileSystemOperations;
+	public abstract fun getIsolation ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
+	protected fun prepare ()V
+	protected final fun requireDistinctNames (Ljava/util/Collection;Ljava/lang/String;)V
+	protected final fun requireNoInputsIn (Lorg/gradle/api/file/DirectoryProperty;)V
+	public final fun runAnt ()V
+}
+
+public abstract class com/kelvsyc/gradle/ant/tasks/AntChecksum : com/kelvsyc/gradle/ant/tasks/AbstractAntTask {
+	public fun <init> ()V
+	protected fun elements (Lcom/kelvsyc/gradle/ant/AntScope;)V
+	public abstract fun getAlgorithm ()Lorg/gradle/api/provider/Property;
+	public abstract fun getFileExtension ()Lorg/gradle/api/provider/Property;
+	public abstract fun getFiles ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	protected fun prepare ()V
+}
+
+public abstract class com/kelvsyc/gradle/ant/tasks/AntJUnitReport : com/kelvsyc/gradle/ant/tasks/AbstractAntTask {
+	public fun <init> ()V
+	protected fun elements (Lcom/kelvsyc/gradle/ant/AntScope;)V
+	public abstract fun getFormat ()Lorg/gradle/api/provider/Property;
+	public abstract fun getIncludes ()Lorg/gradle/api/provider/SetProperty;
+	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getResultsDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	protected fun prepare ()V
+}
+
+public abstract class com/kelvsyc/gradle/ant/tasks/AntReplaceRegexp : com/kelvsyc/gradle/ant/tasks/AbstractAntTask {
+	public fun <init> ()V
+	protected fun elements (Lcom/kelvsyc/gradle/ant/AntScope;)V
+	public abstract fun getByLine ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEncoding ()Lorg/gradle/api/provider/Property;
+	public abstract fun getExcludes ()Lorg/gradle/api/provider/SetProperty;
+	public abstract fun getFlags ()Lorg/gradle/api/provider/Property;
+	public abstract fun getIncludes ()Lorg/gradle/api/provider/SetProperty;
+	public abstract fun getMatch ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getReplace ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSourceDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	protected fun prepare ()V
+}
+
+public abstract class com/kelvsyc/gradle/ant/tasks/AntSignJar : com/kelvsyc/gradle/ant/tasks/AbstractAntTask {
+	public fun <init> ()V
+	protected fun elements (Lcom/kelvsyc/gradle/ant/AntScope;)V
+	public abstract fun getAlias ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDigestAlg ()Lorg/gradle/api/provider/Property;
+	public abstract fun getJars ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public abstract fun getKeyPassword ()Lorg/gradle/api/provider/Property;
+	public abstract fun getKeystore ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getSigAlg ()Lorg/gradle/api/provider/Property;
+	public abstract fun getStorePassword ()Lorg/gradle/api/provider/Property;
+	public abstract fun getStoreType ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTsaUrl ()Lorg/gradle/api/provider/Property;
+	protected fun prepare ()V
+}
+
+public abstract class com/kelvsyc/gradle/ant/tasks/AntXslt : com/kelvsyc/gradle/ant/tasks/AbstractAntTask {
+	public fun <init> ()V
+	protected fun elements (Lcom/kelvsyc/gradle/ant/AntScope;)V
+	public abstract fun getExcludes ()Lorg/gradle/api/provider/SetProperty;
+	public abstract fun getExtension ()Lorg/gradle/api/provider/Property;
+	public abstract fun getIncludes ()Lorg/gradle/api/provider/SetProperty;
+	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getParameters ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getSourceDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getStylesheet ()Lorg/gradle/api/file/RegularFileProperty;
+	protected fun prepare ()V
+}
+
+public final class com/kelvsyc/gradle/plugins/AntBridgePlugin : org/gradle/api/Plugin {
+	public static final field CLASSPATH_NAME Ljava/lang/String;
+	public static final field Companion Lcom/kelvsyc/gradle/plugins/AntBridgePlugin$Companion;
+	public static final field DEFAULT_ANT_VERSION Ljava/lang/String;
+	public static final field EXTENSION_NAME Ljava/lang/String;
+	public static final field SCOPE_NAME Ljava/lang/String;
+	public fun <init> ()V
+	public synthetic fun apply (Ljava/lang/Object;)V
+	public fun apply (Lorg/gradle/api/Project;)V
+}
+
+public final class com/kelvsyc/gradle/plugins/AntBridgePlugin$Companion {
+}
+

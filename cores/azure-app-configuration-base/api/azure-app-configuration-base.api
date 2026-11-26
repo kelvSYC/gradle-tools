@@ -1,0 +1,215 @@
+public abstract class com/kelvsyc/gradle/azure/appconfiguration/AppConfigurationAsyncClientBuildService : com/kelvsyc/gradle/azure/AbstractAzureClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/azure/data/appconfiguration/ConfigurationAsyncClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/appconfiguration/AppConfigurationAsyncClientBuildService$Params : com/kelvsyc/gradle/azure/AzureBuildServiceParams {
+	public abstract fun getConnectionStringRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEndpoint ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/appconfiguration/AppConfigurationClientBuildService : com/kelvsyc/gradle/azure/AbstractAzureClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/azure/data/appconfiguration/ConfigurationClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/appconfiguration/AppConfigurationClientBuildService$Params : com/kelvsyc/gradle/azure/AzureBuildServiceParams {
+	public abstract fun getConnectionStringRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEndpoint ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/appconfiguration/AppConfigurationManagerBuildService : com/kelvsyc/gradle/azure/AbstractAzureClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/azure/resourcemanager/appconfiguration/AppConfigurationManager;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/appconfiguration/AppConfigurationManagerBuildService$Params : com/kelvsyc/gradle/azure/AzureBuildServiceParams {
+	public abstract fun getResourceGroup ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSubscriptionId ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/appconfiguration/ArchiveSnapshotAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/appconfiguration/ArchiveSnapshotAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSnapshotName ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/appconfiguration/CreateConfigurationStoreAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/appconfiguration/CreateConfigurationStoreAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getLocation ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSku ()Lorg/gradle/api/provider/Property;
+	public abstract fun getStoreName ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/appconfiguration/CreateSnapshotAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/appconfiguration/CreateSnapshotAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getKeyFilter ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLabelFilter ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRetentionPeriod ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSnapshotName ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/appconfiguration/DeleteConfigurationSettingAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/appconfiguration/DeleteConfigurationSettingAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLabel ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/appconfiguration/DeleteConfigurationStoreAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/appconfiguration/DeleteConfigurationStoreAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getStoreName ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/appconfiguration/DeleteFeatureFlagAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/appconfiguration/DeleteFeatureFlagAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getFeatureName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLabel ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/appconfiguration/GetConfigurationSettingValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/appconfiguration/GetConfigurationSettingValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLabel ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/appconfiguration/GetConfigurationStoreValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/appconfiguration/GetConfigurationStoreValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getStoreName ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/appconfiguration/GetFeatureFlagValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public fun obtain ()Ljava/lang/Boolean;
+	public synthetic fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/appconfiguration/GetFeatureFlagValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getFeatureName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLabel ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/appconfiguration/ListConfigurationSettingsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/Map;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/appconfiguration/ListConfigurationSettingsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getKeyFilter ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLabelFilter ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/appconfiguration/ListConfigurationStoresValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/Map;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/appconfiguration/ListConfigurationStoresValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/appconfiguration/ListFeatureFlagsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/Map;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/appconfiguration/ListFeatureFlagsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getLabel ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/appconfiguration/ListSnapshotsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/appconfiguration/ListSnapshotsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getNameFilter ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/appconfiguration/RecoverSnapshotAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/appconfiguration/RecoverSnapshotAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSnapshotName ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/appconfiguration/SetConfigurationSettingAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/appconfiguration/SetConfigurationSettingAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getContentType ()Lorg/gradle/api/provider/Property;
+	public abstract fun getKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLabel ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getValue ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/appconfiguration/SetFeatureFlagAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/appconfiguration/SetFeatureFlagAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getDescription ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEnabled ()Lorg/gradle/api/provider/Property;
+	public abstract fun getFeatureName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLabel ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+

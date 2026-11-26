@@ -1,0 +1,145 @@
+public abstract class com/kelvsyc/gradle/azure/identity/AbstractGetAccessTokenWorkAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	protected abstract fun doExecute (Ljava/lang/String;)V
+	public final fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/identity/AbstractGetAccessTokenWorkAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getScopes ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/identity/AccessTokenValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/identity/AccessTokenValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getScopes ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/identity/AzureAttestedDataValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/identity/AzureAttestedDataValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getApiVersion ()Lorg/gradle/api/provider/Property;
+	public abstract fun getNonce ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/identity/AzureComputeMetadataValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/Map;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/identity/AzureComputeMetadataValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getApiVersion ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/identity/AzureImdsClientBuildService : com/kelvsyc/gradle/clients/AbstractClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/kelvsyc/gradle/azure/identity/AzureImdsService;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/identity/AzureImdsService {
+	public abstract fun getAttestedData (Ljava/lang/String;Ljava/lang/String;)Lretrofit2/Call;
+	public abstract fun getComputeMetadata (Ljava/lang/String;)Lretrofit2/Call;
+	public abstract fun getManagedIdentityInfo (Ljava/lang/String;)Lretrofit2/Call;
+}
+
+public final class com/kelvsyc/gradle/azure/identity/AzureImdsService$DefaultImpls {
+	public static synthetic fun getAttestedData$default (Lcom/kelvsyc/gradle/azure/identity/AzureImdsService;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lretrofit2/Call;
+}
+
+public abstract class com/kelvsyc/gradle/azure/identity/GetManagedIdentityInfoValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/Map;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/identity/GetManagedIdentityInfoValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getApiVersion ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/identity/ManagedIdentityCredentialBuildService : com/kelvsyc/gradle/clients/AbstractClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/azure/identity/ManagedIdentityCredential;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/identity/ManagedIdentityCredentialBuildService$Params : org/gradle/api/services/BuildServiceParameters {
+	public abstract fun getClientId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getObjectId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getResourceId ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/azure/identity/ManagedIdentityCredentialBuildServiceParamsExtensionsKt {
+	public static final fun systemAssigned (Lcom/kelvsyc/gradle/azure/identity/ManagedIdentityCredentialBuildService$Params;)V
+	public static final fun userAssigned (Lcom/kelvsyc/gradle/azure/identity/ManagedIdentityCredentialBuildService$Params;Ljava/lang/String;)V
+	public static final fun userAssigned (Lcom/kelvsyc/gradle/azure/identity/ManagedIdentityCredentialBuildService$Params;Lorg/gradle/api/provider/Provider;)V
+	public static final fun userAssignedByObjectId (Lcom/kelvsyc/gradle/azure/identity/ManagedIdentityCredentialBuildService$Params;Ljava/lang/String;)V
+	public static final fun userAssignedByObjectId (Lcom/kelvsyc/gradle/azure/identity/ManagedIdentityCredentialBuildService$Params;Lorg/gradle/api/provider/Provider;)V
+	public static final fun userAssignedByResourceId (Lcom/kelvsyc/gradle/azure/identity/ManagedIdentityCredentialBuildService$Params;Ljava/lang/String;)V
+	public static final fun userAssignedByResourceId (Lcom/kelvsyc/gradle/azure/identity/ManagedIdentityCredentialBuildService$Params;Lorg/gradle/api/provider/Provider;)V
+}
+
+public final class com/kelvsyc/gradle/azure/identity/model/AzureAttestedData {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lcom/kelvsyc/gradle/azure/identity/model/AzureAttestedData;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/azure/identity/model/AzureAttestedData;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/kelvsyc/gradle/azure/identity/model/AzureAttestedData;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEncoding ()Ljava/lang/String;
+	public final fun getSignature ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/azure/identity/model/AzureComputeMetadata {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/kelvsyc/gradle/azure/identity/model/AzureComputeMetadata;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/azure/identity/model/AzureComputeMetadata;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/kelvsyc/gradle/azure/identity/model/AzureComputeMetadata;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLocation ()Ljava/lang/String;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getOsType ()Ljava/lang/String;
+	public final fun getResourceGroupName ()Ljava/lang/String;
+	public final fun getSubscriptionId ()Ljava/lang/String;
+	public final fun getVmId ()Ljava/lang/String;
+	public final fun getVmSize ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/azure/identity/model/AzureManagedIdentityInfo {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lcom/kelvsyc/gradle/azure/identity/model/AzureManagedIdentityInfo;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/azure/identity/model/AzureManagedIdentityInfo;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/kelvsyc/gradle/azure/identity/model/AzureManagedIdentityInfo;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getClientId ()Ljava/lang/String;
+	public final fun getObjectId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+

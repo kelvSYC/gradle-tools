@@ -1,0 +1,354 @@
+public abstract class com/kelvsyc/gradle/bitbucket/server/BitbucketServerClientBuildService : com/kelvsyc/gradle/clients/AbstractClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/kelvsyc/gradle/bitbucket/server/BitbucketServerService;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/bitbucket/server/BitbucketServerClientBuildService$Params : org/gradle/api/services/BuildServiceParameters {
+	public abstract fun getBaseUrl ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTokenRef ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/bitbucket/server/BitbucketServerClientBuildServiceParamsExtensionsKt {
+	public static final fun bearerToken (Lcom/kelvsyc/gradle/bitbucket/server/BitbucketServerClientBuildService$Params;Lcom/kelvsyc/gradle/clients/CredentialReference;)V
+	public static synthetic fun bearerToken$default (Lcom/kelvsyc/gradle/bitbucket/server/BitbucketServerClientBuildService$Params;Lcom/kelvsyc/gradle/clients/CredentialReference;ILjava/lang/Object;)V
+}
+
+public abstract interface class com/kelvsyc/gradle/bitbucket/server/BitbucketServerService {
+	public abstract fun createPullRequestComment (Ljava/lang/String;Ljava/lang/String;JLjava/util/Map;)Lretrofit2/Call;
+	public abstract fun getBuildStatuses (Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;)Lretrofit2/Call;
+	public abstract fun getPullRequest (Ljava/lang/String;Ljava/lang/String;J)Lretrofit2/Call;
+	public abstract fun getRepository (Ljava/lang/String;Ljava/lang/String;)Lretrofit2/Call;
+	public abstract fun listPullRequests (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;)Lretrofit2/Call;
+	public abstract fun postBuildStatus (Ljava/lang/String;Ljava/util/Map;)Lretrofit2/Call;
+}
+
+public final class com/kelvsyc/gradle/bitbucket/server/BitbucketServerService$DefaultImpls {
+	public static synthetic fun getBuildStatuses$default (Lcom/kelvsyc/gradle/bitbucket/server/BitbucketServerService;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;ILjava/lang/Object;)Lretrofit2/Call;
+	public static synthetic fun listPullRequests$default (Lcom/kelvsyc/gradle/bitbucket/server/BitbucketServerService;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/String;ILjava/lang/Object;)Lretrofit2/Call;
+}
+
+public abstract class com/kelvsyc/gradle/bitbucket/server/CreatePullRequestCommentAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/bitbucket/server/CreatePullRequestCommentAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getProjectKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPullRequestId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepoSlug ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getText ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/bitbucket/server/GetBuildStatusesValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/bitbucket/server/GetBuildStatusesValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getCommitId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/bitbucket/server/GetPullRequestValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public fun obtain ()Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequest;
+	public synthetic fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/bitbucket/server/GetPullRequestValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getProjectKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPullRequestId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepoSlug ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/bitbucket/server/GetRepositoryValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public fun obtain ()Lcom/kelvsyc/gradle/bitbucket/server/model/Repository;
+	public synthetic fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/bitbucket/server/GetRepositoryValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getProjectKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepoSlug ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/bitbucket/server/PaginationUtilsKt {
+	public static final fun fetchAllPages (ILkotlin/jvm/functions/Function1;)Ljava/util/List;
+	public static synthetic fun fetchAllPages$default (ILkotlin/jvm/functions/Function1;ILjava/lang/Object;)Ljava/util/List;
+	public static final fun paginatedSequence (ILkotlin/jvm/functions/Function1;)Lkotlin/sequences/Sequence;
+	public static synthetic fun paginatedSequence$default (ILkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlin/sequences/Sequence;
+}
+
+public abstract class com/kelvsyc/gradle/bitbucket/server/PostBuildStatusAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/bitbucket/server/PostBuildStatusAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getCommitId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDescription ()Lorg/gradle/api/provider/Property;
+	public abstract fun getKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getState ()Lorg/gradle/api/provider/Property;
+	public abstract fun getUrl ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/bitbucket/server/model/BuildStatus : java/io/Serializable {
+	public static final field Companion Lcom/kelvsyc/gradle/bitbucket/server/model/BuildStatus$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/Long;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;)Lcom/kelvsyc/gradle/bitbucket/server/model/BuildStatus;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/bitbucket/server/model/BuildStatus;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Long;ILjava/lang/Object;)Lcom/kelvsyc/gradle/bitbucket/server/model/BuildStatus;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDateAdded ()Ljava/lang/Long;
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getKey ()Ljava/lang/String;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getState ()Ljava/lang/String;
+	public final fun getUrl ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/bitbucket/server/model/BuildStatus$Companion {
+}
+
+public final class com/kelvsyc/gradle/bitbucket/server/model/Comment : java/io/Serializable {
+	public static final field Companion Lcom/kelvsyc/gradle/bitbucket/server/model/Comment$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Long;Ljava/lang/String;Lcom/kelvsyc/gradle/bitbucket/server/model/User;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Integer;)V
+	public synthetic fun <init> (Ljava/lang/Long;Ljava/lang/String;Lcom/kelvsyc/gradle/bitbucket/server/model/User;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Integer;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Long;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Lcom/kelvsyc/gradle/bitbucket/server/model/User;
+	public final fun component4 ()Ljava/lang/Long;
+	public final fun component5 ()Ljava/lang/Long;
+	public final fun component6 ()Ljava/lang/Integer;
+	public final fun copy (Ljava/lang/Long;Ljava/lang/String;Lcom/kelvsyc/gradle/bitbucket/server/model/User;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Integer;)Lcom/kelvsyc/gradle/bitbucket/server/model/Comment;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/bitbucket/server/model/Comment;Ljava/lang/Long;Ljava/lang/String;Lcom/kelvsyc/gradle/bitbucket/server/model/User;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/Integer;ILjava/lang/Object;)Lcom/kelvsyc/gradle/bitbucket/server/model/Comment;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAuthor ()Lcom/kelvsyc/gradle/bitbucket/server/model/User;
+	public final fun getCreatedDate ()Ljava/lang/Long;
+	public final fun getId ()Ljava/lang/Long;
+	public final fun getText ()Ljava/lang/String;
+	public final fun getUpdatedDate ()Ljava/lang/Long;
+	public final fun getVersion ()Ljava/lang/Integer;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/bitbucket/server/model/Comment$Companion {
+}
+
+public final class com/kelvsyc/gradle/bitbucket/server/model/PaginatedResponse {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Integer;
+	public final fun component2 ()Ljava/lang/Integer;
+	public final fun component3 ()Ljava/lang/Integer;
+	public final fun component4 ()Ljava/lang/Boolean;
+	public final fun component5 ()Ljava/lang/Integer;
+	public final fun component6 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/util/List;)Lcom/kelvsyc/gradle/bitbucket/server/model/PaginatedResponse;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/bitbucket/server/model/PaginatedResponse;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Boolean;Ljava/lang/Integer;Ljava/util/List;ILjava/lang/Object;)Lcom/kelvsyc/gradle/bitbucket/server/model/PaginatedResponse;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLimit ()Ljava/lang/Integer;
+	public final fun getNextPageStart ()Ljava/lang/Integer;
+	public final fun getSize ()Ljava/lang/Integer;
+	public final fun getStart ()Ljava/lang/Integer;
+	public final fun getValues ()Ljava/util/List;
+	public fun hashCode ()I
+	public final fun isLastPage ()Ljava/lang/Boolean;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/bitbucket/server/model/Project : java/io/Serializable {
+	public static final field Companion Lcom/kelvsyc/gradle/bitbucket/server/model/Project$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Long;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/Boolean;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;)Lcom/kelvsyc/gradle/bitbucket/server/model/Project;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/bitbucket/server/model/Project;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;ILjava/lang/Object;)Lcom/kelvsyc/gradle/bitbucket/server/model/Project;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getId ()Ljava/lang/Long;
+	public final fun getKey ()Ljava/lang/String;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getPublic ()Ljava/lang/Boolean;
+	public final fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/bitbucket/server/model/Project$Companion {
+}
+
+public final class com/kelvsyc/gradle/bitbucket/server/model/PullRequest : java/io/Serializable {
+	public static final field Companion Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequest$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestRef;Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestRef;Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestParticipant;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Long;Ljava/lang/Long;)V
+	public synthetic fun <init> (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestRef;Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestRef;Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestParticipant;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Long;Ljava/lang/Long;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Long;
+	public final fun component10 ()Ljava/lang/Boolean;
+	public final fun component11 ()Ljava/lang/Boolean;
+	public final fun component12 ()Ljava/lang/Long;
+	public final fun component13 ()Ljava/lang/Long;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestRef;
+	public final fun component6 ()Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestRef;
+	public final fun component7 ()Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestParticipant;
+	public final fun component8 ()Ljava/util/List;
+	public final fun component9 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestRef;Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestRef;Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestParticipant;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Long;Ljava/lang/Long;)Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequest;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequest;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestRef;Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestRef;Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestParticipant;Ljava/util/List;Ljava/util/List;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Long;Ljava/lang/Long;ILjava/lang/Object;)Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAuthor ()Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestParticipant;
+	public final fun getClosed ()Ljava/lang/Boolean;
+	public final fun getCreatedDate ()Ljava/lang/Long;
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getFromRef ()Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestRef;
+	public final fun getId ()Ljava/lang/Long;
+	public final fun getOpen ()Ljava/lang/Boolean;
+	public final fun getParticipants ()Ljava/util/List;
+	public final fun getReviewers ()Ljava/util/List;
+	public final fun getState ()Ljava/lang/String;
+	public final fun getTitle ()Ljava/lang/String;
+	public final fun getToRef ()Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestRef;
+	public final fun getUpdatedDate ()Ljava/lang/Long;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/bitbucket/server/model/PullRequest$Companion {
+}
+
+public final class com/kelvsyc/gradle/bitbucket/server/model/PullRequestParticipant : java/io/Serializable {
+	public static final field Companion Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestParticipant$Companion;
+	public fun <init> ()V
+	public fun <init> (Lcom/kelvsyc/gradle/bitbucket/server/model/User;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;)V
+	public synthetic fun <init> (Lcom/kelvsyc/gradle/bitbucket/server/model/User;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/kelvsyc/gradle/bitbucket/server/model/User;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/Boolean;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (Lcom/kelvsyc/gradle/bitbucket/server/model/User;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;)Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestParticipant;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestParticipant;Lcom/kelvsyc/gradle/bitbucket/server/model/User;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/String;ILjava/lang/Object;)Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestParticipant;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getApproved ()Ljava/lang/Boolean;
+	public final fun getRole ()Ljava/lang/String;
+	public final fun getStatus ()Ljava/lang/String;
+	public final fun getUser ()Lcom/kelvsyc/gradle/bitbucket/server/model/User;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/bitbucket/server/model/PullRequestParticipant$Companion {
+}
+
+public final class com/kelvsyc/gradle/bitbucket/server/model/PullRequestRef : java/io/Serializable {
+	public static final field Companion Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestRef$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/bitbucket/server/model/Repository;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/bitbucket/server/model/Repository;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Lcom/kelvsyc/gradle/bitbucket/server/model/Repository;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/bitbucket/server/model/Repository;)Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestRef;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestRef;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/bitbucket/server/model/Repository;ILjava/lang/Object;)Lcom/kelvsyc/gradle/bitbucket/server/model/PullRequestRef;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDisplayId ()Ljava/lang/String;
+	public final fun getId ()Ljava/lang/String;
+	public final fun getLatestCommit ()Ljava/lang/String;
+	public final fun getRepository ()Lcom/kelvsyc/gradle/bitbucket/server/model/Repository;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/bitbucket/server/model/PullRequestRef$Companion {
+}
+
+public final class com/kelvsyc/gradle/bitbucket/server/model/Repository : java/io/Serializable {
+	public static final field Companion Lcom/kelvsyc/gradle/bitbucket/server/model/Repository$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lcom/kelvsyc/gradle/bitbucket/server/model/Project;)V
+	public synthetic fun <init> (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lcom/kelvsyc/gradle/bitbucket/server/model/Project;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Long;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/lang/Boolean;
+	public final fun component8 ()Ljava/lang/Boolean;
+	public final fun component9 ()Lcom/kelvsyc/gradle/bitbucket/server/model/Project;
+	public final fun copy (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lcom/kelvsyc/gradle/bitbucket/server/model/Project;)Lcom/kelvsyc/gradle/bitbucket/server/model/Repository;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/bitbucket/server/model/Repository;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Lcom/kelvsyc/gradle/bitbucket/server/model/Project;ILjava/lang/Object;)Lcom/kelvsyc/gradle/bitbucket/server/model/Repository;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getForkable ()Ljava/lang/Boolean;
+	public final fun getId ()Ljava/lang/Long;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getProject ()Lcom/kelvsyc/gradle/bitbucket/server/model/Project;
+	public final fun getPublic ()Ljava/lang/Boolean;
+	public final fun getScmId ()Ljava/lang/String;
+	public final fun getSlug ()Ljava/lang/String;
+	public final fun getState ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/bitbucket/server/model/Repository$Companion {
+}
+
+public final class com/kelvsyc/gradle/bitbucket/server/model/User : java/io/Serializable {
+	public static final field Companion Lcom/kelvsyc/gradle/bitbucket/server/model/User$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;)V
+	public synthetic fun <init> (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Long;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/lang/Boolean;
+	public final fun copy (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;)Lcom/kelvsyc/gradle/bitbucket/server/model/User;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/bitbucket/server/model/User;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;ILjava/lang/Object;)Lcom/kelvsyc/gradle/bitbucket/server/model/User;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActive ()Ljava/lang/Boolean;
+	public final fun getDisplayName ()Ljava/lang/String;
+	public final fun getEmailAddress ()Ljava/lang/String;
+	public final fun getId ()Ljava/lang/Long;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getSlug ()Ljava/lang/String;
+	public final fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/bitbucket/server/model/User$Companion {
+}
+

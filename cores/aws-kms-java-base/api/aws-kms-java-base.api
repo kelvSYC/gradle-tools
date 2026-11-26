@@ -1,0 +1,56 @@
+public abstract class com/kelvsyc/gradle/aws/java/kms/DecryptAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/kms/DecryptAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getCiphertextFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getKeyId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPlaintextFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/kms/DescribeKeyValueSource : org/gradle/api/provider/ValueSource {
+	public static final field Companion Lcom/kelvsyc/gradle/aws/java/kms/DescribeKeyValueSource$Companion;
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/aws/java/kms/DescribeKeyValueSource$Companion {
+	public final fun getLogger ()Lorg/gradle/api/logging/Logger;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/kms/DescribeKeyValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getKeyId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/kms/EncryptAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/kms/EncryptAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getCiphertextFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getKeyId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPlaintextFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/kms/KmsClientBuildService : com/kelvsyc/gradle/aws/java/AbstractAwsJavaClientBuildService {
+	public fun <init> ()V
+	public synthetic fun createClient ()Ljava/lang/Object;
+	protected fun createClient ()Lsoftware/amazon/awssdk/services/kms/KmsClient;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/kms/ListKeysValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/Map;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/kms/ListKeysValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+

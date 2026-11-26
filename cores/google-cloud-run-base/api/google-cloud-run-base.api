@@ -1,0 +1,241 @@
+public abstract class com/kelvsyc/gradle/google/cloud/run/AbstractCreateJobTask : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getEnvVars ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getImageUri ()Lorg/gradle/api/provider/Property;
+	public abstract fun getJobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getWorkerExecutor ()Lorg/gradle/workers/WorkerExecutor;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/AbstractDeleteJobTask : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getJobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getWorkerExecutor ()Lorg/gradle/workers/WorkerExecutor;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/AbstractDeleteServiceTask : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getServiceName ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getWorkerExecutor ()Lorg/gradle/workers/WorkerExecutor;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/AbstractRunJobTask : org/gradle/api/DefaultTask {
+	public static final field Companion Lcom/kelvsyc/gradle/google/cloud/run/AbstractRunJobTask$Companion;
+	public fun <init> ()V
+	public abstract fun getExecutionNameFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getExecutionsService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getJobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOverrides ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getWorkerExecutor ()Lorg/gradle/workers/WorkerExecutor;
+	public final fun run ()V
+}
+
+public final class com/kelvsyc/gradle/google/cloud/run/AbstractRunJobTask$Companion {
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/AbstractUpdateJobTask : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getEnvVars ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getImageUri ()Lorg/gradle/api/provider/Property;
+	public abstract fun getJobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getWorkerExecutor ()Lorg/gradle/workers/WorkerExecutor;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/AbstractUpsertServiceTask : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getEnvVars ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getImageUri ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getServiceName ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getWorkerExecutor ()Lorg/gradle/workers/WorkerExecutor;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/AbstractWaitForJobExecutionTask : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getExecutionNameFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getWorkerExecutor ()Lorg/gradle/workers/WorkerExecutor;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/CloudRunExecutionsClientBuildService : com/kelvsyc/gradle/google/cloud/AbstractGcpClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/google/cloud/run/v2/ExecutionsClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/CloudRunJobsClientBuildService : com/kelvsyc/gradle/google/cloud/AbstractGcpClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/google/cloud/run/v2/JobsClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/CloudRunServicesClientBuildService : com/kelvsyc/gradle/google/cloud/AbstractGcpClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/google/cloud/run/v2/ServicesClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/CreateJobAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/run/CreateJobAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getEnvVars ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getImageUri ()Lorg/gradle/api/provider/Property;
+	public abstract fun getJobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/CreateJobTask : com/kelvsyc/gradle/google/cloud/run/AbstractCreateJobTask {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/DeleteJobAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/run/DeleteJobAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getJobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/DeleteJobTask : com/kelvsyc/gradle/google/cloud/run/AbstractDeleteJobTask {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/DeleteServiceAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/run/DeleteServiceAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getServiceName ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/DeleteServiceTask : com/kelvsyc/gradle/google/cloud/run/AbstractDeleteServiceTask {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/GetJobValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/run/GetJobValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getJobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/GetServiceValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/run/GetServiceValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getServiceName ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/ListJobsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/run/ListJobsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getLocation ()Lorg/gradle/api/provider/Property;
+	public abstract fun getProjectId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/ListServicesValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/Map;
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/run/ListServicesValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getLocation ()Lorg/gradle/api/provider/Property;
+	public abstract fun getProjectId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/RunJobTask : com/kelvsyc/gradle/google/cloud/run/AbstractRunJobTask {
+	public fun <init> ()V
+	public abstract fun getExecutionsService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/UpdateJobAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/run/UpdateJobAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getEnvVars ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getImageUri ()Lorg/gradle/api/provider/Property;
+	public abstract fun getJobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/UpdateJobTask : com/kelvsyc/gradle/google/cloud/run/AbstractUpdateJobTask {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/UpsertServiceAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/run/UpsertServiceAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getEnvVars ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getImageUri ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getServiceName ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/UpsertServiceTask : com/kelvsyc/gradle/google/cloud/run/AbstractUpsertServiceTask {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/WaitForExecutionAction : org/gradle/workers/WorkAction {
+	public static final field Companion Lcom/kelvsyc/gradle/google/cloud/run/WaitForExecutionAction$Companion;
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public final class com/kelvsyc/gradle/google/cloud/run/WaitForExecutionAction$Companion {
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/run/WaitForExecutionAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getExecutionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getMaxWaitTimeMs ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPollIntervalMs ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/run/WaitForJobExecutionTask : com/kelvsyc/gradle/google/cloud/run/AbstractWaitForJobExecutionTask {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+

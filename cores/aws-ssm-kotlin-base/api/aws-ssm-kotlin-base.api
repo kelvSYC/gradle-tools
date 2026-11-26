@@ -1,0 +1,41 @@
+public abstract class com/kelvsyc/gradle/aws/kotlin/ssm/GetParameterValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/kotlin/ssm/GetParameterValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getParameterName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getWithDecryption ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/ssm/GetParametersByPathValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/Map;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/kotlin/ssm/GetParametersByPathValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getPath ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRecursive ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getWithDecryption ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/ssm/PutParameter : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public final fun execute ()Laws/sdk/kotlin/services/ssm/model/PutParameterResponse;
+	public abstract fun getOverwrite ()Lorg/gradle/api/provider/Property;
+	public abstract fun getParameterName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getParameterType ()Lorg/gradle/api/provider/Property;
+	public abstract fun getParameterValue ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/ssm/SsmClientBuildService : com/kelvsyc/gradle/aws/kotlin/AbstractAwsKotlinClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Laws/sdk/kotlin/services/ssm/SsmClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+

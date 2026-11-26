@@ -1,0 +1,137 @@
+public abstract class com/kelvsyc/gradle/git/GetGitRemoteArchive : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getGitCommand ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getPaths ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRemoteUrl ()Lorg/gradle/api/provider/Property;
+	public abstract fun getVerbose ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/git/GitExport : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;Lorg/gradle/api/file/ArchiveOperations;Lorg/gradle/api/file/FileSystemOperations;)V
+	public abstract fun getGitCommand ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getPaths ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRemoteUrl ()Lorg/gradle/api/provider/Property;
+	public abstract fun getVerbose ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public final class com/kelvsyc/gradle/git/GitRepositoryExtensionsKt {
+	public static final fun getAsRepository (Lorg/gradle/api/file/Directory;)Lorg/eclipse/jgit/lib/Repository;
+	public static final fun getAsRepository (Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+}
+
+public final class com/kelvsyc/gradle/git/ShellProviderExtensionsKt {
+	public static final fun which (Lorg/gradle/api/provider/ProviderFactory;Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+}
+
+public abstract class com/kelvsyc/gradle/git/actions/GitRemoteArchiveAction : org/gradle/workers/WorkAction {
+	public fun <init> (Lorg/gradle/process/ExecOperations;Lorg/gradle/api/provider/ProviderFactory;)V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/git/actions/GitRemoteArchiveAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getGitCommand ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getPaths ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRemoteUrl ()Lorg/gradle/api/provider/Property;
+	public abstract fun getVerbose ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/github/GetGitHubRepoArchive : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getGhCommand ()Lorg/gradle/api/provider/Property;
+	public abstract fun getHostname ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepo ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTokenRef ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/github/actions/DownloadGitHubReleaseArtifactAction : org/gradle/workers/WorkAction {
+	public fun <init> (Lorg/gradle/process/ExecOperations;Lorg/gradle/api/provider/ProviderFactory;)V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/github/actions/DownloadGitHubReleaseArtifactAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getGhCommand ()Lorg/gradle/api/provider/Property;
+	public abstract fun getHostname ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPatternGlobs ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getRepo ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTag ()Lorg/gradle/api/provider/Property;
+	public abstract fun getToken ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/github/actions/GitHubRepoArchiveAction : org/gradle/workers/WorkAction {
+	public fun <init> (Lorg/gradle/process/ExecOperations;Lorg/gradle/api/provider/ProviderFactory;)V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/github/actions/GitHubRepoArchiveAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getGhCommand ()Lorg/gradle/api/provider/Property;
+	public abstract fun getHostname ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepo ()Lorg/gradle/api/provider/Property;
+	public abstract fun getToken ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/gitlab/GetGitLabRepoArchive : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getGlabCommand ()Lorg/gradle/api/provider/Property;
+	public abstract fun getHostname ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepo ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTokenRef ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/gitlab/actions/DownloadGitLabReleaseArtifactAction : org/gradle/workers/WorkAction {
+	public fun <init> (Lorg/gradle/process/ExecOperations;Lorg/gradle/api/provider/ProviderFactory;)V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/gitlab/actions/DownloadGitLabReleaseArtifactAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getAssetNames ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getGlabCommand ()Lorg/gradle/api/provider/Property;
+	public abstract fun getHostname ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepo ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTag ()Lorg/gradle/api/provider/Property;
+	public abstract fun getToken ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/gitlab/actions/GitLabRepoArchiveAction : org/gradle/workers/WorkAction {
+	public fun <init> (Lorg/gradle/process/ExecOperations;Lorg/gradle/api/provider/ProviderFactory;)V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/gitlab/actions/GitLabRepoArchiveAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getGlabCommand ()Lorg/gradle/api/provider/Property;
+	public abstract fun getHostname ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepo ()Lorg/gradle/api/provider/Property;
+	public abstract fun getToken ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/plugins/GitCorePlugin : org/gradle/api/Plugin {
+	public fun <init> ()V
+	public synthetic fun apply (Ljava/lang/Object;)V
+	public fun apply (Lorg/gradle/api/Project;)V
+}
+

@@ -1,0 +1,109 @@
+public abstract class com/kelvsyc/gradle/nexus/AbstractBatchDownloadFromNexus : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getArtifacts ()Lorg/gradle/api/provider/MapProperty;
+	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
+	public final fun getOutputFiles ()Lorg/gradle/api/provider/Provider;
+	protected abstract fun getProviders ()Lorg/gradle/api/provider/ProviderFactory;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getWorkerExecutor ()Lorg/gradle/workers/WorkerExecutor;
+	public final fun registerArtifact (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/nexus/AbstractBatchDownloadFromNexus$Artifact : org/gradle/api/Named {
+	public fun <init> (Ljava/lang/String;)V
+	public fun getName ()Ljava/lang/String;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getPath ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/nexus/AbstractBatchUploadToNexus : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getArtifacts ()Lorg/gradle/api/provider/MapProperty;
+	public final fun getInputFiles ()Lorg/gradle/api/provider/Provider;
+	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
+	protected abstract fun getProviders ()Lorg/gradle/api/provider/ProviderFactory;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getWorkerExecutor ()Lorg/gradle/workers/WorkerExecutor;
+	public final fun registerArtifact (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/nexus/AbstractBatchUploadToNexus$Artifact : org/gradle/api/Named {
+	public fun <init> (Ljava/lang/String;)V
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public fun getName ()Ljava/lang/String;
+	public abstract fun getPath ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/nexus/AbstractNexusArtifactValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public abstract fun doObtain (Ljava/io/InputStream;)Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/nexus/AbstractNexusArtifactValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getPath ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/nexus/BatchDownloadFromNexus : com/kelvsyc/gradle/nexus/AbstractBatchDownloadFromNexus {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/nexus/BatchUploadToNexus : com/kelvsyc/gradle/nexus/AbstractBatchUploadToNexus {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/nexus/DownloadArtifactAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/nexus/DownloadArtifactAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getPath ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/nexus/NexusClientBuildService : com/kelvsyc/gradle/clients/AbstractClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/kelvsyc/gradle/nexus/NexusService;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/nexus/NexusClientBuildService$Params : org/gradle/api/services/BuildServiceParameters {
+	public abstract fun getBaseUrl ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPasswordRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getUsername ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/nexus/NexusClientBuildServiceParamsExtensionsKt {
+	public static final fun anonymous (Lcom/kelvsyc/gradle/nexus/NexusClientBuildService$Params;)V
+	public static final fun basicAuth (Lcom/kelvsyc/gradle/nexus/NexusClientBuildService$Params;Ljava/lang/String;Lcom/kelvsyc/gradle/clients/CredentialReference;)V
+	public static synthetic fun basicAuth$default (Lcom/kelvsyc/gradle/nexus/NexusClientBuildService$Params;Ljava/lang/String;Lcom/kelvsyc/gradle/clients/CredentialReference;ILjava/lang/Object;)V
+}
+
+public abstract interface class com/kelvsyc/gradle/nexus/NexusService {
+	public abstract fun downloadAsset (Ljava/lang/String;Ljava/lang/String;)Lretrofit2/Call;
+	public abstract fun uploadRawAsset (Ljava/lang/String;Lokhttp3/RequestBody;Lokhttp3/RequestBody;Lokhttp3/MultipartBody$Part;)Lretrofit2/Call;
+}
+
+public abstract class com/kelvsyc/gradle/nexus/UploadArtifactAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/nexus/UploadArtifactAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getPath ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+

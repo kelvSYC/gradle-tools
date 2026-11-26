@@ -1,0 +1,115 @@
+public abstract class com/kelvsyc/gradle/artifactory/AbstractArtifactValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public abstract fun doObtain (Ljava/io/InputStream;)Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/artifactory/AbstractArtifactValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getPath ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/artifactory/AbstractBatchDownloadFromArtifactory : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getArtifacts ()Lorg/gradle/api/provider/MapProperty;
+	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
+	public final fun getOutputFiles ()Lorg/gradle/api/provider/Provider;
+	protected abstract fun getProviders ()Lorg/gradle/api/provider/ProviderFactory;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getWorkerExecutor ()Lorg/gradle/workers/WorkerExecutor;
+	public final fun registerArtifact (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/artifactory/AbstractBatchDownloadFromArtifactory$Artifact : org/gradle/api/Named {
+	public fun <init> (Ljava/lang/String;)V
+	public fun getName ()Ljava/lang/String;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getPath ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/artifactory/AbstractBatchUploadToArtifactory : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getArtifacts ()Lorg/gradle/api/provider/MapProperty;
+	public final fun getInputFiles ()Lorg/gradle/api/provider/Provider;
+	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
+	protected abstract fun getProviders ()Lorg/gradle/api/provider/ProviderFactory;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getWorkerExecutor ()Lorg/gradle/workers/WorkerExecutor;
+	public final fun registerArtifact (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/artifactory/AbstractBatchUploadToArtifactory$Artifact : org/gradle/api/Named {
+	public fun <init> (Ljava/lang/String;)V
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public fun getName ()Ljava/lang/String;
+	public abstract fun getPath ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/artifactory/AbstractStreamingRequestValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public abstract fun doObtain (Lorg/jfrog/artifactory/client/ArtifactoryStreamingResponse;)Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/artifactory/AbstractStreamingRequestValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getRequest ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/artifactory/ArtifactoryClientBuildService : com/kelvsyc/gradle/clients/AbstractClientBuildService {
+	public fun <init> ()V
+	public synthetic fun createClient ()Ljava/lang/Object;
+	protected fun createClient ()Lorg/jfrog/artifactory/client/Artifactory;
+}
+
+public abstract interface class com/kelvsyc/gradle/artifactory/ArtifactoryClientBuildService$Params : org/gradle/api/services/BuildServiceParameters {
+	public abstract fun getPasswordRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getUrl ()Lorg/gradle/api/provider/Property;
+	public abstract fun getUsername ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/artifactory/ArtifactoryClientBuildServiceParamsExtensionsKt {
+	public static final fun anonymous (Lcom/kelvsyc/gradle/artifactory/ArtifactoryClientBuildService$Params;)V
+	public static final fun basicAuth (Lcom/kelvsyc/gradle/artifactory/ArtifactoryClientBuildService$Params;Ljava/lang/String;Lcom/kelvsyc/gradle/clients/CredentialReference;)V
+	public static synthetic fun basicAuth$default (Lcom/kelvsyc/gradle/artifactory/ArtifactoryClientBuildService$Params;Ljava/lang/String;Lcom/kelvsyc/gradle/clients/CredentialReference;ILjava/lang/Object;)V
+}
+
+public abstract class com/kelvsyc/gradle/artifactory/BatchDownloadFromArtifactory : com/kelvsyc/gradle/artifactory/AbstractBatchDownloadFromArtifactory {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/artifactory/BatchUploadToArtifactory : com/kelvsyc/gradle/artifactory/AbstractBatchUploadToArtifactory {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/artifactory/DownloadArtifactAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/artifactory/DownloadArtifactAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getPath ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/artifactory/UploadArtifactAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/artifactory/UploadArtifactAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getPath ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+

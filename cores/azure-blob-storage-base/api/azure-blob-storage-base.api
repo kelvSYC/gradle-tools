@@ -1,0 +1,148 @@
+public abstract class com/kelvsyc/gradle/azure/storage/blob/AbstractBlobStorageValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public abstract fun doObtain (Lcom/azure/core/util/BinaryData;)Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/storage/blob/AbstractBlobStorageValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getBlobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getContainerName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/storage/blob/AbstractListBlobsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public abstract fun doObtain (Ljava/util/List;)Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/storage/blob/AbstractListBlobsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getContainerName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPrefix ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/storage/blob/BatchDownloadFromAzureBlobStorage : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getArtifacts ()Lorg/gradle/api/provider/MapProperty;
+	public final fun getOutputFiles ()Lorg/gradle/api/provider/Provider;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public final fun registerArtifact (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/azure/storage/blob/BatchDownloadFromAzureBlobStorage$Artifact : org/gradle/api/Named {
+	public fun <init> (Ljava/lang/String;)V
+	public abstract fun getBlobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getContainerName ()Lorg/gradle/api/provider/Property;
+	public fun getName ()Ljava/lang/String;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+}
+
+public abstract class com/kelvsyc/gradle/azure/storage/blob/BatchUploadToAzureBlobStorage : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getArtifacts ()Lorg/gradle/api/provider/MapProperty;
+	public final fun getInputFiles ()Lorg/gradle/api/provider/Provider;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public final fun registerArtifact (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/azure/storage/blob/BatchUploadToAzureBlobStorage$Artifact : org/gradle/api/Named {
+	public fun <init> (Ljava/lang/String;)V
+	public abstract fun getBlobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getContainerName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public fun getName ()Ljava/lang/String;
+}
+
+public abstract class com/kelvsyc/gradle/azure/storage/blob/BlobContainerAsyncClientBuildService : com/kelvsyc/gradle/azure/AbstractAzureClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/azure/storage/blob/BlobContainerAsyncClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/storage/blob/BlobContainerAsyncClientBuildService$Params : com/kelvsyc/gradle/azure/AzureBuildServiceParams {
+	public abstract fun getContainerName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEndpoint ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/storage/blob/BlobContainerClientBuildService : com/kelvsyc/gradle/azure/AbstractAzureClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/azure/storage/blob/BlobContainerClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/storage/blob/BlobContainerClientBuildService$Params : com/kelvsyc/gradle/azure/AzureBuildServiceParams {
+	public abstract fun getContainerName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEndpoint ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/storage/blob/BlobServiceAsyncClientBuildService : com/kelvsyc/gradle/azure/AbstractAzureClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/azure/storage/blob/BlobServiceAsyncClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/storage/blob/BlobServiceAsyncClientBuildService$Params : com/kelvsyc/gradle/azure/AzureBuildServiceParams {
+	public abstract fun getEndpoint ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/storage/blob/BlobServiceClientBuildService : com/kelvsyc/gradle/azure/AbstractAzureClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/azure/storage/blob/BlobServiceClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/storage/blob/BlobServiceClientBuildService$Params : com/kelvsyc/gradle/azure/AzureBuildServiceParams {
+	public abstract fun getEndpoint ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/storage/blob/CopyBlobAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/storage/blob/CopyBlobAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getDestinationBlobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDestinationContainerName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSourceBlobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSourceContainerName ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/storage/blob/DeleteBlobAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/storage/blob/DeleteBlobAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getBlobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getContainerName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/storage/blob/DownloadBlobAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/storage/blob/DownloadBlobAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getBlobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getContainerName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/storage/blob/UploadBlobAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/storage/blob/UploadBlobAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getBlobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getContainerName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+

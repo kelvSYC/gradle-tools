@@ -131,6 +131,14 @@ tasks.register("detekt") {
     }
 }
 
+listOf("checkKotlinAbi", "updateKotlinAbi").forEach { abiTask ->
+    tasks.register(abiTask) {
+        components.forEach {
+            dependsOn(gradle.includedBuild(it).task(":$abiTask"))
+        }
+    }
+}
+
 tasks.register("test") {
     dependsOn(gradle.includedBuild("aggregation").task(":testing:testAggregateTestReport"))
     dependsOn(gradle.includedBuild("aggregation").task(":compat:test"))
@@ -153,6 +161,7 @@ tasks.register("check") {
     }
     checkComponents.forEach {
         dependsOn(gradle.includedBuild(it).task(":verifyGradleLinkage"))
+        dependsOn(gradle.includedBuild(it).task(":checkKotlinAbi"))
         dependsOn(gradle.includedBuild(it).task(":verifyPomDependencyVersions"))
     }
 }
