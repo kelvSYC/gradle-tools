@@ -9,7 +9,9 @@ on:
 # merge made with GITHUB_TOKEN triggers no workflows, so CI would not run on the wrapper change and nothing would be
 # published after the merge. A run started by Dependabot sees only Dependabot secrets, and one started by the token's
 # own push only Actions secrets, so the token is stored in both. Only the push and auto-merge steps get the token: the
-# Gradle build that refreshes the wrapper runs the build's plugins, which must not see it.
+# Gradle build that refreshes the wrapper runs the build's plugins, which must not see it. A further step labels the PR
+# `release:minor` when a library in the new release moves across a breaking version
+# (.github/scripts/conventions-moves.sh); it uses GITHUB_TOKEN.
 jobs:
   follow-and-auto-merge:
     if: github.event.pull_request.user.login == 'dependabot[bot]'

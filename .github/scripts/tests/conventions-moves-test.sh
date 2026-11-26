@@ -27,6 +27,7 @@ expected="com.example:bom 2.1.0 -> 3.0.0
 com.example:major-up 1.4.1 -> 2.0.0
 com.example:pre 1.2.0-beta.2 -> 1.3.0
 com.example:zero-minor 0.8.0 -> 0.9.0
+com.google.guava:guava-major 33.8.0-jre -> 34.0.0-jre
 org.codehaus.groovy:groovy-ant 3.0.25 -> 4.0.1"
 assert_eq "$expected" "$("$script" breaking "$tmp/old" "$tmp/new")" "breaking moves (and only those)"
 

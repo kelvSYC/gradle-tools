@@ -9,6 +9,9 @@ gradle = "9.9.2"
 managed = {group = "com.example", name = "managed", version = "" }
 literal = {group = "com.example", name = "literal", version = "1.0.0" }
 by-ref = {group = "org.codehaus.groovy", name = "groovy-ant", version.ref = "groovy" }
+g-minor = {group = "com.google.guava", name = "guava-minor", version = "33.8.0-jre" }
+g-major = {group = "com.google.guava", name = "guava-major", version = "33.8.0-jre" }
+jgit = {group = "org.eclipse.jgit", name = "jgit", version = "7.8.1.202611041320-r" }
 
 [plugins]
 some = {id = "x.y", version = "1.0.0" }
