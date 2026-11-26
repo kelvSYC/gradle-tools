@@ -51,6 +51,25 @@ echo gen > cores/a/build/api/a.api
 head="$(commit_change outside)"
 assert_eq none "$("$script" "$base" "$head")" "change outside api/ (incl. build/)"
 
+git reset -q --hard "$base"
+printf 'one\n--two\n' > cores/a/api/a.api
+git add -A; g commit -q -m dashes
+base2="$(git rev-parse HEAD)"
+printf 'one\n' > cores/a/api/a.api
+head="$(commit_change dashremoved)"
+assert_eq breaking "$("$script" "$base2" "$head")" "removed line starting with --"
+
+git reset -q --hard "$base"
+git mv cores/a/api/a.api cores/a/api/renamed.api
+head="$(commit_change rename)"
+assert_eq breaking "$("$script" "$base" "$head")" "renamed api file"
+
+if "$script" nonexistent-ref HEAD >/dev/null 2>&1; then
+  assert_eq nonzero zero "bad base ref exits non-zero"
+else
+  assert_eq nonzero nonzero "bad base ref exits non-zero"
+fi
+
 cd "$origin"
 [ "$failures" -eq 0 ] || { echo "$failures failure(s)"; exit 1; }
 echo "all passed"
