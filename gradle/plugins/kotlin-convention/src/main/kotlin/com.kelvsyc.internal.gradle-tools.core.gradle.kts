@@ -12,6 +12,7 @@ import org.jetbrains.dokka.gradle.DokkaExtension
 plugins {
     `java-library`
     id("org.gradlex.jvm-dependency-conflict-resolution")
+    id("com.kelvsyc.internal.gradle-tools.pom-metadata")
 }
 
 jvmDependencyConflicts {
