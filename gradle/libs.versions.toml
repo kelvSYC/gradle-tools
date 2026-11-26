@@ -22,3 +22,6 @@ kotlin-tools-xml-extensions = { module = "com.kelvsyc.kotlin:xml-extensions", ve
 ant = { module = "org.apache.ant:ant", version.ref = "ant" }
 ant-junit = { module = "org.apache.ant:ant-junit", version.ref = "ant" }
 ant-contrib = { module = "ant-contrib:ant-contrib", version = "1.0b3" }
+
+# Dependency license gate (com.kelvsyc.internal.gradle-tools.license-check); the shared platform does not manage it.
+licensee-plugin = { module = "app.cash.licensee:licensee-gradle-plugin", version = "1.14.1" }

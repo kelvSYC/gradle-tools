@@ -15,6 +15,7 @@ plugins {
     `java-library`
     id("org.gradlex.jvm-dependency-conflict-resolution")
     id("com.kelvsyc.internal.gradle-tools.pom-metadata")
+    id("com.kelvsyc.internal.gradle-tools.license-check")
 }
 
 jvmDependencyConflicts {
