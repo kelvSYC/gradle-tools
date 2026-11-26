@@ -8,4 +8,6 @@ Add the label `release:minor` (while on 0.x) if this PR:
 - renames a task, extension or plugin ID
 - changes only `gradle-extensions`' `src/gradle99` API
 
+From 1.0, a breaking API change needs `release:major` and an API addition needs `release:minor`.
+
 Otherwise, no label.
