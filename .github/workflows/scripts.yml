@@ -1,0 +1,27 @@
+name: Scripts
+
+on:
+  pull_request:
+    paths:
+      - '.github/scripts/**'
+      - '.github/workflows/scripts.yml'
+  push:
+    paths:
+      - '.github/scripts/**'
+      - '.github/workflows/scripts.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Run script tests
+        run: |
+          for t in .github/scripts/tests/*-test.sh; do
+            echo "== $t"
+            bash "$t"
+          done
