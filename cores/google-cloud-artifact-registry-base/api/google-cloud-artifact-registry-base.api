@@ -1,0 +1,88 @@
+public abstract class com/kelvsyc/gradle/google/cloud/artifact/AbstractArtifactValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public abstract fun doObtain (Ljava/io/InputStream;)Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/artifact/AbstractArtifactValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getFilename ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLocation ()Lorg/gradle/api/provider/Property;
+	public abstract fun getProjectName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/artifact/ArtifactRegistryClientBuildService : com/kelvsyc/gradle/google/cloud/AbstractGcpClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/google/devtools/artifactregistry/v1/ArtifactRegistryClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/artifact/DownloadFileAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/artifact/DownloadFileAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getFilename ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLocation ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getProjectName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/artifact/GetRepositoryValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public fun obtain ()Lcom/google/devtools/artifactregistry/v1/Repository;
+	public synthetic fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/artifact/GetRepositoryValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getLocation ()Lorg/gradle/api/provider/Property;
+	public abstract fun getProjectName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/artifact/ListFilesValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/artifact/ListFilesValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getFilter ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLocation ()Lorg/gradle/api/provider/Property;
+	public abstract fun getProjectName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/artifact/ListPackagesValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/artifact/ListPackagesValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getLocation ()Lorg/gradle/api/provider/Property;
+	public abstract fun getProjectName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/artifact/ListVersionsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/artifact/ListVersionsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getLocation ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPackageName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getProjectName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+

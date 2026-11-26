@@ -1,0 +1,36 @@
+public abstract class com/kelvsyc/gradle/dokka/GenerateDashDocset : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getBundleIdentifier ()Lorg/gradle/api/provider/Property;
+	public final fun getDocsetDirectory ()Lorg/gradle/api/provider/Provider;
+	public abstract fun getDocsetName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDokkaOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getIndexPage ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getWorkerClasspath ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/dokka/actions/GenerateDashDocsetAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/dokka/actions/GenerateDashDocsetAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getBundleIdentifier ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDocsetDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getDocsetName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDokkaOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getIndexPage ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/plugins/DokkaDashPlugin : org/gradle/api/Plugin {
+	public static final field Companion Lcom/kelvsyc/gradle/plugins/DokkaDashPlugin$Companion;
+	public static final field SQLITE_JDBC_VERSION Ljava/lang/String;
+	public fun <init> ()V
+	public synthetic fun apply (Ljava/lang/Object;)V
+	public fun apply (Lorg/gradle/api/Project;)V
+}
+
+public final class com/kelvsyc/gradle/plugins/DokkaDashPlugin$Companion {
+}
+

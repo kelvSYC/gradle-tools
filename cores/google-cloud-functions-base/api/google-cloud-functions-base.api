@@ -1,0 +1,78 @@
+public abstract class com/kelvsyc/gradle/google/cloud/functions/AbstractDeployFunctionFromZip : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getFunctionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getWorkerExecutor ()Lorg/gradle/workers/WorkerExecutor;
+	public abstract fun getZipFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/functions/CallFunctionAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/functions/CallFunctionAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getIdentityToken ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPayload ()Lorg/gradle/api/provider/Property;
+	public abstract fun getUri ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/functions/DeployFunctionFromZip : com/kelvsyc/gradle/google/cloud/functions/AbstractDeployFunctionFromZip {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/functions/FunctionServiceClientBuildService : com/kelvsyc/gradle/google/cloud/AbstractGcpClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/google/cloud/functions/v2/FunctionServiceClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/functions/GetFunctionValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/functions/GetFunctionValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getFunctionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/functions/ListFunctionsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/Map;
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/functions/ListFunctionsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getLocation ()Lorg/gradle/api/provider/Property;
+	public abstract fun getProjectId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/functions/UpdateFunctionAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/functions/UpdateFunctionAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getFunctionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getStorageGeneration ()Lorg/gradle/api/provider/Property;
+	public abstract fun getStorageObject ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/functions/UploadAndUpdateFunctionAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/functions/UploadAndUpdateFunctionAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getFunctionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getZipFile ()Lorg/gradle/api/file/RegularFileProperty;
+}
+

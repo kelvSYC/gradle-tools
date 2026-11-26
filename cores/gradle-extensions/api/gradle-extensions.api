@@ -1,0 +1,673 @@
+public final class com/kelvsyc/gradle/ConfigurationContainerExtensionsKt {
+	public static final fun annotationProcessor (Lorg/gradle/api/artifacts/ConfigurationContainer;Lorg/gradle/api/tasks/SourceSet;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public static final fun api (Lorg/gradle/api/artifacts/ConfigurationContainer;Lorg/gradle/api/tasks/SourceSet;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public static final fun compileClasspath (Lorg/gradle/api/artifacts/ConfigurationContainer;Lorg/gradle/api/tasks/SourceSet;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public static final fun compileOnly (Lorg/gradle/api/artifacts/ConfigurationContainer;Lorg/gradle/api/tasks/SourceSet;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public static final fun compileOnlyApi (Lorg/gradle/api/artifacts/ConfigurationContainer;Lorg/gradle/api/tasks/SourceSet;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public static final fun implementation (Lorg/gradle/api/artifacts/ConfigurationContainer;Lorg/gradle/api/tasks/SourceSet;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public static final fun javadocElements (Lorg/gradle/api/artifacts/ConfigurationContainer;Lorg/gradle/api/tasks/SourceSet;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public static final fun runtimeClasspath (Lorg/gradle/api/artifacts/ConfigurationContainer;Lorg/gradle/api/tasks/SourceSet;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public static final fun runtimeElements (Lorg/gradle/api/artifacts/ConfigurationContainer;Lorg/gradle/api/tasks/SourceSet;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public static final fun runtimeOnly (Lorg/gradle/api/artifacts/ConfigurationContainer;Lorg/gradle/api/tasks/SourceSet;)Lorg/gradle/api/NamedDomainObjectProvider;
+	public static final fun sourcesElements (Lorg/gradle/api/artifacts/ConfigurationContainer;Lorg/gradle/api/tasks/SourceSet;)Lorg/gradle/api/NamedDomainObjectProvider;
+}
+
+public final class com/kelvsyc/gradle/DomainObjectContainerExtensionsKt {
+	public static final fun asSequence (Lorg/gradle/api/NamedDomainObjectCollection;)Lkotlin/sequences/Sequence;
+}
+
+public final class com/kelvsyc/gradle/GradleExtensionsKt {
+	public static final fun getRootGradle (Lorg/gradle/api/invocation/Gradle;)Lorg/gradle/api/invocation/Gradle;
+}
+
+public final class com/kelvsyc/gradle/ObjectFactoryObjectsKt {
+	public static final fun getAwsCodeBuild (Lorg/gradle/api/model/ObjectFactory;)Lcom/kelvsyc/gradle/providers/AwsCodeBuildProviders;
+	public static final fun getAzurePipelines (Lorg/gradle/api/model/ObjectFactory;)Lcom/kelvsyc/gradle/providers/AzurePipelinesProviders;
+	public static final fun getCircleCI (Lorg/gradle/api/model/ObjectFactory;)Lcom/kelvsyc/gradle/providers/CircleCIProviders;
+	public static final fun getGithubActions (Lorg/gradle/api/model/ObjectFactory;)Lcom/kelvsyc/gradle/providers/GitHubActionsProviders;
+	public static final fun getGithubCodeBuildActions (Lorg/gradle/api/model/ObjectFactory;)Lcom/kelvsyc/gradle/providers/GitHubCodeBuildActionsProviders;
+	public static final fun getGitlabCI (Lorg/gradle/api/model/ObjectFactory;)Lcom/kelvsyc/gradle/providers/GitLabCIProviders;
+	public static final fun getGitlabMergeRequest (Lorg/gradle/api/model/ObjectFactory;)Lcom/kelvsyc/gradle/providers/GitLabCIMergeRequestProviders;
+	public static final fun getGoogleCloudBuild (Lorg/gradle/api/model/ObjectFactory;)Lcom/kelvsyc/gradle/providers/GoogleCloudBuildProviders;
+	public static final fun getTeamCity (Lorg/gradle/api/model/ObjectFactory;)Lcom/kelvsyc/gradle/providers/TeamCityProviders;
+}
+
+public final class com/kelvsyc/gradle/TaskContainerExtensionsKt {
+	public static final fun classes (Lorg/gradle/api/tasks/TaskContainer;Lorg/gradle/api/tasks/SourceSet;)Lorg/gradle/api/tasks/TaskProvider;
+	public static final fun compileJava (Lorg/gradle/api/tasks/TaskContainer;Lorg/gradle/api/tasks/SourceSet;)Lorg/gradle/api/tasks/TaskProvider;
+	public static final fun jar (Lorg/gradle/api/tasks/TaskContainer;Lorg/gradle/api/tasks/SourceSet;)Lorg/gradle/api/tasks/TaskProvider;
+	public static final fun javadocJar (Lorg/gradle/api/tasks/TaskContainer;Lorg/gradle/api/tasks/SourceSet;)Lorg/gradle/api/tasks/TaskProvider;
+	public static final fun sourcesJar (Lorg/gradle/api/tasks/TaskContainer;Lorg/gradle/api/tasks/SourceSet;)Lorg/gradle/api/tasks/TaskProvider;
+}
+
+public final class com/kelvsyc/gradle/TaskProviderExtensionsKt {
+	public static final fun doFirst (Lorg/gradle/api/tasks/TaskProvider;Lkotlin/jvm/functions/Function1;)V
+	public static final fun doLast (Lorg/gradle/api/tasks/TaskProvider;Lkotlin/jvm/functions/Function1;)V
+}
+
+public abstract class com/kelvsyc/gradle/internal/AbstractCachingDelegate : kotlin/properties/ReadOnlyProperty {
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public fun getValue (Ljava/lang/Object;Lkotlin/reflect/KProperty;)Ljava/lang/Object;
+}
+
+public final class com/kelvsyc/gradle/internal/AwsCodeBuildProvidersDelegate : com/kelvsyc/gradle/internal/AbstractCachingDelegate {
+	public static final field INSTANCE Lcom/kelvsyc/gradle/internal/AwsCodeBuildProvidersDelegate;
+}
+
+public final class com/kelvsyc/gradle/internal/AzurePipelinesProvidersDelegate : com/kelvsyc/gradle/internal/AbstractCachingDelegate {
+	public static final field INSTANCE Lcom/kelvsyc/gradle/internal/AzurePipelinesProvidersDelegate;
+}
+
+public final class com/kelvsyc/gradle/internal/CircleCIProvidersDelegate : com/kelvsyc/gradle/internal/AbstractCachingDelegate {
+	public static final field INSTANCE Lcom/kelvsyc/gradle/internal/CircleCIProvidersDelegate;
+}
+
+public final class com/kelvsyc/gradle/internal/GitHubActionsProvidersDelegate : com/kelvsyc/gradle/internal/AbstractCachingDelegate {
+	public static final field INSTANCE Lcom/kelvsyc/gradle/internal/GitHubActionsProvidersDelegate;
+}
+
+public final class com/kelvsyc/gradle/internal/GitHubCodeBuildActionsProvidersDelegate : com/kelvsyc/gradle/internal/AbstractCachingDelegate {
+	public static final field INSTANCE Lcom/kelvsyc/gradle/internal/GitHubCodeBuildActionsProvidersDelegate;
+}
+
+public final class com/kelvsyc/gradle/internal/GitLabCIMergeRequestProvidersDelegate : com/kelvsyc/gradle/internal/AbstractCachingDelegate {
+	public static final field INSTANCE Lcom/kelvsyc/gradle/internal/GitLabCIMergeRequestProvidersDelegate;
+}
+
+public final class com/kelvsyc/gradle/internal/GitLabCIProvidersDelegate : com/kelvsyc/gradle/internal/AbstractCachingDelegate {
+	public static final field INSTANCE Lcom/kelvsyc/gradle/internal/GitLabCIProvidersDelegate;
+}
+
+public final class com/kelvsyc/gradle/internal/GoogleCloudBuildProvidersDelegate : com/kelvsyc/gradle/internal/AbstractCachingDelegate {
+	public static final field INSTANCE Lcom/kelvsyc/gradle/internal/GoogleCloudBuildProvidersDelegate;
+}
+
+public final class com/kelvsyc/gradle/internal/RootGradleDelegate : com/kelvsyc/gradle/internal/AbstractCachingDelegate {
+	public static final field INSTANCE Lcom/kelvsyc/gradle/internal/RootGradleDelegate;
+}
+
+public final class com/kelvsyc/gradle/internal/TeamCityProvidersDelegate : com/kelvsyc/gradle/internal/AbstractCachingDelegate {
+	public static final field INSTANCE Lcom/kelvsyc/gradle/internal/TeamCityProvidersDelegate;
+}
+
+public final class com/kelvsyc/gradle/logging/GradleLoggerDelegate : kotlin/properties/ReadOnlyProperty {
+	public static final field INSTANCE Lcom/kelvsyc/gradle/logging/GradleLoggerDelegate;
+	public synthetic fun getValue (Ljava/lang/Object;Lkotlin/reflect/KProperty;)Ljava/lang/Object;
+	public fun getValue (Ljava/lang/Object;Lkotlin/reflect/KProperty;)Lorg/gradle/api/logging/Logger;
+}
+
+public final class com/kelvsyc/gradle/logging/GradleLoggerExtensionsKt {
+	public static final fun debug (Lorg/gradle/api/logging/Logger;Ljava/lang/Throwable;Lkotlin/jvm/functions/Function0;)V
+	public static final fun debug (Lorg/gradle/api/logging/Logger;Lkotlin/jvm/functions/Function0;)V
+	public static final fun error (Lorg/gradle/api/logging/Logger;Ljava/lang/Throwable;Lkotlin/jvm/functions/Function0;)V
+	public static final fun error (Lorg/gradle/api/logging/Logger;Lkotlin/jvm/functions/Function0;)V
+	public static final fun info (Lorg/gradle/api/logging/Logger;Ljava/lang/Throwable;Lkotlin/jvm/functions/Function0;)V
+	public static final fun info (Lorg/gradle/api/logging/Logger;Lkotlin/jvm/functions/Function0;)V
+	public static final fun lifecycle (Lorg/gradle/api/logging/Logger;Ljava/lang/Throwable;Lkotlin/jvm/functions/Function0;)V
+	public static final fun lifecycle (Lorg/gradle/api/logging/Logger;Lkotlin/jvm/functions/Function0;)V
+	public static final fun log (Lorg/gradle/api/logging/Logger;Lorg/gradle/api/logging/LogLevel;Ljava/lang/Throwable;Lkotlin/jvm/functions/Function0;)V
+	public static final fun log (Lorg/gradle/api/logging/Logger;Lorg/gradle/api/logging/LogLevel;Lkotlin/jvm/functions/Function0;)V
+	public static final fun quiet (Lorg/gradle/api/logging/Logger;Ljava/lang/Throwable;Lkotlin/jvm/functions/Function0;)V
+	public static final fun quiet (Lorg/gradle/api/logging/Logger;Lkotlin/jvm/functions/Function0;)V
+	public static final fun warn (Lorg/gradle/api/logging/Logger;Ljava/lang/Throwable;Lkotlin/jvm/functions/Function0;)V
+	public static final fun warn (Lorg/gradle/api/logging/Logger;Lkotlin/jvm/functions/Function0;)V
+}
+
+public abstract class com/kelvsyc/gradle/providers/AbstractResourceValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public abstract fun doObtain (Ljava/io/InputStream;)Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/providers/AbstractResourceValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getResourcePath ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/providers/ArtifactoryRepositoryHandlerExtensionsKt {
+	public static final fun artifactoryIvy (Lorg/gradle/api/artifacts/dsl/RepositoryHandler;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/gradle/api/artifacts/repositories/IvyArtifactRepository;
+	public static final fun artifactoryIvy (Lorg/gradle/api/artifacts/dsl/RepositoryHandler;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lorg/gradle/api/artifacts/repositories/IvyArtifactRepository;
+	public static final fun artifactoryMaven (Lorg/gradle/api/artifacts/dsl/RepositoryHandler;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/gradle/api/artifacts/repositories/MavenArtifactRepository;
+	public static final fun artifactoryMaven (Lorg/gradle/api/artifacts/dsl/RepositoryHandler;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lorg/gradle/api/artifacts/repositories/MavenArtifactRepository;
+	public static final fun jfrogCloudIvy (Lorg/gradle/api/artifacts/dsl/RepositoryHandler;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/gradle/api/artifacts/repositories/IvyArtifactRepository;
+	public static final fun jfrogCloudIvy (Lorg/gradle/api/artifacts/dsl/RepositoryHandler;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lorg/gradle/api/artifacts/repositories/IvyArtifactRepository;
+	public static final fun jfrogCloudMaven (Lorg/gradle/api/artifacts/dsl/RepositoryHandler;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/gradle/api/artifacts/repositories/MavenArtifactRepository;
+	public static final fun jfrogCloudMaven (Lorg/gradle/api/artifacts/dsl/RepositoryHandler;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lorg/gradle/api/artifacts/repositories/MavenArtifactRepository;
+}
+
+public abstract class com/kelvsyc/gradle/providers/AwsCodeBuildProviders {
+	public fun <init> (Lorg/gradle/api/file/ProjectLayout;Lorg/gradle/api/provider/ProviderFactory;)V
+	public final fun getAwsDefaultRegion ()Lorg/gradle/api/provider/Provider;
+	public final fun getAwsRegion ()Lorg/gradle/api/provider/Provider;
+	public final fun getBatchBuildIdentifier ()Lorg/gradle/api/provider/Provider;
+	public final fun getBuildArn ()Lorg/gradle/api/provider/Provider;
+	public final fun getBuildId ()Lorg/gradle/api/provider/Provider;
+	public final fun getBuildImage ()Lorg/gradle/api/provider/Provider;
+	public final fun getBuildNumber ()Lorg/gradle/api/provider/Provider;
+	public final fun getBuildSucceeding ()Lorg/gradle/api/provider/Provider;
+	public final fun getBuildUrl ()Lorg/gradle/api/provider/Provider;
+	public final fun getInitiator ()Lorg/gradle/api/provider/Provider;
+	public final fun getKmsKeyId ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectArn ()Lorg/gradle/api/provider/Provider;
+	public final fun getPublicBuildUrl ()Lorg/gradle/api/provider/Provider;
+	public final fun getResolvedSourceVersion ()Lorg/gradle/api/provider/Provider;
+	public final fun getSourceRepoUrl ()Lorg/gradle/api/provider/Provider;
+	public final fun getSourceVersion ()Lorg/gradle/api/provider/Provider;
+	public final fun getSourceVersions ()Lorg/gradle/api/provider/Provider;
+	public final fun getSrcDir ()Lorg/gradle/api/provider/Provider;
+	public final fun getSrcDirPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getSrcDirPaths ()Lorg/gradle/api/provider/Provider;
+	public final fun getSrcDirs ()Lorg/gradle/api/provider/Provider;
+	public final fun getStartTime ()Lorg/gradle/api/provider/Provider;
+	public final fun getWebhookActorAccountId ()Lorg/gradle/api/provider/Provider;
+	public final fun getWebhookBaseRef ()Lorg/gradle/api/provider/Provider;
+	public final fun getWebhookEvent ()Lorg/gradle/api/provider/Provider;
+	public final fun getWebhookHeadRef ()Lorg/gradle/api/provider/Provider;
+	public final fun getWebhookMergeCommit ()Lorg/gradle/api/provider/Provider;
+	public final fun getWebhookPrevCommit ()Lorg/gradle/api/provider/Provider;
+	public final fun getWebhookTrigger ()Lorg/gradle/api/provider/Provider;
+}
+
+public final class com/kelvsyc/gradle/providers/AwsRepositoryHandlerExtensionsKt {
+	public static final fun awsCodeArtifact (Lorg/gradle/api/artifacts/dsl/RepositoryHandler;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/gradle/api/artifacts/repositories/MavenArtifactRepository;
+	public static final fun awsCodeArtifact (Lorg/gradle/api/artifacts/dsl/RepositoryHandler;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lorg/gradle/api/artifacts/repositories/MavenArtifactRepository;
+}
+
+public abstract class com/kelvsyc/gradle/providers/AzurePipelinesProviders {
+	public fun <init> (Lorg/gradle/api/file/ProjectLayout;Lorg/gradle/api/provider/ProviderFactory;)V
+	public final fun getAgentBuildDirectory ()Lorg/gradle/api/provider/Provider;
+	public final fun getAgentBuildDirectoryPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getAgentHomeDirectoryPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getAgentId ()Lorg/gradle/api/provider/Provider;
+	public final fun getAgentJobName ()Lorg/gradle/api/provider/Provider;
+	public final fun getAgentJobStatus ()Lorg/gradle/api/provider/Provider;
+	public final fun getAgentMachineName ()Lorg/gradle/api/provider/Provider;
+	public final fun getAgentName ()Lorg/gradle/api/provider/Provider;
+	public final fun getAgentOs ()Lorg/gradle/api/provider/Provider;
+	public final fun getAgentOsArchitecture ()Lorg/gradle/api/provider/Provider;
+	public final fun getAgentTempDirectory ()Lorg/gradle/api/provider/Provider;
+	public final fun getAgentTempDirectoryPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getAgentToolsDirectory ()Lorg/gradle/api/provider/Provider;
+	public final fun getAgentToolsDirectoryPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getAgentWorkFolderPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getArtifactStagingDirectory ()Lorg/gradle/api/provider/Provider;
+	public final fun getArtifactStagingDirectoryPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getBinariesDirectory ()Lorg/gradle/api/provider/Provider;
+	public final fun getBinariesDirectoryPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getBuildId ()Lorg/gradle/api/provider/Provider;
+	public final fun getBuildNumber ()Lorg/gradle/api/provider/Provider;
+	public final fun getBuildReason ()Lorg/gradle/api/provider/Provider;
+	public final fun getBuildUri ()Lorg/gradle/api/provider/Provider;
+	public final fun getCollectionId ()Lorg/gradle/api/provider/Provider;
+	public final fun getCollectionUri ()Lorg/gradle/api/provider/Provider;
+	public final fun getCronScheduleDisplayName ()Lorg/gradle/api/provider/Provider;
+	public final fun getDebug ()Lorg/gradle/api/provider/Provider;
+	public final fun getDefaultWorkingDirectory ()Lorg/gradle/api/provider/Provider;
+	public final fun getDefaultWorkingDirectoryPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getDefinitionName ()Lorg/gradle/api/provider/Provider;
+	public final fun getDefinitionVersion ()Lorg/gradle/api/provider/Provider;
+	public final fun getEnvironmentId ()Lorg/gradle/api/provider/Provider;
+	public final fun getEnvironmentName ()Lorg/gradle/api/provider/Provider;
+	public final fun getEnvironmentResourceId ()Lorg/gradle/api/provider/Provider;
+	public final fun getEnvironmentResourceName ()Lorg/gradle/api/provider/Provider;
+	public final fun getHostType ()Lorg/gradle/api/provider/Provider;
+	public final fun getJobAttempt ()Lorg/gradle/api/provider/Provider;
+	public final fun getJobDisplayName ()Lorg/gradle/api/provider/Provider;
+	public final fun getJobId ()Lorg/gradle/api/provider/Provider;
+	public final fun getJobName ()Lorg/gradle/api/provider/Provider;
+	public final fun getPipelineWorkspace ()Lorg/gradle/api/provider/Provider;
+	public final fun getPipelineWorkspacePath ()Lorg/gradle/api/provider/Provider;
+	public final fun getPullRequestId ()Lorg/gradle/api/provider/Provider;
+	public final fun getPullRequestIsFork ()Lorg/gradle/api/provider/Provider;
+	public final fun getPullRequestNumber ()Lorg/gradle/api/provider/Provider;
+	public final fun getPullRequestSourceBranch ()Lorg/gradle/api/provider/Provider;
+	public final fun getPullRequestSourceCommitId ()Lorg/gradle/api/provider/Provider;
+	public final fun getPullRequestSourceRepositoryUri ()Lorg/gradle/api/provider/Provider;
+	public final fun getPullRequestTargetBranch ()Lorg/gradle/api/provider/Provider;
+	public final fun getPullRequestTargetBranchName ()Lorg/gradle/api/provider/Provider;
+	public final fun getQueuedBy ()Lorg/gradle/api/provider/Provider;
+	public final fun getQueuedById ()Lorg/gradle/api/provider/Provider;
+	public final fun getRepositoryClean ()Lorg/gradle/api/provider/Provider;
+	public final fun getRepositoryGitSubmoduleCheckout ()Lorg/gradle/api/provider/Provider;
+	public final fun getRepositoryId ()Lorg/gradle/api/provider/Provider;
+	public final fun getRepositoryLocalPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getRepositoryName ()Lorg/gradle/api/provider/Provider;
+	public final fun getRepositoryProvider ()Lorg/gradle/api/provider/Provider;
+	public final fun getRepositoryUri ()Lorg/gradle/api/provider/Provider;
+	public final fun getRequestedFor ()Lorg/gradle/api/provider/Provider;
+	public final fun getRequestedForEmail ()Lorg/gradle/api/provider/Provider;
+	public final fun getRequestedForId ()Lorg/gradle/api/provider/Provider;
+	public final fun getSourceBranch ()Lorg/gradle/api/provider/Provider;
+	public final fun getSourceBranchName ()Lorg/gradle/api/provider/Provider;
+	public final fun getSourceVersion ()Lorg/gradle/api/provider/Provider;
+	public final fun getSourceVersionMessage ()Lorg/gradle/api/provider/Provider;
+	public final fun getSourcesDirectory ()Lorg/gradle/api/provider/Provider;
+	public final fun getSourcesDirectoryPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getStageAttempt ()Lorg/gradle/api/provider/Provider;
+	public final fun getStageDisplayName ()Lorg/gradle/api/provider/Provider;
+	public final fun getStageName ()Lorg/gradle/api/provider/Provider;
+	public final fun getStageRequestedBy ()Lorg/gradle/api/provider/Provider;
+	public final fun getStageRequestedForId ()Lorg/gradle/api/provider/Provider;
+	public final fun getStrategyCycleName ()Lorg/gradle/api/provider/Provider;
+	public final fun getStrategyName ()Lorg/gradle/api/provider/Provider;
+	public final fun getSystemDefinitionId ()Lorg/gradle/api/provider/Provider;
+	public final fun getTeamFoundationCollectionUri ()Lorg/gradle/api/provider/Provider;
+	public final fun getTeamProject ()Lorg/gradle/api/provider/Provider;
+	public final fun getTeamProjectId ()Lorg/gradle/api/provider/Provider;
+	public final fun getTestResultsDirectory ()Lorg/gradle/api/provider/Provider;
+	public final fun getTestResultsDirectoryPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getTfBuild ()Lorg/gradle/api/provider/Provider;
+	public final fun getTriggeredByBuildId ()Lorg/gradle/api/provider/Provider;
+	public final fun getTriggeredByBuildNumber ()Lorg/gradle/api/provider/Provider;
+	public final fun getTriggeredByDefinitionId ()Lorg/gradle/api/provider/Provider;
+	public final fun getTriggeredByDefinitionName ()Lorg/gradle/api/provider/Provider;
+	public final fun getTriggeredByProjectId ()Lorg/gradle/api/provider/Provider;
+}
+
+public abstract class com/kelvsyc/gradle/providers/ChecksumValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/providers/ChecksumValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getAlgorithm ()Lorg/gradle/api/provider/Property;
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+}
+
+public abstract class com/kelvsyc/gradle/providers/CircleCIProviders {
+	public fun <init> (Lorg/gradle/api/file/ProjectLayout;Lorg/gradle/api/provider/ProviderFactory;)V
+	public final fun getBranch ()Lorg/gradle/api/provider/Provider;
+	public final fun getBuildNum ()Lorg/gradle/api/provider/Provider;
+	public final fun getBuildUrl ()Lorg/gradle/api/provider/Provider;
+	public final fun getCi ()Lorg/gradle/api/provider/Provider;
+	public final fun getCircleCI ()Lorg/gradle/api/provider/Provider;
+	public final fun getJob ()Lorg/gradle/api/provider/Provider;
+	public final fun getNodeIndex ()Lorg/gradle/api/provider/Provider;
+	public final fun getNodeTotal ()Lorg/gradle/api/provider/Provider;
+	public final fun getOrganizationId ()Lorg/gradle/api/provider/Provider;
+	public final fun getPipelineId ()Lorg/gradle/api/provider/Provider;
+	public final fun getPrNumber ()Lorg/gradle/api/provider/Provider;
+	public final fun getPrRepoName ()Lorg/gradle/api/provider/Provider;
+	public final fun getPrUsername ()Lorg/gradle/api/provider/Provider;
+	public final fun getPreviousBuildNum ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectId ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectRepoName ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectUsername ()Lorg/gradle/api/provider/Provider;
+	public final fun getPullRequest ()Lorg/gradle/api/provider/Provider;
+	public final fun getPullRequests ()Lorg/gradle/api/provider/Provider;
+	public final fun getRepositoryUrl ()Lorg/gradle/api/provider/Provider;
+	public final fun getSha1 ()Lorg/gradle/api/provider/Provider;
+	public final fun getTag ()Lorg/gradle/api/provider/Provider;
+	public final fun getUsername ()Lorg/gradle/api/provider/Provider;
+	public final fun getWorkflowId ()Lorg/gradle/api/provider/Provider;
+	public final fun getWorkflowJobId ()Lorg/gradle/api/provider/Provider;
+	public final fun getWorkflowWorkspaceId ()Lorg/gradle/api/provider/Provider;
+	public final fun getWorkingDirectory ()Lorg/gradle/api/provider/Provider;
+	public final fun getWorkingDirectoryPath ()Lorg/gradle/api/provider/Provider;
+}
+
+public final class com/kelvsyc/gradle/providers/CollectionProviderExtensionsKt {
+	public static final fun getAsMap (Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun getting (Lorg/gradle/api/provider/Provider;Ljava/lang/Object;)Lorg/gradle/api/provider/Provider;
+	public static final fun getting (Lorg/gradle/api/provider/Provider;Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun listProviderOrElseEmpty (Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun mapElements (Lorg/gradle/api/provider/Provider;Lkotlin/jvm/functions/Function1;)Lorg/gradle/api/provider/Provider;
+	public static final fun mapElementsNotNull (Lorg/gradle/api/provider/Provider;Lkotlin/jvm/functions/Function1;)Lorg/gradle/api/provider/Provider;
+	public static final fun mapProviderOrElseEmpty (Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun setProviderOrElseEmpty (Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+}
+
+public final class com/kelvsyc/gradle/providers/FileProviderExtensionsKt {
+	public static final fun dir (Lorg/gradle/api/provider/Provider;Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+	public static final fun dir (Lorg/gradle/api/provider/Provider;Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun file (Lorg/gradle/api/provider/Provider;Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+	public static final fun file (Lorg/gradle/api/provider/Provider;Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun getAsAbsolutePath (Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun getAsPath (Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+}
+
+public final class com/kelvsyc/gradle/providers/GcpRepositoryHandlerExtensionsKt {
+	public static final fun gcpArtifactRegistry (Lorg/gradle/api/artifacts/dsl/RepositoryHandler;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/gradle/api/artifacts/repositories/MavenArtifactRepository;
+	public static final fun gcpArtifactRegistry (Lorg/gradle/api/artifacts/dsl/RepositoryHandler;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lorg/gradle/api/artifacts/repositories/MavenArtifactRepository;
+}
+
+public abstract class com/kelvsyc/gradle/providers/GitHubActionsProviders {
+	public fun <init> (Lorg/gradle/api/file/ProjectLayout;Lorg/gradle/api/provider/ProviderFactory;)V
+	public final fun getAction ()Lorg/gradle/api/provider/Provider;
+	public final fun getActionPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getActionRepository ()Lorg/gradle/api/provider/Provider;
+	public final fun getActions ()Lorg/gradle/api/provider/Provider;
+	public final fun getActor ()Lorg/gradle/api/provider/Provider;
+	public final fun getActorId ()Lorg/gradle/api/provider/Provider;
+	public final fun getApiUrl ()Lorg/gradle/api/provider/Provider;
+	public final fun getBaseRef ()Lorg/gradle/api/provider/Provider;
+	public final fun getCi ()Lorg/gradle/api/provider/Provider;
+	public final fun getEnvFile ()Lorg/gradle/api/provider/Provider;
+	public final fun getEnvPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getEventFile ()Lorg/gradle/api/provider/Provider;
+	public final fun getEventName ()Lorg/gradle/api/provider/Provider;
+	public final fun getEventPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getGraphqlUrl ()Lorg/gradle/api/provider/Provider;
+	public final fun getHeadRef ()Lorg/gradle/api/provider/Provider;
+	public final fun getJob ()Lorg/gradle/api/provider/Provider;
+	public final fun getOutputFile ()Lorg/gradle/api/provider/Provider;
+	public final fun getOutputPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getPathFile ()Lorg/gradle/api/provider/Provider;
+	public final fun getPathPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getRef ()Lorg/gradle/api/provider/Provider;
+	public final fun getRefName ()Lorg/gradle/api/provider/Provider;
+	public final fun getRefProtected ()Lorg/gradle/api/provider/Provider;
+	public final fun getRefType ()Lorg/gradle/api/provider/Provider;
+	public final fun getRepository ()Lorg/gradle/api/provider/Provider;
+	public final fun getRepositoryId ()Lorg/gradle/api/provider/Provider;
+	public final fun getRepositoryOwner ()Lorg/gradle/api/provider/Provider;
+	public final fun getRepositoryOwnerId ()Lorg/gradle/api/provider/Provider;
+	public final fun getRetentionDays ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunAttempt ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunId ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunNumber ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunnerArch ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunnerDebug ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunnerEnvironment ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunnerName ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunnerOs ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunnerTempDirectory ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunnerTempPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunnerToolCacheDirectory ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunnerToolCachePath ()Lorg/gradle/api/provider/Provider;
+	public final fun getServerUrl ()Lorg/gradle/api/provider/Provider;
+	public final fun getSha ()Lorg/gradle/api/provider/Provider;
+	public final fun getStepSummaryFile ()Lorg/gradle/api/provider/Provider;
+	public final fun getStepSummaryPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getTriggeringActor ()Lorg/gradle/api/provider/Provider;
+	public final fun getWorkflow ()Lorg/gradle/api/provider/Provider;
+	public final fun getWorkflowRef ()Lorg/gradle/api/provider/Provider;
+	public final fun getWorkflowRunUrl ()Lorg/gradle/api/provider/Provider;
+	public final fun getWorkflowSha ()Lorg/gradle/api/provider/Provider;
+	public final fun getWorkspaceDirectory ()Lorg/gradle/api/provider/Provider;
+	public final fun getWorkspacePath ()Lorg/gradle/api/provider/Provider;
+}
+
+public abstract class com/kelvsyc/gradle/providers/GitHubCodeBuildActionsProviders {
+	public fun <init> (Lorg/gradle/api/provider/ProviderFactory;)V
+	public final fun getRunnerOwner ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunnerRepo ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunnerRepoDomain ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunnerWithBuildspec ()Lorg/gradle/api/provider/Provider;
+	public final fun getWebhookJobId ()Lorg/gradle/api/provider/Provider;
+	public final fun getWebhookLabel ()Lorg/gradle/api/provider/Provider;
+	public final fun getWebhookRunId ()Lorg/gradle/api/provider/Provider;
+	public final fun getWebhookWorkflowName ()Lorg/gradle/api/provider/Provider;
+}
+
+public abstract class com/kelvsyc/gradle/providers/GitLabCIMergeRequestProviders {
+	public fun <init> (Lorg/gradle/api/provider/ProviderFactory;)V
+	public final fun getApproved ()Lorg/gradle/api/provider/Provider;
+	public final fun getAssignees ()Lorg/gradle/api/provider/Provider;
+	public final fun getDescription ()Lorg/gradle/api/provider/Provider;
+	public final fun getDescriptionIsTruncated ()Lorg/gradle/api/provider/Provider;
+	public final fun getDiffBaseSha ()Lorg/gradle/api/provider/Provider;
+	public final fun getDiffId ()Lorg/gradle/api/provider/Provider;
+	public final fun getDraft ()Lorg/gradle/api/provider/Provider;
+	public final fun getEventType ()Lorg/gradle/api/provider/Provider;
+	public final fun getId ()Lorg/gradle/api/provider/Provider;
+	public final fun getIid ()Lorg/gradle/api/provider/Provider;
+	public final fun getLabels ()Lorg/gradle/api/provider/Provider;
+	public final fun getMilestone ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectId ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectUrl ()Lorg/gradle/api/provider/Provider;
+	public final fun getRefPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getSourceBranchName ()Lorg/gradle/api/provider/Provider;
+	public final fun getSourceBranchProtected ()Lorg/gradle/api/provider/Provider;
+	public final fun getSourceBranchSha ()Lorg/gradle/api/provider/Provider;
+	public final fun getSourceProjectId ()Lorg/gradle/api/provider/Provider;
+	public final fun getSourceProjectPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getSourceProjectUrl ()Lorg/gradle/api/provider/Provider;
+	public final fun getSquashOnMerge ()Lorg/gradle/api/provider/Provider;
+	public final fun getTargetBranchName ()Lorg/gradle/api/provider/Provider;
+	public final fun getTargetBranchProtected ()Lorg/gradle/api/provider/Provider;
+	public final fun getTargetBranchSha ()Lorg/gradle/api/provider/Provider;
+	public final fun getTitle ()Lorg/gradle/api/provider/Provider;
+}
+
+public abstract class com/kelvsyc/gradle/providers/GitLabCIProviders {
+	public fun <init> (Lorg/gradle/api/file/ProjectLayout;Lorg/gradle/api/provider/ProviderFactory;)V
+	public final fun getApiGraphqlUrl ()Lorg/gradle/api/provider/Provider;
+	public final fun getApiV4Url ()Lorg/gradle/api/provider/Provider;
+	public final fun getCi ()Lorg/gradle/api/provider/Provider;
+	public final fun getCiServer ()Lorg/gradle/api/provider/Provider;
+	public final fun getCommitAuthor ()Lorg/gradle/api/provider/Provider;
+	public final fun getCommitBeforeSha ()Lorg/gradle/api/provider/Provider;
+	public final fun getCommitBranch ()Lorg/gradle/api/provider/Provider;
+	public final fun getCommitDescription ()Lorg/gradle/api/provider/Provider;
+	public final fun getCommitMessage ()Lorg/gradle/api/provider/Provider;
+	public final fun getCommitRefName ()Lorg/gradle/api/provider/Provider;
+	public final fun getCommitRefProtected ()Lorg/gradle/api/provider/Provider;
+	public final fun getCommitRefSlug ()Lorg/gradle/api/provider/Provider;
+	public final fun getCommitSha ()Lorg/gradle/api/provider/Provider;
+	public final fun getCommitShortSha ()Lorg/gradle/api/provider/Provider;
+	public final fun getCommitTag ()Lorg/gradle/api/provider/Provider;
+	public final fun getCommitTagMessage ()Lorg/gradle/api/provider/Provider;
+	public final fun getCommitTimestamp ()Lorg/gradle/api/provider/Provider;
+	public final fun getCommitTitle ()Lorg/gradle/api/provider/Provider;
+	public final fun getConfigPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getDebugServices ()Lorg/gradle/api/provider/Provider;
+	public final fun getDebugTrace ()Lorg/gradle/api/provider/Provider;
+	public final fun getDefaultBranch ()Lorg/gradle/api/provider/Provider;
+	public final fun getDependencyProxyDirectGroupImagePrefix ()Lorg/gradle/api/provider/Provider;
+	public final fun getDependencyProxyGroupImagePrefix ()Lorg/gradle/api/provider/Provider;
+	public final fun getDependencyProxyServer ()Lorg/gradle/api/provider/Provider;
+	public final fun getDeployFreeze ()Lorg/gradle/api/provider/Provider;
+	public final fun getDisposableEnvironment ()Lorg/gradle/api/provider/Provider;
+	public final fun getEnvironmentAction ()Lorg/gradle/api/provider/Provider;
+	public final fun getEnvironmentId ()Lorg/gradle/api/provider/Provider;
+	public final fun getEnvironmentName ()Lorg/gradle/api/provider/Provider;
+	public final fun getEnvironmentSlug ()Lorg/gradle/api/provider/Provider;
+	public final fun getEnvironmentTier ()Lorg/gradle/api/provider/Provider;
+	public final fun getEnvironmentUrl ()Lorg/gradle/api/provider/Provider;
+	public final fun getFipsMode ()Lorg/gradle/api/provider/Provider;
+	public final fun getGitlabCI ()Lorg/gradle/api/provider/Provider;
+	public final fun getHasOpenRequirements ()Lorg/gradle/api/provider/Provider;
+	public final fun getJobId ()Lorg/gradle/api/provider/Provider;
+	public final fun getJobImage ()Lorg/gradle/api/provider/Provider;
+	public final fun getJobManual ()Lorg/gradle/api/provider/Provider;
+	public final fun getJobName ()Lorg/gradle/api/provider/Provider;
+	public final fun getJobNameSlug ()Lorg/gradle/api/provider/Provider;
+	public final fun getJobStage ()Lorg/gradle/api/provider/Provider;
+	public final fun getJobStartedAt ()Lorg/gradle/api/provider/Provider;
+	public final fun getJobStatus ()Lorg/gradle/api/provider/Provider;
+	public final fun getJobTimeout ()Lorg/gradle/api/provider/Provider;
+	public final fun getJobUrl ()Lorg/gradle/api/provider/Provider;
+	public final fun getKubernetesActive ()Lorg/gradle/api/provider/Provider;
+	public final fun getNodeIndex ()Lorg/gradle/api/provider/Provider;
+	public final fun getNodeTotal ()Lorg/gradle/api/provider/Provider;
+	public final fun getOpenMergeRequests ()Lorg/gradle/api/provider/Provider;
+	public final fun getPagesDomain ()Lorg/gradle/api/provider/Provider;
+	public final fun getPagesUrl ()Lorg/gradle/api/provider/Provider;
+	public final fun getPipelineCreatedAt ()Lorg/gradle/api/provider/Provider;
+	public final fun getPipelineId ()Lorg/gradle/api/provider/Provider;
+	public final fun getPipelineIid ()Lorg/gradle/api/provider/Provider;
+	public final fun getPipelineName ()Lorg/gradle/api/provider/Provider;
+	public final fun getPipelineSource ()Lorg/gradle/api/provider/Provider;
+	public final fun getPipelineTriggered ()Lorg/gradle/api/provider/Provider;
+	public final fun getPipelineUrl ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectClassificationLabel ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectDescription ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectDir ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectDirPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectId ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectName ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectNamespace ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectNamespaceId ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectPathSlug ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectRepositoryLanguages ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectRootNamespace ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectTitle ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectUrl ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectVisibility ()Lorg/gradle/api/provider/Provider;
+	public final fun getRegistry ()Lorg/gradle/api/provider/Provider;
+	public final fun getRegistryImage ()Lorg/gradle/api/provider/Provider;
+	public final fun getReleaseDescription ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunnerDescription ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunnerExecutableArch ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunnerId ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunnerRevision ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunnerShortToken ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunnerTags ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunnerVersion ()Lorg/gradle/api/provider/Provider;
+	public final fun getServerFqdn ()Lorg/gradle/api/provider/Provider;
+	public final fun getServerHost ()Lorg/gradle/api/provider/Provider;
+	public final fun getServerName ()Lorg/gradle/api/provider/Provider;
+	public final fun getServerPort ()Lorg/gradle/api/provider/Provider;
+	public final fun getServerProtocol ()Lorg/gradle/api/provider/Provider;
+	public final fun getServerRevision ()Lorg/gradle/api/provider/Provider;
+	public final fun getServerShellSshHost ()Lorg/gradle/api/provider/Provider;
+	public final fun getServerShellSshPort ()Lorg/gradle/api/provider/Provider;
+	public final fun getServerUrl ()Lorg/gradle/api/provider/Provider;
+	public final fun getServerVersion ()Lorg/gradle/api/provider/Provider;
+	public final fun getServerVersionMajor ()Lorg/gradle/api/provider/Provider;
+	public final fun getServerVersionMinor ()Lorg/gradle/api/provider/Provider;
+	public final fun getServerVersionPatch ()Lorg/gradle/api/provider/Provider;
+	public final fun getSharedEnvironment ()Lorg/gradle/api/provider/Provider;
+	public final fun getTemplateRegistryHost ()Lorg/gradle/api/provider/Provider;
+	public final fun getUserEmail ()Lorg/gradle/api/provider/Provider;
+	public final fun getUserId ()Lorg/gradle/api/provider/Provider;
+	public final fun getUserLogin ()Lorg/gradle/api/provider/Provider;
+	public final fun getUserName ()Lorg/gradle/api/provider/Provider;
+}
+
+public final class com/kelvsyc/gradle/providers/GitRegistryRepositoryHandlerExtensionsKt {
+	public static final fun gitHubPackages (Lorg/gradle/api/artifacts/dsl/RepositoryHandler;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/gradle/api/artifacts/repositories/MavenArtifactRepository;
+	public static final fun gitHubPackages (Lorg/gradle/api/artifacts/dsl/RepositoryHandler;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lorg/gradle/api/artifacts/repositories/MavenArtifactRepository;
+	public static final fun gitLabPackages (Lorg/gradle/api/artifacts/dsl/RepositoryHandler;Ljava/lang/String;Ljava/lang/String;)Lorg/gradle/api/artifacts/repositories/MavenArtifactRepository;
+	public static final fun gitLabPackages (Lorg/gradle/api/artifacts/dsl/RepositoryHandler;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lorg/gradle/api/artifacts/repositories/MavenArtifactRepository;
+	public static final fun giteaPackages (Lorg/gradle/api/artifacts/dsl/RepositoryHandler;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/gradle/api/artifacts/repositories/MavenArtifactRepository;
+	public static final fun giteaPackages (Lorg/gradle/api/artifacts/dsl/RepositoryHandler;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lorg/gradle/api/artifacts/repositories/MavenArtifactRepository;
+}
+
+public abstract class com/kelvsyc/gradle/providers/GoogleCloudBuildProviders {
+	public fun <init> (Lorg/gradle/api/provider/ProviderFactory;)V
+	public final fun getBaseBranch ()Lorg/gradle/api/provider/Provider;
+	public final fun getBranchName ()Lorg/gradle/api/provider/Provider;
+	public final fun getBuildId ()Lorg/gradle/api/provider/Provider;
+	public final fun getCommitSha ()Lorg/gradle/api/provider/Provider;
+	public final fun getHeadBranch ()Lorg/gradle/api/provider/Provider;
+	public final fun getHeadRepoUrl ()Lorg/gradle/api/provider/Provider;
+	public final fun getLocation ()Lorg/gradle/api/provider/Provider;
+	public final fun getPrNumber ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectId ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectNumber ()Lorg/gradle/api/provider/Provider;
+	public final fun getRefName ()Lorg/gradle/api/provider/Provider;
+	public final fun getRepoFullName ()Lorg/gradle/api/provider/Provider;
+	public final fun getRepoName ()Lorg/gradle/api/provider/Provider;
+	public final fun getRevisionId ()Lorg/gradle/api/provider/Provider;
+	public final fun getServiceAccount ()Lorg/gradle/api/provider/Provider;
+	public final fun getServiceAccountEmail ()Lorg/gradle/api/provider/Provider;
+	public final fun getShortSha ()Lorg/gradle/api/provider/Provider;
+	public final fun getTagName ()Lorg/gradle/api/provider/Provider;
+	public final fun getTriggerBuildConfigPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getTriggerName ()Lorg/gradle/api/provider/Provider;
+}
+
+public final class com/kelvsyc/gradle/providers/NexusRepositoryHandlerExtensionsKt {
+	public static final fun nexusMaven (Lorg/gradle/api/artifacts/dsl/RepositoryHandler;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lorg/gradle/api/artifacts/repositories/MavenArtifactRepository;
+	public static final fun nexusMaven (Lorg/gradle/api/artifacts/dsl/RepositoryHandler;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lorg/gradle/api/artifacts/repositories/MavenArtifactRepository;
+}
+
+public abstract class com/kelvsyc/gradle/providers/PropertiesFromFileValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/Properties;
+}
+
+public abstract interface class com/kelvsyc/gradle/providers/PropertiesFromFileValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+}
+
+public abstract class com/kelvsyc/gradle/providers/PropertiesResourceValueSource : com/kelvsyc/gradle/providers/AbstractResourceValueSource {
+	public fun <init> ()V
+	public synthetic fun doObtain (Ljava/io/InputStream;)Ljava/lang/Object;
+	public fun doObtain (Ljava/io/InputStream;)Ljava/util/Properties;
+}
+
+public final class com/kelvsyc/gradle/providers/ProviderFactoryExtensionsKt {
+	public static final fun checksum (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/file/RegularFile;Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+	public static final fun checksum (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/file/RegularFile;Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun checksum (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/provider/Provider;Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+	public static final fun checksum (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/provider/Provider;Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun getAbsent (Lorg/gradle/api/provider/ProviderFactory;)Lorg/gradle/api/provider/Provider;
+	public static final fun ofNullable (Lorg/gradle/api/provider/ProviderFactory;Ljava/lang/Object;)Lorg/gradle/api/provider/Provider;
+	public static final fun propertiesFile (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/file/RegularFile;)Lorg/gradle/api/provider/Provider;
+	public static final fun propertiesFile (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+}
+
+public final class com/kelvsyc/gradle/providers/StringProviderExtensionsKt {
+	public static final fun filterNotBlank (Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun getAsBoolean (Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun getAsInt (Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun getOrElseEmpty (Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+}
+
+public abstract class com/kelvsyc/gradle/providers/StringResourceValueSource : com/kelvsyc/gradle/providers/AbstractResourceValueSource {
+	public fun <init> ()V
+	public synthetic fun doObtain (Ljava/io/InputStream;)Ljava/lang/Object;
+	public fun doObtain (Ljava/io/InputStream;)Ljava/lang/String;
+}
+
+public abstract class com/kelvsyc/gradle/providers/TeamCityProviders {
+	public fun <init> (Lorg/gradle/api/file/ProjectLayout;Lorg/gradle/api/provider/ProviderFactory;)V
+	public final fun getAgentHomeDir ()Lorg/gradle/api/provider/Provider;
+	public final fun getAgentHomeDirPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getAgentName ()Lorg/gradle/api/provider/Provider;
+	public final fun getAgentToolsDir ()Lorg/gradle/api/provider/Provider;
+	public final fun getAgentToolsDirPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getBranch ()Lorg/gradle/api/provider/Provider;
+	public final fun getBuildConfName ()Lorg/gradle/api/provider/Provider;
+	public final fun getBuildId ()Lorg/gradle/api/provider/Provider;
+	public final fun getBuildNumber ()Lorg/gradle/api/provider/Provider;
+	public final fun getBuildPropertiesFilePath ()Lorg/gradle/api/provider/Provider;
+	public final fun getBuildTypeId ()Lorg/gradle/api/provider/Provider;
+	public final fun getBuildVcsNumber ()Lorg/gradle/api/provider/Provider;
+	public final fun getChangedFilesFilePath ()Lorg/gradle/api/provider/Provider;
+	public final fun getCheckoutDir ()Lorg/gradle/api/provider/Provider;
+	public final fun getCheckoutDirPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getConfigurationPropertiesFilePath ()Lorg/gradle/api/provider/Provider;
+	public final fun getProjectName ()Lorg/gradle/api/provider/Provider;
+	public final fun getRecentlyFailedTestsFilePath ()Lorg/gradle/api/provider/Provider;
+	public final fun getRunnerPropertiesFilePath ()Lorg/gradle/api/provider/Provider;
+	public final fun getServerUrl ()Lorg/gradle/api/provider/Provider;
+	public final fun getTeamcityVersion ()Lorg/gradle/api/provider/Provider;
+	public final fun getTempDir ()Lorg/gradle/api/provider/Provider;
+	public final fun getTempDirPath ()Lorg/gradle/api/provider/Provider;
+	public final fun getVcsRootRevisions ()Lorg/gradle/api/provider/Provider;
+	public final fun getWorkingDir ()Lorg/gradle/api/provider/Provider;
+	public final fun getWorkingDirPath ()Lorg/gradle/api/provider/Provider;
+	public final fun isDefaultBranch ()Lorg/gradle/api/provider/Provider;
+	public final fun isPersonal ()Lorg/gradle/api/provider/Provider;
+}
+
+public abstract class com/kelvsyc/gradle/workers/ChecksumWorkAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/workers/ChecksumWorkAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getAlgorithm ()Lorg/gradle/api/provider/Property;
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+}
+
+public abstract class com/kelvsyc/gradle/workers/ZipAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/workers/ZipAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getBaseDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getCompressionLevel ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getSourceFiles ()Lorg/gradle/api/file/ConfigurableFileCollection;
+}
+

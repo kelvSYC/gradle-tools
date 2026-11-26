@@ -1,0 +1,188 @@
+public abstract class com/kelvsyc/gradle/azure/functions/AbstractDeployFunctionAppFromPackage : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	protected abstract fun configureAction (Lcom/kelvsyc/gradle/azure/functions/RunFromPackageFunctionAppAction$Parameters;)V
+	public abstract fun getAppName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getAppService ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getWorkerExecutor ()Lorg/gradle/workers/WorkerExecutor;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/azure/functions/AbstractDeployFunctionAppFromZip : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getAppName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getAppService ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getWorkerExecutor ()Lorg/gradle/workers/WorkerExecutor;
+	public abstract fun getZipFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/azure/functions/CallFunctionAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/functions/CallFunctionAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getAuthMode ()Lorg/gradle/api/provider/Property;
+	public abstract fun getFunctionKeyRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getIdentityTokenRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPayload ()Lorg/gradle/api/provider/Property;
+	public abstract fun getUri ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/azure/functions/CallFunctionActionKt {
+	public static final fun anonymous (Lcom/kelvsyc/gradle/azure/functions/CallFunctionAction$Parameters;)V
+	public static final fun azureAdToken (Lcom/kelvsyc/gradle/azure/functions/CallFunctionAction$Parameters;Lcom/kelvsyc/gradle/clients/CredentialReference;)V
+	public static final fun functionKey (Lcom/kelvsyc/gradle/azure/functions/CallFunctionAction$Parameters;Lcom/kelvsyc/gradle/clients/CredentialReference;)V
+}
+
+public abstract class com/kelvsyc/gradle/azure/functions/DeployFunctionAppFromPackage : com/kelvsyc/gradle/azure/functions/AbstractDeployFunctionAppFromPackage {
+	public fun <init> ()V
+	protected fun configureAction (Lcom/kelvsyc/gradle/azure/functions/RunFromPackageFunctionAppAction$Parameters;)V
+	public abstract fun getAppName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getAppService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPackageUrl ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/functions/DeployFunctionAppFromZip : com/kelvsyc/gradle/azure/functions/AbstractDeployFunctionAppFromZip {
+	public fun <init> ()V
+	public abstract fun getAppService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/functions/FunctionAppClientBuildService : com/kelvsyc/gradle/azure/AbstractAzureClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/azure/resourcemanager/appservice/AppServiceManager;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/functions/FunctionAppClientBuildService$Params : com/kelvsyc/gradle/azure/AzureBuildServiceParams {
+	public abstract fun getResourceGroup ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSubscriptionId ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/azure/functions/FunctionAuthLevel : java/lang/Enum {
+	public static final field ADMIN Lcom/kelvsyc/gradle/azure/functions/FunctionAuthLevel;
+	public static final field ANONYMOUS Lcom/kelvsyc/gradle/azure/functions/FunctionAuthLevel;
+	public static final field FUNCTION Lcom/kelvsyc/gradle/azure/functions/FunctionAuthLevel;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/kelvsyc/gradle/azure/functions/FunctionAuthLevel;
+	public static fun values ()[Lcom/kelvsyc/gradle/azure/functions/FunctionAuthLevel;
+}
+
+public final class com/kelvsyc/gradle/azure/functions/FunctionAuthMode : java/lang/Enum {
+	public static final field ANONYMOUS Lcom/kelvsyc/gradle/azure/functions/FunctionAuthMode;
+	public static final field AZURE_AD Lcom/kelvsyc/gradle/azure/functions/FunctionAuthMode;
+	public static final field FUNCTION_KEY Lcom/kelvsyc/gradle/azure/functions/FunctionAuthMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/kelvsyc/gradle/azure/functions/FunctionAuthMode;
+	public static fun values ()[Lcom/kelvsyc/gradle/azure/functions/FunctionAuthMode;
+}
+
+public abstract class com/kelvsyc/gradle/azure/functions/FunctionClientBuildService : com/kelvsyc/gradle/clients/AbstractClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/kelvsyc/gradle/azure/functions/FunctionInfo;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/functions/FunctionClientBuildService$Params : org/gradle/api/services/BuildServiceParameters {
+	public abstract fun getAppName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getAppService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getFunctionName ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/azure/functions/FunctionInfo {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/azure/functions/FunctionAuthLevel;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Lcom/kelvsyc/gradle/azure/functions/FunctionAuthLevel;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/azure/functions/FunctionAuthLevel;)Lcom/kelvsyc/gradle/azure/functions/FunctionInfo;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/azure/functions/FunctionInfo;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/azure/functions/FunctionAuthLevel;ILjava/lang/Object;)Lcom/kelvsyc/gradle/azure/functions/FunctionInfo;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAuthLevel ()Lcom/kelvsyc/gradle/azure/functions/FunctionAuthLevel;
+	public final fun getInvokeUrlTemplate ()Ljava/lang/String;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class com/kelvsyc/gradle/azure/functions/GetFunctionAppValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/functions/GetFunctionAppValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getAppName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/functions/GetFunctionValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/functions/GetFunctionValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getFunctionService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/functions/ListFunctionAppsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/Map;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/functions/ListFunctionAppsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/functions/ListFunctionsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/Map;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/functions/ListFunctionsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getAppName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/functions/RunFromPackageFunctionAppAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/functions/RunFromPackageFunctionAppAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getAppName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getAppService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPackageSasUrlRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPackageUrl ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/azure/functions/RunFromPackageFunctionAppActionKt {
+	public static final fun plainUrl (Lcom/kelvsyc/gradle/azure/functions/RunFromPackageFunctionAppAction$Parameters;Ljava/lang/String;)V
+	public static final fun sasUrl (Lcom/kelvsyc/gradle/azure/functions/RunFromPackageFunctionAppAction$Parameters;Lcom/kelvsyc/gradle/clients/CredentialReference;)V
+}
+
+public abstract class com/kelvsyc/gradle/azure/functions/UpdateFunctionAppSettingsAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/functions/UpdateFunctionAppSettingsAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getAppName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getAppService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSensitiveSettings ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getSettings ()Lorg/gradle/api/provider/MapProperty;
+}
+
+public abstract class com/kelvsyc/gradle/azure/functions/ZipDeployFunctionAppAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/functions/ZipDeployFunctionAppAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getAppName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getAppService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getZipFile ()Lorg/gradle/api/file/RegularFileProperty;
+}
+

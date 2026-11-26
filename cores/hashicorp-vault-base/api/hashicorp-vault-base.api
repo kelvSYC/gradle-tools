@@ -1,0 +1,80 @@
+public abstract class com/kelvsyc/gradle/hashicorp/vault/AbstractAwsCredentialWorkAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	protected abstract fun doExecute (Lcom/kelvsyc/gradle/hashicorp/vault/AwsDynamicCredential;)V
+	public final fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/hashicorp/vault/AbstractAwsCredentialWorkAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getRole ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/hashicorp/vault/AbstractAzureCredentialWorkAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	protected abstract fun doExecute (Lcom/kelvsyc/gradle/hashicorp/vault/AzureDynamicCredential;)V
+	public final fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/hashicorp/vault/AbstractAzureCredentialWorkAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getRole ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/hashicorp/vault/AbstractDatabaseCredentialWorkAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	protected abstract fun doExecute (Lcom/kelvsyc/gradle/hashicorp/vault/DatabaseCredential;)V
+	public final fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/hashicorp/vault/AbstractDatabaseCredentialWorkAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getRole ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/hashicorp/vault/AbstractGcpCredentialWorkAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	protected abstract fun doExecute (Lcom/kelvsyc/gradle/hashicorp/vault/GcpDynamicCredential;)V
+	public final fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/hashicorp/vault/AbstractGcpCredentialWorkAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getRole ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/hashicorp/vault/DeleteKvSecretAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/hashicorp/vault/DeleteKvSecretAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getPath ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/hashicorp/vault/RevokeLeaseAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/hashicorp/vault/RevokeLeaseAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getLeaseId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/hashicorp/vault/VaultClientBuildService : com/kelvsyc/gradle/hashicorp/vault/AbstractVaultClientBuildService {
+	public fun <init> ()V
+}
+
+public abstract class com/kelvsyc/gradle/hashicorp/vault/WriteKvSecretAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/hashicorp/vault/WriteKvSecretAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPath ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getValue ()Lorg/gradle/api/provider/Property;
+}
+

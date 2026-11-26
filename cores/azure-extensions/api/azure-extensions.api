@@ -1,0 +1,86 @@
+public abstract class com/kelvsyc/gradle/azure/AbstractAzureClientBuildService : com/kelvsyc/gradle/clients/AbstractClientBuildService {
+	public fun <init> ()V
+	protected final fun resolveCredential ()Lcom/kelvsyc/gradle/azure/ResolvedAzureCredential;
+	protected final fun resolveTokenCredential ()Lcom/azure/core/credential/TokenCredential;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/AzureBuildServiceParams : org/gradle/api/services/BuildServiceParameters {
+	public abstract fun getAccountKeyRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getAccountName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getClientId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getClientSecretRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getCredentialSource ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSasTokenRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTenantId ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/azure/AzureBuildServiceParamsExtensionsKt {
+	public static final fun clientSecret (Lcom/kelvsyc/gradle/azure/AzureBuildServiceParams;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/clients/CredentialReference;)V
+	public static synthetic fun clientSecret$default (Lcom/kelvsyc/gradle/azure/AzureBuildServiceParams;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/clients/CredentialReference;ILjava/lang/Object;)V
+	public static final fun defaultCredential (Lcom/kelvsyc/gradle/azure/AzureBuildServiceParams;)V
+	public static final fun managedIdentity (Lcom/kelvsyc/gradle/azure/AzureBuildServiceParams;Ljava/lang/String;)V
+	public static synthetic fun managedIdentity$default (Lcom/kelvsyc/gradle/azure/AzureBuildServiceParams;Ljava/lang/String;ILjava/lang/Object;)V
+	public static final fun noCredentials (Lcom/kelvsyc/gradle/azure/AzureBuildServiceParams;)V
+	public static final fun sasToken (Lcom/kelvsyc/gradle/azure/AzureBuildServiceParams;Lcom/kelvsyc/gradle/clients/CredentialReference;)V
+	public static synthetic fun sasToken$default (Lcom/kelvsyc/gradle/azure/AzureBuildServiceParams;Lcom/kelvsyc/gradle/clients/CredentialReference;ILjava/lang/Object;)V
+	public static final fun sharedKey (Lcom/kelvsyc/gradle/azure/AzureBuildServiceParams;Ljava/lang/String;Lcom/kelvsyc/gradle/clients/CredentialReference;)V
+	public static synthetic fun sharedKey$default (Lcom/kelvsyc/gradle/azure/AzureBuildServiceParams;Ljava/lang/String;Lcom/kelvsyc/gradle/clients/CredentialReference;ILjava/lang/Object;)V
+}
+
+public final class com/kelvsyc/gradle/azure/AzureCredentialSource : java/lang/Enum {
+	public static final field CLIENT_SECRET Lcom/kelvsyc/gradle/azure/AzureCredentialSource;
+	public static final field DEFAULT Lcom/kelvsyc/gradle/azure/AzureCredentialSource;
+	public static final field MANAGED_IDENTITY Lcom/kelvsyc/gradle/azure/AzureCredentialSource;
+	public static final field NONE Lcom/kelvsyc/gradle/azure/AzureCredentialSource;
+	public static final field SAS_TOKEN Lcom/kelvsyc/gradle/azure/AzureCredentialSource;
+	public static final field STORAGE_ACCOUNT_KEY Lcom/kelvsyc/gradle/azure/AzureCredentialSource;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/kelvsyc/gradle/azure/AzureCredentialSource;
+	public static fun values ()[Lcom/kelvsyc/gradle/azure/AzureCredentialSource;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/ResolvedAzureCredential {
+}
+
+public final class com/kelvsyc/gradle/azure/ResolvedAzureCredential$NamedKey : com/kelvsyc/gradle/azure/ResolvedAzureCredential {
+	public static final synthetic fun box-impl (Lcom/azure/core/credential/AzureNamedKeyCredential;)Lcom/kelvsyc/gradle/azure/ResolvedAzureCredential$NamedKey;
+	public static fun constructor-impl (Lcom/azure/core/credential/AzureNamedKeyCredential;)Lcom/azure/core/credential/AzureNamedKeyCredential;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Lcom/azure/core/credential/AzureNamedKeyCredential;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Lcom/azure/core/credential/AzureNamedKeyCredential;Lcom/azure/core/credential/AzureNamedKeyCredential;)Z
+	public final fun getCredential ()Lcom/azure/core/credential/AzureNamedKeyCredential;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Lcom/azure/core/credential/AzureNamedKeyCredential;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Lcom/azure/core/credential/AzureNamedKeyCredential;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Lcom/azure/core/credential/AzureNamedKeyCredential;
+}
+
+public final class com/kelvsyc/gradle/azure/ResolvedAzureCredential$Sas : com/kelvsyc/gradle/azure/ResolvedAzureCredential {
+	public static final synthetic fun box-impl (Lcom/azure/core/credential/AzureSasCredential;)Lcom/kelvsyc/gradle/azure/ResolvedAzureCredential$Sas;
+	public static fun constructor-impl (Lcom/azure/core/credential/AzureSasCredential;)Lcom/azure/core/credential/AzureSasCredential;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Lcom/azure/core/credential/AzureSasCredential;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Lcom/azure/core/credential/AzureSasCredential;Lcom/azure/core/credential/AzureSasCredential;)Z
+	public final fun getCredential ()Lcom/azure/core/credential/AzureSasCredential;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Lcom/azure/core/credential/AzureSasCredential;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Lcom/azure/core/credential/AzureSasCredential;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Lcom/azure/core/credential/AzureSasCredential;
+}
+
+public final class com/kelvsyc/gradle/azure/ResolvedAzureCredential$Token : com/kelvsyc/gradle/azure/ResolvedAzureCredential {
+	public static final synthetic fun box-impl (Lcom/azure/core/credential/TokenCredential;)Lcom/kelvsyc/gradle/azure/ResolvedAzureCredential$Token;
+	public static fun constructor-impl (Lcom/azure/core/credential/TokenCredential;)Lcom/azure/core/credential/TokenCredential;
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun equals-impl (Lcom/azure/core/credential/TokenCredential;Ljava/lang/Object;)Z
+	public static final fun equals-impl0 (Lcom/azure/core/credential/TokenCredential;Lcom/azure/core/credential/TokenCredential;)Z
+	public final fun getCredential ()Lcom/azure/core/credential/TokenCredential;
+	public fun hashCode ()I
+	public static fun hashCode-impl (Lcom/azure/core/credential/TokenCredential;)I
+	public fun toString ()Ljava/lang/String;
+	public static fun toString-impl (Lcom/azure/core/credential/TokenCredential;)Ljava/lang/String;
+	public final synthetic fun unbox-impl ()Lcom/azure/core/credential/TokenCredential;
+}
+

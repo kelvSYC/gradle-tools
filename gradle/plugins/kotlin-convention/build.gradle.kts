@@ -12,5 +12,6 @@ dependencies {
     implementation(platform(libs.conventions.platform))
     implementation(libs.detekt.plugin)
     implementation(libs.dokka.plugin)
+    compileOnly(libs.kotlin.plugin)
     implementation(libs.gradlex.dependency.conflict.resolution.plugin)
 }

@@ -1,0 +1,111 @@
+public abstract class com/kelvsyc/gradle/aws/kotlin/s3/AbstractBatchDownloadFromS3 : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getArtifacts ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getClient ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEnableChecksumMode ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
+	public abstract fun getRetries ()Lorg/gradle/api/provider/Property;
+	public final fun outputFileForArtifact (Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+	public final fun registerArtifact (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public final fun run ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/kotlin/s3/AbstractBatchDownloadFromS3$Artifact {
+	public abstract fun getBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/s3/AbstractBatchUploadToS3 : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getArtifacts ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getChecksumAlgorithm ()Lorg/gradle/api/provider/Property;
+	public abstract fun getClient ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
+	public abstract fun getRetries ()Lorg/gradle/api/provider/Property;
+	public final fun registerArtifact (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public final fun run ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/kotlin/s3/AbstractBatchUploadToS3$Artifact {
+	public abstract fun getBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getKey ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/s3/AbstractListObjectsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public abstract fun doObtain (Ljava/util/List;)Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/kotlin/s3/AbstractListObjectsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPrefix ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/s3/AbstractS3ValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public abstract fun doObtain (Laws/sdk/kotlin/services/s3/model/GetObjectResponse;)Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/kotlin/s3/AbstractS3ValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/s3/BatchDownloadFromS3 : com/kelvsyc/gradle/aws/kotlin/s3/AbstractBatchDownloadFromS3 {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/s3/BatchUploadToS3 : com/kelvsyc/gradle/aws/kotlin/s3/AbstractBatchUploadToS3 {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/s3/CopyObject : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public final fun execute ()V
+	public abstract fun getDestinationBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDestinationKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSourceBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSourceKey ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/s3/DeleteObject : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public final fun execute ()V
+	public abstract fun getBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/s3/DownloadFile : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public final fun execute ()V
+	public abstract fun getBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/s3/S3ClientBuildService : com/kelvsyc/gradle/aws/kotlin/AbstractAwsKotlinClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Laws/sdk/kotlin/services/s3/S3Client;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/s3/UploadFile : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public final fun execute ()V
+	public abstract fun getBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+

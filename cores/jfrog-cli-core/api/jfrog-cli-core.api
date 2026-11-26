@@ -1,0 +1,131 @@
+public abstract class com/kelvsyc/gradle/jfrog/AbstractArtifactorySearchValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	protected abstract fun buildSearchArgs ()Ljava/util/List;
+	protected abstract fun doObtain (Ljava/lang/String;)Ljava/lang/Object;
+	protected abstract fun getExecOperations ()Lorg/gradle/process/ExecOperations;
+	public final fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/jfrog/AbstractArtifactorySearchValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getAccessTokenRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getJfCommand ()Lorg/gradle/api/provider/Property;
+	public abstract fun getServerUrl ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/jfrog/AddGitInfoToBuild : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getBuildName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBuildNumber ()Lorg/gradle/api/provider/Property;
+	public abstract fun getJfCommand ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/jfrog/CleanBuildInfo : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getBuildName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBuildNumber ()Lorg/gradle/api/provider/Property;
+	public abstract fun getJfCommand ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/jfrog/CollectBuildEnvironment : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getBuildName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBuildNumber ()Lorg/gradle/api/provider/Property;
+	public abstract fun getExcludePatterns ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getIncludePatterns ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getJfCommand ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/jfrog/PublishBuildInfo : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getAccessTokenRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBuildName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBuildNumber ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEnvExcludePatterns ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getJfCommand ()Lorg/gradle/api/provider/Property;
+	public abstract fun getServerUrl ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/jfrog/ScanBuild : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getAccessTokenRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBuildName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBuildNumber ()Lorg/gradle/api/provider/Property;
+	public abstract fun getFailBuild ()Lorg/gradle/api/provider/Property;
+	public abstract fun getJfCommand ()Lorg/gradle/api/provider/Property;
+	public abstract fun getServerUrl ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/jfrog/actions/AddGitInfoToBuildAction : org/gradle/workers/WorkAction {
+	public fun <init> (Lorg/gradle/process/ExecOperations;Lorg/gradle/api/provider/ProviderFactory;)V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/jfrog/actions/AddGitInfoToBuildAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getBuildName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBuildNumber ()Lorg/gradle/api/provider/Property;
+	public abstract fun getJfCommand ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/jfrog/actions/CleanBuildInfoAction : org/gradle/workers/WorkAction {
+	public fun <init> (Lorg/gradle/process/ExecOperations;Lorg/gradle/api/provider/ProviderFactory;)V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/jfrog/actions/CleanBuildInfoAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getBuildName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBuildNumber ()Lorg/gradle/api/provider/Property;
+	public abstract fun getJfCommand ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/jfrog/actions/CollectBuildEnvironmentAction : org/gradle/workers/WorkAction {
+	public fun <init> (Lorg/gradle/process/ExecOperations;Lorg/gradle/api/provider/ProviderFactory;)V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/jfrog/actions/CollectBuildEnvironmentAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getBuildName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBuildNumber ()Lorg/gradle/api/provider/Property;
+	public abstract fun getExcludePatterns ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getIncludePatterns ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getJfCommand ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/jfrog/actions/PublishBuildInfoAction : org/gradle/workers/WorkAction {
+	public fun <init> (Lorg/gradle/process/ExecOperations;Lorg/gradle/api/provider/ProviderFactory;)V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/jfrog/actions/PublishBuildInfoAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getAccessToken ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBuildName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBuildNumber ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEnvExcludePatterns ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getJfCommand ()Lorg/gradle/api/provider/Property;
+	public abstract fun getServerUrl ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/jfrog/actions/ScanBuildAction : org/gradle/workers/WorkAction {
+	public fun <init> (Lorg/gradle/process/ExecOperations;Lorg/gradle/api/provider/ProviderFactory;)V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/jfrog/actions/ScanBuildAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getAccessToken ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBuildName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBuildNumber ()Lorg/gradle/api/provider/Property;
+	public abstract fun getFailBuild ()Lorg/gradle/api/provider/Property;
+	public abstract fun getJfCommand ()Lorg/gradle/api/provider/Property;
+	public abstract fun getServerUrl ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/plugins/JFrogCliPlugin : org/gradle/api/Plugin {
+	public fun <init> ()V
+	public synthetic fun apply (Ljava/lang/Object;)V
+	public fun apply (Lorg/gradle/api/Project;)V
+}
+

@@ -1,0 +1,69 @@
+public abstract class com/kelvsyc/gradle/aws/kotlin/lambda/AbstractBatchUpdateFunctionCode : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getArtifacts ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getClient ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
+	public abstract fun getVersionArnsFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getWaitForActive ()Lorg/gradle/api/provider/Property;
+	public final fun registerArtifact (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public final fun run ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/kotlin/lambda/AbstractBatchUpdateFunctionCode$Artifact {
+	public abstract fun getFunctionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPublish ()Lorg/gradle/api/provider/Property;
+	public abstract fun getZipFile ()Lorg/gradle/api/file/RegularFileProperty;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/lambda/BatchUpdateFunctionCode : com/kelvsyc/gradle/aws/kotlin/lambda/AbstractBatchUpdateFunctionCode {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/lambda/GetFunctionConfigurationValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/kotlin/lambda/GetFunctionConfigurationValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getFunctionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getQualifier ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/lambda/InvokeFunction : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public final fun execute ()V
+	public abstract fun getFunctionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getInvocationType ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPayload ()Lorg/gradle/api/provider/Property;
+	public abstract fun getQualifier ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/lambda/LambdaClientBuildService : com/kelvsyc/gradle/aws/kotlin/AbstractAwsKotlinClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Laws/sdk/kotlin/services/lambda/LambdaClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/lambda/ListFunctionsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/Map;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/kotlin/lambda/ListFunctionsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/lambda/UpdateFunctionCode : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public final fun execute ()V
+	public abstract fun getFunctionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPublish ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getZipFile ()Lorg/gradle/api/file/RegularFileProperty;
+}
+

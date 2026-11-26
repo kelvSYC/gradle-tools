@@ -1,0 +1,25 @@
+public abstract class com/kelvsyc/gradle/aws/jvm/lambda/deploy/AwsLambdaJvmDeployExtension {
+	public fun <init> ()V
+	public abstract fun getFunctionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPublish ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRegionId ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/aws/jvm/lambda/deploy/AwsLambdaJvmDeployPlugin : org/gradle/api/Plugin {
+	public fun <init> ()V
+	public synthetic fun apply (Ljava/lang/Object;)V
+	public fun apply (Lorg/gradle/api/Project;)V
+}
+
+public final class com/kelvsyc/gradle/aws/jvm/lambda/deploy/AwsLambdaJvmLayeredDeployPlugin : org/gradle/api/Plugin {
+	public fun <init> ()V
+	public synthetic fun apply (Ljava/lang/Object;)V
+	public fun apply (Lorg/gradle/api/Project;)V
+}
+
+public final class com/kelvsyc/gradle/aws/jvm/lambda/deploy/AwsLambdaJvmUploadPlugin : org/gradle/api/Plugin {
+	public fun <init> ()V
+	public synthetic fun apply (Ljava/lang/Object;)V
+	public fun apply (Lorg/gradle/api/Project;)V
+}
+

@@ -1,0 +1,38 @@
+public abstract class com/kelvsyc/gradle/aws/kotlin/sts/AbstractAssumeRole : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	protected abstract fun doExecute (Lcom/kelvsyc/gradle/aws/kotlin/AwsSessionCredential;)V
+	public final fun execute ()V
+	public abstract fun getDuration ()Lorg/gradle/api/provider/Property;
+	public abstract fun getExternalId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRoleArn ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRoleSessionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/sts/DecodeAuthorizationMessageValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/kotlin/sts/DecodeAuthorizationMessageValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getEncodedMessage ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/sts/GetCallerIdentityValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/Map;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/kotlin/sts/GetCallerIdentityValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/sts/StsClientBuildService : com/kelvsyc/gradle/aws/kotlin/AbstractAwsKotlinClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Laws/sdk/kotlin/services/sts/StsClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+

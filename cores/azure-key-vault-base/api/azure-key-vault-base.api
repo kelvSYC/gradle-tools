@@ -1,0 +1,43 @@
+public abstract class com/kelvsyc/gradle/azure/keyvault/KeyVaultSecretValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/keyvault/KeyVaultSecretValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getSecretName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getVersion ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/keyvault/SecretAsyncClientBuildService : com/kelvsyc/gradle/azure/AbstractAzureClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/azure/security/keyvault/secrets/SecretAsyncClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/keyvault/SecretAsyncClientBuildService$Params : com/kelvsyc/gradle/azure/AzureBuildServiceParams {
+	public abstract fun getVaultUrl ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/keyvault/SecretClientBuildService : com/kelvsyc/gradle/azure/AbstractAzureClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/azure/security/keyvault/secrets/SecretClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/keyvault/SecretClientBuildService$Params : com/kelvsyc/gradle/azure/AzureBuildServiceParams {
+	public abstract fun getVaultUrl ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/keyvault/SetSecretAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/keyvault/SetSecretAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getSecretName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSecretValue ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+

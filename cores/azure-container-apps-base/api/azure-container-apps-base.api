@@ -1,0 +1,382 @@
+public abstract class com/kelvsyc/gradle/azure/containerapp/ContainerAppBuildService : com/kelvsyc/gradle/clients/AbstractClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/azure/resourcemanager/appcontainers/models/ContainerApp;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/ContainerAppBuildService$Params : org/gradle/api/services/BuildServiceParameters {
+	public abstract fun getContainerAppName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEnvironmentService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/ContainerAppJobBuildService : com/kelvsyc/gradle/clients/AbstractClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/azure/resourcemanager/appcontainers/models/Job;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/ContainerAppJobBuildService$Params : org/gradle/api/services/BuildServiceParameters {
+	public abstract fun getEnvironmentService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getJobName ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/ContainerAppsEnvironmentBuildService : com/kelvsyc/gradle/azure/AbstractAzureClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/azure/resourcemanager/appcontainers/ContainerAppsApiManager;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/ContainerAppsEnvironmentBuildService$Params : com/kelvsyc/gradle/azure/AzureBuildServiceParams {
+	public abstract fun getEnvironmentName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getResourceGroupName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSubscriptionId ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/azure/containerapp/ContainerAppsEnvironmentBuildServiceExtensionsKt {
+	public static final fun clientSecret (Lcom/kelvsyc/gradle/azure/containerapp/ContainerAppsEnvironmentBuildService$Params;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/clients/CredentialReference;)V
+	public static final fun defaultCredential (Lcom/kelvsyc/gradle/azure/containerapp/ContainerAppsEnvironmentBuildService$Params;)V
+	public static final fun managedIdentity (Lcom/kelvsyc/gradle/azure/containerapp/ContainerAppsEnvironmentBuildService$Params;Ljava/lang/String;)V
+	public static synthetic fun managedIdentity$default (Lcom/kelvsyc/gradle/azure/containerapp/ContainerAppsEnvironmentBuildService$Params;Ljava/lang/String;ILjava/lang/Object;)V
+}
+
+public final class com/kelvsyc/gradle/azure/containerapp/JobTriggerType : java/lang/Enum {
+	public static final field EVENT Lcom/kelvsyc/gradle/azure/containerapp/JobTriggerType;
+	public static final field MANUAL Lcom/kelvsyc/gradle/azure/containerapp/JobTriggerType;
+	public static final field SCHEDULED Lcom/kelvsyc/gradle/azure/containerapp/JobTriggerType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/kelvsyc/gradle/azure/containerapp/JobTriggerType;
+	public static fun values ()[Lcom/kelvsyc/gradle/azure/containerapp/JobTriggerType;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/actions/ActivateRevisionAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/actions/ActivateRevisionAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getRevisionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/actions/CreateContainerAppAction : org/gradle/workers/WorkAction {
+	public static final field Companion Lcom/kelvsyc/gradle/azure/containerapp/actions/CreateContainerAppAction$Companion;
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public final class com/kelvsyc/gradle/azure/containerapp/actions/CreateContainerAppAction$Companion {
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/actions/CreateContainerAppAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getContainerAppName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEnvVars ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getImageUri ()Lorg/gradle/api/provider/Property;
+	public abstract fun getIngressEnabled ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLocation ()Lorg/gradle/api/provider/Property;
+	public abstract fun getMaxReplicas ()Lorg/gradle/api/provider/Property;
+	public abstract fun getMinReplicas ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTargetPort ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/actions/CreateContainerAppJobAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/actions/CreateContainerAppJobAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getCronExpression ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEnvVars ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getImageUri ()Lorg/gradle/api/provider/Property;
+	public abstract fun getJobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLocation ()Lorg/gradle/api/provider/Property;
+	public abstract fun getReplicaCompletionCount ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTriggerType ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/actions/CreateManagedEnvironmentAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/actions/CreateManagedEnvironmentAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getLocation ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLogAnalyticsWorkspaceId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLogAnalyticsWorkspaceKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/actions/DeactivateRevisionAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/actions/DeactivateRevisionAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getRevisionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/actions/DeleteContainerAppAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/actions/DeleteContainerAppAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/actions/DeleteContainerAppJobAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/actions/DeleteContainerAppJobAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/actions/DeleteManagedEnvironmentAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/actions/DeleteManagedEnvironmentAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/actions/StartJobExecutionAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/actions/StartJobExecutionAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getExecutionNameFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/actions/StopJobExecutionAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/actions/StopJobExecutionAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getExecutionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/actions/UpdateContainerAppAction : org/gradle/workers/WorkAction {
+	public static final field Companion Lcom/kelvsyc/gradle/azure/containerapp/actions/UpdateContainerAppAction$Companion;
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public final class com/kelvsyc/gradle/azure/containerapp/actions/UpdateContainerAppAction$Companion {
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/actions/UpdateContainerAppAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getEnvVars ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getImageUri ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/actions/UpdateContainerAppJobAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/actions/UpdateContainerAppJobAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getEnvVars ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getImageUri ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/sources/GetContainerAppJobValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/sources/GetContainerAppJobValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/sources/GetContainerAppValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/sources/GetContainerAppValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/sources/GetJobExecutionValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/sources/GetJobExecutionValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getExecutionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/sources/GetManagedEnvironmentValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/sources/GetManagedEnvironmentValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/sources/GetRevisionValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/sources/GetRevisionValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getRevisionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/sources/ListContainerAppJobsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/sources/ListContainerAppJobsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/sources/ListContainerAppsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/sources/ListContainerAppsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/sources/ListJobExecutionsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/sources/ListJobExecutionsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/sources/ListRevisionsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerapp/sources/ListRevisionsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/tasks/ActivateRevision : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getContainerAppService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRevisionName ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/tasks/CreateContainerApp : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getContainerAppName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEnvVars ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getEnvironmentService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getImageUri ()Lorg/gradle/api/provider/Property;
+	public abstract fun getIngressEnabled ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLocation ()Lorg/gradle/api/provider/Property;
+	public abstract fun getMaxReplicas ()Lorg/gradle/api/provider/Property;
+	public abstract fun getMinReplicas ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTargetPort ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/tasks/CreateContainerAppJob : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getCronExpression ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEnvVars ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getEnvironmentService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getImageUri ()Lorg/gradle/api/provider/Property;
+	public abstract fun getJobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLocation ()Lorg/gradle/api/provider/Property;
+	public abstract fun getReplicaCompletionCount ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTriggerType ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/tasks/CreateManagedEnvironment : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getEnvironmentService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLocation ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLogAnalyticsWorkspaceId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLogAnalyticsWorkspaceKey ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/tasks/DeactivateRevision : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getContainerAppService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRevisionName ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/tasks/DeleteContainerApp : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getContainerAppService ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/tasks/DeleteContainerAppJob : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getJobService ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/tasks/DeleteManagedEnvironment : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getEnvironmentService ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/tasks/StartJobExecution : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getExecutionNameFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getJobService ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/tasks/StopJobExecution : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getExecutionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getJobService ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/tasks/UpdateContainerApp : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getContainerAppService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEnvVars ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getImageUri ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerapp/tasks/UpdateContainerAppJob : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getEnvVars ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getImageUri ()Lorg/gradle/api/provider/Property;
+	public abstract fun getJobService ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+

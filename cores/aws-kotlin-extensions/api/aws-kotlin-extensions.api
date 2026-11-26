@@ -1,0 +1,59 @@
+public abstract class com/kelvsyc/gradle/aws/kotlin/AbstractAwsKotlinClientBuildService : com/kelvsyc/gradle/clients/AbstractClientBuildService {
+	public fun <init> ()V
+	protected final fun resolveCredentialsProvider ()Laws/smithy/kotlin/runtime/auth/awscredentials/CredentialsProvider;
+	protected final fun resolveRegion ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/kotlin/AwsBuildServiceParams : org/gradle/api/services/BuildServiceParameters {
+	public abstract fun getAccessKeyIdRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getCredentialSource ()Lorg/gradle/api/provider/Property;
+	public abstract fun getCredentialsProfile ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRegion ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSecretAccessKeyRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSessionTokenRef ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/aws/kotlin/AwsBuildServiceParamsExtensionsKt {
+	public static final fun anonymous (Lcom/kelvsyc/gradle/aws/kotlin/AwsBuildServiceParams;)V
+	public static final fun defaultCredentials (Lcom/kelvsyc/gradle/aws/kotlin/AwsBuildServiceParams;)V
+	public static final fun fromAwsCredentials (Lcom/kelvsyc/gradle/aws/kotlin/AwsBuildServiceParams;Lorg/gradle/api/provider/Provider;)V
+	public static final fun fromPasswordCredentials (Lcom/kelvsyc/gradle/aws/kotlin/AwsBuildServiceParams;Lorg/gradle/api/provider/Provider;)V
+	public static final fun profileCredentials (Lcom/kelvsyc/gradle/aws/kotlin/AwsBuildServiceParams;Ljava/lang/String;)V
+	public static final fun sessionCredentials (Lcom/kelvsyc/gradle/aws/kotlin/AwsBuildServiceParams;Lcom/kelvsyc/gradle/clients/CredentialReference;Lcom/kelvsyc/gradle/clients/CredentialReference;Lcom/kelvsyc/gradle/clients/CredentialReference;)V
+	public static synthetic fun sessionCredentials$default (Lcom/kelvsyc/gradle/aws/kotlin/AwsBuildServiceParams;Lcom/kelvsyc/gradle/clients/CredentialReference;Lcom/kelvsyc/gradle/clients/CredentialReference;Lcom/kelvsyc/gradle/clients/CredentialReference;ILjava/lang/Object;)V
+	public static final fun staticCredentials (Lcom/kelvsyc/gradle/aws/kotlin/AwsBuildServiceParams;Lcom/kelvsyc/gradle/clients/CredentialReference;Lcom/kelvsyc/gradle/clients/CredentialReference;)V
+	public static synthetic fun staticCredentials$default (Lcom/kelvsyc/gradle/aws/kotlin/AwsBuildServiceParams;Lcom/kelvsyc/gradle/clients/CredentialReference;Lcom/kelvsyc/gradle/clients/CredentialReference;ILjava/lang/Object;)V
+}
+
+public final class com/kelvsyc/gradle/aws/kotlin/AwsCredentialSource : java/lang/Enum {
+	public static final field ANONYMOUS Lcom/kelvsyc/gradle/aws/kotlin/AwsCredentialSource;
+	public static final field DEFAULT_CHAIN Lcom/kelvsyc/gradle/aws/kotlin/AwsCredentialSource;
+	public static final field PROFILE Lcom/kelvsyc/gradle/aws/kotlin/AwsCredentialSource;
+	public static final field STATIC Lcom/kelvsyc/gradle/aws/kotlin/AwsCredentialSource;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/kelvsyc/gradle/aws/kotlin/AwsCredentialSource;
+	public static fun values ()[Lcom/kelvsyc/gradle/aws/kotlin/AwsCredentialSource;
+}
+
+public final class com/kelvsyc/gradle/aws/kotlin/AwsSessionCredential {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/time/Instant;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/time/Instant;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/time/Instant;)Lcom/kelvsyc/gradle/aws/kotlin/AwsSessionCredential;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/aws/kotlin/AwsSessionCredential;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/time/Instant;ILjava/lang/Object;)Lcom/kelvsyc/gradle/aws/kotlin/AwsSessionCredential;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAccessKeyId ()Ljava/lang/String;
+	public final fun getExpiration ()Ljava/time/Instant;
+	public final fun getSecretAccessKey ()Ljava/lang/String;
+	public final fun getSessionToken ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/aws/kotlin/CredentialsProviderExtensionsKt {
+	public static final fun getAsCredentialsProvider (Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun getAsGradleCredentials (Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+}
+

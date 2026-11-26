@@ -1,0 +1,39 @@
+public final class com/kelvsyc/gradle/xml/ProviderExtensionsKt {
+	public static final fun parseXml (Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+}
+
+public final class com/kelvsyc/gradle/xml/ProviderFactoryExtensionsKt {
+	public static final fun xmlFile (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/file/RegularFile;)Lorg/gradle/api/provider/Provider;
+	public static final fun xmlFile (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun xpath (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/file/RegularFile;Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+	public static final fun xpath (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/file/RegularFile;Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun xpath (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/provider/Provider;Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+	public static final fun xpath (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/provider/Provider;Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+}
+
+public abstract class com/kelvsyc/gradle/xml/XPathValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/xml/XPathValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getXpath ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/xml/XmlValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public fun obtain ()Lcom/kelvsyc/kotlin/xml/XmlElement;
+	public synthetic fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/xml/XmlValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+}
+
+public final class com/kelvsyc/gradle/xml/groovy/XmlValueOperatorsKt {
+	public static final fun get (Lcom/kelvsyc/kotlin/xml/XmlElement;I)Lcom/kelvsyc/kotlin/xml/XmlElement;
+	public static final fun get (Lcom/kelvsyc/kotlin/xml/XmlElement;Ljava/lang/String;)Lcom/kelvsyc/kotlin/xml/XmlElement;
+}
+

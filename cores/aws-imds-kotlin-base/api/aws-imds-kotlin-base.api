@@ -1,0 +1,42 @@
+public abstract class com/kelvsyc/gradle/aws/kotlin/imds/AbstractImdsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public abstract fun doObtain (Ljava/lang/String;)Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/kotlin/imds/AbstractImdsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getPath ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/imds/AbstractInstanceIdentityValueSource : org/gradle/api/provider/ValueSource {
+	public static final field Companion Lcom/kelvsyc/gradle/aws/kotlin/imds/AbstractInstanceIdentityValueSource$Companion;
+	public static final field DOCUMENT_REQUEST_PATH Ljava/lang/String;
+	public fun <init> ()V
+	public abstract fun doObtain (Ljava/lang/String;)Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/Object;
+}
+
+public final class com/kelvsyc/gradle/aws/kotlin/imds/AbstractInstanceIdentityValueSource$Companion {
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/kotlin/imds/AbstractInstanceIdentityValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/imds/ImdsClientBuildService : com/kelvsyc/gradle/clients/AbstractClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Laws/sdk/kotlin/runtime/config/imds/ImdsClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/kotlin/imds/ImdsClientBuildService$Params : org/gradle/api/services/BuildServiceParameters {
+	public abstract fun getEndpoint ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/imds/ImdsValueSource : com/kelvsyc/gradle/aws/kotlin/imds/AbstractImdsValueSource {
+	public fun <init> ()V
+	public synthetic fun doObtain (Ljava/lang/String;)Ljava/lang/Object;
+	public fun doObtain (Ljava/lang/String;)Ljava/lang/String;
+}
+

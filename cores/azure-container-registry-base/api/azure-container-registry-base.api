@@ -1,0 +1,154 @@
+public abstract class com/kelvsyc/gradle/azure/containerregistry/BatchDeleteManifestsFromAzureContainerRegistry : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getDigests ()Lorg/gradle/api/provider/SetProperty;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerregistry/BatchDeleteTagsFromAzureContainerRegistry : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTags ()Lorg/gradle/api/provider/SetProperty;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerregistry/ContainerRegistryAsyncClientBuildService : com/kelvsyc/gradle/azure/AbstractAzureClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/azure/containers/containerregistry/ContainerRegistryAsyncClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerregistry/ContainerRegistryAsyncClientBuildService$Params : com/kelvsyc/gradle/azure/AzureBuildServiceParams {
+	public abstract fun getEndpoint ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerregistry/ContainerRegistryClientBuildService : com/kelvsyc/gradle/azure/AbstractAzureClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/azure/containers/containerregistry/ContainerRegistryClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerregistry/ContainerRegistryClientBuildService$Params : com/kelvsyc/gradle/azure/AzureBuildServiceParams {
+	public abstract fun getEndpoint ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerregistry/ContainerRepositoryAsyncClientBuildService : com/kelvsyc/gradle/clients/AbstractClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/azure/containers/containerregistry/ContainerRepositoryAsync;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerregistry/ContainerRepositoryAsyncClientBuildService$Params : org/gradle/api/services/BuildServiceParameters {
+	public abstract fun getRegistryService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepositoryName ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerregistry/ContainerRepositoryClientBuildService : com/kelvsyc/gradle/clients/AbstractClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/azure/containers/containerregistry/ContainerRepository;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerregistry/ContainerRepositoryClientBuildService$Params : org/gradle/api/services/BuildServiceParameters {
+	public abstract fun getRegistryService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepositoryName ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerregistry/DeleteManifestAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerregistry/DeleteManifestAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getDigest ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerregistry/DeleteRepositoryAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerregistry/DeleteRepositoryAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getRepositoryName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerregistry/DeleteTagAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerregistry/DeleteTagAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTagName ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerregistry/ListManifestDigestsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerregistry/ListManifestDigestsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerregistry/ListRepositoryNamesValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerregistry/ListRepositoryNamesValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerregistry/ListTagNamesValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerregistry/ListTagNamesValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerregistry/UpdateManifestPropertiesAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerregistry/UpdateManifestPropertiesAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getCanDelete ()Lorg/gradle/api/provider/Property;
+	public abstract fun getCanList ()Lorg/gradle/api/provider/Property;
+	public abstract fun getCanRead ()Lorg/gradle/api/provider/Property;
+	public abstract fun getCanWrite ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDigest ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerregistry/UpdateRepositoryPropertiesAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerregistry/UpdateRepositoryPropertiesAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getCanDelete ()Lorg/gradle/api/provider/Property;
+	public abstract fun getCanList ()Lorg/gradle/api/provider/Property;
+	public abstract fun getCanWrite ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/containerregistry/UpdateTagPropertiesAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/containerregistry/UpdateTagPropertiesAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getCanDelete ()Lorg/gradle/api/provider/Property;
+	public abstract fun getCanWrite ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTagName ()Lorg/gradle/api/provider/Property;
+}
+

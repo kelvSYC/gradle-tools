@@ -1,0 +1,51 @@
+public abstract class com/kelvsyc/gradle/aws/java/sqs/AbstractSendMessageBatch : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getClient ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEntries ()Lorg/gradle/api/provider/MapProperty;
+	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
+	protected abstract fun getProviders ()Lorg/gradle/api/provider/ProviderFactory;
+	public abstract fun getQueueUrl ()Lorg/gradle/api/provider/Property;
+	public final fun registerEntry (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/sqs/AbstractSendMessageBatch$Entry : org/gradle/api/Named {
+	public fun <init> (Ljava/lang/String;)V
+	public abstract fun getAttributes ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getMessageBody ()Lorg/gradle/api/provider/Property;
+	public abstract fun getMessageDeduplicationId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getMessageGroupId ()Lorg/gradle/api/provider/Property;
+	public fun getName ()Ljava/lang/String;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/sqs/SendMessageAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/sqs/SendMessageAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getAttributes ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getMessageBody ()Lorg/gradle/api/provider/Property;
+	public abstract fun getMessageDeduplicationId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getMessageGroupId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getQueueUrl ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/sqs/SendMessageBatch : com/kelvsyc/gradle/aws/java/sqs/AbstractSendMessageBatch {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/sqs/SqsAsyncClientBuildService : com/kelvsyc/gradle/aws/java/AbstractAwsJavaClientBuildService {
+	public fun <init> ()V
+	public synthetic fun createClient ()Ljava/lang/Object;
+	protected fun createClient ()Lsoftware/amazon/awssdk/services/sqs/SqsAsyncClient;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/sqs/SqsClientBuildService : com/kelvsyc/gradle/aws/java/AbstractAwsJavaClientBuildService {
+	public fun <init> ()V
+	public synthetic fun createClient ()Ljava/lang/Object;
+	protected fun createClient ()Lsoftware/amazon/awssdk/services/sqs/SqsClient;
+}
+
