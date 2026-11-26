@@ -28,6 +28,8 @@ class AntBridgePlugin : Plugin<Project> {
             extendsFrom(scope.get())
         }
         val extension = project.extensions.create(EXTENSION_NAME, AntBridgeExtension::class.java, classpath.get())
+        // After every import of the project has registered.
+        project.afterEvaluate { extension.warnAboutUnsuppliedExclusions() }
         project.tasks.withType(AntWork::class.java).configureEach {
             antClasspath.from(extension.classpath)
             isolation.convention(AntIsolation.CLASSLOADER)

@@ -60,6 +60,66 @@ class AntShim(
     }
 
     /**
+     * Parses [files] in order into one fresh Ant project, with [seeds] set first as user properties, logging Ant's
+     * messages to [logger], and returns the targets, top-level properties and loaded files of the parse. No target
+     * runs.
+     *
+     * Before each file, the project's base directory is [BuildFile.baseDirectory], else the file's directory; the
+     * file's own `<project basedir>` is ignored, as legacy `importBuild` ignored it.
+     *
+     * @throws AntExecutionException if Ant reports a failure, or a target name is defined in two top-level files
+     */
+    fun readBuild(files: List<BuildFile>, seeds: Map<String, String>, logger: Logger): BuildModel {
+        val request = mapOf("files" to files.map { it.toShimMap() }, "seeds" to seeds)
+        val result = invoke(BUILD_READER, request, logger)
+        @Suppress("UNCHECKED_CAST")
+        val targets = (result["targets"] as List<Map<String, Any?>>).map { target ->
+            @Suppress("UNCHECKED_CAST")
+            BuildTarget(
+                name = target["name"] as String,
+                file = (target["file"] as String?)?.let(::File),
+                description = target["description"] as String?,
+                depends = (target["depends"] as List<String>).toList(),
+                upstream = (target["upstream"] as List<String>).toList()
+            )
+        }
+        @Suppress("UNCHECKED_CAST")
+        val properties = LinkedHashMap(result["properties"] as Map<String, String>)
+        @Suppress("UNCHECKED_CAST")
+        val loadedFiles = (result["loadedFiles"] as List<String>).map(::File)
+        @Suppress("UNCHECKED_CAST")
+        val readFiles = (result["readFiles"] as List<String>).map(::File)
+        return BuildModel(targets, properties, loadedFiles, readFiles)
+    }
+
+    /**
+     * Runs only [target]'s own tasks, not its Ant dependencies, in a fresh Ant project and returns every property the
+     * run defined. The project gets [seeds] as user properties, parses [files] as [readBuild] does, then gets each map
+     * of [upstreamExports] in order, as an upstream target's properties (the first definition of a name wins, so the
+     * build's top-level definitions win too). The target's own `if` and `unless` apply, and it runs with the base
+     * directory and `ant.file` of the top-level file that registered it.
+     *
+     * @throws AntExecutionException if Ant reports a failure, or the build has no such target
+     */
+    fun runTarget(
+        files: List<BuildFile>,
+        seeds: Map<String, String>,
+        upstreamExports: List<Map<String, String>>,
+        target: String,
+        logger: Logger
+    ): Map<String, String> {
+        val request = mapOf(
+            "files" to files.map { it.toShimMap() },
+            "seeds" to seeds,
+            "exports" to upstreamExports,
+            "target" to target
+        )
+        val result = invoke(TARGET_RUNNER, request, logger)
+        @Suppress("UNCHECKED_CAST")
+        return LinkedHashMap(result["properties"] as Map<String, String>)
+    }
+
+    /**
      * Invokes the shim entry point [className] and returns its result.
      *
      * @throws AntExecutionException if the result reports a failure
@@ -111,6 +171,55 @@ class AntShim(
         val baseDirectory: File
     )
 
+    /**
+     * A top-level build file to parse.
+     */
+    data class BuildFile(
+        /** The build file. */
+        val file: File,
+        /** The base directory, or `null` for the file's directory. */
+        val baseDirectory: File?
+    ) {
+        internal fun toShimMap(): Map<String, String?> =
+            mapOf("file" to file.absolutePath, "baseDirectory" to baseDirectory?.absolutePath)
+    }
+
+    /**
+     * The outcome of [readBuild].
+     */
+    data class BuildModel(
+        /** Every target name Ant registered, prefixed `<import>` aliases included, in name order. */
+        val targets: List<BuildTarget>,
+        /**
+         * The seeds and the properties the parse defined, with Ant's effective value. Ant built-ins and system
+         * properties the build did not name are excluded.
+         */
+        val topLevelProperties: Map<String, String>,
+        /** The top-level files and every file they imported or included. */
+        val loadedFiles: List<File>,
+        /**
+         * The files the parse's `property file=`, `loadproperties` and `import` tasks read or looked for, missing ones
+         * included. Other inputs of the parse (environment, URLs, resources, commands) are not tracked.
+         */
+        val readFiles: List<File> = emptyList()
+    )
+
+    /**
+     * A target of a [BuildModel].
+     */
+    data class BuildTarget(
+        /** The name Ant registered the target under. */
+        val name: String,
+        /** The file defining the target, or `null` if Ant does not know it. */
+        val file: File?,
+        /** The target's description, or `null` if it has none. */
+        val description: String?,
+        /** The direct dependencies as Ant resolved them, extension-point wiring included. */
+        val depends: List<String>,
+        /** Every transitive dependency that is a target, in Ant's execution order, without the target itself. */
+        val upstream: List<String>
+    )
+
     private class LoggerBridge(private val logger: Logger) : BiConsumer<Int, String> {
         override fun accept(priority: Int, message: String) {
             when (priority) {
@@ -125,6 +234,8 @@ class AntShim(
     private companion object {
         const val TREE_EXECUTOR = "com.kelvsyc.gradle.ant.shim.TreeExecutor"
         const val PROPERTY_LOADER = "com.kelvsyc.gradle.ant.shim.PropertyLoader"
+        const val BUILD_READER = "com.kelvsyc.gradle.ant.shim.BuildReader"
+        const val TARGET_RUNNER = "com.kelvsyc.gradle.ant.shim.TargetRunner"
 
         /** Ant's `Project.MSG_ERR`. */
         const val MSG_ERR = 0
