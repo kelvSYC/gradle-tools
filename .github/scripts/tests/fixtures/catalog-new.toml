@@ -1,0 +1,14 @@
+[metadata]
+format.version = "1.1"
+
+[versions]
+groovy = "4.0.1"
+gradle = "9.9.2"
+
+[libraries]
+managed = {group = "com.example", name = "managed", version = "" }
+literal = {group = "com.example", name = "literal", version = "1.1.0" }
+by-ref = {group = "org.codehaus.groovy", name = "groovy-ant", version.ref = "groovy" }
+
+[plugins]
+some = {id = "x.y", version = "1.1.0" }
