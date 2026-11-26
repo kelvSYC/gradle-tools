@@ -221,6 +221,44 @@ Each core has a minimum Gradle, set by `com.kelvsyc.gradle.minimumGradle` in the
   - Each spec gives TestKit its own directory, `<compat.testKitDir>/<gradle version>`, because TestKit directories must not be shared by concurrent builds. `compat.testKitDir` is the `COMPAT_TESTKIT_DIR` environment variable, else `aggregation/compat/build/compat-testkit`. It is a JVM argument, not a task input, so it never invalidates the test task. CI does not cache it: each version's `caches` (resolved dependencies, generated Kotlin DSL jars) total about 1.7 GB, too much for the repository's cache quota for the time saved. The Gradle distributions themselves go to the real Gradle user home's `wrapper/dists`, which `setup-gradle` already caches.
 - `GradleVariantSelectionSpec` (`gradle-extensions`) and `DokkaDashGradleVersionSpec` (`dokka-dash`) test their cores across Gradle versions, in the same way (`gradle-extensions` resolves its core from `build/variant-test-repo`, which, like the compat repository, is not a publishing repository: its `publishMavenPublicationToVariantTestRepository` task is standalone, so `publish` never writes to it): each is abstract, with one subclass per Gradle version, including one for the running Gradle that has no tests when that version already has a subclass. The test task asks for one JVM per version (`maxParallelForks`: 5 for `gradle-extensions`, 4 for `dokka-dash`), and each version has its own TestKit directory under `build/variant-testkit` or `build/gradle-version-testkit` respectively. Gradle hands test classes to its test JVMs in turn, in the order it finds the class files, so the subclasses are the only classes in their package (`com.kelvsyc.gradle.variantselection`, `com.kelvsyc.gradle.plugins.gradleversions`): found one after another, they go to distinct JVMs. Gradle caps the test JVMs at `max-workers` (4 on CI's 4-vCPU runners, unless `org.gradle.workers.max` says otherwise): with more versions than that, the extra versions share a JVM with another and run one after the other in it, and the package isolation only spreads the versions evenly. On CI, `gradle-extensions`' five versions therefore run in four JVMs, two of them one after the other. A new Gradle version is a new subclass there (and a larger `maxParallelForks`).
 
+## Releasing
+
+Every component (each core, the BOM and the catalog) is released together under one version, the `vX.Y.Z` git tag (see Shared Build Conventions: a tagged, clean `HEAD` resolves the bare version). Releases go to GitHub Packages only. Every push to `main` still publishes `-SNAPSHOT`s (the `publish` job of `gradle-build.yml`).
+
+**Labels.** A PR's release bump comes from its labels: `release:major`, `release:minor`, none for patch. The rule depends on the latest release tag's major version:
+
+| Change | 0.x | ≥ 1.0 |
+|---|---|---|
+| API removed or changed (a removed or changed line in a `cores/*/api/*.api` dump) | `release:minor` | `release:major` |
+| API added only | none (patch) | `release:minor` |
+| Non-API break (minimum Gradle tier raised, defaults changed, task/extension/plugin ID renamed, API changed only in `gradle-extensions`' `src/gradle99`) | `release:minor` (by hand; the PR template's checklist) | `release:major` |
+| Fixes, docs, build, dependencies | none (patch) | none (patch) |
+
+While 0.x, `release:major` counts as minor; only the release workflow's `bump: major` input leaves 0.x. A higher label than required is allowed.
+
+**API dumps.** The API rule reads the dumps at `cores/<core>/api/<core>.api` (see Core Convention Plugins). After an intended API change, run `./gradlew :updateKotlinAbi` (or `./gradlew :<core>:updateKotlinAbi`) and commit the dumps with the change.
+
+**Label check.** `.github/workflows/release-label.yml` (job `release-label`, script `.github/scripts/release-label-check.sh`) fails a PR whose labels are below what its own API change (diffed from the merge base) requires, naming the dumps and the required label. It re-runs on labelling, so adding the label fixes it.
+
+**Conventions bumps.** `conventions-bump.yml` labels a gradle-build-conventions bump PR `release:minor` when a library in the new release's platform or catalog moves across a breaking version (major changed, or minor changed while 0.x; `.github/scripts/conventions-moves.sh`), since such a move reaches the published POMs. Otherwise the PR stays unlabelled. Other Dependabot PRs are labelled by the maintainer at merge.
+
+**Repository prerequisites (owner, once).**
+
+- Create the labels `release:major` and `release:minor` (`gh label create release:major`, `gh label create release:minor`). They must exist before `conventions-bump.yml`'s labelling step runs or a PR can use them.
+- Add the `release-label` check to the required status checks of the "Main Ruleset", next to `build`. Until then it is advisory; the release workflow applies the API rule again regardless.
+
+**Running a release.** Run the `Release` workflow (`.github/workflows/release.yml`, `workflow_dispatch`, from `main` only) with `bump` (`auto`, `patch`, `minor`, `major`) and `dry-run`. Run it with `dry-run: true` first and read the plan in the run summary.
+
+1. It releases the commit `main` pointed at when dispatched, and fails unless that commit's `build` check (the required check of `gradle-build.yml`) concluded `success`.
+2. `.github/scripts/release-plan.sh` computes the version from the latest `vX.Y.Z` tag: the largest bump of the labels of the PRs merged since (first-parent commits of `main`; labels are read at dispatch, so a label added after merge counts), raised to what the API change over that range requires (`raised=` in the plan). Commits with no PR (direct pushes) count as patch and are listed as `direct=`. A `bump` input other than `auto` overrides the result but fails if it is lower. No commits since the latest tag fails. `dry-run` stops here.
+3. It tags `HEAD` locally (annotated), runs `./gradlew :publish`, and only after a successful publish pushes the tag and creates the GitHub Release with generated notes, categorised by `.github/release.yml`.
+
+The first release after the release automation uses `bump: minor` (→ `v0.2.0`), since earlier PRs are unlabelled.
+
+**Partial publish.** GitHub Packages refuses to republish a version, so a release that failed during `:publish` leaves some packages published at that version. Delete that version from every package that has it (repository Packages, or `gh api -X DELETE /user/packages/maven/<package>/versions/<id>`), delete the remote tag if it was pushed (`git push origin :refs/tags/vX.Y.Z`) and any GitHub Release, then re-run the workflow.
+
+**License overrides.** The license gate's `allowDependency(group, artifact, version)` overrides (see Core Convention Plugins) are pinned to one version: when that artifact is bumped, `:checkLicense` fails until the override is checked again by hand and updated to the new version.
+
 ## Critical Gotchas
 
 ### Detekt + JDK 25 = FAILS ⚠️

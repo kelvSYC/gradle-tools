@@ -1,0 +1,165 @@
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Version bump; auto takes it from the PR labels and the public-API change
+        type: choice
+        options:
+          - auto
+          - patch
+          - minor
+          - major
+        default: auto
+      dry-run:
+        description: Only plan the release (version and PRs); no tag, publish or GitHub Release
+        type: boolean
+        default: false
+
+# One release at a time; a queued run waits for the running one instead of cancelling it.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      pull-requests: read
+      checks: read
+      statuses: read
+
+    steps:
+      - name: Require main
+        env:
+          REF: ${{ github.ref }}
+        run: |
+          if [ "$REF" != refs/heads/main ]; then
+            echo "::error::Releases are made from main only, not $REF."
+            exit 1
+          fi
+      - name: Checkout
+        # main at the SHA the run was dispatched for (github.sha), with every tag.
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          filter: tree:0
+      - name: Record the released commit
+        id: commit
+        env:
+          SHA: ${{ github.sha }}
+        run: |
+          head=$(git rev-parse HEAD)
+          if [ "$head" != "$SHA" ]; then
+            echo "::error::Checked out $head, not the dispatched $SHA."
+            exit 1
+          fi
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+      - name: Require a green build
+        # The required status check of gradle-build.yml (its build job, not the build (n/4) shards) on this commit.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ steps.commit.outputs.sha }}
+        run: |
+          conclusions=$(gh api --paginate "repos/$REPO/commits/$SHA/check-runs?check_name=build&filter=latest" \
+            --jq '.check_runs[] | select(.name == "build" and .app.slug == "github-actions") | .conclusion // "pending"')
+          if [ -z "$conclusions" ]; then
+            echo "::error::No build check run on $SHA; wait for gradle-build.yml to finish."
+            exit 1
+          fi
+          if printf '%s\n' "$conclusions" | grep -qv '^success$'; then
+            echo "::error::The build check on $SHA has not succeeded: $(printf '%s' "$conclusions" | tr '\n' ' ')"
+            exit 1
+          fi
+      - name: Plan
+        id: plan
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SHA: ${{ steps.commit.outputs.sha }}
+          BUMP: ${{ inputs.bump }}
+        run: |
+          # Outside the checkout: an untracked file would make the semver version +dirty.
+          plan="$RUNNER_TEMP/release-plan.txt"
+          rc=0
+          .github/scripts/release-plan.sh "$SHA" "$BUMP" > "$plan" 2> "$plan.err" || rc=$?
+          cat "$plan"
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::No release: $(tr '\n' ' ' < "$plan.err")"
+            exit "$rc"
+          fi
+          version=$(sed -n 's/^version=//p' "$plan")
+          latest=$(sed -n 's/^latest=//p' "$plan")
+          if ! printf '%s' "$version" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::The plan produced no valid version: '$version'."
+            exit 1
+          fi
+          if git rev-parse -q --verify "refs/tags/$version" >/dev/null || [ -n "$(git ls-remote --tags origin "refs/tags/$version")" ]; then
+            echo "::error::Tag $version already exists."
+            exit 1
+          fi
+          {
+            echo "### Release $version"
+            echo
+            echo '```'
+            cat "$plan"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "latest=$latest" >> "$GITHUB_OUTPUT"
+      - name: Set up JDK 21
+        if: ${{ !inputs.dry-run }}
+        uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          java-version: '21'
+          distribution: 'zulu'
+      - name: Setup Gradle
+        if: ${{ !inputs.dry-run }}
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+        with:
+          build-scan-publish: true
+          build-scan-terms-of-use-url: "https://gradle.com/help/legal-terms-of-use"
+          build-scan-terms-of-use-agree: "yes"
+      - name: Tag
+        # Local only until the publish succeeds, so that a failed publish leaves no tag behind.
+        if: ${{ !inputs.dry-run }}
+        env:
+          VERSION: ${{ steps.plan.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$VERSION" -m "Release $VERSION"
+      - name: Publish
+        # The tagged, clean HEAD resolves to the bare version.
+        if: ${{ !inputs.dry-run }}
+        env:
+          VERSION: ${{ steps.plan.outputs.version }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # These feed the publishing repository's credentials, resolved at execution so publishing stays
+          # configuration-cache compatible. GITHUB_ACTOR/GITHUB_TOKEN above still serve dependency resolution.
+          ORG_GRADLE_PROJECT_GitHubPackagesUsername: ${{ github.actor }}
+          ORG_GRADLE_PROJECT_GitHubPackagesPassword: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "$(git describe --exact-match HEAD)" != "$VERSION" ] || [ -n "$(git status --porcelain)" ]; then
+            echo "::error::HEAD is not exactly $VERSION on a clean tree; the published version would not be $VERSION."
+            git status --short
+            exit 1
+          fi
+          ./gradlew :publish
+      - name: Push the tag
+        if: ${{ !inputs.dry-run }}
+        env:
+          VERSION: ${{ steps.plan.outputs.version }}
+        run: git push origin "refs/tags/$VERSION"
+      - name: Create the GitHub Release
+        if: ${{ !inputs.dry-run }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.plan.outputs.version }}
+          LATEST: ${{ steps.plan.outputs.latest }}
+        run: |
+          gh release create "$VERSION" --verify-tag --title "$VERSION" --generate-notes \
+            ${LATEST:+--notes-start-tag "$LATEST"}
