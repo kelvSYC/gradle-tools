@@ -136,6 +136,12 @@ dependencyResolutionManagement {
 Components publish the versions of their dependencies. A published BOM and version catalog are available from the
 `metadata/` build for aligning versions across multiple components.
 
+Every component, the BOM and the catalog are released together under one version. The released versions and their
+notes (breaking changes first) are listed on the
+[GitHub Releases](https://github.com/kelvSYC/gradle-tools/releases) page. While the version is 0.x, a minor release
+may break compatibility and a patch release does not. `-SNAPSHOT` versions of the next release are published from
+every commit to `main`.
+
 ## Building from source
 
 ```bash

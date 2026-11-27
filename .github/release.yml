@@ -1,0 +1,14 @@
+# Categories of the generated release notes (gh release create --generate-notes in workflows/release.yml).
+# While 0.x a breaking change is labelled release:minor; on leaving 0.x, drop release:minor from Breaking changes.
+changelog:
+  categories:
+    - title: Breaking changes
+      labels:
+        - release:major
+        - release:minor
+    - title: Dependencies
+      labels:
+        - dependencies
+    - title: Changes
+      labels:
+        - "*"
