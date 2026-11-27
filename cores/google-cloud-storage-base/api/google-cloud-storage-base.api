@@ -1,0 +1,90 @@
+public abstract class com/kelvsyc/gradle/google/cloud/storage/AbstractBatchDownloadFromGCS : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getArtifacts ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getClient ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
+	public final fun getOutputFiles ()Lorg/gradle/api/provider/Provider;
+	protected abstract fun getProviders ()Lorg/gradle/api/provider/ProviderFactory;
+	public final fun registerArtifact (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/storage/AbstractBatchDownloadFromGCS$Artifact : org/gradle/api/Named {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun getBlobId ()Lorg/gradle/api/provider/Provider;
+	public abstract fun getBlobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBucket ()Lorg/gradle/api/provider/Property;
+	public fun getName ()Ljava/lang/String;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/storage/AbstractBatchUploadToGCS : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getArtifacts ()Lorg/gradle/api/provider/MapProperty;
+	public final fun getInputFiles ()Lorg/gradle/api/provider/Provider;
+	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
+	protected abstract fun getProviders ()Lorg/gradle/api/provider/ProviderFactory;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getWorkerExecutor ()Lorg/gradle/workers/WorkerExecutor;
+	public final fun registerArtifact (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/storage/AbstractBatchUploadToGCS$Artifact : org/gradle/api/Named {
+	public fun <init> (Ljava/lang/String;)V
+	public abstract fun getBlobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public fun getName ()Ljava/lang/String;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/storage/AbstractGCSValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public abstract fun doObtain ([B)Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/storage/AbstractGCSValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getBlobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/storage/BatchDownloadFromGCS : com/kelvsyc/gradle/google/cloud/storage/AbstractBatchDownloadFromGCS {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/storage/BatchUploadToGCS : com/kelvsyc/gradle/google/cloud/storage/AbstractBatchUploadToGCS {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/google/cloud/storage/GoogleCredentialsExtensionsKt {
+	public static final fun getAsServiceAccountCredentials (Lorg/gradle/api/file/RegularFile;)Lcom/google/auth/oauth2/ServiceAccountCredentials;
+	public static final fun getAsServiceAccountCredentials (Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/storage/StorageClientBuildService : com/kelvsyc/gradle/google/cloud/AbstractGcpClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/google/cloud/storage/Storage;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/storage/UploadFileAction : org/gradle/workers/WorkAction {
+	public static final field BUFFER_SIZE I
+	public static final field Companion Lcom/kelvsyc/gradle/google/cloud/storage/UploadFileAction$Companion;
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public final class com/kelvsyc/gradle/google/cloud/storage/UploadFileAction$Companion {
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/storage/UploadFileAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getBlobName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+

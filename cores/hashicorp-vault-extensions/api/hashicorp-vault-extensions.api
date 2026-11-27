@@ -1,0 +1,130 @@
+public abstract class com/kelvsyc/gradle/hashicorp/vault/AbstractVaultClientBuildService : com/kelvsyc/gradle/clients/AbstractClientBuildService {
+	public static final field Companion Lcom/kelvsyc/gradle/hashicorp/vault/AbstractVaultClientBuildService$Companion;
+	public fun <init> ()V
+	public fun close ()V
+	protected fun createClient ()Lio/github/jopenlibs/vault/Vault;
+	public synthetic fun createClient ()Ljava/lang/Object;
+	public final fun getKvSecret (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public final fun getKvSecretMap (Ljava/lang/String;)Ljava/util/Map;
+	public final fun issueAwsCredential (Ljava/lang/String;)Lcom/kelvsyc/gradle/hashicorp/vault/AwsDynamicCredential;
+	public final fun issueAzureCredential (Ljava/lang/String;)Lcom/kelvsyc/gradle/hashicorp/vault/AzureDynamicCredential;
+	public final fun issueDatabaseCredential (Ljava/lang/String;)Lcom/kelvsyc/gradle/hashicorp/vault/DatabaseCredential;
+	public final fun issueGcpCredential (Ljava/lang/String;)Lcom/kelvsyc/gradle/hashicorp/vault/GcpDynamicCredential;
+	public final fun revokeLease (Ljava/lang/String;)V
+	public final fun trackLease (Ljava/lang/String;)V
+	public final fun withAwsCredential (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public final fun withAzureCredential (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public final fun withDatabaseCredential (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+	public final fun withGcpCredential (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+}
+
+public final class com/kelvsyc/gradle/hashicorp/vault/AbstractVaultClientBuildService$Companion {
+}
+
+public final class com/kelvsyc/gradle/hashicorp/vault/AwsDynamicCredential {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/time/Duration;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/time/Duration;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/time/Duration;)Lcom/kelvsyc/gradle/hashicorp/vault/AwsDynamicCredential;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/hashicorp/vault/AwsDynamicCredential;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/time/Duration;ILjava/lang/Object;)Lcom/kelvsyc/gradle/hashicorp/vault/AwsDynamicCredential;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAccessKeyId ()Ljava/lang/String;
+	public final fun getLeaseDuration ()Ljava/time/Duration;
+	public final fun getLeaseId ()Ljava/lang/String;
+	public final fun getSecretAccessKey ()Ljava/lang/String;
+	public final fun getSessionToken ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/hashicorp/vault/AzureDynamicCredential {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/time/Duration;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/time/Duration;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/time/Duration;)Lcom/kelvsyc/gradle/hashicorp/vault/AzureDynamicCredential;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/hashicorp/vault/AzureDynamicCredential;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/time/Duration;ILjava/lang/Object;)Lcom/kelvsyc/gradle/hashicorp/vault/AzureDynamicCredential;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getClientId ()Ljava/lang/String;
+	public final fun getClientSecret ()Ljava/lang/String;
+	public final fun getLeaseDuration ()Ljava/time/Duration;
+	public final fun getLeaseId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/hashicorp/vault/DatabaseCredential {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/time/Duration;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/time/Duration;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/time/Duration;)Lcom/kelvsyc/gradle/hashicorp/vault/DatabaseCredential;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/hashicorp/vault/DatabaseCredential;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/time/Duration;ILjava/lang/Object;)Lcom/kelvsyc/gradle/hashicorp/vault/DatabaseCredential;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLeaseDuration ()Ljava/time/Duration;
+	public final fun getLeaseId ()Ljava/lang/String;
+	public final fun getPassword ()Ljava/lang/String;
+	public final fun getUsername ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/hashicorp/vault/GcpDynamicCredential {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/time/Duration;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/time/Duration;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/time/Duration;)Lcom/kelvsyc/gradle/hashicorp/vault/GcpDynamicCredential;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/hashicorp/vault/GcpDynamicCredential;Ljava/lang/String;Ljava/lang/String;Ljava/time/Duration;ILjava/lang/Object;)Lcom/kelvsyc/gradle/hashicorp/vault/GcpDynamicCredential;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLeaseDuration ()Ljava/time/Duration;
+	public final fun getLeaseId ()Ljava/lang/String;
+	public final fun getToken ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/hashicorp/vault/VaultBuildServiceParams : org/gradle/api/services/BuildServiceParameters {
+	public abstract fun getCaCertFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getCredentialSource ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEndpoint ()Lorg/gradle/api/provider/Property;
+	public abstract fun getJwtRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getKubernetesJwtPath ()Lorg/gradle/api/provider/Property;
+	public abstract fun getKubernetesRole ()Lorg/gradle/api/provider/Property;
+	public abstract fun getNamespace ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRoleId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSecretIdRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSkipVerify ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTokenRef ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/hashicorp/vault/VaultBuildServiceParamsExtensionsKt {
+	public static final fun appRoleAuth (Lcom/kelvsyc/gradle/hashicorp/vault/VaultBuildServiceParams;Ljava/lang/String;Lcom/kelvsyc/gradle/clients/CredentialReference;)V
+	public static synthetic fun appRoleAuth$default (Lcom/kelvsyc/gradle/hashicorp/vault/VaultBuildServiceParams;Ljava/lang/String;Lcom/kelvsyc/gradle/clients/CredentialReference;ILjava/lang/Object;)V
+	public static final fun awsIamAuth (Lcom/kelvsyc/gradle/hashicorp/vault/VaultBuildServiceParams;)V
+	public static final fun azureMsiAuth (Lcom/kelvsyc/gradle/hashicorp/vault/VaultBuildServiceParams;)V
+	public static final fun gcpAuth (Lcom/kelvsyc/gradle/hashicorp/vault/VaultBuildServiceParams;Lcom/kelvsyc/gradle/clients/CredentialReference;)V
+	public static synthetic fun gcpAuth$default (Lcom/kelvsyc/gradle/hashicorp/vault/VaultBuildServiceParams;Lcom/kelvsyc/gradle/clients/CredentialReference;ILjava/lang/Object;)V
+	public static final fun kubernetesAuth (Lcom/kelvsyc/gradle/hashicorp/vault/VaultBuildServiceParams;Ljava/lang/String;Ljava/lang/String;)V
+	public static synthetic fun kubernetesAuth$default (Lcom/kelvsyc/gradle/hashicorp/vault/VaultBuildServiceParams;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)V
+	public static final fun tokenAuth (Lcom/kelvsyc/gradle/hashicorp/vault/VaultBuildServiceParams;Lcom/kelvsyc/gradle/clients/CredentialReference;)V
+	public static synthetic fun tokenAuth$default (Lcom/kelvsyc/gradle/hashicorp/vault/VaultBuildServiceParams;Lcom/kelvsyc/gradle/clients/CredentialReference;ILjava/lang/Object;)V
+}
+
+public final class com/kelvsyc/gradle/hashicorp/vault/VaultCredentialSource : java/lang/Enum {
+	public static final field APP_ROLE Lcom/kelvsyc/gradle/hashicorp/vault/VaultCredentialSource;
+	public static final field AWS_IAM Lcom/kelvsyc/gradle/hashicorp/vault/VaultCredentialSource;
+	public static final field AZURE_MSI Lcom/kelvsyc/gradle/hashicorp/vault/VaultCredentialSource;
+	public static final field GCP Lcom/kelvsyc/gradle/hashicorp/vault/VaultCredentialSource;
+	public static final field KUBERNETES Lcom/kelvsyc/gradle/hashicorp/vault/VaultCredentialSource;
+	public static final field TOKEN Lcom/kelvsyc/gradle/hashicorp/vault/VaultCredentialSource;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/kelvsyc/gradle/hashicorp/vault/VaultCredentialSource;
+	public static fun values ()[Lcom/kelvsyc/gradle/hashicorp/vault/VaultCredentialSource;
+}
+

@@ -1,0 +1,54 @@
+public abstract class com/kelvsyc/gradle/aws/java/imds/AbstractImdsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public abstract fun doObtain (Lsoftware/amazon/awssdk/imds/Ec2MetadataResponse;)Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/imds/AbstractImdsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getPath ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/imds/AbstractInstanceIdentityValueSource : org/gradle/api/provider/ValueSource {
+	public static final field Companion Lcom/kelvsyc/gradle/aws/java/imds/AbstractInstanceIdentityValueSource$Companion;
+	public static final field DOCUMENT_REQUEST_PATH Ljava/lang/String;
+	public fun <init> ()V
+	public abstract fun doObtain (Lsoftware/amazon/awssdk/core/document/Document;)Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/Object;
+}
+
+public final class com/kelvsyc/gradle/aws/java/imds/AbstractInstanceIdentityValueSource$Companion {
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/imds/AbstractInstanceIdentityValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/imds/ImdsAsyncClientBuildService : com/kelvsyc/gradle/clients/AbstractClientBuildService {
+	public fun <init> ()V
+	public synthetic fun createClient ()Ljava/lang/Object;
+	protected fun createClient ()Lsoftware/amazon/awssdk/imds/Ec2MetadataAsyncClient;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/imds/ImdsAsyncClientBuildService$Params : org/gradle/api/services/BuildServiceParameters {
+	public abstract fun getEndpoint ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEndpointMode ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/imds/ImdsClientBuildService : com/kelvsyc/gradle/clients/AbstractClientBuildService {
+	public fun <init> ()V
+	public synthetic fun createClient ()Ljava/lang/Object;
+	protected fun createClient ()Lsoftware/amazon/awssdk/imds/Ec2MetadataClient;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/imds/ImdsClientBuildService$Params : org/gradle/api/services/BuildServiceParameters {
+	public abstract fun getEndpoint ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEndpointMode ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/imds/ImdsValueSource : com/kelvsyc/gradle/aws/java/imds/AbstractImdsValueSource {
+	public fun <init> ()V
+	public synthetic fun doObtain (Lsoftware/amazon/awssdk/imds/Ec2MetadataResponse;)Ljava/lang/Object;
+	public fun doObtain (Lsoftware/amazon/awssdk/imds/Ec2MetadataResponse;)Ljava/lang/String;
+}
+

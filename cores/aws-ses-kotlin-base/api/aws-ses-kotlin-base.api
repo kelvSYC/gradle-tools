@@ -1,0 +1,63 @@
+public abstract class com/kelvsyc/gradle/aws/kotlin/ses/AbstractSendBulkTemplatedMail : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getClient ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDefaultTemplateData ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEntries ()Lorg/gradle/api/provider/MapProperty;
+	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
+	public abstract fun getSender ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTemplateName ()Lorg/gradle/api/provider/Property;
+	public final fun registerEntry (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public final fun run ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/kotlin/ses/AbstractSendBulkTemplatedMail$Entry {
+	public abstract fun getBccAddresses ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getCcAddresses ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getRecipients ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getTemplateData ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/ses/AbstractSendRawMail : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public final fun execute ()Laws/sdk/kotlin/services/ses/model/SendRawEmailResponse;
+	public abstract fun getMessage ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSender ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/ses/AbstractSendTemplatedMail : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public final fun execute ()Laws/sdk/kotlin/services/ses/model/SendTemplatedEmailResponse;
+	public abstract fun getBccAddresses ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getCcAddresses ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getRecipients ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getSender ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTemplateJson ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTemplateName ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/ses/SendBulkTemplatedMail : com/kelvsyc/gradle/aws/kotlin/ses/AbstractSendBulkTemplatedMail {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/ses/SendMail : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public final fun execute ()Laws/sdk/kotlin/services/ses/model/SendEmailResponse;
+	public abstract fun getBccAddresses ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getCcAddresses ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getHtmlMessage ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRecipients ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getSender ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSubject ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTextMessage ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/ses/SesClientBuildService : com/kelvsyc/gradle/aws/kotlin/AbstractAwsKotlinClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Laws/sdk/kotlin/services/ses/SesClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+

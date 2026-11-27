@@ -1,0 +1,48 @@
+public abstract class com/kelvsyc/gradle/google/cloud/AbstractGcpClientBuildService : com/kelvsyc/gradle/clients/AbstractClientBuildService {
+	public fun <init> ()V
+	protected final fun resolveCredentials ()Lcom/google/auth/Credentials;
+	protected final fun resolveCredentialsProvider ()Lcom/google/api/gax/core/CredentialsProvider;
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/GcpBuildServiceParams : org/gradle/api/services/BuildServiceParameters {
+	public abstract fun getAccessTokenRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getCredentialSource ()Lorg/gradle/api/provider/Property;
+	public abstract fun getCredentialsFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getCredentialsJsonRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getExternalAccountConfigFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getExternalAccountConfigRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getProjectId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getWorkloadIdentityAudience ()Lorg/gradle/api/provider/Property;
+	public abstract fun getWorkloadIdentityServiceAccountEmail ()Lorg/gradle/api/provider/Property;
+	public abstract fun getWorkloadIdentityTokenRef ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/google/cloud/GcpBuildServiceParamsExtensionsKt {
+	public static final fun accessToken (Lcom/kelvsyc/gradle/google/cloud/GcpBuildServiceParams;Lcom/kelvsyc/gradle/clients/CredentialReference;)V
+	public static synthetic fun accessToken$default (Lcom/kelvsyc/gradle/google/cloud/GcpBuildServiceParams;Lcom/kelvsyc/gradle/clients/CredentialReference;ILjava/lang/Object;)V
+	public static final fun applicationDefault (Lcom/kelvsyc/gradle/google/cloud/GcpBuildServiceParams;)V
+	public static final fun externalAccountFromFile (Lcom/kelvsyc/gradle/google/cloud/GcpBuildServiceParams;Lorg/gradle/api/provider/Provider;)V
+	public static final fun externalAccountFromJson (Lcom/kelvsyc/gradle/google/cloud/GcpBuildServiceParams;Lcom/kelvsyc/gradle/clients/CredentialReference;)V
+	public static synthetic fun externalAccountFromJson$default (Lcom/kelvsyc/gradle/google/cloud/GcpBuildServiceParams;Lcom/kelvsyc/gradle/clients/CredentialReference;ILjava/lang/Object;)V
+	public static final fun noCredentials (Lcom/kelvsyc/gradle/google/cloud/GcpBuildServiceParams;)V
+	public static final fun serviceAccountFromFile (Lcom/kelvsyc/gradle/google/cloud/GcpBuildServiceParams;Lorg/gradle/api/provider/Provider;)V
+	public static final fun serviceAccountFromJson (Lcom/kelvsyc/gradle/google/cloud/GcpBuildServiceParams;Lcom/kelvsyc/gradle/clients/CredentialReference;)V
+	public static synthetic fun serviceAccountFromJson$default (Lcom/kelvsyc/gradle/google/cloud/GcpBuildServiceParams;Lcom/kelvsyc/gradle/clients/CredentialReference;ILjava/lang/Object;)V
+	public static final fun workloadIdentity (Lcom/kelvsyc/gradle/google/cloud/GcpBuildServiceParams;Ljava/lang/String;Lcom/kelvsyc/gradle/clients/CredentialReference;Ljava/lang/String;)V
+	public static synthetic fun workloadIdentity$default (Lcom/kelvsyc/gradle/google/cloud/GcpBuildServiceParams;Ljava/lang/String;Lcom/kelvsyc/gradle/clients/CredentialReference;Ljava/lang/String;ILjava/lang/Object;)V
+}
+
+public final class com/kelvsyc/gradle/google/cloud/GcpCredentialSource : java/lang/Enum {
+	public static final field ACCESS_TOKEN Lcom/kelvsyc/gradle/google/cloud/GcpCredentialSource;
+	public static final field APPLICATION_DEFAULT Lcom/kelvsyc/gradle/google/cloud/GcpCredentialSource;
+	public static final field EXTERNAL_ACCOUNT_CONFIG_ENV Lcom/kelvsyc/gradle/google/cloud/GcpCredentialSource;
+	public static final field EXTERNAL_ACCOUNT_CONFIG_FILE Lcom/kelvsyc/gradle/google/cloud/GcpCredentialSource;
+	public static final field NONE Lcom/kelvsyc/gradle/google/cloud/GcpCredentialSource;
+	public static final field SERVICE_ACCOUNT_JSON_ENV Lcom/kelvsyc/gradle/google/cloud/GcpCredentialSource;
+	public static final field SERVICE_ACCOUNT_JSON_FILE Lcom/kelvsyc/gradle/google/cloud/GcpCredentialSource;
+	public static final field WORKLOAD_IDENTITY_OIDC Lcom/kelvsyc/gradle/google/cloud/GcpCredentialSource;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/kelvsyc/gradle/google/cloud/GcpCredentialSource;
+	public static fun values ()[Lcom/kelvsyc/gradle/google/cloud/GcpCredentialSource;
+}
+

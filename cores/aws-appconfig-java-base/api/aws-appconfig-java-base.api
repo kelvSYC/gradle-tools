@@ -1,0 +1,219 @@
+public abstract class com/kelvsyc/gradle/aws/java/appconfig/AbstractGetConfigurationValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	protected abstract fun convert ([B)Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/appconfig/AbstractGetConfigurationValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getApplicationIdentifier ()Lorg/gradle/api/provider/Property;
+	public abstract fun getConfigurationProfileIdentifier ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEnvironmentIdentifier ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/appconfig/AppConfigClientBuildService : com/kelvsyc/gradle/aws/java/AbstractAwsJavaClientBuildService {
+	public fun <init> ()V
+	public synthetic fun createClient ()Ljava/lang/Object;
+	protected fun createClient ()Lsoftware/amazon/awssdk/services/appconfig/AppConfigClient;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/appconfig/AppConfigDataClientBuildService : com/kelvsyc/gradle/aws/java/AbstractAwsJavaClientBuildService {
+	public static final field Companion Lcom/kelvsyc/gradle/aws/java/appconfig/AppConfigDataClientBuildService$Companion;
+	public fun <init> ()V
+	public synthetic fun createClient ()Ljava/lang/Object;
+	protected fun createClient ()Lsoftware/amazon/awssdk/services/appconfigdata/AppConfigDataClient;
+	public final fun fetchConfiguration (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)[B
+}
+
+public final class com/kelvsyc/gradle/aws/java/appconfig/AppConfigDataClientBuildService$Companion {
+	public final fun getLogger ()Lorg/gradle/api/logging/Logger;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/appconfig/CreateApplicationAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/appconfig/CreateApplicationAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getDescription ()Lorg/gradle/api/provider/Property;
+	public abstract fun getName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/appconfig/CreateConfigurationProfileAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/appconfig/CreateConfigurationProfileAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getApplicationId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDescription ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLocationUri ()Lorg/gradle/api/provider/Property;
+	public abstract fun getName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getType ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/appconfig/CreateEnvironmentAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/appconfig/CreateEnvironmentAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getApplicationId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDescription ()Lorg/gradle/api/provider/Property;
+	public abstract fun getName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/appconfig/CreateHostedConfigurationVersionAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/appconfig/CreateHostedConfigurationVersionAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getApplicationId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getConfigurationProfileId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getContent ()Lorg/gradle/api/provider/Property;
+	public abstract fun getContentType ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getVersionNumberFile ()Lorg/gradle/api/file/RegularFileProperty;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/appconfig/DeleteApplicationAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/appconfig/DeleteApplicationAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getApplicationId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/appconfig/DeleteConfigurationProfileAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/appconfig/DeleteConfigurationProfileAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getApplicationId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getConfigurationProfileId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/appconfig/DeleteEnvironmentAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/appconfig/DeleteEnvironmentAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getApplicationId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEnvironmentId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/appconfig/DownloadConfigurationAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/appconfig/DownloadConfigurationAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getApplicationIdentifier ()Lorg/gradle/api/provider/Property;
+	public abstract fun getConfigurationProfileIdentifier ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEnvironmentIdentifier ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/appconfig/GetConfigurationValueSource : com/kelvsyc/gradle/aws/java/appconfig/AbstractGetConfigurationValueSource {
+	public fun <init> ()V
+	public synthetic fun convert ([B)Ljava/lang/Object;
+	protected fun convert ([B)Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/appconfig/GetConfigurationValueSource$Parameters : com/kelvsyc/gradle/aws/java/appconfig/AbstractGetConfigurationValueSource$Parameters {
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/appconfig/StartDeploymentAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/appconfig/StartDeploymentAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getApplicationId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getConfigurationProfileId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getConfigurationVersion ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDeploymentNumberFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getDeploymentStrategyId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEnvironmentId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/appconfig/StopDeploymentAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/appconfig/StopDeploymentAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getApplicationId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDeploymentNumber ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEnvironmentId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/appconfig/UpdateApplicationAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/appconfig/UpdateApplicationAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getApplicationId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDescription ()Lorg/gradle/api/provider/Property;
+	public abstract fun getName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/appconfig/UpdateConfigurationProfileAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/appconfig/UpdateConfigurationProfileAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getApplicationId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getConfigurationProfileId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDescription ()Lorg/gradle/api/provider/Property;
+	public abstract fun getName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/appconfig/UpdateEnvironmentAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/appconfig/UpdateEnvironmentAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getApplicationId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDescription ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEnvironmentId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/appconfig/WaitForDeploymentAction : org/gradle/workers/WorkAction {
+	public static final field Companion Lcom/kelvsyc/gradle/aws/java/appconfig/WaitForDeploymentAction$Companion;
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public final class com/kelvsyc/gradle/aws/java/appconfig/WaitForDeploymentAction$Companion {
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/appconfig/WaitForDeploymentAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getApplicationId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDeploymentNumber ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEnvironmentId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getMaxWaitTimeMs ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPollIntervalMs ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+

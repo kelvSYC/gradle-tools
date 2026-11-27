@@ -1,0 +1,39 @@
+public abstract class com/kelvsyc/gradle/aws/kotlin/sqs/AbstractSendMessageBatch : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getClient ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEntries ()Lorg/gradle/api/provider/MapProperty;
+	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
+	public abstract fun getQueueUrl ()Lorg/gradle/api/provider/Property;
+	public final fun registerEntry (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public final fun run ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/kotlin/sqs/AbstractSendMessageBatch$Entry {
+	public abstract fun getAttributes ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getMessageBody ()Lorg/gradle/api/provider/Property;
+	public abstract fun getMessageDeduplicationId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getMessageGroupId ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/sqs/SendMessage : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public final fun execute ()V
+	public abstract fun getAttributes ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getMessageBody ()Lorg/gradle/api/provider/Property;
+	public abstract fun getMessageDeduplicationId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getMessageGroupId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getQueueUrl ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/sqs/SendMessageBatch : com/kelvsyc/gradle/aws/kotlin/sqs/AbstractSendMessageBatch {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/kotlin/sqs/SqsClientBuildService : com/kelvsyc/gradle/aws/kotlin/AbstractAwsKotlinClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Laws/sdk/kotlin/services/sqs/SqsClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+

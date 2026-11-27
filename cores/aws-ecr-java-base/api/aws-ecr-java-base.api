@@ -1,0 +1,47 @@
+public abstract class com/kelvsyc/gradle/aws/java/ecr/AbstractGetAuthorizationTokenWorkAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	protected abstract fun doExecute (Ljava/lang/String;)V
+	public final fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/ecr/AbstractGetAuthorizationTokenWorkAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/ecr/BatchDeleteImageAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/ecr/BatchDeleteImageAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getImageTags ()Lorg/gradle/api/provider/SetProperty;
+	public abstract fun getRepositoryName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/ecr/DescribeRepositoriesValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/Map;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/ecr/DescribeRepositoriesValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/ecr/EcrClientBuildService : com/kelvsyc/gradle/aws/java/AbstractAwsJavaClientBuildService {
+	public fun <init> ()V
+	public synthetic fun createClient ()Ljava/lang/Object;
+	protected fun createClient ()Lsoftware/amazon/awssdk/services/ecr/EcrClient;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/ecr/GetAuthorizationTokenValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/ecr/GetAuthorizationTokenValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+

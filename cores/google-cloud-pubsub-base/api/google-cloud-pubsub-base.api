@@ -1,0 +1,65 @@
+public abstract class com/kelvsyc/gradle/google/cloud/pubsub/AbstractPublishBatch : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getClient ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEntries ()Lorg/gradle/api/provider/MapProperty;
+	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
+	public abstract fun getProjectId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTopicId ()Lorg/gradle/api/provider/Property;
+	public final fun registerEntry (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public final fun run ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/pubsub/AbstractPublishBatch$Entry {
+	public abstract fun getAttributes ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getData ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOrderingKey ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/pubsub/ListTopicSubscriptionsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/pubsub/ListTopicSubscriptionsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getProjectId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTopicId ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/pubsub/ListTopicsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/pubsub/ListTopicsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getProjectId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/pubsub/PublishAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/pubsub/PublishAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getAttributes ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getData ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOrderingKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getProjectId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTopicId ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/pubsub/PublishBatch : com/kelvsyc/gradle/google/cloud/pubsub/AbstractPublishBatch {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/pubsub/TopicAdminClientBuildService : com/kelvsyc/gradle/google/cloud/AbstractGcpClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/google/cloud/pubsub/v1/TopicAdminClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+

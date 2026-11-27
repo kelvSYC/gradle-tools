@@ -1,0 +1,27 @@
+public abstract class com/kelvsyc/gradle/pkl/AbstractPklValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public abstract fun doObtain (Lorg/pkl/core/PModule;)Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/pkl/AbstractPklValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+}
+
+public abstract class com/kelvsyc/gradle/pkl/PklPathValueSource : com/kelvsyc/gradle/pkl/AbstractPklValueSource {
+	public fun <init> ()V
+	public synthetic fun doObtain (Lorg/pkl/core/PModule;)Ljava/lang/Object;
+	public fun doObtain (Lorg/pkl/core/PModule;)Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/pkl/PklPathValueSource$Parameters : com/kelvsyc/gradle/pkl/AbstractPklValueSource$Parameters {
+	public abstract fun getPklPath ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/pkl/ProviderFactoryExtensionsKt {
+	public static final fun pklPath (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/file/RegularFile;Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+	public static final fun pklPath (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/file/RegularFile;Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun pklPath (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/provider/Provider;Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+	public static final fun pklPath (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/provider/Provider;Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+}
+

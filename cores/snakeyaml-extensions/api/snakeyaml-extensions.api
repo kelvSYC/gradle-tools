@@ -1,0 +1,26 @@
+public final class com/kelvsyc/gradle/snakeyaml/ProviderExtensionsKt {
+	public static final fun booleanAt (Lorg/gradle/api/provider/Provider;[Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+	public static final fun doubleAt (Lorg/gradle/api/provider/Provider;[Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+	public static final fun intAt (Lorg/gradle/api/provider/Provider;[Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+	public static final fun longAt (Lorg/gradle/api/provider/Provider;[Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+	public static final fun mappingAt (Lorg/gradle/api/provider/Provider;[Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+	public static final fun parseYaml (Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun sequenceAt (Lorg/gradle/api/provider/Provider;[Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+	public static final fun stringAt (Lorg/gradle/api/provider/Provider;[Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+}
+
+public final class com/kelvsyc/gradle/snakeyaml/ProviderFactoryExtensionsKt {
+	public static final fun yamlFile (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/file/RegularFile;)Lorg/gradle/api/provider/Provider;
+	public static final fun yamlFile (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+}
+
+public abstract class com/kelvsyc/gradle/snakeyaml/YamlValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public fun obtain ()Lcom/kelvsyc/kotlin/snakeyaml/YamlValue;
+	public synthetic fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/snakeyaml/YamlValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+}
+

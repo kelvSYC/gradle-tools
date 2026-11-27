@@ -1,0 +1,38 @@
+public abstract class com/kelvsyc/gradle/karakum/KarakumExtension {
+	public fun <init> (Lorg/gradle/api/provider/ProviderFactory;)V
+	public abstract fun getKarakumCommand ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getKarakumVersion ()Lorg/gradle/api/provider/Property;
+	public final fun useNodeModules ()V
+	public final fun useNodeModules (Lorg/gradle/api/provider/Provider;)V
+	public final fun useNpx ()V
+	public final fun useNpx (Lorg/gradle/api/provider/Provider;)V
+	public final fun useSystem ()V
+}
+
+public abstract class com/kelvsyc/gradle/karakum/KarakumTask : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public abstract fun getConfigFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getInputFiles ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public abstract fun getKarakumCommand ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/karakum/actions/RunKarakumAction : org/gradle/workers/WorkAction {
+	public fun <init> (Lorg/gradle/process/ExecOperations;)V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/karakum/actions/RunKarakumAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getConfigFile ()Lorg/gradle/api/provider/Property;
+	public abstract fun getInputFiles ()Lorg/gradle/api/file/ConfigurableFileCollection;
+	public abstract fun getKarakumCommand ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getOutputDirectory ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/plugins/KarakumPlugin : org/gradle/api/Plugin {
+	public fun <init> ()V
+	public synthetic fun apply (Ljava/lang/Object;)V
+	public fun apply (Lorg/gradle/api/Project;)V
+}
+

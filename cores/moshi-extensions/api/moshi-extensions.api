@@ -1,0 +1,55 @@
+public final class com/kelvsyc/gradle/moshi/FileAdapter {
+	public fun <init> ()V
+	public final fun fromJson (Ljava/lang/String;)Ljava/io/File;
+	public final fun toJson (Ljava/io/File;)Ljava/lang/String;
+}
+
+public abstract class com/kelvsyc/gradle/moshi/JsonPathValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/moshi/JsonPathValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getJsonPath ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/moshi/JsonValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public fun obtain ()Lcom/kelvsyc/kotlin/moshi/JsonValue;
+	public synthetic fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/moshi/JsonValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+}
+
+public final class com/kelvsyc/gradle/moshi/MoshiBuilderExtensionsKt {
+	public static final fun addGradleTypeAdapters (Lcom/squareup/moshi/Moshi$Builder;)Lcom/squareup/moshi/Moshi$Builder;
+}
+
+public final class com/kelvsyc/gradle/moshi/ProviderExtensionsKt {
+	public static final fun parseJson (Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+}
+
+public final class com/kelvsyc/gradle/moshi/ProviderFactoryExtensionsKt {
+	public static final fun jsonFile (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/file/RegularFile;)Lorg/gradle/api/provider/Provider;
+	public static final fun jsonFile (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun jsonPath (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/file/RegularFile;Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+	public static final fun jsonPath (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/file/RegularFile;Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+	public static final fun jsonPath (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/provider/Provider;Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+	public static final fun jsonPath (Lorg/gradle/api/provider/ProviderFactory;Lorg/gradle/api/provider/Provider;Lorg/gradle/api/provider/Provider;)Lorg/gradle/api/provider/Provider;
+}
+
+public final class com/kelvsyc/gradle/moshi/UriAdapter {
+	public fun <init> ()V
+	public final fun fromJson (Ljava/lang/String;)Ljava/net/URI;
+	public final fun toJson (Ljava/net/URI;)Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/moshi/groovy/JsonValueOperatorsKt {
+	public static final fun get (Lcom/kelvsyc/kotlin/moshi/JsonValue;I)Lcom/kelvsyc/kotlin/moshi/JsonValue;
+	public static final fun get (Lcom/kelvsyc/kotlin/moshi/JsonValue;Ljava/lang/String;)Lcom/kelvsyc/kotlin/moshi/JsonValue;
+}
+

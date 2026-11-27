@@ -1,0 +1,143 @@
+public abstract class com/kelvsyc/gradle/aws/java/s3/AbstractBatchDownloadFromS3 : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getArtifacts ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getClient ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
+	public final fun getOutputFiles ()Lorg/gradle/api/provider/Provider;
+	protected abstract fun getProviders ()Lorg/gradle/api/provider/ProviderFactory;
+	public final fun registerArtifact (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/s3/AbstractBatchDownloadFromS3$Artifact : org/gradle/api/Named {
+	public fun <init> (Ljava/lang/String;)V
+	public abstract fun getBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getKey ()Lorg/gradle/api/provider/Property;
+	public fun getName ()Ljava/lang/String;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/s3/AbstractBatchUploadToS3 : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getArtifacts ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getClient ()Lorg/gradle/api/provider/Property;
+	public final fun getInputFiles ()Lorg/gradle/api/provider/Provider;
+	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
+	protected abstract fun getProviders ()Lorg/gradle/api/provider/ProviderFactory;
+	public final fun registerArtifact (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/s3/AbstractBatchUploadToS3$Artifact : org/gradle/api/Named {
+	public fun <init> (Ljava/lang/String;)V
+	public abstract fun getBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getKey ()Lorg/gradle/api/provider/Property;
+	public fun getName ()Ljava/lang/String;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/s3/AbstractListObjectsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public abstract fun doObtain (Ljava/util/List;)Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/s3/AbstractListObjectsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPrefix ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/s3/AbstractS3ValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public abstract fun doObtain (Lsoftware/amazon/awssdk/core/ResponseBytes;)Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/s3/AbstractS3ValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/s3/BatchDownloadFromS3 : com/kelvsyc/gradle/aws/java/s3/AbstractBatchDownloadFromS3 {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/s3/BatchUploadToS3 : com/kelvsyc/gradle/aws/java/s3/AbstractBatchUploadToS3 {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/s3/CopyObjectAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/s3/CopyObjectAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getDestinationBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDestinationKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSourceBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSourceKey ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/s3/DeleteObjectAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/s3/DeleteObjectAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/s3/DownloadFileAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/s3/DownloadFileAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/s3/S3AsyncClientBuildService : com/kelvsyc/gradle/aws/java/AbstractAwsJavaClientBuildService {
+	public fun <init> ()V
+	public synthetic fun createClient ()Ljava/lang/Object;
+	protected fun createClient ()Lsoftware/amazon/awssdk/services/s3/S3AsyncClient;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/s3/S3ClientBuildService : com/kelvsyc/gradle/aws/java/AbstractAwsJavaClientBuildService {
+	public fun <init> ()V
+	public synthetic fun createClient ()Ljava/lang/Object;
+	protected fun createClient ()Lsoftware/amazon/awssdk/services/s3/S3Client;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/s3/S3TransferManagerBuildService : com/kelvsyc/gradle/clients/AbstractClientBuildService {
+	public fun <init> ()V
+	public synthetic fun createClient ()Ljava/lang/Object;
+	protected fun createClient ()Lsoftware/amazon/awssdk/transfer/s3/S3TransferManager;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/s3/S3TransferManagerBuildService$Params : org/gradle/api/services/BuildServiceParameters {
+	public abstract fun getBaseService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getUploadDirectoryFollowSymbolicLinks ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/s3/UploadFileAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/s3/UploadFileAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getBucket ()Lorg/gradle/api/provider/Property;
+	public abstract fun getInputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+

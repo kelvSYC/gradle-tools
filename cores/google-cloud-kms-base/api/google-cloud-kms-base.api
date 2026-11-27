@@ -1,0 +1,138 @@
+public abstract class com/kelvsyc/gradle/google/cloud/kms/AsymmetricDecryptAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/kms/AsymmetricDecryptAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getCiphertextFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getCryptoKeyVersionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPlaintextFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/kms/AsymmetricSignAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/kms/AsymmetricSignAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getCryptoKeyVersionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDataFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getDigestAlgorithm ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSignatureFile ()Lorg/gradle/api/file/RegularFileProperty;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/kms/DecryptAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/kms/DecryptAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getCiphertextFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getCryptoKeyName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPlaintextFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/kms/EncryptAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/kms/EncryptAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getCiphertextFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getCryptoKeyName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPlaintextFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/kms/GetCryptoKeyValueSource : org/gradle/api/provider/ValueSource {
+	public static final field Companion Lcom/kelvsyc/gradle/google/cloud/kms/GetCryptoKeyValueSource$Companion;
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/google/cloud/kms/GetCryptoKeyValueSource$Companion {
+	public final fun getLogger ()Lorg/gradle/api/logging/Logger;
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/kms/GetCryptoKeyValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getCryptoKeyName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/kms/GetPublicKeyValueSource : org/gradle/api/provider/ValueSource {
+	public static final field Companion Lcom/kelvsyc/gradle/google/cloud/kms/GetPublicKeyValueSource$Companion;
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/google/cloud/kms/GetPublicKeyValueSource$Companion {
+	public final fun getLogger ()Lorg/gradle/api/logging/Logger;
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/kms/GetPublicKeyValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getCryptoKeyVersionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/kms/KmsClientBuildService : com/kelvsyc/gradle/google/cloud/AbstractGcpClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/google/cloud/kms/v1/KeyManagementServiceClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/kms/ListCryptoKeyVersionsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/kms/ListCryptoKeyVersionsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getCryptoKeyId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getKeyRingId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLocation ()Lorg/gradle/api/provider/Property;
+	public abstract fun getProjectId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/kms/ListCryptoKeysValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/kms/ListCryptoKeysValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getKeyRingId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getLocation ()Lorg/gradle/api/provider/Property;
+	public abstract fun getProjectId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/kms/ListKeyRingsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/kms/ListKeyRingsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getLocation ()Lorg/gradle/api/provider/Property;
+	public abstract fun getProjectId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/google/cloud/kms/MacSignAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/google/cloud/kms/MacSignAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getCryptoKeyVersionName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDataFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getMacFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+

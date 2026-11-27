@@ -1,0 +1,414 @@
+public abstract class com/kelvsyc/gradle/gitea/DownloadGiteaReleaseArtifact : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public final fun execute ()V
+	public abstract fun getAssetNames ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepo ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTag ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/gitea/GetGiteaRepoArchive : org/gradle/api/DefaultTask {
+	public fun <init> (Lorg/gradle/workers/WorkerExecutor;)V
+	public final fun execute ()V
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepo ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/gitea/GiteaBasicClientBuildService : com/kelvsyc/gradle/clients/AbstractClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/kelvsyc/gradle/gitea/GiteaService;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/gitea/GiteaBasicClientBuildService$Params : org/gradle/api/services/BuildServiceParameters {
+	public abstract fun getBaseUrl ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPasswordRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getUsername ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/gitea/GiteaBasicClientBuildServiceParamsExtensionsKt {
+	public static final fun basicAuth (Lcom/kelvsyc/gradle/gitea/GiteaBasicClientBuildService$Params;Ljava/lang/String;Lcom/kelvsyc/gradle/clients/CredentialReference;)V
+	public static synthetic fun basicAuth$default (Lcom/kelvsyc/gradle/gitea/GiteaBasicClientBuildService$Params;Ljava/lang/String;Lcom/kelvsyc/gradle/clients/CredentialReference;ILjava/lang/Object;)V
+}
+
+public abstract class com/kelvsyc/gradle/gitea/GiteaBearerClientBuildService : com/kelvsyc/gradle/clients/AbstractClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/kelvsyc/gradle/gitea/GiteaService;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/gitea/GiteaBearerClientBuildService$Params : org/gradle/api/services/BuildServiceParameters {
+	public abstract fun getBaseUrl ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTokenRef ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/gitea/GiteaBearerClientBuildServiceParamsExtensionsKt {
+	public static final fun bearerToken (Lcom/kelvsyc/gradle/gitea/GiteaBearerClientBuildService$Params;Lcom/kelvsyc/gradle/clients/CredentialReference;)V
+	public static synthetic fun bearerToken$default (Lcom/kelvsyc/gradle/gitea/GiteaBearerClientBuildService$Params;Lcom/kelvsyc/gradle/clients/CredentialReference;ILjava/lang/Object;)V
+}
+
+public abstract interface class com/kelvsyc/gradle/gitea/GiteaService {
+	public abstract fun createComment (Ljava/lang/String;Ljava/lang/String;JLjava/util/Map;)Lretrofit2/Call;
+	public abstract fun createStatus (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Lretrofit2/Call;
+	public abstract fun downloadAsset (Ljava/lang/String;)Lretrofit2/Call;
+	public abstract fun getArchive (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lretrofit2/Call;
+	public abstract fun getPullRequest (Ljava/lang/String;Ljava/lang/String;J)Lretrofit2/Call;
+	public abstract fun getReleaseByTag (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lretrofit2/Call;
+	public abstract fun getRepository (Ljava/lang/String;Ljava/lang/String;)Lretrofit2/Call;
+	public abstract fun listPullRequests (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;II)Lretrofit2/Call;
+	public abstract fun listStatuses (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;II)Lretrofit2/Call;
+}
+
+public abstract class com/kelvsyc/gradle/gitea/actions/CreatePullRequestCommentAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/gitea/actions/CreatePullRequestCommentAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getBody ()Lorg/gradle/api/provider/Property;
+	public abstract fun getIndex ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepo ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/gitea/actions/DownloadGiteaReleaseArtifactAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/gitea/actions/DownloadGiteaReleaseArtifactAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getAssetNames ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
+	public abstract fun getOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepo ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTag ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/gitea/actions/GetGiteaRepoArchiveAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/gitea/actions/GetGiteaRepoArchiveAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRef ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepo ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/gitea/actions/PostCommitStatusAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/gitea/actions/PostCommitStatusAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getContext ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDescription ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepo ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSha ()Lorg/gradle/api/provider/Property;
+	public abstract fun getState ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTargetUrl ()Lorg/gradle/api/provider/Property;
+}
+
+public final class com/kelvsyc/gradle/gitea/models/Comment : java/io/Serializable {
+	public static final field Companion Lcom/kelvsyc/gradle/gitea/models/Comment$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Long;Ljava/lang/String;Lcom/kelvsyc/gradle/gitea/models/User;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/Long;Ljava/lang/String;Lcom/kelvsyc/gradle/gitea/models/User;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Long;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Lcom/kelvsyc/gradle/gitea/models/User;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/Long;Ljava/lang/String;Lcom/kelvsyc/gradle/gitea/models/User;Ljava/lang/String;Ljava/lang/String;)Lcom/kelvsyc/gradle/gitea/models/Comment;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/gitea/models/Comment;Ljava/lang/Long;Ljava/lang/String;Lcom/kelvsyc/gradle/gitea/models/User;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/kelvsyc/gradle/gitea/models/Comment;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBody ()Ljava/lang/String;
+	public final fun getCreatedAt ()Ljava/lang/String;
+	public final fun getId ()Ljava/lang/Long;
+	public final fun getUpdatedAt ()Ljava/lang/String;
+	public final fun getUser ()Lcom/kelvsyc/gradle/gitea/models/User;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/gitea/models/Comment$Companion {
+}
+
+public final class com/kelvsyc/gradle/gitea/models/CommitStatus : java/io/Serializable {
+	public static final field Companion Lcom/kelvsyc/gradle/gitea/models/CommitStatus$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Long;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/kelvsyc/gradle/gitea/models/CommitStatus;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/gitea/models/CommitStatus;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/kelvsyc/gradle/gitea/models/CommitStatus;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getContext ()Ljava/lang/String;
+	public final fun getCreatedAt ()Ljava/lang/String;
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getId ()Ljava/lang/Long;
+	public final fun getStatus ()Ljava/lang/String;
+	public final fun getTargetUrl ()Ljava/lang/String;
+	public final fun getUpdatedAt ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/gitea/models/CommitStatus$Companion {
+}
+
+public final class com/kelvsyc/gradle/gitea/models/PullRequest : java/io/Serializable {
+	public static final field Companion Lcom/kelvsyc/gradle/gitea/models/PullRequest$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/gitea/models/PullRequestRef;Lcom/kelvsyc/gradle/gitea/models/PullRequestRef;Lcom/kelvsyc/gradle/gitea/models/User;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/gitea/models/PullRequestRef;Lcom/kelvsyc/gradle/gitea/models/PullRequestRef;Lcom/kelvsyc/gradle/gitea/models/User;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Long;
+	public final fun component10 ()Ljava/lang/String;
+	public final fun component11 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/Long;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Lcom/kelvsyc/gradle/gitea/models/PullRequestRef;
+	public final fun component7 ()Lcom/kelvsyc/gradle/gitea/models/PullRequestRef;
+	public final fun component8 ()Lcom/kelvsyc/gradle/gitea/models/User;
+	public final fun component9 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/gitea/models/PullRequestRef;Lcom/kelvsyc/gradle/gitea/models/PullRequestRef;Lcom/kelvsyc/gradle/gitea/models/User;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/kelvsyc/gradle/gitea/models/PullRequest;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/gitea/models/PullRequest;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/gitea/models/PullRequestRef;Lcom/kelvsyc/gradle/gitea/models/PullRequestRef;Lcom/kelvsyc/gradle/gitea/models/User;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/kelvsyc/gradle/gitea/models/PullRequest;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBase ()Lcom/kelvsyc/gradle/gitea/models/PullRequestRef;
+	public final fun getBody ()Ljava/lang/String;
+	public final fun getCreatedAt ()Ljava/lang/String;
+	public final fun getHead ()Lcom/kelvsyc/gradle/gitea/models/PullRequestRef;
+	public final fun getId ()Ljava/lang/Long;
+	public final fun getMergedAt ()Ljava/lang/String;
+	public final fun getNumber ()Ljava/lang/Long;
+	public final fun getState ()Ljava/lang/String;
+	public final fun getTitle ()Ljava/lang/String;
+	public final fun getUpdatedAt ()Ljava/lang/String;
+	public final fun getUser ()Lcom/kelvsyc/gradle/gitea/models/User;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/gitea/models/PullRequest$Companion {
+}
+
+public final class com/kelvsyc/gradle/gitea/models/PullRequestRef : java/io/Serializable {
+	public static final field Companion Lcom/kelvsyc/gradle/gitea/models/PullRequestRef$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/gitea/models/Repository;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/gitea/models/Repository;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Lcom/kelvsyc/gradle/gitea/models/Repository;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/gitea/models/Repository;)Lcom/kelvsyc/gradle/gitea/models/PullRequestRef;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/gitea/models/PullRequestRef;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/gitea/models/Repository;ILjava/lang/Object;)Lcom/kelvsyc/gradle/gitea/models/PullRequestRef;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLabel ()Ljava/lang/String;
+	public final fun getRef ()Ljava/lang/String;
+	public final fun getRepo ()Lcom/kelvsyc/gradle/gitea/models/Repository;
+	public final fun getSha ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/gitea/models/PullRequestRef$Companion {
+}
+
+public final class com/kelvsyc/gradle/gitea/models/Release : java/io/Serializable {
+	public static final field Companion Lcom/kelvsyc/gradle/gitea/models/Release$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Long;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/Boolean;
+	public final fun component6 ()Ljava/lang/Boolean;
+	public final fun component7 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;)Lcom/kelvsyc/gradle/gitea/models/Release;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/gitea/models/Release;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/util/List;ILjava/lang/Object;)Lcom/kelvsyc/gradle/gitea/models/Release;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAssets ()Ljava/util/List;
+	public final fun getBody ()Ljava/lang/String;
+	public final fun getDraft ()Ljava/lang/Boolean;
+	public final fun getId ()Ljava/lang/Long;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getPrerelease ()Ljava/lang/Boolean;
+	public final fun getTagName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/gitea/models/Release$Companion {
+}
+
+public final class com/kelvsyc/gradle/gitea/models/ReleaseAsset : java/io/Serializable {
+	public static final field Companion Lcom/kelvsyc/gradle/gitea/models/ReleaseAsset$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Long;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/Long;
+	public final fun component4 ()Ljava/lang/Long;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;)Lcom/kelvsyc/gradle/gitea/models/ReleaseAsset;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/gitea/models/ReleaseAsset;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/Long;Ljava/lang/Long;Ljava/lang/String;ILjava/lang/Object;)Lcom/kelvsyc/gradle/gitea/models/ReleaseAsset;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBrowserDownloadUrl ()Ljava/lang/String;
+	public final fun getDownloadCount ()Ljava/lang/Long;
+	public final fun getId ()Ljava/lang/Long;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getSize ()Ljava/lang/Long;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/gitea/models/ReleaseAsset$Companion {
+}
+
+public final class com/kelvsyc/gradle/gitea/models/Repository : java/io/Serializable {
+	public static final field Companion Lcom/kelvsyc/gradle/gitea/models/Repository$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/gitea/models/User;)V
+	public synthetic fun <init> (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/gitea/models/User;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Long;
+	public final fun component10 ()Lcom/kelvsyc/gradle/gitea/models/User;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/Boolean;
+	public final fun component6 ()Ljava/lang/Boolean;
+	public final fun component7 ()Ljava/lang/String;
+	public final fun component8 ()Ljava/lang/String;
+	public final fun component9 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/gitea/models/User;)Lcom/kelvsyc/gradle/gitea/models/Repository;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/gitea/models/Repository;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lcom/kelvsyc/gradle/gitea/models/User;ILjava/lang/Object;)Lcom/kelvsyc/gradle/gitea/models/Repository;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCloneUrl ()Ljava/lang/String;
+	public final fun getDefaultBranch ()Ljava/lang/String;
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getFork ()Ljava/lang/Boolean;
+	public final fun getFullName ()Ljava/lang/String;
+	public final fun getHtmlUrl ()Ljava/lang/String;
+	public final fun getId ()Ljava/lang/Long;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getOwner ()Lcom/kelvsyc/gradle/gitea/models/User;
+	public final fun getPrivate ()Ljava/lang/Boolean;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/gitea/models/Repository$Companion {
+}
+
+public final class com/kelvsyc/gradle/gitea/models/User : java/io/Serializable {
+	public static final field Companion Lcom/kelvsyc/gradle/gitea/models/User$Companion;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Long;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/kelvsyc/gradle/gitea/models/User;
+	public static synthetic fun copy$default (Lcom/kelvsyc/gradle/gitea/models/User;Ljava/lang/Long;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/kelvsyc/gradle/gitea/models/User;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAvatarUrl ()Ljava/lang/String;
+	public final fun getEmail ()Ljava/lang/String;
+	public final fun getFullName ()Ljava/lang/String;
+	public final fun getId ()Ljava/lang/Long;
+	public final fun getLogin ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/kelvsyc/gradle/gitea/models/User$Companion {
+}
+
+public abstract class com/kelvsyc/gradle/gitea/valuesources/AbstractCollectedPaginatedValueSource : com/kelvsyc/gradle/gitea/valuesources/AbstractPaginatedValueSource {
+	public fun <init> ()V
+	public synthetic fun transform (Lkotlin/sequences/Sequence;)Ljava/lang/Object;
+	protected fun transform (Lkotlin/sequences/Sequence;)Ljava/util/List;
+}
+
+public abstract class com/kelvsyc/gradle/gitea/valuesources/AbstractPaginatedValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	protected abstract fun fetchPage (Lcom/kelvsyc/gradle/gitea/GiteaService;II)Ljava/util/List;
+	public fun obtain ()Ljava/lang/Object;
+	protected abstract fun transform (Lkotlin/sequences/Sequence;)Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/gitea/valuesources/AbstractPaginatedValueSource$PaginatedParameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/gitea/valuesources/GetCommitStatusesValueSource : com/kelvsyc/gradle/gitea/valuesources/AbstractCollectedPaginatedValueSource {
+	public fun <init> ()V
+	protected fun fetchPage (Lcom/kelvsyc/gradle/gitea/GiteaService;II)Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/gitea/valuesources/GetCommitStatusesValueSource$Parameters : com/kelvsyc/gradle/gitea/valuesources/AbstractPaginatedValueSource$PaginatedParameters {
+	public abstract fun getOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepo ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSha ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/gitea/valuesources/GetPullRequestValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public fun obtain ()Lcom/kelvsyc/gradle/gitea/models/PullRequest;
+	public synthetic fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/gitea/valuesources/GetPullRequestValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getIndex ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepo ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/gitea/valuesources/GetPullRequestsValueSource : com/kelvsyc/gradle/gitea/valuesources/AbstractCollectedPaginatedValueSource {
+	public fun <init> ()V
+	protected fun fetchPage (Lcom/kelvsyc/gradle/gitea/GiteaService;II)Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/gitea/valuesources/GetPullRequestsValueSource$Parameters : com/kelvsyc/gradle/gitea/valuesources/AbstractPaginatedValueSource$PaginatedParameters {
+	public abstract fun getOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepo ()Lorg/gradle/api/provider/Property;
+	public abstract fun getState ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/gitea/valuesources/GetRepositoryValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public fun obtain ()Lcom/kelvsyc/gradle/gitea/models/Repository;
+	public synthetic fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/gitea/valuesources/GetRepositoryValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepo ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+

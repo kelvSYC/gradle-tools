@@ -1,4 +1,6 @@
 import org.jetbrains.dokka.gradle.DokkaExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 
 /**
  * What every core adds to the shared conventions: gradlex dependency conflict resolution (with slf4j-simple as the
@@ -29,6 +31,15 @@ pluginManager.withPlugin("org.jetbrains.dokka") {
                 url("https://docs.gradle.org/current/kotlin-dsl/gradle")
             }
         }
+    }
+}
+
+// The public API of the main compilation is dumped to api/<core>.api; `checkKotlinAbi` (part of `check`) fails when it
+// drifts from the dump and `updateKotlinAbi` rewrites the dump. The release automation diffs the dumps.
+pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+    @OptIn(ExperimentalAbiValidation::class)
+    configure<KotlinProjectExtension> {
+        abiValidation()
     }
 }
 

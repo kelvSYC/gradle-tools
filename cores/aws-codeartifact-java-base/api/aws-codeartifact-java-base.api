@@ -1,0 +1,207 @@
+public abstract class com/kelvsyc/gradle/aws/java/codeartifact/AbstractAsyncBatchGetGenericPackageVersionAsset : com/kelvsyc/gradle/aws/java/codeartifact/AbstractBatchGetGenericPackageVersionAsset {
+	public fun <init> ()V
+	public abstract fun getClient ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/codeartifact/AbstractAsyncBatchPublishPackageVersion : com/kelvsyc/gradle/aws/java/codeartifact/AbstractBatchPublishPackageVersion {
+	public fun <init> ()V
+	public abstract fun getClient ()Lorg/gradle/api/provider/Property;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/codeartifact/AbstractBatchGetGenericPackageVersionAsset : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getArtifacts ()Lorg/gradle/api/provider/MapProperty;
+	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
+	public final fun outputFileForArtifact (Ljava/lang/String;)Lorg/gradle/api/provider/Provider;
+	public final fun registerArtifact (Ljava/lang/String;Lorg/gradle/api/Action;)V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/codeartifact/AbstractBatchGetGenericPackageVersionAsset$Artifact {
+	public abstract fun getAssetName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDomain ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDomainOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getNamespace ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getPackageValue ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPackageVersion ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/codeartifact/AbstractBatchPublishPackageVersion : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getArtifacts ()Lorg/gradle/api/provider/MapProperty;
+	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
+	public final fun registerArtifact (Ljava/lang/String;Lorg/gradle/api/Action;)V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/codeartifact/AbstractBatchPublishPackageVersion$Artifact {
+	public abstract fun getAssetContent ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getAssetName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getAssetSHA256 ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDomain ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDomainOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getNamespace ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPackageValue ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPackageVersion ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+	public abstract fun getUnfinished ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/codeartifact/AbstractGetAuthorizationTokenWorkAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	protected abstract fun doExecute (Ljava/lang/String;)V
+	public final fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/codeartifact/AbstractGetAuthorizationTokenWorkAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getDomain ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDomainOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDuration ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/codeartifact/AbstractGetGenericAssetValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public abstract fun doObtain (Lsoftware/amazon/awssdk/services/codeartifact/model/GetPackageVersionAssetResponse;Lsoftware/amazon/awssdk/http/AbortableInputStream;)Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/codeartifact/AbstractGetGenericAssetValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getAsset ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDomain ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDomainOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getNamespace ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPackageValue ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPackageVersion ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/codeartifact/AbstractWorkerBatchGetGenericPackageVersionAsset : com/kelvsyc/gradle/aws/java/codeartifact/AbstractBatchGetGenericPackageVersionAsset {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getWorkerExecutor ()Lorg/gradle/workers/WorkerExecutor;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/codeartifact/AbstractWorkerBatchPublishPackageVersion : com/kelvsyc/gradle/aws/java/codeartifact/AbstractBatchPublishPackageVersion {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	protected abstract fun getWorkerExecutor ()Lorg/gradle/workers/WorkerExecutor;
+	public final fun run ()V
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/codeartifact/AsyncBatchGetGenericPackageVersionAsset : com/kelvsyc/gradle/aws/java/codeartifact/AbstractAsyncBatchGetGenericPackageVersionAsset {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/codeartifact/AsyncBatchPublishPackageVersion : com/kelvsyc/gradle/aws/java/codeartifact/AbstractAsyncBatchPublishPackageVersion {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/codeartifact/BatchGetGenericPackageVersionAsset : com/kelvsyc/gradle/aws/java/codeartifact/AbstractWorkerBatchGetGenericPackageVersionAsset {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/codeartifact/BatchPublishPackageVersion : com/kelvsyc/gradle/aws/java/codeartifact/AbstractWorkerBatchPublishPackageVersion {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/codeartifact/CodeArtifactAsyncClientBuildService : com/kelvsyc/gradle/aws/java/AbstractAwsJavaClientBuildService {
+	public fun <init> ()V
+	public synthetic fun createClient ()Ljava/lang/Object;
+	protected fun createClient ()Lsoftware/amazon/awssdk/services/codeartifact/CodeartifactAsyncClient;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/codeartifact/CodeArtifactClientBuildService : com/kelvsyc/gradle/aws/java/AbstractAwsJavaClientBuildService {
+	public fun <init> ()V
+	public synthetic fun createClient ()Ljava/lang/Object;
+	protected fun createClient ()Lsoftware/amazon/awssdk/services/codeartifact/CodeartifactClient;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/codeartifact/GetAuthorizationTokenValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/codeartifact/GetAuthorizationTokenValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getDomain ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDomainOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDuration ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/codeartifact/GetGenericPackageVersionAssetAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/codeartifact/GetGenericPackageVersionAssetAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getAsset ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDomain ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDomainOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getNamespace ()Lorg/gradle/api/provider/Property;
+	public abstract fun getOutputFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getPackageValue ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPackageVersion ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/codeartifact/GetRepositoryEndpointValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/lang/String;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/codeartifact/GetRepositoryEndpointValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getDomain ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDomainOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEndpointType ()Lorg/gradle/api/provider/Property;
+	public abstract fun getFormat ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/codeartifact/ListPackageVersionsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/codeartifact/ListPackageVersionsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getDomain ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDomainOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getFormat ()Lorg/gradle/api/provider/Property;
+	public abstract fun getNamespace ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPackageValue ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/aws/java/codeartifact/PublishPackageVersionAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/aws/java/codeartifact/PublishPackageVersionAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getAssetContent ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getAssetName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getAssetSHA256 ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDomain ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDomainOwner ()Lorg/gradle/api/provider/Property;
+	public abstract fun getNamespace ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPackageValue ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPackageVersion ()Lorg/gradle/api/provider/Property;
+	public abstract fun getRepository ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getUnfinished ()Lorg/gradle/api/provider/Property;
+}
+

@@ -1,0 +1,91 @@
+public abstract class com/kelvsyc/gradle/azure/servicebus/AbstractSendMessageBatch : org/gradle/api/DefaultTask {
+	public fun <init> ()V
+	public abstract fun getClient ()Lorg/gradle/api/provider/Property;
+	public abstract fun getEntries ()Lorg/gradle/api/provider/MapProperty;
+	protected abstract fun getObjects ()Lorg/gradle/api/model/ObjectFactory;
+	public final fun registerEntry (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public final fun run ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/servicebus/AbstractSendMessageBatch$Entry {
+	public abstract fun getApplicationProperties ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getBody ()Lorg/gradle/api/provider/Property;
+	public abstract fun getMessageId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPartitionKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSessionId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSubject ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/servicebus/ListQueuesValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/servicebus/ListQueuesValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/servicebus/ListSubscriptionsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/servicebus/ListSubscriptionsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTopicName ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/servicebus/ListTopicsValueSource : org/gradle/api/provider/ValueSource {
+	public fun <init> ()V
+	public synthetic fun obtain ()Ljava/lang/Object;
+	public fun obtain ()Ljava/util/List;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/servicebus/ListTopicsValueSource$Parameters : org/gradle/api/provider/ValueSourceParameters {
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/servicebus/SendMessageAction : org/gradle/workers/WorkAction {
+	public fun <init> ()V
+	public fun execute ()V
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/servicebus/SendMessageAction$Parameters : org/gradle/workers/WorkParameters {
+	public abstract fun getApplicationProperties ()Lorg/gradle/api/provider/MapProperty;
+	public abstract fun getBody ()Lorg/gradle/api/provider/Property;
+	public abstract fun getMessageId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getPartitionKey ()Lorg/gradle/api/provider/Property;
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSessionId ()Lorg/gradle/api/provider/Property;
+	public abstract fun getSubject ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/servicebus/SendMessageBatch : com/kelvsyc/gradle/azure/servicebus/AbstractSendMessageBatch {
+	public fun <init> ()V
+	public abstract fun getService ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/servicebus/ServiceBusAdministrationClientBuildService : com/kelvsyc/gradle/azure/AbstractAzureClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/azure/messaging/servicebus/administration/ServiceBusAdministrationClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/servicebus/ServiceBusAdministrationClientBuildService$Params : com/kelvsyc/gradle/azure/AzureBuildServiceParams {
+	public abstract fun getNamespace ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract class com/kelvsyc/gradle/azure/servicebus/ServiceBusSenderClientBuildService : com/kelvsyc/gradle/azure/AbstractAzureClientBuildService {
+	public fun <init> ()V
+	protected fun createClient ()Lcom/azure/messaging/servicebus/ServiceBusSenderClient;
+	public synthetic fun createClient ()Ljava/lang/Object;
+}
+
+public abstract interface class com/kelvsyc/gradle/azure/servicebus/ServiceBusSenderClientBuildService$Params : com/kelvsyc/gradle/azure/AzureBuildServiceParams {
+	public abstract fun getNamespace ()Lorg/gradle/api/provider/Property;
+	public abstract fun getQueueName ()Lorg/gradle/api/provider/Property;
+	public abstract fun getTopicName ()Lorg/gradle/api/provider/Property;
+}
+
