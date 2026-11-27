@@ -9,7 +9,9 @@ on:
 # merge made with GITHUB_TOKEN triggers no workflows, so CI would not run on the wrapper change and nothing would be
 # published after the merge. A run started by Dependabot sees only Dependabot secrets, and one started by the token's
 # own push only Actions secrets, so the token is stored in both. Only the push and auto-merge steps get the token: the
-# Gradle build that refreshes the wrapper runs the build's plugins, which must not see it.
+# Gradle build that refreshes the wrapper runs the build's plugins, which must not see it. A further step labels the PR
+# `release:minor` when a library in the new release moves across a breaking version
+# (.github/scripts/conventions-moves.sh); it uses GITHUB_TOKEN.
 jobs:
   follow-and-auto-merge:
     if: github.event.pull_request.user.login == 'dependabot[bot]'
@@ -17,7 +19,7 @@ jobs:
     permissions:
       contents: read
       packages: read
-      pull-requests: read
+      pull-requests: write
 
     steps:
       - name: Dependabot metadata
@@ -73,6 +75,46 @@ jobs:
           git add gradle/wrapper gradlew gradlew.bat
           git commit -m "Follow gradle-build-conventions to Gradle ${GRADLE_VERSION}"
           git push "https://x-access-token:${CONVENTIONS_TOKEN}@github.com/${REPOSITORY}.git" "HEAD:${BRANCH}"
+      - name: Label breaking library moves
+        if: steps.bump.outputs.conventions == 'true'
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          pin_regex='s/^gradle-build-conventions *= *"([^"]+)".*/\1/p'
+          old=$(git show "${BASE_SHA}:gradle/libs.versions.toml" | sed -nE "$pin_regex")
+          new=$(sed -nE "$pin_regex" gradle/libs.versions.toml)
+          if [ -z "$old" ] || [ -z "$new" ]; then
+            echo "::error::No gradle-build-conventions pin found (old='${old}', new='${new}')."
+            exit 1
+          fi
+          if [ "$old" = "$new" ]; then
+            echo "The conventions pin did not change."
+            exit 0
+          fi
+          base_url=https://maven.pkg.github.com/kelvSYC/gradle-build-conventions/com/kelvsyc/internal
+          work=$(mktemp -d)
+          for v in "$old" "$new"; do
+            curl -fsSL --retry 3 --retry-all-errors -u "${GITHUB_ACTOR}:${GITHUB_TOKEN}" -o "$work/platform-$v.pom" "$base_url/platform/$v/platform-$v.pom"
+            curl -fsSL --retry 3 --retry-all-errors -u "${GITHUB_ACTOR}:${GITHUB_TOKEN}" -o "$work/catalog-$v.toml" "$base_url/catalog/$v/catalog-$v.toml"
+            .github/scripts/conventions-moves.sh versions "$work/platform-$v.pom" "$work/catalog-$v.toml" > "$work/versions-$v"
+          done
+          moves=$(.github/scripts/conventions-moves.sh breaking "$work/versions-$old" "$work/versions-$new")
+          if [ -z "$moves" ]; then
+            echo "No library moves across a breaking version between ${old} and ${new}."
+            exit 0
+          fi
+          gh pr edit "$PR_URL" --add-label release:minor
+          {
+            echo "### Breaking library moves (${old} -> ${new})"
+            echo
+            echo '```'
+            echo "$moves"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Enable auto-merge
         if: steps.bump.outputs.conventions == 'true'
         env:
