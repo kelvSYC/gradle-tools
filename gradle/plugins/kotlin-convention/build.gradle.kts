@@ -14,4 +14,5 @@ dependencies {
     implementation(libs.dokka.plugin)
     compileOnly(libs.kotlin.plugin)
     implementation(libs.gradlex.dependency.conflict.resolution.plugin)
+    implementation(local.licensee.plugin)
 }

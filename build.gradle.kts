@@ -139,6 +139,13 @@ listOf("checkKotlinAbi", "updateKotlinAbi").forEach { abiTask ->
     }
 }
 
+// The dependency license gate of every component (licensee, see com.kelvsyc.internal.gradle-tools.license-check).
+tasks.register("checkLicense") {
+    components.forEach {
+        dependsOn(gradle.includedBuild(it).task(":licensee"))
+    }
+}
+
 tasks.register("test") {
     dependsOn(gradle.includedBuild("aggregation").task(":testing:testAggregateTestReport"))
     dependsOn(gradle.includedBuild("aggregation").task(":compat:test"))
@@ -162,6 +169,7 @@ tasks.register("check") {
     checkComponents.forEach {
         dependsOn(gradle.includedBuild(it).task(":verifyGradleLinkage"))
         dependsOn(gradle.includedBuild(it).task(":checkKotlinAbi"))
+        dependsOn(gradle.includedBuild(it).task(":licensee"))
         dependsOn(gradle.includedBuild(it).task(":verifyPomDependencyVersions"))
     }
 }
