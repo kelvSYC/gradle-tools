@@ -242,9 +242,11 @@ While 0.x, `release:major` counts as minor; only the release workflow's `bump: m
 
 **Label check.** `.github/workflows/release-label.yml` (job `release-label`, script `.github/scripts/release-label-check.sh`) fails a PR whose labels are below what its own API change (diffed from the merge base) requires, naming the dumps and the required label. It re-runs on labelling, so adding the label fixes it.
 
+**Conventions bumps.** `conventions-bump.yml` labels a gradle-build-conventions bump PR `release:minor` when a library in the new release's platform or catalog moves across a breaking version (major changed, or minor changed while 0.x; `.github/scripts/conventions-moves.sh`), since such a move reaches the published POMs. Otherwise the PR stays unlabelled. Other Dependabot PRs are labelled by the maintainer at merge.
+
 **Repository prerequisites (owner, once).**
 
-- Create the labels `release:major` and `release:minor` (`gh label create release:major`, `gh label create release:minor`). They must exist before a PR can use them.
+- Create the labels `release:major` and `release:minor` (`gh label create release:major`, `gh label create release:minor`). They must exist before `conventions-bump.yml`'s labelling step runs or a PR can use them.
 - Add the `release-label` check to the required status checks of the "Main Ruleset", next to `build`. Until then it is advisory; the release workflow will apply the API rule again regardless.
 
 ## Critical Gotchas

@@ -6,7 +6,8 @@
 #       with a literal version (`version.ref` is resolved from [versions]; an empty version is managed by the platform).
 #   conventions-moves.sh breaking <old-versions> <new-versions>
 #       Prints `group:artifact old -> new` for each breaking move, always exiting 0. A move is breaking when the major
-#       changes, or the major is 0 and the minor changes, or the old version is a pre-release (a `-` suffix) and the
+#       changes, or the major is 0 and the minor changes, or the old version is a pre-release (a `-` suffix of alpha, beta, rc, cr, m<n>, milestone, preview, ea or snapshot, with
+#       optional separators and digits; Maven qualifiers such as `-jre` or `-r` are not) and the
 #       major or minor changes. Added or removed modules are not moves.
 #
 # Portable (awk/sed/sort only): runs on ubuntu-latest and macOS bash 3.2.
@@ -45,6 +46,13 @@ versions() {
 
 breaking() {
     awk '
+        # A pre-release has a `-` suffix naming a pre-release stage (beta.2, RC1, M3, alpha-1); other suffixes, such as
+        # Maven qualifiers (-jre, -r), do not make a version a pre-release.
+        function isPre(ver,    suffix) {
+            if (index(ver, "-") == 0) return 0
+            suffix = tolower(ver); sub(/^[^-]*-/, "", suffix)
+            return suffix ~ /^(alpha|beta|rc|cr|m[0-9]+|milestone|preview|ea|snapshot)[-._0-9]*$/
+        }
         function parts(ver, out,    core, n, arr) {
             core = ver; sub(/-.*/, "", core)
             n = split(core, arr, ".")
@@ -54,7 +62,7 @@ breaking() {
         ($1 in old) && old[$1] != $2 {
             parts(old[$1], o); parts($2, w)
             majorMoved = o[1] != w[1]; minorMoved = o[2] != w[2]
-            pre = index(old[$1], "-") > 0
+            pre = isPre(old[$1])
             if (majorMoved || (o[1] == 0 && minorMoved) || (pre && minorMoved))
                 print $1 " " old[$1] " -> " $2
         }
