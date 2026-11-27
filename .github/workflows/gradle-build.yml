@@ -265,14 +265,6 @@ jobs:
           build-scan-publish: true
           build-scan-terms-of-use-url: "https://gradle.com/help/legal-terms-of-use"
           build-scan-terms-of-use-agree: "yes"
-      - name: Create initial tag for semver
-        run: |
-          if ! git rev-parse v0.1.0 >/dev/null 2>&1; then
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git tag v0.1.0
-            git push origin v0.1.0
-          fi
       - name: Delete existing snapshot versions
         run: |
           for pkg in $(gh api -H "Accept: application/vnd.github+json" "/user/packages?package_type=maven&per_page=100" --jq '.[].name'); do

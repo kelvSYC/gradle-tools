@@ -247,7 +247,20 @@ While 0.x, `release:major` counts as minor; only the release workflow's `bump: m
 **Repository prerequisites (owner, once).**
 
 - Create the labels `release:major` and `release:minor` (`gh label create release:major`, `gh label create release:minor`). They must exist before `conventions-bump.yml`'s labelling step runs or a PR can use them.
-- Add the `release-label` check to the required status checks of the "Main Ruleset", next to `build`. Until then it is advisory; the release workflow will apply the API rule again regardless.
+- Add the `release-label` check to the required status checks of the "Main Ruleset", next to `build`. Until then it is advisory; the release workflow applies the API rule again regardless.
+- Enable GitHub private vulnerability reporting (repository Settings, Code security), which is the reporting route `SECURITY.md` names.
+
+**Running a release.** Run the `Release` workflow (`.github/workflows/release.yml`, `workflow_dispatch`, from `main` only) with `bump` (`auto`, `patch`, `minor`, `major`) and `dry-run`. Run it with `dry-run: true` first and read the plan in the run summary.
+
+1. It releases the commit `main` pointed at when dispatched, and fails unless that commit's `build` check (the required check of `gradle-build.yml`) concluded `success`.
+2. `.github/scripts/release-plan.sh` computes the version from the latest `vX.Y.Z` tag: the largest bump of the labels of the PRs merged since (first-parent commits of `main`; labels are read at dispatch, so a label added after merge counts), raised to what the API change over that range requires (`raised=` in the plan). Commits with no PR (direct pushes) count as patch and are listed as `direct=`. A `bump` input other than `auto` overrides the result but fails if it is lower. No commits since the latest tag fails. `dry-run` stops here.
+3. It tags `HEAD` locally (annotated), runs `./gradlew :publish`, and only after a successful publish pushes the tag and creates the GitHub Release with generated notes, categorised by `.github/release.yml`.
+
+The first release after the release automation uses `bump: minor` (→ `v0.2.0`), since earlier PRs are unlabelled.
+
+**Partial publish.** GitHub Packages refuses to republish a version, so a release that failed during `:publish` leaves some packages published at that version. Delete that version from every package that has it (repository Packages, or `gh api -X DELETE /user/packages/maven/<package>/versions/<id>`), delete the remote tag if it was pushed (`git push origin :refs/tags/vX.Y.Z`) and any GitHub Release, then re-run the workflow.
+
+**Publish and tag succeeded, release creation failed.** If `:publish` and the tag push succeeded but `gh release create` failed, the packages are fine: do not delete them or the tag. Create the release by hand with `gh release create vX.Y.Z --verify-tag --generate-notes`.
 
 ## Critical Gotchas
 
