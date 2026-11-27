@@ -1,0 +1,30 @@
+name: Release label
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  release-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Check release label
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+        run: |
+          labels=()
+          while IFS= read -r label; do
+            labels+=("$label")
+          done < <(jq -r '.[]' <<< "$LABELS")
+          .github/scripts/release-label-check.sh "$BASE_SHA" "$HEAD_SHA" ${labels[@]+"${labels[@]}"}
